@@ -1,0 +1,1 @@
+ks, ctr, face, simTime = KitBase.initialize("config.txt")
