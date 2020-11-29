@@ -1,6 +1,7 @@
 # ============================================================
 # KitBase.jl: The lightweight prototype with physical 
 #             formulations of Kinetic.jl Ecosystem
+# Copyright (c) 2020 Tianbai Xiao <tianbaixiao@gmail.com>
 # ============================================================
 
 module KitBase
