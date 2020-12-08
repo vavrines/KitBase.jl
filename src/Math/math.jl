@@ -247,12 +247,7 @@ end
 """
 Finite difference for pseudo-unstructured mesh
 
-    unstruct_diff(
-        u::AbstractArray{<:Any,1},
-        x::AbstractArray{<:Any,1},
-        nx::Int;
-        mode = :central::Symbol,
-    )
+    unstruct_diff(u::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1}, nx::Int; mode = :central::Symbol)
 
     unstruct_diff(u::Function, x::AbstractArray{<:Any,2}, nx::Int, dim::Int; mode = :central::Symbol)
 
@@ -283,34 +278,34 @@ end
 
 function unstruct_diff(
     u::Function,
-    x::AbstractArray{<:Any,2},
+    x::AbstractArray{<:Any,1},
     nx::Int,
     dim::Int;
     mode = :central::Symbol,
 )
-    uu = reshape(u(x), (nx, :))
-    xx = reshape(x[dim, :], (nx, :))
+    uu = reshape(u.(x), (nx, :))
+    xx = reshape(x, (nx, :))
     dux = zeros(eltype(x), axes(xx))
 
     if dim == 1
-        for i = 1:nx
+        for j in axes(xx, 2)
+            if mode == :central
+                dux[:, j] .= central_diff(uu[:, j], xx[:, j])
+            elseif mode == :upwind
+                dux[:, j] .= upwind_diff(uu[:, j], xx[:, j])
+            end
+        end
+    elseif dim == 2
+        for i in axes(xx, 1)
             if mode == :central
                 dux[i, :] .= central_diff(uu[i, :], xx[i, :])
             elseif mode == :upwind
                 dux[i, :] .= upwind_diff(uu[i, :], xx[i, :])
             end
         end
-    elseif dim == 2
-        for i = 1:nx
-            if mode == :central
-                dux[:, i] .= central_diff(uu[:, i], xx[:, i])
-            elseif mode == :upwind
-                dux[:, i] .= upwind_diff(uu[:, i], xx[:, i])
-            end
-        end
     end
 
-    return reshape(dux, (1, :))
+    return dux[:]
 end
 
 
