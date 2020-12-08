@@ -510,7 +510,7 @@ function mesh_center_2D(
     cellMidPoints = zeros(size(cells, 1), 2)
     for i in axes(cellMidPoints, 1) # nCells
         for j in axes(cells, 2) # nNodesPerCell
-            cellMidPoints[i, :] .+= nodes[cells[i, j], :]
+            cellMidPoints[i, :] .+= nodes[cells[i, j], 1:2]
         end
     end
     cellMidPoints ./= size(cells, 2)
