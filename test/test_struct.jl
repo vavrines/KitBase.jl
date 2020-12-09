@@ -5,6 +5,14 @@ for key in keys(D)
     @eval $s = $(D[key])
 end
 
+#--- settings ---#
+Setup()
+Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01)
+Particle(knudsen, mach, prandtl, inK, 3.0, 1e-4, omega, alphaRef, omegaRef, 0.01)
+Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5)
+Plasma1D([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5, 0.01, 0.01, 100.0, 1.0, 1.0)
+Plasma2D([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5, 0.01, 0.01, 100.0, 1.0, 1.0)
+
 prim = [1.0, 0.0, 1.0]
 w = prim_conserve(prim, 1.4)
 u = Float64.(collect(umin:nu:umax)) # u should be float

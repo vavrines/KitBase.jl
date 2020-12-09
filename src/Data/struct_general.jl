@@ -20,6 +20,8 @@ struct Setup{S,I,E,F} <: AbstractSetup
     cfl::E
     maxTime::F
 
+    Setup() = Setup("sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", 0.5, 2.0)
+
     function Setup(
         case::AbstractString,
         space::AbstractString,
@@ -92,6 +94,65 @@ struct Gas{A,B,C,D,E,F,G,H,I} <: AbstractProperty
             Pr,
             K,
             γ,
+            ω,
+            αᵣ,
+            ωᵣ,
+            μᵣ,
+        )
+    end
+
+end
+
+
+"""
+Particle property
+
+    @consts: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ
+
+"""
+struct Particle{A,B,C,D,E,F,G,H,I,J} <: AbstractProperty
+
+    Kn::A
+    Ma::B
+    Pr::C
+    K::D
+    γ::E
+    m::F
+    ω::G
+    αᵣ::H
+    ωᵣ::I
+    μᵣ::J
+
+    function Particle(
+        Kn::Union{Real,AbstractArray}, # unified consideration of
+        Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
+        Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
+        K::Union{Real,AbstractArray},
+        γ::Union{Real,AbstractArray},
+        m::Union{Real,AbstractArray},
+        ω::Union{Real,AbstractArray},
+        αᵣ::Union{Real,AbstractArray},
+        ωᵣ::Union{Real,AbstractArray},
+        μᵣ::Union{Real,AbstractArray},
+    )
+        new{
+            typeof(Kn),
+            typeof(Ma),
+            typeof(Pr),
+            typeof(K),
+            typeof(γ),
+            typeof(m),
+            typeof(ω),
+            typeof(αᵣ),
+            typeof(ωᵣ),
+            typeof(μᵣ),
+        }(
+            Kn,
+            Ma,
+            Pr,
+            K,
+            γ,
+            m,
             ω,
             αᵣ,
             ωᵣ,
