@@ -575,7 +575,7 @@ function kernel_mode(
     wnum::I,
     alpha::R;
     quad_num = 64::I,
-) where {I<:Int,R<:Real}
+) where {I<:Integer,R<:Real}
 
     supp = sqrt(2.0) * 2.0 * max(umax, vmax, wmax) / (3.0 + sqrt(2.0))
 

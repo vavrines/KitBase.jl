@@ -139,6 +139,8 @@ conserve_prim(ρ, M, E, γ) = conserve_prim([ρ, M, E], γ)
 
 conserve_prim(ρ, MX, MY, E, γ) = conserve_prim([ρ, MX, MY, E], γ)
 
+conserve_prim(ρ, MX, MY, MZ, E, γ) = conserve_prim([ρ, MX, MY, MZ, E], γ)
+
 
 """
 Transform multi-component conservative -> primitive variables
@@ -191,7 +193,7 @@ function em_coefficients(
     Z<:AbstractArray{<:Real,1},
 }
 
-    if eltype(W) <: Int
+    if eltype(prim) <: Int
         A = zeros(9, 9)
         b = zeros(9)
     else
