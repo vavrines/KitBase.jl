@@ -1081,7 +1081,7 @@ function aap_hs_diffeq!(du, u, p, t)
         du[10] = (mixw[5, 2] - E₅) / τₑ
     end
 
-    nothing
+    return nothing
 
 end
 
@@ -1138,6 +1138,8 @@ function shift_pdf!(f::T, a, du, dt) where {T<:AbstractArray{<:AbstractFloat,1}}
     f[q0] = f[q0+1]
     f[q1] = f[q1-1]
 
+    return nothing
+
 end
 
 #--- multi-component gas ---#
@@ -1155,4 +1157,6 @@ function shift_pdf!(
         _f = @view f[:, j]
         shift_pdf!(_f, a[j], du[j], dt)
     end
+    
+    return nothing
 end

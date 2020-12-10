@@ -56,3 +56,25 @@ Mu, Mv, Mw, MuL, MuR = mixture_gauss_moments(prim, 0)
 @test MuL[:, 2] ≈ MuL2 atol=0.01
 @test MuR[:, 2] ≈ MuR2 atol=0.01
 
+#--- generalized ---#
+Mu1, Mv1, Mw1, MuL1, MuR1 = gauss_moments(prim[:, 1], 0)
+moments_conserve_slope(zeros(5), Mu1, Mv1, Mw1, 2, 0, 0)
+
+f1 = rand(16)
+u1 = collect(-1:1/7.5:1)
+w1 = ones(16)
+discrete_moments(f1, u1, w1, 1)
+
+f2 = rand(16, 16)
+u2 = rand(16, 16)
+w2 = rand(16, 16)
+discrete_moments(f2, u2, w2, 1)
+
+f3 = rand(16, 16, 16)
+u3 = rand(16, 16, 16)
+w3 = rand(16, 16, 16)
+discrete_moments(f3, u3, w3, 1)
+
+stress(f2, rand(4), u2, u2, w2)
+heat_flux(f1, rand(3), u1, w1)
+heat_flux(f2, f2, rand(4), u2, u2, w2)
