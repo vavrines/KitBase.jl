@@ -308,3 +308,47 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
     end
 
 end
+
+
+"""
+Initialize particles
+
+"""
+function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+
+    np = 0
+    for i in eachindex(ctr)
+        np += Int(floor(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+    end
+
+    ptc = Array{Particle1D}(undef, np)
+    np_tmp = 0
+    for i in eachindex(ctr)
+        np = Int(floor(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        for j in 1:np
+            np_tmp += 1 
+
+            rd1 = rand(3)
+            rd2 = rand(3)
+            rd = rand()
+
+            m = KS.gas.m
+            v = @. sqrt(-log(rd1) / ctr[i].prim[end]) * sin(2.0 * π * rd2)
+            x = ctr[i].x + (rd - 0.5) * ctr[i].dx
+            idx = i
+
+            if v[1] < 0
+                tb = (ctr[i].x - 0.5 * ctr[i].dx - x) / v[1]
+            elseif v[1] > 0
+                tb = (ctr[i].x + 0.5 * ctr[i].dx - x) / v[1]
+            else
+                tb = 1.0
+            end
+
+            ptc[np_tmp] = Particle1D(m, x, v, idx, tb)
+        end
+    end
+
+    return ptc
+
+end
