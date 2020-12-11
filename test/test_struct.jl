@@ -8,7 +8,7 @@ end
 #--- settings ---#
 Setup()
 Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01)
-Particle(knudsen, mach, prandtl, inK, 3.0, 1e-4, omega, alphaRef, omegaRef, 0.01)
+Particle(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000)
 Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5)
 Plasma1D([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5, 0.01, 0.01, 100.0, 1.0, 1.0)
 Plasma2D([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5, 0.01, 0.01, 100.0, 1.0, 1.0)
