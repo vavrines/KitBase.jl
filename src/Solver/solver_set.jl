@@ -2,7 +2,7 @@
 Structure of solver setup
 
 """
-struct SolverSet <: AbstractSolverSet
+mutable struct SolverSet <: AbstractSolverSet
 
     # setup
     set::AbstractSetup

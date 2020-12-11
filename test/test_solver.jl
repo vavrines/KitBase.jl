@@ -7,11 +7,12 @@ particle = Particle(
     ks.gas.Pr,
     ks.gas.K,
     ks.gas.γ,
-    1e-3,
     ks.gas.ω,
     ks.gas.αᵣ,
     ks.gas.ωᵣ,
     ks.gas.μᵣ,
+    1e-3,
+    1000,
 )
 
 ks1 = SolverSet(ks.set, ks.pSpace, ks.vSpace, particle, ks.ib, ks.outputFolder)

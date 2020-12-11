@@ -8,18 +8,18 @@ function flux_equilibrium!(
     fw::T1,
     wL::T2,
     wR::T2,
-    γ,
-    inK,
-    μᵣ,
-    ω,
-    dt,
-    dxL,
-    dxR,
+    γ::Real,
+    inK::Real,
+    μᵣ::Real,
+    ω::Real,
+    dt::Real,
+    dxL::Real,
+    dxR::Real,
     swL = zeros(eltype(fw), axes(wL))::T1,
     swR = zeros(eltype(fw), axes(wR))::T1,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:Real,1},
 } # 1D
 
     primL = conserve_prim(wL, γ)
@@ -103,22 +103,22 @@ end
 
 #--- 2D ---#
 function flux_equilibrium!(
-    fw::X,
-    wL::Y,
-    wR::Y,
-    γ,
-    inK,
-    μᵣ,
-    ω,
-    dt,
-    dxL,
-    dxR,
-    dy,
-    swL = zeros(eltype(fw), axes(wL))::X,
-    swR = zeros(eltype(fw), axes(wR))::X,
+    fw::T1,
+    wL::T2,
+    wR::T2,
+    γ::Real,
+    inK::Real,
+    μᵣ::Real,
+    ω::Real,
+    dt::Real,
+    dxL::Real,
+    dxR::Real,
+    dy::Real,
+    swL = zeros(eltype(fw), axes(wL))::T1,
+    swR = zeros(eltype(fw), axes(wR))::T1,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:Real,1},
 }
 
     Mu1, Mv1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)

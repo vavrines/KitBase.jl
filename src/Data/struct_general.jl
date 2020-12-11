@@ -8,7 +8,7 @@ Computational setup
     @consts: case, space, flux, collision, nSpecies, interpOrder, limiter, cfl, maxTime
 
 """
-struct Setup{S,I,E,F} <: AbstractSetup
+struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
 
     case::S
     space::S
@@ -107,56 +107,72 @@ end
 """
 Particle property
 
-    @consts: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ
+    @vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np
 
 """
-struct Particle{A,B,C,D,E,F,G,H,I,J} <: AbstractProperty
+mutable struct Particle{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
 
     Kn::A
     Ma::B
     Pr::C
     K::D
     γ::E
-    m::F
-    ω::G
-    αᵣ::H
-    ωᵣ::I
-    μᵣ::J
+    ω::F
+    αᵣ::G
+    ωᵣ::H
+    μᵣ::I
+    m::J
+    np::K
 
     function Particle(
-        Kn::Union{Real,AbstractArray}, # unified consideration of
-        Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
-        Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
-        K::Union{Real,AbstractArray},
-        γ::Union{Real,AbstractArray},
-        m::Union{Real,AbstractArray},
-        ω::Union{Real,AbstractArray},
-        αᵣ::Union{Real,AbstractArray},
-        ωᵣ::Union{Real,AbstractArray},
-        μᵣ::Union{Real,AbstractArray},
+        _Kn::Union{Real,AbstractArray}, # unified consideration of
+        _Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
+        _Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
+        _K::Union{Real,AbstractArray},
+        _γ::Union{Real,AbstractArray},
+        _ω::Union{Real,AbstractArray},
+        _αᵣ::Union{Real,AbstractArray},
+        _ωᵣ::Union{Real,AbstractArray},
+        _μᵣ::Union{Real,AbstractArray},
+        _m::Union{Real,AbstractArray},
+        _np::Union{Integer,AbstractArray},
     )
+        Kn = deepcopy(_Kn)
+        Ma = deepcopy(_Ma)
+        Pr = deepcopy(_Pr)
+        K = deepcopy(_K)
+        γ = deepcopy(_γ)
+        ω = deepcopy(_ω)
+        αᵣ = deepcopy(_αᵣ)
+        ωᵣ = deepcopy(_ωᵣ)
+        μᵣ = deepcopy(_μᵣ)
+        m = deepcopy(_m)
+        np = deepcopy(_np)
+
         new{
             typeof(Kn),
             typeof(Ma),
             typeof(Pr),
             typeof(K),
             typeof(γ),
-            typeof(m),
             typeof(ω),
             typeof(αᵣ),
             typeof(ωᵣ),
             typeof(μᵣ),
+            typeof(m),
+            typeof(np),
         }(
             Kn,
             Ma,
             Pr,
             K,
             γ,
-            m,
             ω,
             αᵣ,
             ωᵣ,
             μᵣ,
+            m,
+            np,
         )
     end
 
