@@ -1,5 +1,5 @@
 """
-Gas kinetic Navier-Stokes flux
+Gas kinetic flux
 
     flux_gks(u::Real, μ::Real, dt::Real, su = 0.0::Real, a = 0::Real)
     flux_gks(uL::Real, uR::Real, μ::Real, dt::Real, dxL::Real,
