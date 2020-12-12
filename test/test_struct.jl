@@ -93,3 +93,5 @@ Flux2D2F(zeros(2), w, w, h, h, zeros(2), w, w, h, h)
 #--- particle ---#
 Particle1D(1e-4, 0.1, randn(3), 34, 0.2)
 Particle2D(1e-4, 0.1, 0.3, randn(3), 34, 21, 0.2)
+ControlVolumeParticle1D(x, dx, w, prim)
+ControlVolumeParticle2D(x, dx, x, dx, w, prim)

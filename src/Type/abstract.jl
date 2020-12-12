@@ -22,3 +22,7 @@ abstract type AbstractSolution1D <: AbstractSolution end
 abstract type AbstractSolution2D <: AbstractSolution end
 abstract type AbstractFlux1D <: AbstractFlux end
 abstract type AbstractFlux2D <: AbstractFlux end
+
+abstract type AbstractParticle end
+abstract type AbstractParticle1D <: AbstractParticle end
+abstract type AbstractParticle2D <: AbstractParticle end

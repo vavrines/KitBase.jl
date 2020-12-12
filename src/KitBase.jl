@@ -18,7 +18,7 @@ using JLD2
 using ProgressMeter
 using PyCall
 
-include("Data/data.jl")
+include("Type/type.jl")
 include("IO/io.jl")
 include("Math/math.jl")
 include("Geometry/geometry.jl")

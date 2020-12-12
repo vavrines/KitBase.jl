@@ -1,13 +1,21 @@
-"""
+# ============================================================
+# Update Algorithm for Particle Simulations
+# ============================================================
 
-
-"""
-function update!(KS, ctr, ptc, face, dt, residual; coll = :bgk::Symbol,
-    bc = :fix::Symbol)
+function update!(
+    KS::T, 
+    ctr::ControlVolumeParticle1D, 
+    ptc::Particle1D, 
+    face::Interface1D, 
+    dt, 
+    residual; 
+    coll = :bgk::Symbol,
+    bc = :fix::Symbol,
+) where {T<:AbstractSolverSet}
 
     np = KS.gas.np
 
-
+    KS.pSpace.nx
 
 #=
 
