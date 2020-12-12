@@ -18,13 +18,7 @@ mutable struct Particle1D{T1,T2,T3,T4,T5} <: AbstractParticle1D
     idx::T4
     tb::T5
 
-    function Particle1D(
-        M::AbstractFloat,
-        X::Real,
-        V::AbstractArray,
-        IDX::Integer,
-        T::Real,
-    )
+    function Particle1D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
         m = deepcopy(M)
         x = deepcopy(X)
         v = deepcopy(V)
@@ -109,7 +103,7 @@ mutable struct ControlVolumeParticle1D{F,A} <: AbstractControlVolume1D
         w = deepcopy(W)
         prim = deepcopy(PRIM)
         sw = zeros(eltype(w), axes(w))
-        
+
         wg = deepcopy(W)
         τ = zero(dx)
 

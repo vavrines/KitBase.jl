@@ -2,8 +2,8 @@ cd(@__DIR__)
 ks, ctr, face, simTime = KitBase.initialize("config.txt")
 
 particle = Particle(
-    ks.gas.Kn, 
-    ks.gas.Ma, 
+    ks.gas.Kn,
+    ks.gas.Ma,
     ks.gas.Pr,
     ks.gas.K,
     ks.gas.γ,

@@ -43,7 +43,8 @@ full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), 1.0, 3.0)
 ref_vhs_vis(1.0, 1.0, 0.5)
 vhs_collision_time(prim, 1e-3, 0.81)
 hs_boltz_kn(1e-3, 1.0)
-phi, psi, phipsi = kernel_mode(5, 5.0, 5.0, 5.0, 0.1, 0.1, 0.1, 16, 16, 16, 1.0, quad_num=16)
+phi, psi, phipsi =
+    kernel_mode(5, 5.0, 5.0, 5.0, 0.1, 0.1, 0.1, 16, 16, 16, 1.0, quad_num = 16)
 boltzmann_fft(rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
 boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
 

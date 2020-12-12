@@ -60,9 +60,7 @@ function flux_gks(
     Mu1, MuL1, MuR1 = gauss_moments(primL)
     Mu2, MuL2, MuR2 = gauss_moments(primR)
 
-    u =
-        primL[1] * moments_conserve(MuL1, 0) +
-        primR[1] * moments_conserve(MuR2, 0)
+    u = primL[1] * moments_conserve(MuL1, 0) + primR[1] * moments_conserve(MuR2, 0)
     prim = ifelse(a == 0, conserve_prim(u), conserve_prim(u, a))
     tau = 2.0 * abs(uL - uR) / (abs(uL) + abs(uR)) * dt + 2.0 * μ
 
@@ -80,10 +78,8 @@ function flux_gks(
     gaL = pdf_slope(u, sw0L)
     gaR = pdf_slope(u, sw0R)
     Δ =
-        -prim[1] * (
-            moments_conserve_slope(gaL, MuL, 1) +
-            moments_conserve_slope(gaR, MuR, 1)
-        )
+        -prim[1] *
+        (moments_conserve_slope(gaL, MuL, 1) + moments_conserve_slope(gaR, MuR, 1))
     # sw = (uR - uL) / (dxL + dxR)
     # ga = pdf_slope(u, sw)
     # Δ = -prim[1] .* moments_conserve_slope(ga, Mu, 1)
@@ -104,10 +100,7 @@ function flux_gks(
     # Mau = moments_conserve_slope(ga, MuR, 2)
     MauT = moments_conserve_slope(gaT, Mu, 1)
 
-    fw =
-        Mt[1] * prim[1] * Muv +
-        Mt[2] * prim[1] * (MauL + MauR) +
-        Mt[3] * prim[1] * MauT
+    fw = Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * (MauL + MauR) + Mt[3] * prim[1] * MauT
     # fw = Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * Mau + Mt[3] * prim[1] * MauT
 
     # flux related to upwind distribution
@@ -153,10 +146,7 @@ function flux_gks!(
     dx::Real,
     swL = zeros(eltype(fw), axes(wL))::X,
     swR = zeros(eltype(fw), axes(wR))::X,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-}
+) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -248,10 +238,7 @@ function flux_gks!(
     dy::Real,
     swL = zeros(eltype(fw), axes(wL))::X,
     swR = zeros(eltype(fw), axes(wR))::X,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-}
+) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     Mu1, Mv1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)
     Mu2, Mv2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
@@ -447,17 +434,12 @@ function flux_gks!(
 
     @. fh =
         Mt[1] * u * H +
-        Mt[2] *
-        u^2 *
-        (gaL[1] * H + gaL[2] * u * H + 0.5 * gaL[3] * (u^2 * H + B)) *
-        δ +
+        Mt[2] * u^2 * (gaL[1] * H + gaL[2] * u * H + 0.5 * gaL[3] * (u^2 * H + B)) * δ +
         Mt[2] *
         u^2 *
         (gaR[1] * H + gaR[2] * u * H + 0.5 * gaR[3] * (u^2 * H + B)) *
         (1.0 - δ) +
-        Mt[3] *
-        u *
-        (gaT[1] * H + gaT[2] * u * H + 0.5 * gaT[3] * (u^2 * H + B)) +
+        Mt[3] * u * (gaT[1] * H + gaT[2] * u * H + 0.5 * gaT[3] * (u^2 * H + B)) +
         Mt[4] * u * HL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
@@ -488,43 +470,25 @@ function flux_gks!(
         u^2 *
         (gaR[1] * B + gaR[2] * u * B + 0.5 * gaR[3] * (u^2 * B + Mxi[2] * H)) *
         (1.0 - δ) +
-        Mt[3] *
-        u *
-        (gaT[1] * H + gaT[2] * u * H + 0.5 * gaT[3] * (u^2 * B + Mxi[2] * H)) +
+        Mt[3] * u * (gaT[1] * H + gaT[2] * u * H + 0.5 * gaT[3] * (u^2 * B + Mxi[2] * H)) +
         Mt[4] * u * BL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faL[1] * BL +
-            faL[2] * u * BL +
-            0.5 * faL[3] * (u^2 * BL + Mxi[2] * HL)
-        ) *
+        (faL[1] * BL + faL[2] * u * BL + 0.5 * faL[3] * (u^2 * BL + Mxi[2] * HL)) *
         δ + Mt[4] * u * BR * (1.0 - δ) -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faR[1] * BR +
-            faR[2] * u * BR +
-            0.5 * faR[3] * (u^2 * BR + Mxi[2] * HR)
-        ) *
+        (faR[1] * BR + faR[2] * u * BR + 0.5 * faR[3] * (u^2 * BR + Mxi[2] * HR)) *
         (1.0 - δ) -
         tau *
         Mt[4] *
         u *
-        (
-            faTL[1] * BL +
-            faTL[2] * u * BL +
-            0.5 * faTL[3] * (u^2 * BL + Mxi[2] * HL)
-        ) *
+        (faTL[1] * BL + faTL[2] * u * BL + 0.5 * faTL[3] * (u^2 * BL + Mxi[2] * HL)) *
         δ -
         tau *
         Mt[4] *
         u *
-        (
-            faTR[1] * BR +
-            faTR[2] * u * BR +
-            0.5 * faTR[3] * (u^2 * BR + Mxi[2] * HR)
-        ) *
+        (faTR[1] * BR + faTR[2] * u * BR + 0.5 * faTR[3] * (u^2 * BR + Mxi[2] * HR)) *
         (1.0 - δ)
 
     return nothing
@@ -564,9 +528,7 @@ function flux_gks!(
     tau = aap_hs_collision_time(prim, mi, ni, me, ne, Kn)
     for i in eachindex(tau)
         tau[i] +=
-            2.0 *
-            dt *
-            abs(primL[1, i] / primL[end, i] - primR[1, i] / primR[end, i]) /
+            2.0 * dt * abs(primL[1, i] / primL[end, i] - primR[1, i] / primR[end, i]) /
             (primL[1, i] / primL[end, i] + primR[1, i] / primR[end, i])
     end
     prim = aap_hs_prim(prim, tau, mi, ni, me, ne, Kn) # pseudo primitive variables
@@ -731,10 +693,7 @@ function flux_ugks!(
     MauR = moments_conserve_slope(aR, MuR, Mxi, 2)
     MauT = moments_conserve_slope(aT, Mu, Mxi, 1)
 
-    @. fw =
-        Mt[1] * prim[1] * Muv +
-        Mt[2] * prim[1] * (MauL + MauR) +
-        Mt[3] * prim[1] * MauT
+    @. fw = Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * (MauL + MauR) + Mt[3] * prim[1] * MauT
 
     #--- calculate flux from f0 ---#
     H = maxwellian(u, prim)
@@ -748,10 +707,7 @@ function flux_ugks!(
 
     @. fh =
         Mt[1] * u * H +
-        Mt[2] *
-        u^2 *
-        (aL[1] * H + aL[2] * u * H + 0.5 * aL[3] * (u^2 * H + B)) *
-        δ +
+        Mt[2] * u^2 * (aL[1] * H + aL[2] * u * H + 0.5 * aL[3] * (u^2 * H + B)) * δ +
         Mt[2] *
         u^2 *
         (aR[1] * H + aR[2] * u * H + 0.5 * aR[3] * (u^2 * H + B)) *
@@ -768,9 +724,7 @@ function flux_ugks!(
         u^2 *
         (aR[1] * B + aR[2] * u * B + 0.5 * aR[3] * (u^2 * B + Mxi[2] * H)) *
         (1.0 - δ) +
-        Mt[3] *
-        u *
-        (aT[1] * B + aT[2] * u * B + 0.5 * aT[3] * (u^2 * B + Mxi[2] * H)) +
+        Mt[3] * u * (aT[1] * B + aT[2] * u * B + 0.5 * aT[3] * (u^2 * B + Mxi[2] * H)) +
         Mt[4] * u * b - Mt[5] * u^2 * sb
 
     return nothing
@@ -856,10 +810,7 @@ function flux_ugks!(
     MauR = moments_conserve_slope(aR, MuR, Mv, Mxi, 2, 0)
     MauT = moments_conserve_slope(aT, Mu, Mv, Mxi, 1, 0)
 
-    @. fw =
-        Mt[1] * prim[1] * Muv +
-        Mt[2] * prim[1] * (MauL + MauR) +
-        Mt[3] * prim[1] * MauT
+    @. fw = Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * (MauL + MauR) + Mt[3] * prim[1] * MauT
 
     # --- calculate flux from f0 ---#
     H = maxwellian(u, v, prim)
@@ -869,9 +820,7 @@ function flux_ugks!(
     fw[2] += Mt[4] * sum(ω .* u .^ 2 .* h) - Mt[5] * sum(ω .* u .^ 3 .* sh)
     fw[3] += Mt[4] * sum(ω .* v .* u .* h) - Mt[5] * sum(ω .* v .* u .^ 2 .* sh)
     fw[4] +=
-        Mt[4] *
-        0.5 *
-        (sum(ω .* u .* (u .^ 2 .+ v .^ 2) .* h) + sum(ω .* u .* b)) -
+        Mt[4] * 0.5 * (sum(ω .* u .* (u .^ 2 .+ v .^ 2) .* h) + sum(ω .* u .* b)) -
         Mt[5] *
         0.5 *
         (sum(ω .* u .^ 2 .* (u .^ 2 .+ v .^ 2) .* sh) + sum(ω .* u .^ 2 .* sb))
@@ -880,30 +829,15 @@ function flux_ugks!(
         Mt[1] * u * H +
         Mt[2] *
         u^2 *
-        (
-            aL[1] * H +
-            aL[2] * u * H +
-            aL[3] * v * H +
-            0.5 * aL[4] * ((u^2 + v^2) * H + B)
-        ) *
+        (aL[1] * H + aL[2] * u * H + aL[3] * v * H + 0.5 * aL[4] * ((u^2 + v^2) * H + B)) *
         δ +
         Mt[2] *
         u^2 *
-        (
-            aR[1] * H +
-            aR[2] * u * H +
-            aR[3] * v * H +
-            0.5 * aR[4] * ((u^2 + v^2) * H + B)
-        ) *
+        (aR[1] * H + aR[2] * u * H + aR[3] * v * H + 0.5 * aR[4] * ((u^2 + v^2) * H + B)) *
         (1.0 - δ) +
         Mt[3] *
         u *
-        (
-            aT[1] * H +
-            aT[2] * u * H +
-            aT[3] * v * H +
-            0.5 * aT[4] * ((u^2 + v^2) * H + B)
-        ) +
+        (aT[1] * H + aT[2] * u * H + aT[3] * v * H + 0.5 * aT[4] * ((u^2 + v^2) * H + B)) +
         Mt[4] * u * h - Mt[5] * u^2 * sh
     @. fb =
         Mt[1] * u * B +
@@ -1063,10 +997,8 @@ function flux_ugks!(
             Mt[4, j] * sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* h0[:, :, j]) -
             Mt[5, j] * sum(ω[:, :, j] .* u[:, :, j] .^ 3 .* sh0[:, :, j])
         fw[3, j] +=
-            Mt[4, j] *
-            sum(ω[:, :, j] .* v[:, :, j] .* u[:, :, j] .* h0[:, :, j]) -
-            Mt[5, j] *
-            sum(ω[:, :, j] .* v[:, :, j] .* u[:, :, j] .^ 2 .* sh0[:, :, j])
+            Mt[4, j] * sum(ω[:, :, j] .* v[:, :, j] .* u[:, :, j] .* h0[:, :, j]) -
+            Mt[5, j] * sum(ω[:, :, j] .* v[:, :, j] .* u[:, :, j] .^ 2 .* sh0[:, :, j])
         fw[4, j] +=
             Mt[4, j] * sum(ω[:, :, j] .* u[:, :, j] .* h1[:, :, j]) -
             Mt[5, j] * sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* sh1[:, :, j])
@@ -1075,16 +1007,16 @@ function flux_ugks!(
             0.5 *
             (
                 sum(
-                    ω[:, :, j] .* u[:, :, j] .*
-                    (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .* h0[:, :, j],
+                    ω[:, :, j] .* u[:, :, j] .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
+                    h0[:, :, j],
                 ) + sum(ω[:, :, j] .* u[:, :, j] .* h2[:, :, j])
             ) -
             Mt[5, j] *
             0.5 *
             (
                 sum(
-                    ω[:, :, j] .* u[:, :, j] .^ 2 .*
-                    (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .* sh0[:, :, j],
+                    ω[:, :, j] .* u[:, :, j] .^ 2 .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
+                    sh0[:, :, j],
                 ) + sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* sh2[:, :, j])
             )
 
@@ -1097,9 +1029,7 @@ function flux_ugks!(
                 a[2, j] * u[:, :, j] * H0[:, :, j] +
                 a[3, j] * v[:, :, j] * H0[:, :, j] +
                 a[4, j] * u[:, :, j] * H1[:, :, j] +
-                0.5 *
-                a[5, j] *
-                ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])
+                0.5 * a[5, j] * ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])
             ) +
             Mt[3, j] *
             u[:, :, j] *
@@ -1112,8 +1042,7 @@ function flux_ugks!(
                 aT[5, j] *
                 ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])
             ) +
-            Mt[4, j] * u[:, :, j] * h0[:, :, j] -
-            Mt[5, j] * u[:, :, j]^2 * sh0[:, :, j]
+            Mt[4, j] * u[:, :, j] * h0[:, :, j] - Mt[5, j] * u[:, :, j]^2 * sh0[:, :, j]
         @. fh1[:, :, j] =
             Mt[1, j] * u[:, :, j] * H1[:, :, j] +
             Mt[2, j] *
@@ -1125,10 +1054,7 @@ function flux_ugks!(
                 a[4, j] * u[:, :, j] * H2[:, :, j] +
                 0.5 *
                 a[5, j] *
-                (
-                    (u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] +
-                    Mxi[3, j] * H0[:, :, j]
-                )
+                ((u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] + Mxi[3, j] * H0[:, :, j])
             ) +
             Mt[3, j] *
             u[:, :, j] *
@@ -1139,13 +1065,9 @@ function flux_ugks!(
                 aT[4, j] * u[:, :, j] * H2[:, :, j] +
                 0.5 *
                 aT[5, j] *
-                (
-                    (u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] +
-                    Mxi[3, j] * H0[:, :, j]
-                )
+                ((u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] + Mxi[3, j] * H0[:, :, j])
             ) +
-            Mt[4, j] * u[:, :, j] * h1[:, :, j] -
-            Mt[5, j] * u[:, :, j]^2 * sh1[:, :, j]
+            Mt[4, j] * u[:, :, j] * h1[:, :, j] - Mt[5, j] * u[:, :, j]^2 * sh1[:, :, j]
         @. fh2[:, :, j] =
             Mt[1, j] * u[:, :, j] * H2[:, :, j] +
             Mt[2, j] *
@@ -1157,10 +1079,7 @@ function flux_ugks!(
                 a[4, j] * u[:, :, j] * Mxi[3, j] * H0[:, :, j] +
                 0.5 *
                 a[5, j] *
-                (
-                    (u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] +
-                    Mxi[4, j] * H0[:, :, j]
-                )
+                ((u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] + Mxi[4, j] * H0[:, :, j])
             ) +
             Mt[3, j] *
             u[:, :, j] *
@@ -1171,13 +1090,9 @@ function flux_ugks!(
                 aT[4, j] * u[:, :, j] * Mxi[3, j] * H0[:, :, j] +
                 0.5 *
                 aT[5, j] *
-                (
-                    (u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] +
-                    Mxi[4, j] * H0[:, :, j]
-                )
+                ((u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] + Mxi[4, j] * H0[:, :, j])
             ) +
-            Mt[4, j] * u[:, :, j] * h2[:, :, j] -
-            Mt[5, j] * u[:, :, j]^2 * sh2[:, :, j]
+            Mt[4, j] * u[:, :, j] * h2[:, :, j] - Mt[5, j] * u[:, :, j]^2 * sh2[:, :, j]
     end
 
     @. fw *= len

@@ -3,7 +3,7 @@ using KitBase
 np = 10000 # number of particles
 ptc = Array{Particle1D}(undef, np)
 
-for i in 1:np
+for i = 1:np
     rd1 = rand(3)
     rd2 = rand(3)
     rd = rand()
@@ -25,20 +25,20 @@ for i in 1:np
 end
 
 v = zeros(np, 3)
-for i in 1:np
+for i = 1:np
     v[i, :] .= ptc[i].v
 end
 
 using Plots
-histogram(v[:, 1], label="u")
-histogram!(v[:, 2], label="v")
-histogram!(v[:, 3], label="w")
+histogram(v[:, 1], label = "u")
+histogram!(v[:, 2], label = "v")
+histogram!(v[:, 3], label = "w")
 
 cd(@__DIR__)
 ks, ctr, face, simTime = KitBase.initialize("config.txt")
 particle = Particle(
-    ks.gas.Kn, 
-    ks.gas.Ma, 
+    ks.gas.Kn,
+    ks.gas.Ma,
     ks.gas.Pr,
     ks.gas.K,
     ks.gas.γ,

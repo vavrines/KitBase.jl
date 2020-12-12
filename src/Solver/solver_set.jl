@@ -72,17 +72,7 @@ mutable struct SolverSet <: AbstractSolverSet
             end
         elseif Dv == 2
             if nSpecies == 1
-                vSpace = VSpace2D(
-                    umin,
-                    umax,
-                    nu,
-                    vmin,
-                    vmax,
-                    nv,
-                    vMeshType,
-                    nug,
-                    nvg,
-                )
+                vSpace = VSpace2D(umin, umax, nu, vmin, vmax, nv, vMeshType, nug, nvg)
             elseif nSpecies == 2
                 ue0 = umin * sqrt(mi / me)
                 ue1 = umax * sqrt(mi / me)
@@ -176,31 +166,11 @@ mutable struct SolverSet <: AbstractSolverSet
 
         if nSpecies == 1
             μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
-            gas = Gas(
-                knudsen,
-                mach,
-                prandtl,
-                inK,
-                γ,
-                omega,
-                alphaRef,
-                omegaRef,
-                μᵣ,
-            )
+            gas = Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ)
         elseif nSpecies == 2
             kne = knudsen * (me / mi)
             if !(@isdefined rL) && !(@isdefined echi) # undefined plasma args
-                gas = Mixture(
-                    [knudsen, kne],
-                    mach,
-                    prandtl,
-                    inK,
-                    γ,
-                    mi,
-                    ni,
-                    me,
-                    ne,
-                )
+                gas = Mixture([knudsen, kne], mach, prandtl, inK, γ, mi, ni, me, ne)
             else
                 if Dx == 1
                     gas = Plasma1D(
@@ -282,8 +252,7 @@ function set_ib(
     if set.case == "shock"
 
         if set.space[3:end] == "1f1v"
-            wL, primL, fL, bcL, wR, primR, fR, bcR =
-                ib_rh(gas.Ma, gas.γ, vSpace.u)
+            wL, primL, fL, bcL, wR, primR, fR, bcR = ib_rh(gas.Ma, gas.γ, vSpace.u)
             ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
         elseif set.space[3:end] == "1f3v"
             wL, primL, fL, bcL, wR, primR, fR, bcR =
@@ -305,8 +274,7 @@ function set_ib(
                 ib_sod(gas.γ, vSpace.u, vSpace.v, vSpace.w)
             ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
         elseif set.space[3:end] == "2f1v"
-            wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                ib_sod(gas.γ, gas.K, vSpace.u)
+            wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR = ib_sod(gas.γ, gas.K, vSpace.u)
             ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
         end
 

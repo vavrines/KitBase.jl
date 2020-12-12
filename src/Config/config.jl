@@ -19,8 +19,7 @@ function ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}} # 1D1
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
     ratioT =
-        (1.0 + (gam - 1.0) / 2.0 * MaL^2) *
-        (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
+        (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
         (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
 
     primR = [
@@ -52,8 +51,7 @@ function ib_rh(MaL, gam, K, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
     ratioT =
-        (1.0 + (gam - 1.0) / 2.0 * MaL^2) *
-        (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
+        (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
         (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
 
     primR = [
@@ -81,21 +79,14 @@ end
 # ------------------------------------------------------------
 # 1D1F3V
 # ------------------------------------------------------------
-function ib_rh(
-    MaL,
-    gam,
-    u::T,
-    v::T,
-    w::T,
-) where {T<:AbstractArray{<:AbstractFloat,3}}
+function ib_rh(MaL, gam, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
 
     #--- calculate Rankine-Hugoniot relation ---#
     primL = [1.0, MaL * sqrt(gam / 2.0), 0.0, 0.0, 1.0]
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
     ratioT =
-        (1.0 + (gam - 1.0) / 2.0 * MaL^2) *
-        (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
+        (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
         (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
 
     primR = [
@@ -122,12 +113,20 @@ end
 # ------------------------------------------------------------
 # 1D2F1V (mixture)
 # ------------------------------------------------------------
-function ib_rh(MaL, gam, K, mi, me, ni, ne, u::T) where {T<:AbstractArray{<:AbstractFloat,2}}
+function ib_rh(
+    MaL,
+    gam,
+    K,
+    mi,
+    me,
+    ni,
+    ne,
+    u::T,
+) where {T<:AbstractArray{<:AbstractFloat,2}}
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
     ratioT =
-        (1.0 + (gam - 1.0) / 2.0 * MaL^2) *
-        (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
+        (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
         (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
 
     primL = zeros(3, 2)
@@ -135,7 +134,7 @@ function ib_rh(MaL, gam, K, mi, me, ni, ne, u::T) where {T<:AbstractArray{<:Abst
     primL[:, 2] .= [me, MaL * sqrt(gam / 2.0), me / 1.0]
 
     primR = zeros(3, 2)
-    for j in 1:2
+    for j = 1:2
         primR[1, j] = primL[1, j] * (gam + 1.0) * MaL^2 / ((gam - 1.0) * MaL^2 + 2.0)
         primR[2, j] = MaR * sqrt(gam / 2.0 / (mi * ni + me * ne)) * sqrt(ratioT)
         primR[3, j] = primL[3, j] / ratioT
@@ -149,7 +148,7 @@ function ib_rh(MaL, gam, K, mi, me, ni, ne, u::T) where {T<:AbstractArray{<:Abst
 
     bL = similar(hL)
     bR = similar(hR)
-    for j in 1:2
+    for j = 1:2
         bL[:, j] = hL[:, j] .* K ./ (2.0 .* primL[end, j])
         bR[:, j] = hR[:, j] .* K ./ (2.0 .* primR[end, j])
     end
@@ -254,14 +253,7 @@ Initialize lid-driven cavity
     K) where {T<:AbstractArray{<:AbstractFloat,2}}`
 
 """
-function ib_cavity(
-    gam,
-    Um,
-    Vm,
-    Tm,
-    u::T,
-    v::T,
-) where {T<:AbstractArray{<:AbstractFloat,2}} # 2D1F2V
+function ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}} # 2D1F2V
 
     primL = [1.0, 0.0, 0.0, 1.0]
     primR = deepcopy(primL)
@@ -322,12 +314,7 @@ Initialize Brio-Wu MHD shock
     ib_briowu(gam, uspace::T, mi, me) where {T<:AbstractArray{<:AbstractFloat,2}}
 
 """
-function ib_briowu(
-    gam,
-    mi,
-    me,
-    uspace::T,
-) where {T<:AbstractArray{<:AbstractFloat,2}}
+function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFloat,2}}
 
     # upstream
     primL = zeros(5, 2)
@@ -352,8 +339,7 @@ function ib_briowu(
         h1L[:, j] .= primL[3, j] .* h0L[:, j]
         h2L[:, j] .= primL[4, j] .* h0L[:, j]
         h3L[:, j] .=
-            (primL[3, j]^2 + primL[4, j]^2 + 2.0 / (2.0 * primL[end, j])) .*
-            h0L[:, j]
+            (primL[3, j]^2 + primL[4, j]^2 + 2.0 / (2.0 * primL[end, j])) .* h0L[:, j]
     end
 
     EL = zeros(3)
@@ -384,8 +370,7 @@ function ib_briowu(
         h1R[:, j] .= primR[3, j] .* h0R[:, j]
         h2R[:, j] .= primR[4, j] .* h0R[:, j]
         h3R[:, j] .=
-            (primR[3, j]^2 + primR[4, j]^2 + 2.0 / (2.0 * primR[end, j])) .*
-            h0R[:, j]
+            (primR[3, j]^2 + primR[4, j]^2 + 2.0 / (2.0 * primR[end, j])) .* h0R[:, j]
     end
 
     ER = zeros(3)

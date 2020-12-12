@@ -228,22 +228,10 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
             end
 
             for j = 1:KS.pSpace.ny, i = 1:KS.pSpace.nx+1
-                a1face[i] = Interface2D1F(
-                    KS.pSpace.dy[i, j],
-                    0.0,
-                    1.0,
-                    KS.ib.wL,
-                    KS.ib.hL,
-                )
+                a1face[i] = Interface2D1F(KS.pSpace.dy[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
             end
             for j = 1:KS.pSpace.ny+1, i = 1:KS.pSpace.nx
-                a2face[i] = Interface2D1F(
-                    KS.pSpace.dx[i, j],
-                    1.0,
-                    0.0,
-                    KS.ib.wL,
-                    KS.ib.hL,
-                )
+                a2face[i] = Interface2D1F(KS.pSpace.dx[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
             end
 
         elseif KS.set.space[3:4] == "2f"
@@ -283,22 +271,10 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
             end
 
             for j = 1:KS.pSpace.ny, i = 1:KS.pSpace.nx+1
-                a1face[i] = Interface2D2F(
-                    KS.pSpace.dy[i, j],
-                    0.0,
-                    1.0,
-                    KS.ib.wL,
-                    KS.ib.hL,
-                )
+                a1face[i] = Interface2D2F(KS.pSpace.dy[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
             end
             for j = 1:KS.pSpace.ny+1, i = 1:KS.pSpace.nx
-                a2face[i] = Interface2D2F(
-                    KS.pSpace.dx[i, j],
-                    1.0,
-                    0.0,
-                    KS.ib.wL,
-                    KS.ib.hL,
-                )
+                a2face[i] = Interface2D2F(KS.pSpace.dx[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
             end
 
         end
@@ -335,8 +311,8 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
     np_tmp = 0
     for i in eachindex(ctr)
         np = Int(floor(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
-        for j in 1:np
-            np_tmp += 1 
+        for j = 1:np
+            np_tmp += 1
 
             rd1 = rand(3)
             rd2 = rand(3)

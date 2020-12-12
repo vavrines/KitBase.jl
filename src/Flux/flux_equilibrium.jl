@@ -17,10 +17,7 @@ function flux_equilibrium!(
     dxR::Real,
     swL = zeros(eltype(fw), axes(wL))::T1,
     swR = zeros(eltype(fw), axes(wR))::T1,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:Real,1},
-} # 1D
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}} # 1D
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -116,10 +113,7 @@ function flux_equilibrium!(
     dy::Real,
     swL = zeros(eltype(fw), axes(wL))::T1,
     swR = zeros(eltype(fw), axes(wR))::T1,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:Real,1},
-}
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}}
 
     Mu1, Mv1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)
     Mu2, Mv2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
@@ -189,8 +183,8 @@ function flux_equilibrium!(
     MauT = moments_conserve_slope(gaT, Mu, Mv, Mxi, 1, 0)
 
     @. fw =
-        (Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * (MauL + MauR) +
-        Mt[3] * prim[1] * MauT) * dy
+        (Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * (MauL + MauR) + Mt[3] * prim[1] * MauT) *
+        dy
     # fw .= (Mt[1] .* prim[1] .* Muv .+ Mt[2] .* prim[1] .* Mau .+ Mt[3] .* prim[1] .* MauT) .* dy
 
     return nothing

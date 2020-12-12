@@ -27,10 +27,7 @@ function step!(
     dx,
     RES,
     AVG,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-}
+) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     #// 1D0F
 
@@ -167,11 +164,8 @@ function step!(
     #--- update distribution function ---#
     for k in axes(wVelo, 3), j in axes(vVelo, 2), i in axes(uVelo, 1)
         f[i, j, k] =
-            (
-                f[i, j, k] +
-                (ffL[i, j, k] - ffR[i, j, k]) / dx +
-                dt / τ * M[i, j, k]
-            ) / (1.0 + dt / τ)
+            (f[i, j, k] + (ffL[i, j, k] - ffR[i, j, k]) / dx + dt / τ * M[i, j, k]) /
+            (1.0 + dt / τ)
     end
 
 end
@@ -455,8 +449,7 @@ function step!(
 
     # source -> U^{n+1}, E^{n+1} and B^{n+1}
     mr = KS.gas.mi / KS.gas.me
-    A, b =
-        em_coefficients(cell.prim, cell.E, cell.B, mr, KS.gas.lD, KS.gas.rL, dt)
+    A, b = em_coefficients(cell.prim, cell.E, cell.B, mr, KS.gas.lD, KS.gas.rL, dt)
     x = A \ b
 
     #--- calculate lorenz force ---#
@@ -571,14 +564,11 @@ function step!(
     # BGK term
     Mu, Mv, Mw, MuL, MuR = mixture_gauss_moments(prim, KS.gas.K)
     for k in axes(cell.h0, 2)
-        @. cell.h0[:, k] =
-            (cell.h0[:, k] + dt / tau[k] * g[:, k]) / (1.0 + dt / tau[k])
+        @. cell.h0[:, k] = (cell.h0[:, k] + dt / tau[k] * g[:, k]) / (1.0 + dt / tau[k])
         @. cell.h1[:, k] =
-            (cell.h1[:, k] + dt / tau[k] * Mv[1, k] * g[:, k]) /
-            (1.0 + dt / tau[k])
+            (cell.h1[:, k] + dt / tau[k] * Mv[1, k] * g[:, k]) / (1.0 + dt / tau[k])
         @. cell.h2[:, k] =
-            (cell.h2[:, k] + dt / tau[k] * Mw[1, k] * g[:, k]) /
-            (1.0 + dt / tau[k])
+            (cell.h2[:, k] + dt / tau[k] * Mw[1, k] * g[:, k]) / (1.0 + dt / tau[k])
         @. cell.h3[:, k] =
             (cell.h3[:, k] + dt / tau[k] * (Mv[2, k] + Mw[2, k]) * g[:, k]) /
             (1.0 + dt / tau[k])
@@ -690,8 +680,7 @@ function step!(
 
     # source -> U^{n+1}, E^{n+1} and B^{n+1}
     mr = KS.gas.mi / KS.gas.me
-    A, b =
-        em_coefficients(cell.prim, cell.E, cell.B, mr, KS.gas.lD, KS.gas.rL, dt)
+    A, b = em_coefficients(cell.prim, cell.E, cell.B, mr, KS.gas.lD, KS.gas.rL, dt)
     x = A \ b
 
     #--- calculate lorenz force ---#
@@ -814,8 +803,7 @@ function step!(
     H1 = similar(H0)
     H2 = similar(H0)
     for k in axes(H0, 3)
-        H0[:, :, k] .=
-            maxwellian(KS.vSpace.u[:, :, k], KS.vSpace.v[:, :, k], prim[:, k])
+        H0[:, :, k] .= maxwellian(KS.vSpace.u[:, :, k], KS.vSpace.v[:, :, k], prim[:, k])
         @. H1[:, :, k] = H0[:, :, k] * prim[4, k]
         @. H2[:, :, k] = H0[:, :, k] * (prim[4, k]^2 + 1.0 / (2.0 * prim[5, k]))
     end

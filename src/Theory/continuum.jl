@@ -30,9 +30,7 @@ function prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,1}}
         W[1] = prim[1]
         W[2] = prim[1] * prim[2]
         W[3] = prim[1] * prim[3]
-        W[4] =
-            0.5 * prim[1] / prim[4] / (γ - 1.0) +
-            0.5 * prim[1] * (prim[2]^2 + prim[3]^2)
+        W[4] = 0.5 * prim[1] / prim[4] / (γ - 1.0) + 0.5 * prim[1] * (prim[2]^2 + prim[3]^2)
     elseif length(prim) == 5 # 3D
         W[1] = prim[1]
         W[2] = prim[1] * prim[2]
@@ -117,16 +115,13 @@ function conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,1}}
         prim[1] = W[1]
         prim[2] = W[2] / W[1]
         prim[3] = W[3] / W[1]
-        prim[4] =
-            0.5 * W[1] / (γ - 1.0) / (W[4] - 0.5 * (W[2]^2 + W[3]^2) / W[1])
+        prim[4] = 0.5 * W[1] / (γ - 1.0) / (W[4] - 0.5 * (W[2]^2 + W[3]^2) / W[1])
     elseif length(W) == 5 # 3D
         prim[1] = W[1]
         prim[2] = W[2] / W[1]
         prim[3] = W[3] / W[1]
         prim[4] = W[4] / W[1]
-        prim[5] =
-            0.5 * W[1] / (γ - 1.0) /
-            (W[5] - 0.5 * (W[2]^2 + W[3]^2 + W[4]^2) / W[1])
+        prim[5] = 0.5 * W[1] / (γ - 1.0) / (W[5] - 0.5 * (W[2]^2 + W[3]^2 + W[4]^2) / W[1])
     else
         throw("w -> prim : dimension dismatch")
     end
@@ -187,11 +182,7 @@ function em_coefficients(
     lD,
     rL,
     dt,
-) where {
-    X<:AbstractArray{<:Real,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:Real,1},
-}
+) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:Real,1}}
 
     if eltype(prim) <: Int
         A = zeros(9, 9)
@@ -250,16 +241,13 @@ function em_coefficients(
         prim[4, 1] / (dt) + E[3] / (2.0 * rL) - B[1] * prim[3, 1] / (2.0 * rL) +
         B[2] * prim[2, 1] / (2.0 * rL)
     b[4] =
-        prim[2, 2] / (dt) - mr * E[1] / (2.0 * rL) +
-        mr * B[2] * prim[4, 2] / (2.0 * rL) -
+        prim[2, 2] / (dt) - mr * E[1] / (2.0 * rL) + mr * B[2] * prim[4, 2] / (2.0 * rL) -
         mr * B[3] * prim[3, 2] / (2.0 * rL)
     b[5] =
-        prim[3, 2] / (dt) - mr * E[2] / (2.0 * rL) +
-        mr * B[3] * prim[2, 2] / (2.0 * rL) -
+        prim[3, 2] / (dt) - mr * E[2] / (2.0 * rL) + mr * B[3] * prim[2, 2] / (2.0 * rL) -
         mr * B[1] * prim[4, 2] / (2.0 * rL)
     b[6] =
-        prim[4, 2] / (dt) - mr * E[3] / (2.0 * rL) +
-        mr * B[1] * prim[3, 2] / (2.0 * rL) -
+        prim[4, 2] / (dt) - mr * E[3] / (2.0 * rL) + mr * B[1] * prim[3, 2] / (2.0 * rL) -
         mr * B[2] * prim[2, 2] / (2.0 * rL)
     b[7] =
         E[1] / (dt) - prim[1, 1] * prim[2, 1] / (2.0 * rL * lD^2) +
@@ -302,11 +290,7 @@ Theoretical fluxes of Euler Equations
 * @return: flux tuple
 
 """
-function euler_flux(
-    w::T,
-    γ;
-    frame = :cartesian::Symbol,
-) where {T<:AbstractArray{<:Real,1}}
+function euler_flux(w::T, γ; frame = :cartesian::Symbol) where {T<:AbstractArray{<:Real,1}}
 
     prim = conserve_prim(w, γ)
     p = 0.5 * prim[1] / prim[end]

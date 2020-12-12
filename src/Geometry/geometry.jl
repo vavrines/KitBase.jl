@@ -50,20 +50,14 @@ function global_frame(
     end
 
     if length(w) == 3
-        G[1] =
-            w[1] * dirccos[1, 1] + w[2] * dirccos[2, 1] + w[3] * dirccos[3, 1]
-        G[2] =
-            w[1] * dirccos[1, 2] + w[2] * dirccos[2, 2] + w[3] * dirccos[3, 2]
-        G[3] =
-            w[1] * dirccos[1, 3] + w[2] * dirccos[2, 3] + w[3] * dirccos[3, 3]
+        G[1] = w[1] * dirccos[1, 1] + w[2] * dirccos[2, 1] + w[3] * dirccos[3, 1]
+        G[2] = w[1] * dirccos[1, 2] + w[2] * dirccos[2, 2] + w[3] * dirccos[3, 2]
+        G[3] = w[1] * dirccos[1, 3] + w[2] * dirccos[2, 3] + w[3] * dirccos[3, 3]
     elseif length(w) == 5
         G[1] = w[1]
-        G[2] =
-            w[2] * dirccos[1, 1] + w[3] * dirccos[2, 1] + w[4] * dirccos[3, 1]
-        G[3] =
-            w[2] * dirccos[1, 2] + w[3] * dirccos[2, 2] + w[4] * dirccos[3, 2]
-        G[4] =
-            w[2] * dirccos[1, 3] + w[3] * dirccos[2, 3] + w[4] * dirccos[3, 3]
+        G[2] = w[2] * dirccos[1, 1] + w[3] * dirccos[2, 1] + w[4] * dirccos[3, 1]
+        G[3] = w[2] * dirccos[1, 2] + w[3] * dirccos[2, 2] + w[4] * dirccos[3, 2]
+        G[4] = w[2] * dirccos[1, 3] + w[3] * dirccos[2, 3] + w[4] * dirccos[3, 3]
         G[5] = w[5]
     else
         throw("local -> global: dimension dismatch")
@@ -117,20 +111,14 @@ function local_frame(
     end
 
     if length(w) == 3
-        L[1] =
-            w[1] * dirccos[1, 1] + w[2] * dirccos[1, 2] + w[3] * dirccos[1, 3]
-        L[2] =
-            w[1] * dirccos[2, 1] + w[2] * dirccos[2, 2] + w[3] * dirccos[2, 3]
-        L[3] =
-            w[1] * dirccos[3, 1] + w[2] * dirccos[3, 2] + w[3] * dirccos[3, 3]
+        L[1] = w[1] * dirccos[1, 1] + w[2] * dirccos[1, 2] + w[3] * dirccos[1, 3]
+        L[2] = w[1] * dirccos[2, 1] + w[2] * dirccos[2, 2] + w[3] * dirccos[2, 3]
+        L[3] = w[1] * dirccos[3, 1] + w[2] * dirccos[3, 2] + w[3] * dirccos[3, 3]
     elseif length(w) == 5
         L[1] = w[1]
-        L[2] =
-            w[2] * dirccos[1, 1] + w[3] * dirccos[1, 2] + w[4] * dirccos[1, 3]
-        L[3] =
-            w[2] * dirccos[2, 1] + w[3] * dirccos[2, 2] + w[4] * dirccos[2, 3]
-        L[4] =
-            w[2] * dirccos[3, 1] + w[3] * dirccos[3, 2] + w[4] * dirccos[3, 3]
+        L[2] = w[2] * dirccos[1, 1] + w[3] * dirccos[1, 2] + w[4] * dirccos[1, 3]
+        L[3] = w[2] * dirccos[2, 1] + w[3] * dirccos[2, 2] + w[4] * dirccos[2, 3]
+        L[4] = w[2] * dirccos[3, 1] + w[3] * dirccos[3, 2] + w[4] * dirccos[3, 3]
         L[5] = w[5]
     else
         throw("global -> local: dimension dismatch")
@@ -236,8 +224,7 @@ struct PSpace2D{T<:AbstractArray{Float64,2}} <: AbstractPhysicalSpace
     end
 
     PSpace2D() = PSpace2D(0, 1, 45, 0, 1, 45)
-    PSpace2D(X0::Real, X1::Real, Y0::Real, Y1::Real) =
-        PSpace2D(X0, X1, 45, Y0, Y1, 45)
+    PSpace2D(X0::Real, X1::Real, Y0::Real, Y1::Real) = PSpace2D(X0, X1, 45, Y0, Y1, 45)
 
     function PSpace2D(
         X0::Real,
@@ -385,8 +372,7 @@ function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Int,2}}
     for i = 1:nCells, k = 1:nNodesPerCell
         isNewEdge = true
         for j = 1:counter
-            if tmpEdgeNodes[j, :] ==
-               [cells[i, k], cells[i, k%nNodesPerCell+1]] ||
+            if tmpEdgeNodes[j, :] == [cells[i, k], cells[i, k%nNodesPerCell+1]] ||
                tmpEdgeNodes[j, :] == [cells[i, k%nNodesPerCell+1], cells[i, k]]
                 isNewEdge = false
                 tmpEdgeCells[j, 2] = i
@@ -408,8 +394,7 @@ function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Int,2}}
     for i = 1:nCells, k = 1:nNodesPerCell, j = 1:nEdges
         if edgeNodes[j, 1] == cells[i, k] &&
            edgeNodes[j, 2] == cells[i, k%nNodesPerCell+1] ||
-           edgeNodes[j, 1] == cells[i, k%nNodesPerCell+1] &&
-           edgeNodes[j, 2] == cells[i, k]
+           edgeNodes[j, 1] == cells[i, k%nNodesPerCell+1] && edgeNodes[j, 2] == cells[i, k]
             if edgeCells[j, 1] != i && edgeCells[j, 2] == i
                 cellNeighbors[i, k] = edgeCells[j, 1]
             elseif edgeCells[j, 1] == i && edgeCells[j, 2] != i
@@ -446,8 +431,7 @@ function mesh_area_2D(
                     (nodes[cells[i, 2], 2] - nodes[cells[i, 3], 2]) +
                     nodes[cells[i, 2], 1] *
                     (nodes[cells[i, 3], 2] - nodes[cells[i, 1], 2]) +
-                    nodes[cells[i, 3], 1] *
-                    (nodes[cells[i, 1], 2] - nodes[cells[i, 2], 2])
+                    nodes[cells[i, 3], 1] * (nodes[cells[i, 1], 2] - nodes[cells[i, 2], 2])
                 ) / 2,
             )
         end
@@ -481,12 +465,7 @@ function mesh_area_2D(
 
             ΔS[i] = sqrt(
                 (T - a) * (T - b) * (T - c) * (T - d) -
-                a *
-                b *
-                c *
-                d *
-                cos(0.5 * (alpha + beta)) *
-                cos(0.5 * (alpha + beta)),
+                a * b * c * d * cos(0.5 * (alpha + beta)) * cos(0.5 * (alpha + beta)),
             )
         end
     end

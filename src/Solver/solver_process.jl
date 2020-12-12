@@ -253,12 +253,7 @@ function reconstruct!(
     # boundary
     @inbounds Threads.@threads for j = 1:KS.pSpace.ny
         swL = extract_last(ctr[1, j].sw, 1, mode = :view)
-        reconstruct2!(
-            swL,
-            ctr[1, j].w,
-            ctr[2, j].w,
-            0.5 * (ctr[1, j].dx + ctr[2, j].dx),
-        )
+        reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (ctr[1, j].dx + ctr[2, j].dx))
 
         swR = extract_last(ctr[KS.pSpace.nx, j].sw, 1, mode = :view)
         reconstruct2!(
@@ -271,12 +266,7 @@ function reconstruct!(
 
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         swD = extract_last(ctr[i, 1].sw, 2, mode = :view)
-        reconstruct2!(
-            swD,
-            ctr[i, 1].w,
-            ctr[i, 2].w,
-            0.5 * (ctr[i, 1].dy + ctr[i, 2].dy),
-        )
+        reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (ctr[i, 1].dy + ctr[i, 2].dy))
 
         swU = extract_last(ctr[i, KS.pSpace.ny].sw, 2, mode = :view)
         reconstruct2!(
@@ -322,19 +312,9 @@ function reconstruct!(
     # boundary
     @inbounds Threads.@threads for j = 1:KS.pSpace.ny
         shL = extract_last(ctr[1, j].sh, 1, mode = :view)
-        reconstruct2!(
-            shL,
-            ctr[1, j].h,
-            ctr[2, j].h,
-            0.5 * (ctr[1, j].dx + ctr[2, j].dx),
-        )
+        reconstruct2!(shL, ctr[1, j].h, ctr[2, j].h, 0.5 * (ctr[1, j].dx + ctr[2, j].dx))
         sbL = extract_last(ctr[1, j].sb, 1, mode = :view)
-        reconstruct2!(
-            sbL,
-            ctr[1, j].b,
-            ctr[2, j].b,
-            0.5 * (ctr[1, j].dx + ctr[2, j].dx),
-        )
+        reconstruct2!(sbL, ctr[1, j].b, ctr[2, j].b, 0.5 * (ctr[1, j].dx + ctr[2, j].dx))
 
         shR = extract_last(ctr[KS.pSpace.nx, j].sh, 1, mode = :view)
         reconstruct2!(
@@ -354,19 +334,9 @@ function reconstruct!(
 
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         shD = extract_last(ctr[i, 1].sh, 2, mode = :view)
-        reconstruct2!(
-            shD,
-            ctr[i, 1].h,
-            ctr[i, 2].h,
-            0.5 * (ctr[i, 1].dy + ctr[i, 2].dy),
-        )
+        reconstruct2!(shD, ctr[i, 1].h, ctr[i, 2].h, 0.5 * (ctr[i, 1].dy + ctr[i, 2].dy))
         sbD = extract_last(ctr[i, 1].sb, 2, mode = :view)
-        reconstruct2!(
-            sbD,
-            ctr[i, 1].b,
-            ctr[i, 2].b,
-            0.5 * (ctr[i, 1].dy + ctr[i, 2].dy),
-        )
+        reconstruct2!(sbD, ctr[i, 1].b, ctr[i, 2].b, 0.5 * (ctr[i, 1].dy + ctr[i, 2].dy))
 
         shU = extract_last(ctr[i, KS.pSpace.ny].sh, 2, mode = :view)
         reconstruct2!(
@@ -452,12 +422,7 @@ function reconstruct!(
     # boundary
     @inbounds Threads.@threads for j = 1:KS.pSpace.ny
         swL = extract_last(ctr[1, j].sw, 1, mode = :view)
-        reconstruct2!(
-            swL,
-            ctr[1, j].w,
-            ctr[2, j].w,
-            0.5 * (ctr[1, j].dx + ctr[2, j].dx),
-        )
+        reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (ctr[1, j].dx + ctr[2, j].dx))
 
         swR = extract_last(ctr[KS.pSpace.nx, j].sw, 1, mode = :view)
         reconstruct2!(
@@ -470,12 +435,7 @@ function reconstruct!(
 
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         swD = extract_last(ctr[i, 1].sw, 2, mode = :view)
-        reconstruct2!(
-            swD,
-            ctr[i, 1].w,
-            ctr[i, 2].w,
-            0.5 * (ctr[i, 1].dy + ctr[i, 2].dy),
-        )
+        reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (ctr[i, 1].dy + ctr[i, 2].dy))
 
         swU = extract_last(ctr[i, KS.pSpace.ny].sw, 2, mode = :view)
         reconstruct2!(
@@ -521,26 +481,11 @@ function reconstruct!(
     # boundary
     @inbounds Threads.@threads for j = 1:KS.pSpace.ny
         s0L = extract_last(ctr[1, j].sh0, 1, mode = :view)
-        reconstruct2!(
-            s0L,
-            ctr[1, j].h0,
-            ctr[2, j].h0,
-            0.5 * (ctr[1, j].dx + ctr[2, j].dx),
-        )
+        reconstruct2!(s0L, ctr[1, j].h0, ctr[2, j].h0, 0.5 * (ctr[1, j].dx + ctr[2, j].dx))
         s1L = extract_last(ctr[1, j].sh1, 1, mode = :view)
-        reconstruct2!(
-            s1L,
-            ctr[1, j].h1,
-            ctr[2, j].h1,
-            0.5 * (ctr[1, j].dx + ctr[2, j].dx),
-        )
+        reconstruct2!(s1L, ctr[1, j].h1, ctr[2, j].h1, 0.5 * (ctr[1, j].dx + ctr[2, j].dx))
         s2L = extract_last(ctr[1, j].sh2, 1, mode = :view)
-        reconstruct2!(
-            s2L,
-            ctr[1, j].h2,
-            ctr[2, j].h2,
-            0.5 * (ctr[1, j].dx + ctr[2, j].dx),
-        )
+        reconstruct2!(s2L, ctr[1, j].h2, ctr[2, j].h2, 0.5 * (ctr[1, j].dx + ctr[2, j].dx))
 
         s0R = extract_last(ctr[KS.pSpace.nx, j].sh0, 1, mode = :view)
         reconstruct2!(
@@ -567,26 +512,11 @@ function reconstruct!(
 
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         s0D = extract_last(ctr[i, 1].sh0, 2, mode = :view)
-        reconstruct2!(
-            s0D,
-            ctr[i, 1].h0,
-            ctr[i, 2].h0,
-            0.5 * (ctr[i, 1].dy + ctr[i, 2].dy),
-        )
+        reconstruct2!(s0D, ctr[i, 1].h0, ctr[i, 2].h0, 0.5 * (ctr[i, 1].dy + ctr[i, 2].dy))
         s1D = extract_last(ctr[i, 1].sh1, 2, mode = :view)
-        reconstruct2!(
-            s1D,
-            ctr[i, 1].h1,
-            ctr[i, 2].h1,
-            0.5 * (ctr[i, 1].dy + ctr[i, 2].dy),
-        )
+        reconstruct2!(s1D, ctr[i, 1].h1, ctr[i, 2].h1, 0.5 * (ctr[i, 1].dy + ctr[i, 2].dy))
         s2D = extract_last(ctr[i, 1].sh2, 2, mode = :view)
-        reconstruct2!(
-            s2D,
-            ctr[i, 1].h2,
-            ctr[i, 2].h2,
-            0.5 * (ctr[i, 1].dy + ctr[i, 2].dy),
-        )
+        reconstruct2!(s2D, ctr[i, 1].h2, ctr[i, 2].h2, 0.5 * (ctr[i, 1].dy + ctr[i, 2].dy))
 
         s0U = extract_last(ctr[i, KS.pSpace.ny].sh0, 2, mode = :view)
         reconstruct2!(
@@ -1116,16 +1046,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(
-        KS,
-        ctr,
-        face,
-        dt,
-        residual;
-        coll = coll,
-        bc = bc,
-        isMHD = false,
-    )
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = false)
 
 end
 
@@ -1209,16 +1130,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(
-        KS,
-        ctr,
-        face,
-        dt,
-        residual;
-        coll = coll,
-        bc = bc,
-        isMHD = false,
-    )
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = false)
 
 end
 
@@ -1248,16 +1160,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(
-        KS,
-        ctr,
-        face,
-        dt,
-        residual;
-        coll = coll,
-        bc = bc,
-        isMHD = isMHD,
-    )
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
 
     #=
     ng = 1 - first(eachindex(KS.pSpace.x))
@@ -1362,16 +1265,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(
-        KS,
-        ctr,
-        face,
-        dt,
-        residual;
-        coll = coll,
-        bc = bc,
-        isMHD = isMHD,
-    )
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
 
 end
 
@@ -1565,8 +1459,7 @@ function update_boundary!(
     end
 
     for i in eachindex(residual)
-        residual[i] +=
-            sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
+        residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
     end
 
     ng = 1 - first(eachindex(KS.pSpace.x))
@@ -1687,22 +1580,18 @@ function update_boundary!(
     elseif bc == :balance
         @. ctr[0].w = 0.5 * (ctr[-1].w + ctr[1].w)
         @. ctr[0].prim = 0.5 * (ctr[-1].prim + ctr[1].prim)
-        @. ctr[KS.pSpace.nx+1].w =
-            0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
+        @. ctr[KS.pSpace.nx+1].w = 0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
         @. ctr[KS.pSpace.nx+1].prim =
             0.5 * (ctr[KS.pSpace.nx].prim + ctr[KS.pSpace.nx+2].prim)
 
         if KS.set.space[3:4] == "1f"
             @. ctr[0].f = 0.5 * (ctr[-1].f + ctr[1].f)
-            @. ctr[KS.pSpace.nx+1].f =
-                0.5 * (ctr[KS.pSpace.nx].f + ctr[KS.pSpace.nx+2].f)
+            @. ctr[KS.pSpace.nx+1].f = 0.5 * (ctr[KS.pSpace.nx].f + ctr[KS.pSpace.nx+2].f)
         elseif KS.set.space[3:4] == "2f"
             @. ctr[0].h = 0.5 * (ctr[-1].h + ctr[1].h)
             @. ctr[0].b = 0.5 * (ctr[-1].b + ctr[1].b)
-            @. ctr[KS.pSpace.nx+1].h =
-                0.5 * (ctr[KS.pSpace.nx].h + ctr[KS.pSpace.nx+2].h)
-            @. ctr[KS.pSpace.nx+1].b =
-                0.5 * (ctr[KS.pSpace.nx].b + ctr[KS.pSpace.nx+2].b)
+            @. ctr[KS.pSpace.nx+1].h = 0.5 * (ctr[KS.pSpace.nx].h + ctr[KS.pSpace.nx+2].h)
+            @. ctr[KS.pSpace.nx+1].b = 0.5 * (ctr[KS.pSpace.nx].b + ctr[KS.pSpace.nx+2].b)
         elseif KS.set.space[3:4] == "3f"
             @. ctr[0].h0 = 0.5 * (ctr[-1].h0 + ctr[1].h0)
             @. ctr[0].h1 = 0.5 * (ctr[-1].h1 + ctr[1].h1)
@@ -1719,14 +1608,10 @@ function update_boundary!(
                 0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
             @. ctr[KS.pSpace.nx+1].h2 =
                 0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
-            @. ctr[KS.pSpace.nx+1].E =
-                0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
-            @. ctr[KS.pSpace.nx+1].B =
-                0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
-            ctr[KS.pSpace.nx+1].ϕ =
-                0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
-            ctr[KS.pSpace.nx+1].ψ =
-                0.5 * (ctr[KS.pSpace.nx].ψ + ctr[KS.pSpace.nx+2].ψ)
+            @. ctr[KS.pSpace.nx+1].E = 0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
+            @. ctr[KS.pSpace.nx+1].B = 0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
+            ctr[KS.pSpace.nx+1].ϕ = 0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
+            ctr[KS.pSpace.nx+1].ψ = 0.5 * (ctr[KS.pSpace.nx].ψ + ctr[KS.pSpace.nx+2].ψ)
             @. ctr[KS.pSpace.nx+1].lorenz =
                 0.5 * (ctr[KS.pSpace.nx].lorenz + ctr[KS.pSpace.nx+2].lorenz)
         elseif KS.set.space[3:4] == "4f"
@@ -1748,14 +1633,10 @@ function update_boundary!(
                 0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
             @. ctr[KS.pSpace.nx+1].h3 =
                 0.5 * (ctr[KS.pSpace.nx].h3 + ctr[KS.pSpace.nx+2].h3)
-            @. ctr[KS.pSpace.nx+1].E =
-                0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
-            @. ctr[KS.pSpace.nx+1].B =
-                0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
-            ctr[KS.pSpace.nx+1].ϕ =
-                0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
-            ctr[KS.pSpace.nx+1].ψ =
-                0.5 * (ctr[KS.pSpace.nx].ψ + ctr[KS.pSpace.nx+2].ψ)
+            @. ctr[KS.pSpace.nx+1].E = 0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
+            @. ctr[KS.pSpace.nx+1].B = 0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
+            ctr[KS.pSpace.nx+1].ϕ = 0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
+            ctr[KS.pSpace.nx+1].ψ = 0.5 * (ctr[KS.pSpace.nx].ψ + ctr[KS.pSpace.nx+2].ψ)
             @. ctr[KS.pSpace.nx+1].lorenz =
                 0.5 * (ctr[KS.pSpace.nx].lorenz + ctr[KS.pSpace.nx+2].lorenz)
         else

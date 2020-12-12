@@ -24,12 +24,7 @@ mutable struct ControlVolume1D{F,A} <: AbstractControlVolume1D
     prim::A
     sw::A
 
-    function ControlVolume1D(
-        X::Real,
-        DX::Real,
-        W::AbstractArray,
-        PRIM::AbstractArray,
-    )
+    function ControlVolume1D(X::Real, DX::Real, W::AbstractArray, PRIM::AbstractArray)
         x = deepcopy(X)
         dx = deepcopy(DX)
 

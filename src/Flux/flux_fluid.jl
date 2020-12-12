@@ -20,9 +20,7 @@ function flux_lax!(
     dt,
     dx,
 ) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1}}
-    fw .=
-        0.5 * dt .*
-        (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1] - dx / dt .* (wR - wL))
+    fw .= 0.5 * dt .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1] - dx / dt .* (wR - wL))
     return nothing
 end
 
@@ -95,11 +93,7 @@ function flux_roe!(
     γ,
     dt,
     n = [1.0, 0.0]::Z,
-) where {
-    X<:AbstractArray{<:Real,1},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:Real,1},
-}
+) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:Real,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)

@@ -10,8 +10,38 @@ Setup()
 Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01)
 Particle(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000)
 Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5)
-Plasma1D([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5, 0.01, 0.01, 100.0, 1.0, 1.0)
-Plasma2D([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5, 0.01, 0.01, 100.0, 1.0, 1.0)
+Plasma1D(
+    [0.1, 0.5],
+    mach,
+    prandtl,
+    inK,
+    3.0,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    0.01,
+    0.01,
+    100.0,
+    1.0,
+    1.0,
+)
+Plasma2D(
+    [0.1, 0.5],
+    mach,
+    prandtl,
+    inK,
+    3.0,
+    1.0,
+    0.5,
+    0.5,
+    0.5,
+    0.01,
+    0.01,
+    100.0,
+    1.0,
+    1.0,
+)
 
 prim = [1.0, 0.0, 1.0]
 w = prim_conserve(prim, 1.4)
@@ -68,16 +98,16 @@ Interface2D1F(dx, cosa, sina, w, h)
 Interface2D2F(dx, cosa, sina, w, h)
 
 #--- solution ---#
-sol_w = [w for i in 1:2]
-sol_prim = [prim for i in 1:2]
-sol_h = [h for i in 1:2]
+sol_w = [w for i = 1:2]
+sol_prim = [prim for i = 1:2]
+sol_h = [h for i = 1:2]
 Solution1D(sol_w, sol_prim)
 Solution1D1F(sol_w, sol_prim, sol_h)
 Solution1D2F(sol_w, sol_prim, sol_h, sol_h)
 
-sol_w = [w for i in 1:2, j in 1:2]
-sol_prim = [prim for i in 1:2, j in 1:2]
-sol_h = [h for i in 1:2, j in 1:2]
+sol_w = [w for i = 1:2, j = 1:2]
+sol_prim = [prim for i = 1:2, j = 1:2]
+sol_h = [h for i = 1:2, j = 1:2]
 Solution2D(sol_w, sol_prim)
 Solution2D1F(sol_w, sol_prim, sol_h)
 Solution2D2F(sol_w, sol_prim, sol_h, sol_h)
