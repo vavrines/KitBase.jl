@@ -4,10 +4,10 @@
 
 function update!(
     KS::T,
-    ctr::ControlVolumeParticle1D,
-    ptc::Particle1D,
-    ptc_temp::Particle1D,
-    face::Interface1D,
+    ctr::AbstractArray{ControlVolumeParticle1D,1},
+    ptc::AbstractArray{Particle1D,1},
+    ptc_temp::AbstractArray{Particle1D,1},
+    face::AbstractArray{Interface1D,1},
     dt,
     residual;
     coll = :bgk::Symbol,
@@ -18,8 +18,7 @@ function update!(
     update_collision!(KS, ctr, ptc, ptc_temp, face, dt, residual; coll = coll)
     update_boundary!(KS, ctr, ptc, ptc_temp, face, dt; coll = coll, bc = bc)
 
-    no_particle = no_particle_temp
-    particle = particle_temp
+    ptc = deepcopy(ptc_temp)
 
     return nothing
 
@@ -34,9 +33,9 @@ Update algorithm for particle transports
 """
 function update_transport!(
     KS::T,
-    ctr::ControlVolumeParticle1D,
-    ptc::Particle1D,
-    ptc_temp::Particle1D,
+    ctr::AbstractArray{ControlVolumeParticle1D,1},
+    ptc::AbstractArray{Particle1D,1},
+    ptc_temp::AbstractArray{Particle1D,1},
     dt,
 ) where {T<:AbstractSolverSet}
 
@@ -126,6 +125,8 @@ function update_transport!(
             0.5 * ptc_temp[i].m * sum(ptc_temp[i].v .^ 2) / ctr[particle_cell_temp].dx
     end
 
+    KS.gas.np = no_particle_temp
+
     return nothing
 
 end
@@ -139,12 +140,10 @@ Update algorithm for particle collisions
 """
 function update_collision!(
     KS::T,
-    ctr::ControlVolumeParticle1D,
-    ptc::Particle1D,
-    ptc_temp::Particle1D,
-    face::Interface1D,
+    ctr::AbstractArray{ControlVolumeParticle1D,1},
+    ptc_temp::AbstractArray{Particle1D,1},
+    face::AbstractArray{Interface1D,1},
     dt,
-    residual;
     coll = :bgk::Symbol,
 ) where {T<:AbstractSolverSet}
 
@@ -175,7 +174,7 @@ function update_collision!(
         ctr[i].τ = vhs_collision_time(prim, KS.gas.μᵣ, KS.gas.ω)
     end
 
-
+    no_particle_temp = KS.gas.np
     for i = 1:KS.pSpace.nx
         no_particle_cell_temp = Int(round(ctr[i].wg[1] * ctr[i].dx / KS.gas.m))
         for j = 1:no_particle_cell_temp
@@ -185,7 +184,7 @@ function update_collision!(
             rd2 = rand(3)
             rd = rand()
 
-            ptc_temp[no_particle_temp].mass = KS.gas.m
+            ptc_temp[no_particle_temp].m = KS.gas.m
             @. ptc_temp[no_particle_temp].v =
                 sqrt(-log(rd1) / ctr[i].prim[end]) * sin(2.0 * π * rd2)
             ptc_temp[no_particle_temp].v[1] += ctr[i].prim[2]
@@ -212,14 +211,16 @@ end
 
 function update_boundary!(
     KS::T,
-    ctr::ControlVolumeParticle1D,
-    ptc::Particle1D,
-    ptc_temp::Particle1D,
-    face::Interface1D,
+    ctr::AbstractArray{ControlVolumeParticle1D,1},
+    ptc::AbstractArray{Particle1D,1},
+    ptc_temp::AbstractArray{Particle1D,1},
+    face::AbstractArray{Interface1D,1},
     dt,
     coll = :bgk::Symbol,
     bc = :fix::Symbol,
 ) where {T<:AbstractSolverSet}
+
+    no_particle_temp = KS.gas.np
 
     ng = 1 - first(eachindex(KS.pSpace.x))
 
@@ -228,15 +229,15 @@ function update_boundary!(
         for i = 1:ng
             idx = 1 - i
 
-            no_particle_cell_temp = round(ctr[idx].w[idx] * ctr[idx].dx / KS.gas.m) |> Int
+            no_particle_cell_temp = round(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
             for j = 1:no_particle_cell_temp
-                no_particle_temp = no_particle_temp + 1
+                no_particle_temp += 1
 
                 rd1 = rand(3)
                 rd2 = rand(3)
                 rd = rand()
 
-                ptc_temp[no_particle_temp].mass = KS.gas.m
+                ptc_temp[no_particle_temp].m = KS.gas.m
                 @. ptc_temp[no_particle_temp].v =
                     sqrt(-log(rd1) / ctr[idx].prim[end]) * sin(2.0 * π * rd2)
                 ptc_temp[no_particle_temp].v[1] += ctr[idx].prim[2]
@@ -261,7 +262,7 @@ function update_boundary!(
         for i = 1:ng
             idx = KS.pSpace.nx + i
 
-            no_particle_cell_temp = round(ctr[idx].w[idx] * ctr[idx].dx / KS.gas.m) |> Int
+            no_particle_cell_temp = round(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
             for j = 1:no_particle_cell_temp
                 no_particle_temp = no_particle_temp + 1
 
@@ -269,7 +270,7 @@ function update_boundary!(
                 rd2 = rand(3)
                 rd = rand()
 
-                ptc_temp[no_particle_temp].mass = KS.gas.m
+                ptc_temp[no_particle_temp].m = KS.gas.m
                 @. ptc_temp[no_particle_temp].v =
                     sqrt(-log(rd1) / ctr[idx].prim[end]) * sin(2.0 * π * rd2)
                 ptc_temp[no_particle_temp].v[1] += ctr[idx].prim[2]
