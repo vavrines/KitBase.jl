@@ -15,8 +15,8 @@ function update!(
 ) where {T<:AbstractSolverSet}
 
     update_transport!(KS, ctr, ptc, ptc_temp, dt)
-    update_collision!(KS, ctr, ptc, ptc_temp, face, dt, residual; coll = coll)
-    update_boundary!(KS, ctr, ptc, ptc_temp, face, dt; coll = coll, bc = bc)
+    update_collision!(KS, ctr, ptc_temp, face, coll)
+    update_boundary!(KS, ctr, ptc, ptc_temp, face, dt, coll, bc)
 
     ptc = deepcopy(ptc_temp)
 
@@ -39,71 +39,47 @@ function update_transport!(
     dt,
 ) where {T<:AbstractSolverSet}
 
-    for i = 1:KS.pSpace.nx
+    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         ctr[i].wg .= ctr[i].w
     end
 
-    np_tmp = 0
-
-
     no_particle_temp = 0
     np = KS.gas.np
-    for i = 1:np
+    for i in 1:np
         cell_no = ptc[i].idx
-
         tc = -ctr[cell_no].τ * log(rand())
 
-        if tc > dt
+        if tc > dt # class 1: free transport particles
             ptc[i].x += dt * ptc[i].v[1]
-
-            cell_no_temp = ptc[i].idx
 
             ctr[cell_no].wg[1] -= ptc[i].m / ctr[cell_no].dx
             ctr[cell_no].wg[2] -= ptc[i].m * ptc[i].v[1] / ctr[cell_no].dx
             ctr[cell_no].wg[3] -= 0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cell_no].dx
 
-            if ptc[i].x > KS.pSpace.x0 && ptc[i].x < KS.pSpace.x1
+            if ptc[i].x >= KS.pSpace.x0 && ptc[i].x <= KS.pSpace.x1
                 no_particle_temp += 1
 
-                ptc_temp[no_particle_temp].m = ptc[i].m
-                ptc_temp[no_particle_temp].x = ptc[i].x
-                ptc_temp[no_particle_temp].v .= ptc[i].v
-
-                cell_no_temp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[cell_no_temp].dx))
+                cell_no_temp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[1].dx))
                 #cell_no_temp = argmin(abs.(KS.pSpace.x[1:KS.pSpace.nx] .- ptc[i].x))
+                #cell_no_temp = find_idx(KS.pSpace.x[1:KS.pSpace.nx], ptc[i].x, mode=:uniform)
 
-                ptc_temp[no_particle_temp].idx = cell_no_temp
-
-                if ptc_temp[no_particle_temp].v[1] < 0.0
-                    ptc_temp[no_particle_temp].tb =
-                        (
-                            ctr[cell_no_temp].x - 0.5 * ctr[cell_no_temp].dx -
-                            ptc_temp[no_particle_temp].x
-                        ) / ptc_temp[no_particle_temp].v[1]
-                elseif ptc_temp[no_particle_temp].v[1] > 0.0
-                    ptc_temp[no_particle_temp].tb =
-                        (
-                            ctr[cell_no_temp].x + 0.5 * ctr[cell_no_temp].dx -
-                            ptc_temp[no_particle_temp].x
-                        ) / ptc_temp[no_particle_temp].v[1]
-                else
-                    ptc_temp[no_particle_temp].tb = 1.0
-                end
+                tb = boundary_time(ptc[i].x, ptc[i].v, ctr[cell_no_temp].x, ctr[cell_no_temp].dx)
+                sample_particle!(ptc_temp[no_particle_temp], ptc[i].m, ptc[i].x, ptc[i].v, cell_no_temp, tb)
             end
-
-        elseif tc > ptc[i].tb
+       
+        elseif tc > ptc[i].tb  # class 2: transfering collision particles
 
             ptc[i].x += dt * ptc[i].v[1]
 
-            cell_no_temp = ptc[i].idx
-
-            ctr[cell_no].wg[1] -= ptc[i].m / dx
+            ctr[cell_no].wg[1] -= ptc[i].m / ctr[cell_no].dx
             ctr[cell_no].wg[2] -= ptc[i].m * ptc[i].v[1] / ctr[cell_no].dx
             ctr[cell_no].wg[3] -= 0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cell_no].dx
 
-            if ptc[i].x > KS.pSpace.x0 && ptc[i].x < KS.pSpace.x1
-                cell_no_temp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[cell_no_temp].dx))
-                ctr[cell_no_temp].wg[1] += ptc[i].m / dx
+            if ptc[i].x >= KS.pSpace.x0 && ptc[i].x <= KS.pSpace.x1
+                cell_no_temp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[1].dx)) 
+                #cell_no_temp = find_idx(KS.pSpace.x[1:KS.pSpace.nx], ptc[i].x, mode=:uniform)
+
+                ctr[cell_no_temp].wg[1] += ptc[i].m / ctr[cell_no_temp].dx
                 ctr[cell_no_temp].wg[2] += ptc[i].m * ptc[i].v[1] / ctr[cell_no_temp].dx
                 ctr[cell_no_temp].wg[3] +=
                     0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cell_no_temp].dx
@@ -111,10 +87,9 @@ function update_transport!(
         end
     end
 
-    for i = 1:KS.pSpace.nx
+    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         ctr[i].w .= 0.0
     end
-
     for i = 1:no_particle_temp
         particle_cell_temp = ptc_temp[i].idx
 
@@ -126,7 +101,6 @@ function update_transport!(
     end
 
     KS.gas.np = no_particle_temp
-
     return nothing
 
 end
@@ -143,71 +117,47 @@ function update_collision!(
     ctr::AbstractArray{ControlVolumeParticle1D,1},
     ptc_temp::AbstractArray{Particle1D,1},
     face::AbstractArray{Interface1D,1},
-    dt,
     coll = :bgk::Symbol,
 ) where {T<:AbstractSolverSet}
 
-    for i = 1:KS.pSpace.nx
+    no_particle_temp = KS.gas.np
+    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+        # fluid variables
         @. ctr[i].wg += (face[i].fw - face[i+1].fw) / ctr[i].dx
-
         if ctr[i].wg[1] < 0.0
-            ctr[i].wg .= zero(ctr[i].wg)
+            ctr[i].wg .= zero(ctr[i].wg) .+ 1e-8
         else
-            ctr[i].prim = conserve_prim(ctr[i].wg, KS.gas.γ)
-            if ctr[i].prim[end] < 0.0
-                ctr[i].prim[end] = eltype(ctr[i].prim)(1e8)
+            primG = conserve_prim(ctr[i].wg, KS.gas.γ)
+            if primG[end] < 0.0
+                primG[end] = eltype(primG)(1e8)
             end
         end
 
         @. ctr[i].w += ctr[i].wg
-
-        prim = conserve_prim(ctr[i].w, KS.gas.γ)
         if ctr[i].w[1] < 0.0
-            ctr[i].w .= zero(ctr[i].w)
+            ctr[i].w .= zero(ctr[i].w) .+ 1e-8
         else
-            prim = conserve_prim(ctr[i].w, KS.gas.γ)
+            ctr[i].prim = conserve_prim(ctr[i].w, KS.gas.γ)
             if ctr[i].prim[end] < 0.0
                 ctr[i].prim[end] = eltype(ctr[i].prim)(1e8)
-                ctr[i].w .= prim_conserve(prim, KS.gas.γ)
+                ctr[i].w .= prim_conserve(ctr[i].prim, KS.gas.γ)
             end
+            ctr[i].τ = vhs_collision_time(ctr[i].prim, KS.gas.μᵣ, KS.gas.ω)
         end
-        ctr[i].τ = vhs_collision_time(prim, KS.gas.μᵣ, KS.gas.ω)
-    end
 
-    no_particle_temp = KS.gas.np
-    for i = 1:KS.pSpace.nx
+        # particles
         no_particle_cell_temp = Int(round(ctr[i].wg[1] * ctr[i].dx / KS.gas.m))
-        for j = 1:no_particle_cell_temp
-            no_particle_temp = no_particle_temp + 1
-
-            rd1 = rand(3)
-            rd2 = rand(3)
-            rd = rand()
-
-            ptc_temp[no_particle_temp].m = KS.gas.m
-            @. ptc_temp[no_particle_temp].v =
-                sqrt(-log(rd1) / ctr[i].prim[end]) * sin(2.0 * π * rd2)
-            ptc_temp[no_particle_temp].v[1] += ctr[i].prim[2]
-            ptc_temp[no_particle_temp].x = ctr[i].x + (rd - 0.5) * ctr[i].dx
-            ptc_temp[no_particle_temp].idx = i
-
-            if ptc_temp[no_particle_temp].v[1] < 0
-                ptc_temp[no_particle_temp].tb =
-                    (ctr[i].x - 0.5 * ctr[i].dx - ptc_temp[no_particle_temp].x) /
-                    ptc_temp[no_particle_temp].v[1]
-            elseif ptc_temp[no_particle_temp].v[1] > 0
-                ptc_temp[no_particle_temp].tb =
-                    (ctr[i].x + 0.5 * ctr[i].dx - ptc_temp[no_particle_temp].x) /
-                    ptc_temp[no_particle_temp].v[1]
-            else
-                ptc_temp[no_particle_temp].tb = 1.0
-            end
+        for j in 1:no_particle_cell_temp
+            no_particle_temp += 1
+            sample_particle!(ptc_temp[no_particle_temp], KS, ctr[i], i)
         end
     end
 
+    KS.gas.np = no_particle_temp
     return nothing
 
 end
+
 
 function update_boundary!(
     KS::T,
@@ -222,78 +172,37 @@ function update_boundary!(
 
     no_particle_temp = KS.gas.np
 
-    ng = 1 - first(eachindex(KS.pSpace.x))
-
     if bc == :fix
 
+        ng = 1 - first(eachindex(KS.pSpace.x))
+
+        # left boundary
         for i = 1:ng
             idx = 1 - i
-
             no_particle_cell_temp = round(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
             for j = 1:no_particle_cell_temp
                 no_particle_temp += 1
-
-                rd1 = rand(3)
-                rd2 = rand(3)
-                rd = rand()
-
-                ptc_temp[no_particle_temp].m = KS.gas.m
-                @. ptc_temp[no_particle_temp].v =
-                    sqrt(-log(rd1) / ctr[idx].prim[end]) * sin(2.0 * π * rd2)
-                ptc_temp[no_particle_temp].v[1] += ctr[idx].prim[2]
-                ptc_temp[no_particle_temp].x = ctr[idx].x + (rd - 0.5) * ctr[idx].dx
-                ptc_temp[no_particle_temp].idx = 0
-
-                if ptc_temp[no_particle_temp].v[1] < 0
-                    ptc_temp[no_particle_temp].tb =
-                        (ctr[idx].x - 0.5 * ctr[idx].dx - ptc_temp[no_particle_temp].x) /
-                        ptc_temp[no_particle_temp].v[1]
-                elseif ptc_temp[no_particle_temp].v[1] > 0
-                    ptc_temp[no_particle_temp].tb =
-                        (ctr[idx].x + 0.5 * ctr[idx].dx - ptc_temp[no_particle_temp].x) /
-                        ptc_temp[no_particle_temp].v[1]
-                else
-                    ptc_temp[no_particle_temp].tb = 1.0
-                end
+                sample_particle!(ptc_temp[no_particle_temp], KS, ctr[idx], idx)
             end
-
         end
 
+        # right boundary
         for i = 1:ng
             idx = KS.pSpace.nx + i
-
             no_particle_cell_temp = round(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
             for j = 1:no_particle_cell_temp
-                no_particle_temp = no_particle_temp + 1
-
-                rd1 = rand(3)
-                rd2 = rand(3)
-                rd = rand()
-
-                ptc_temp[no_particle_temp].m = KS.gas.m
-                @. ptc_temp[no_particle_temp].v =
-                    sqrt(-log(rd1) / ctr[idx].prim[end]) * sin(2.0 * π * rd2)
-                ptc_temp[no_particle_temp].v[1] += ctr[idx].prim[2]
-                ptc_temp[no_particle_temp].x = ctr[idx].x + (rd - 0.5) * ctr[idx].dx
-                ptc_temp[no_particle_temp].idx = 0
-
-                if ptc_temp[no_particle_temp].v[1] < 0
-                    ptc_temp[no_particle_temp].tb =
-                        (ctr[idx].x - 0.5 * ctr[idx].dx - ptc_temp[no_particle_temp].x) /
-                        ptc_temp[no_particle_temp].v[1]
-                elseif ptc_temp[no_particle_temp].v[1] > 0
-                    ptc_temp[no_particle_temp].tb =
-                        (ctr[idx].x + 0.5 * ctr[idx].dx - ptc_temp[no_particle_temp].x) /
-                        ptc_temp[no_particle_temp].v[1]
-                else
-                    ptc_temp[no_particle_temp].tb = 1.0
-                end
+                no_particle_temp += 1
+                sample_particle!(ptc_temp[no_particle_temp], KS, ctr[idx], idx)
             end
-
         end
 
     end
 
+    KS.gas.np = no_particle_temp
     return nothing
 
 end
+
+
+
+

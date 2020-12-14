@@ -1,11 +1,13 @@
-using OffsetArrays
+using OffsetArrays, ProgressMeter
 import KitBase
 
-cd(@__DIR__)
-D = KitBase.read_dict("config.txt")
-for key in keys(D)
-    s = Symbol(key)
-    @eval $s = $(D[key])
+begin
+    cd(@__DIR__)
+    D = KitBase.read_dict("config.txt")
+    for key in keys(D)
+        s = Symbol(key)
+        @eval $s = $(D[key])
+    end
 end
 
 begin
@@ -43,6 +45,7 @@ begin
                 ks.pSpace.dx[i],
                 ks.ib.wL,
                 ks.ib.primL,
+                KitBase.vhs_collision_time(ks.ib.primL, ks.gas.μᵣ, ks.gas.ω),
             )
         else
             ctr[i] = KitBase.ControlVolumeParticle1D(
@@ -50,6 +53,7 @@ begin
                 ks.pSpace.dx[i],
                 ks.ib.wR,
                 ks.ib.primR,
+                KitBase.vhs_collision_time(ks.ib.primR, ks.gas.μᵣ, ks.gas.ω),
             )
         end
     end
@@ -65,29 +69,51 @@ end
 
 t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
+res = zeros(3)
 
-KitBase.reconstruct!(ks, ctr)
-
-@inbounds Threads.@threads for i = 1:ks.pSpace.nx+1
-    KitBase.flux_equilibrium!(
-        face[i].fw,
-        ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
-        ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
-        ks.gas.K,
-        ks.gas.γ,
-        ks.gas.μᵣ,
-        ks.gas.ω,
-        ks.gas.Pr,
-        dt,
-        0.5 * ctr[i-1].dx,
-        0.5 * ctr[i].dx,
-        ctr[i-1].sw,
-        ctr[i].sw,
-    )
+@showprogress for iter in 1:100
+    #KitBase.reconstruct!(ks, ctr)
+    
+    @inbounds Threads.@threads for i = 1:ks.pSpace.nx+1
+        KitBase.flux_equilibrium!(
+            face[i].fw,
+            ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
+            ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
+            ks.gas.K,
+            ks.gas.γ,
+            ks.gas.μᵣ,
+            ks.gas.ω,
+            ks.gas.Pr,
+            dt,
+            0.5 * ctr[i-1].dx,
+            0.5 * ctr[i].dx,
+            ctr[i-1].sw,
+            ctr[i].sw,
+        )
+    end
+    
+    #KitBase.update!(ks, ctr, ptc, ptc_new, face, dt, res; coll = :bgk, bc = :fix)
+    
+    KitBase.update_transport!(ks, ctr, ptc, ptc_new, dt)
+    KitBase.update_collision!(ks, ctr, ptc_new, face, :bgk)
+    KitBase.update_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
+    ptc = deepcopy(ptc_new)
+    
+    t += dt
 end
 
-KitBase.update_transport!(ks, ctr, ptc, ptc_new, dt)
-KitBase.update_collision!(ks, ctr, ptc_new, face, dt, :bgk)
-KitBase.update_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
-
 KitBase.plot_line(ks, ctr)
+
+using Plots
+pltx = ks.pSpace.x[1:ks.pSpace.nx]
+plty = zeros(ks.pSpace.nx, 6)
+for i in eachindex(pltx)
+    for j = 1:2
+        plty[i, j] = ctr[i].w[j]
+    end
+    #plty[i, 3] = 1.0 / ctr[i].prim[end]
+    plty[i, 3] = ctr[i].w[end]
+end
+plot(pltx, plty[:, 1], label = "Density", lw = 2, xlabel = "x", legend=:none)
+plot!(pltx, plty[:, 2], label = "Velocity", lw = 2)
+plot!(pltx, plty[:, 3], label = "Temperature", lw = 2)

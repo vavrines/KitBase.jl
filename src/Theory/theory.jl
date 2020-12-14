@@ -38,9 +38,11 @@ export gauss_moments,
        boltzmann_fft,
        boltzmann_fft!
 export heat_capacity_ratio, sound_speed
+export sample_particle!, sample_velocity, boundary_time
 
-include("continuum.jl")
-include("atom.jl")
-include("moments_pure.jl")
-include("moments_mixture.jl")
-include("thermo.jl")
+include("theory_continuum.jl")
+include("theory_atom.jl")
+include("theory_moments_pure.jl")
+include("theory_moments_mixture.jl")
+include("theory_thermo.jl")
+include("theory_particle.jl")

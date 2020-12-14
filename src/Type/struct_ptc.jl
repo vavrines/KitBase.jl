@@ -96,6 +96,7 @@ mutable struct ControlVolumeParticle1D{F,A} <: AbstractControlVolume1D
         DX::Real,
         W::AbstractArray,
         PRIM::AbstractArray,
+        TAU = 0.0::Real,
     )
         x = deepcopy(X)
         dx = deepcopy(DX)
@@ -105,7 +106,7 @@ mutable struct ControlVolumeParticle1D{F,A} <: AbstractControlVolume1D
         sw = zeros(eltype(w), axes(w))
 
         wg = deepcopy(W)
-        τ = zero(dx)
+        τ = deepcopy(TAU)
 
         new{typeof(x),typeof(w)}(x, dx, w, prim, sw, wg, τ)
     end
@@ -142,6 +143,7 @@ mutable struct ControlVolumeParticle2D{F,A,B} <: AbstractControlVolume2D
         DY::Real,
         W::AbstractArray,
         PRIM::AbstractArray,
+        TAU = 0.0::Real,
     )
 
         x = deepcopy(X)
@@ -154,7 +156,7 @@ mutable struct ControlVolumeParticle2D{F,A,B} <: AbstractControlVolume2D
         sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
 
         wg = deepcopy(W)
-        τ = zero(dx)
+        τ = deepcopy(TAU)
 
         new{typeof(x),typeof(w),typeof(sw)}(x, dx, y, dy, w, prim, sw, wg, τ)
 

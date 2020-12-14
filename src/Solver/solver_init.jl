@@ -294,7 +294,7 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
 
     np = 0
     for i in eachindex(ctr)
-        np += Int(floor(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        np += Int(ceil(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
     end
 
     ptc = Array{Particle1D}(undef, 2 * np)
@@ -302,7 +302,7 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
         m = KS.gas.m
         v = zeros(3)
         x = 0.0
-        idx = -1
+        idx = -7
         tb = 0.0
 
         ptc[i] = Particle1D(m, x, v, idx, tb)
@@ -310,7 +310,7 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
 
     np_tmp = 0
     for i in eachindex(ctr)
-        np = Int(floor(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        np = Int(ceil(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
         for j = 1:np
             np_tmp += 1
 

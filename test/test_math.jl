@@ -28,3 +28,5 @@ unstruct_diff(sin, randn(12), 4, 1)
 
 KitBase.lgwt(12, -1, 1)
 KitBase.extract_last(randn(2, 3), 2; mode = :view)
+
+find_idx(randn(20), 0.13)

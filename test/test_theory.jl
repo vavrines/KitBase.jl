@@ -53,3 +53,10 @@ aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)
 
 aap_hs_diffeq!(similar(mprim), mprim, [τ[1], τ[2], 1.0, 0.5, 0.5, 0.5, 1.0, 3.0], 0.0)
 shift_pdf!(M, 1.0, 1e-4, 1e-4)
+
+#--- particle ---#
+sample_velocity([1.0, 0.0, 1.0])
+boundary_time(1.0, randn(3), 0.0, 0.1, t0 = 1.0)
+
+ptc = Particle1D(1e-3, 0.0, randn(3), 1, 0.01)
+sample_particle!(ptc, 1e-4, rand(), randn(3), 2, 0.1)

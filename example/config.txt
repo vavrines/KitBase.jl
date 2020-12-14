@@ -35,4 +35,4 @@ inK = 2.0
 omega = 0.81
 alphaRef = 1.0
 omegaRef = 0.5
-mass = 0.001
+mass = 0.0005
