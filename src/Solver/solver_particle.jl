@@ -9,13 +9,15 @@ function update!(
     ptc_temp::AbstractArray{Particle1D,1},
     face::AbstractArray{Interface1D,1},
     dt,
-    residual;
+    res;
     coll = :bgk::Symbol,
     bc = :fix::Symbol,
 ) where {T<:AbstractSolverSet}
 
+    res .= 0.
+
     update_transport!(KS, ctr, ptc, ptc_temp, dt)
-    update_collision!(KS, ctr, ptc_temp, face, coll)
+    update_collision!(KS, ctr, ptc_temp, face, res, coll)
     update_boundary!(KS, ctr, ptc, ptc_temp, face, dt, coll, bc)
 
     ptc = deepcopy(ptc_temp)
@@ -45,7 +47,7 @@ function update_transport!(
 
     no_particle_temp = 0
     np = KS.gas.np
-    for i in 1:np
+    @inbounds @simd for i in 1:np
         cell_no = ptc[i].idx
         tc = -ctr[cell_no].τ * log(rand())
 
@@ -90,7 +92,7 @@ function update_transport!(
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         ctr[i].w .= 0.0
     end
-    for i = 1:no_particle_temp
+    @inbounds Threads.@threads for i = 1:no_particle_temp
         particle_cell_temp = ptc_temp[i].idx
 
         ctr[particle_cell_temp].w[1] += ptc_temp[i].m / ctr[particle_cell_temp].dx
@@ -117,11 +119,14 @@ function update_collision!(
     ctr::AbstractArray{ControlVolumeParticle1D,1},
     ptc_temp::AbstractArray{Particle1D,1},
     face::AbstractArray{Interface1D,1},
+    res::AbstractArray{<:AbstractFloat,1},
     coll = :bgk::Symbol,
 ) where {T<:AbstractSolverSet}
 
     no_particle_temp = KS.gas.np
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+        wold = deepcopy(ctr[i].wg)
+
         # fluid variables
         @. ctr[i].wg += (face[i].fw - face[i+1].fw) / ctr[i].dx
         if ctr[i].wg[1] < 0.0
@@ -132,6 +137,8 @@ function update_collision!(
                 primG[end] = eltype(primG)(1e8)
             end
         end
+
+        @. res += (ctr[i].wg - wold)^2
 
         @. ctr[i].w += ctr[i].wg
         if ctr[i].w[1] < 0.0
@@ -170,39 +177,35 @@ function update_boundary!(
     bc = :fix::Symbol,
 ) where {T<:AbstractSolverSet}
 
-    no_particle_temp = KS.gas.np
+    np = KS.gas.np
 
     if bc == :fix
 
-        ng = 1 - first(eachindex(KS.pSpace.x))
+        ng = 1 - first(eachindex(KS.pSpace.x)) # ghost cell
 
         # left boundary
-        for i = 1:ng
+        @inbounds for i = 1:ng
             idx = 1 - i
-            no_particle_cell_temp = round(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
-            for j = 1:no_particle_cell_temp
-                no_particle_temp += 1
-                sample_particle!(ptc_temp[no_particle_temp], KS, ctr[idx], idx)
+            npc = ceil(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
+            for j = 1:npc
+                np += 1
+                sample_particle!(ptc_temp[np], KS, ctr[idx], idx)
             end
         end
 
         # right boundary
-        for i = 1:ng
+        @inbounds for i = 1:ng
             idx = KS.pSpace.nx + i
-            no_particle_cell_temp = round(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
-            for j = 1:no_particle_cell_temp
-                no_particle_temp += 1
-                sample_particle!(ptc_temp[no_particle_temp], KS, ctr[idx], idx)
+            npc = ceil(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
+            for j = 1:npc
+                np += 1
+                sample_particle!(ptc_temp[np], KS, ctr[idx], idx)
             end
         end
 
     end
 
-    KS.gas.np = no_particle_temp
+    KS.gas.np = np
     return nothing
 
 end
-
-
-
-

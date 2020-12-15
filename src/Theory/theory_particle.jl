@@ -11,16 +11,18 @@ function sample_particle!(ptc::Particle1D, m, x, v, idx, tb)
     ptc.v = v
     ptc.idx = idx
     ptc.tb = tb
+
+    return nothing
 end
 
 function sample_particle!(ptc::Particle1D, KS, ctr, idx, t0 = 1.0)
-
     ptc.m = KS.gas.m
     ptc.v .= sample_velocity(ctr.prim)
     ptc.x = ctr.x + (rand() - 0.5) * ctr.dx
     ptc.idx = idx
     ptc.tb = boundary_time(ptc.x, ptc.v, ctr.x, ctr.dx, t0)
 
+    return nothing
 end
 
 

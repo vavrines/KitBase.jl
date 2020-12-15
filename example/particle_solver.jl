@@ -71,7 +71,8 @@ t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
 res = zeros(3)
 
-@showprogress for iter in 1:100
+@showprogress for iter in 1:10
+#for iter in 1:10
     #KitBase.reconstruct!(ks, ctr)
     
     @inbounds Threads.@threads for i = 1:ks.pSpace.nx+1
@@ -95,11 +96,12 @@ res = zeros(3)
     #KitBase.update!(ks, ctr, ptc, ptc_new, face, dt, res; coll = :bgk, bc = :fix)
     
     KitBase.update_transport!(ks, ctr, ptc, ptc_new, dt)
-    KitBase.update_collision!(ks, ctr, ptc_new, face, :bgk)
+    KitBase.update_collision!(ks, ctr, ptc_new, face, res, :bgk)
     KitBase.update_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
     ptc = deepcopy(ptc_new)
     
     t += dt
+    #@show iter, res
 end
 
 KitBase.plot_line(ks, ctr)
