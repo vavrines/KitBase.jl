@@ -16,6 +16,7 @@ using Plots
 using FileIO
 using JLD2
 using ProgressMeter
+using Distributions
 using PyCall
 
 include("Type/type.jl")

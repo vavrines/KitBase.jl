@@ -294,7 +294,7 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
 
     np = 0
     for i in eachindex(ctr)
-        np += Int(ceil(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        np += Int(round(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
     end
 
     ptc = Array{Particle1D}(undef, 2 * np)
@@ -311,8 +311,8 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
 
     np_tmp = 0
     for i in eachindex(ctr)
-        np = Int(ceil(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
-        for j = 1:np
+        npl = Int(round(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        for j = 1:npl
             np_tmp += 1
             sample_particle!(ptc[np_tmp], KS, ctr[i], i)
         end

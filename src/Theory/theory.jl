@@ -38,7 +38,7 @@ export gauss_moments,
        boltzmann_fft,
        boltzmann_fft!
 export heat_capacity_ratio, sound_speed
-export sample_velocity, next_collision_time
+export sample_velocity, next_collision_time, boundary_time
 
 include("theory_continuum.jl")
 include("theory_atom.jl")

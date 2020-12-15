@@ -51,9 +51,9 @@ function particle_transport!(
     npt = 0
     @inbounds for i in 1:KS.gas.np
         cellid = ptc[i].idx
-        tc = vhs_collision_time(ctr[cellid].prim, KS.gas.μᵣ, KS.gas.ω)
+        ptc[i].tc = -vhs_collision_time(ctr[cellid].prim, KS.gas.μᵣ, KS.gas.ω) * log(rand())
 
-        if tc > dt # class 1: free transport particles
+        if ptc[i].tc > dt # class 1: free transport particles
             ptc[i].x += dt * ptc[i].v[1]
 
             ctr[cellid].wf[1] -= ptc[i].m / ctr[cellid].dx
@@ -66,28 +66,32 @@ function particle_transport!(
                 cellid_tmp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[1].dx))
                 #cellid_tmp = find_idx(KS.pSpace.x[1:KS.pSpace.nx], ptc[i].x, mode=:uniform)
 
-                sample_particle!(ptc_tmp[npt], ptc[i].m, ptc[i].x, ptc[i].v, 0.5 / ctr[cellid_tmp].prim[end], cellid_tmp, tc)
+                sample_particle!(ptc_tmp[npt], ptc[i].m, ptc[i].x, ptc[i].v, 0.5 / ctr[cellid_tmp].prim[end], cellid_tmp, ptc[i].tc)
             end
-        elseif tc > ptc[i].tb  # class 2: jumping collision particles
-            ptc[i].x += tc * ptc[i].v[1]
+        elseif ptc[i].tc > boundary_time(ptc[i].x, ptc[i].v, ctr[cellid].x, ctr[cellid].dx)   # class 2: jumping collision particles
+            #ptc[i].x += ptc[i].tc * ptc[i].v[1]
+            ptc[i].x += dt * ptc[i].v[1]
 
-            ctr[cellid].wf[1] -= ptc[i].m / ctr[cellid].dx
-            ctr[cellid].wf[2] -= ptc[i].m * ptc[i].v[1] / ctr[cellid].dx
-            ctr[cellid].wf[3] -= 0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cellid].dx
+            if ptc[i].x > ctr[cellid].x + 0.5 * ctr[cellid].dx && ptc[i].x < ctr[cellid].x - 0.5 * ctr[cellid].dx
 
-            if ptc[i].x >= KS.pSpace.x0 && ptc[i].x <= KS.pSpace.x1
-                cellid_tmp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[1].dx)) 
-                #cellid_tmp = find_idx(KS.pSpace.x[1:KS.pSpace.nx], ptc[i].x, mode=:uniform)
+                ctr[cellid].wf[1] -= ptc[i].m / ctr[cellid].dx
+                ctr[cellid].wf[2] -= ptc[i].m * ptc[i].v[1] / ctr[cellid].dx
+                ctr[cellid].wf[3] -= 0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cellid].dx
 
-                ctr[cellid_tmp].wf[1] += ptc[i].m / ctr[cellid_tmp].dx
-                ctr[cellid_tmp].wf[2] += ptc[i].m * ptc[i].v[1] / ctr[cellid_tmp].dx
-                ctr[cellid_tmp].wf[3] +=
-                    0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cellid_tmp].dx
+                if ptc[i].x >= KS.pSpace.x0 && ptc[i].x <= KS.pSpace.x1
+                    cellid_tmp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[1].dx)) 
+                    #cellid_tmp = find_idx(KS.pSpace.x[1:KS.pSpace.nx], ptc[i].x, mode=:uniform)
+
+                    ctr[cellid_tmp].wf[1] += ptc[i].m / ctr[cellid_tmp].dx
+                    ctr[cellid_tmp].wf[2] += ptc[i].m * ptc[i].v[1] / ctr[cellid_tmp].dx
+                    ctr[cellid_tmp].wf[3] +=
+                        0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cellid_tmp].dx
+                end
             end
         end
     end
 
-    @inbounds for i = 1:KS.pSpace.nx
+    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         ctr[i].wp .= 0.0
     end
     @inbounds for i = 1:npt
@@ -119,17 +123,23 @@ function particle_collision!(
     coll = :bgk::Symbol,
 ) where {T<:AbstractSolverSet}
 
+    sum_res = zeros(3)
+    sum_avg = zeros(3)
+
     npt = KS.gas.np
     @inbounds for i = 1:KS.pSpace.nx
         # fluid variables
         wold = deepcopy(ctr[i].w)
         @. ctr[i].wf += (face[i].fw - face[i+1].fw) / ctr[i].dx
+
         if ctr[i].wf[1] < 0.0
-            ctr[i].wf .= zero(ctr[i].wf) .+ 1e-8
+            ctr[i].wf .= zero(ctr[i].wf)
+        #end
         else
             primG = conserve_prim(ctr[i].wf, KS.gas.γ)
             if primG[end] < 0.0
-                primG[end] = eltype(primG)(1e8)
+                primG[end] = 1e8
+                ctr[i].wf .= prim_conserve(primG, KS.gas.γ)
             end
         end
 
@@ -143,7 +153,9 @@ function particle_collision!(
                 ctr[i].w .= prim_conserve(ctr[i].prim, KS.gas.γ)
             end
         end
-        @. res += (ctr[i].w - wold)^2
+        @. sum_res += (ctr[i].w - wold)^2
+        @. sum_avg += abs.(ctr[i].w)
+
         ctr[i].τ = vhs_collision_time(ctr[i].prim, KS.gas.μᵣ, KS.gas.ω)
         
         # particles
@@ -151,11 +163,14 @@ function particle_collision!(
         for j in 1:no_cellid
             npt += 1
             sample_particle!(ptc_temp[npt], KS.gas.m, primG, ctr[i].x, ctr[i].dx, i, KS.gas.μᵣ, KS.gas.ω)
+            #sample_particle!(ptc_temp[npt], KS.gas.m, primG, KS.vSpace.u0, KS.vSpace.u1, ctr[i].x, ctr[i].dx, i, KS.gas.μᵣ, KS.gas.ω)
         end
     end
 
+    @. res = sqrt(KS.pSpace.nx*sum_res)/(sum_avg+1e-8)
     KS.gas.np = npt
     return nothing
+
 
 end
 
@@ -204,11 +219,12 @@ function particle_boundary!(
 end
 
 
-function duplicate!(ptc, ptc_new, n)
+function duplicate!(ptc, ptc_new, n=length(ptc))
     @inbounds Threads.@threads for i in 1:n
         ptc[i].m = ptc_new[i].m
         ptc[i].x = ptc_new[i].x
         ptc[i].v .= ptc_new[i].v
+        ptc[i].e = ptc_new[i].e
         ptc[i].idx = ptc_new[i].idx
         ptc[i].tc = ptc_new[i].tc
     end
@@ -247,10 +263,24 @@ function sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω) wh
     return nothing
 end
 
+function sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω) where {T<:AbstractArray{<:Real,1}}
+    ptc.m = m
+    ptc.x = x + (rand() - 0.5) * dx
+    ptc.v = sample_velocity(prim)
+    #ptc.v = sample_velocity(prim, umin, umax)
+    ptc.e = 0.5 / prim[end]
+    ptc.idx = idx
+    τ = vhs_collision_time(prim, μᵣ, ω)
+    ptc.tc = next_collision_time(τ)
+
+    return nothing
+end
+
 function sample_particle!(ptc::Particle1D, KS, ctr, idx)
     ptc.m = KS.gas.m
     ptc.x = ctr.x + (rand() - 0.5) * ctr.dx
     ptc.v = sample_velocity(ctr.prim)
+    #ptc.v = sample_velocity(ctr.prim, KS.vSpace.u0, KS.vSpace.u1)
     ptc.e = 0.5 / ctr.prim[end]
     ptc.idx = idx
     τ = vhs_collision_time(ctr.prim, KS.gas.μᵣ, KS.gas.ω)

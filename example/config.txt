@@ -10,29 +10,29 @@ collision = bgk
 nSpecies = 1
 interpOrder = 2
 limiter = vanleer
-cfl = 0.95
-maxTime = 250.0
+cfl = 0.8
+maxTime = 50.0
 
 # phase space
-x0 = -35.0
-x1 = 35.0
-nx = 100
+x0 = -25.0
+x1 = 25.0
+nx = 60
 pMeshType = uniform
-nxg = 1
+nxg = 2
 
 # velocity space
-umin = -15.0
-umax = 15.0
+umin = -12.0
+umax = 12.0
 nu = 64
 vMeshType = rectangle
 nug = 0
 
 # gas
 knudsen = 1.0
-mach = 2.0
+mach = 3.0
 prandtl = 1.0
 inK = 2.0
 omega = 0.81
 alphaRef = 1.0
 omegaRef = 0.5
-mass = 0.001
+mass = 0.0005
