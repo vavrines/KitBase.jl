@@ -71,38 +71,44 @@ t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
 res = zeros(3)
 
-@showprogress for iter in 1:10
-#for iter in 1:10
-    #KitBase.reconstruct!(ks, ctr)
-    
-    @inbounds Threads.@threads for i = 1:ks.pSpace.nx+1
-        KitBase.flux_equilibrium!(
-            face[i].fw,
-            ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
-            ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
-            ks.gas.K,
-            ks.gas.γ,
-            ks.gas.μᵣ,
-            ks.gas.ω,
-            ks.gas.Pr,
-            dt,
-            0.5 * ctr[i-1].dx,
-            0.5 * ctr[i].dx,
-            ctr[i-1].sw,
-            ctr[i].sw,
-        )
+function solve!(ks, ctr, ptc, ptc_new, t, dt, res, nt=10)
+    @showprogress for iter in 1:nt
+    #for iter in 1:10
+        #KitBase.reconstruct!(ks, ctr)
+        
+        @inbounds Threads.@threads for i = 1:ks.pSpace.nx+1
+            KitBase.flux_equilibrium!(
+                face[i].fw,
+                ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
+                ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
+                ks.gas.K,
+                ks.gas.γ,
+                ks.gas.μᵣ,
+                ks.gas.ω,
+                ks.gas.Pr,
+                dt,
+                0.5 * ctr[i-1].dx,
+                0.5 * ctr[i].dx,
+                ctr[i-1].sw,
+                ctr[i].sw,
+            )
+        end
+        
+        #KitBase.update!(ks, ctr, ptc, ptc_new, face, dt, res; coll = :bgk, bc = :fix)
+        
+        KitBase.particle_transport!(ks, ctr, ptc, ptc_new, dt)
+        KitBase.particle_collision!(ks, ctr, ptc_new, face, res, :bgk)
+        KitBase.particle_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
+        KitBase.duplicate!(ptc, ptc_new, ks.gas.np)
+        
+        t += dt
+        #@show iter, res
     end
-    
-    #KitBase.update!(ks, ctr, ptc, ptc_new, face, dt, res; coll = :bgk, bc = :fix)
-    
-    KitBase.update_transport!(ks, ctr, ptc, ptc_new, dt)
-    KitBase.update_collision!(ks, ctr, ptc_new, face, res, :bgk)
-    KitBase.update_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
-    ptc = deepcopy(ptc_new)
-    
-    t += dt
-    #@show iter, res
+
+    return t
 end
+
+t = solve!(ks, ctr, ptc, ptc_new, t, dt, res, 100)
 
 KitBase.plot_line(ks, ctr)
 
@@ -111,11 +117,10 @@ pltx = ks.pSpace.x[1:ks.pSpace.nx]
 plty = zeros(ks.pSpace.nx, 6)
 for i in eachindex(pltx)
     for j = 1:2
-        plty[i, j] = ctr[i].w[j]
+        plty[i, j] = ctr[i].wf[j] .+ ctr[i].wp[j]
     end
-    #plty[i, 3] = 1.0 / ctr[i].prim[end]
-    plty[i, 3] = ctr[i].w[end]
+    plty[i, 3] = ctr[i].wf[end] + ctr[i].wp[end]
 end
-plot(pltx, plty[:, 1], label = "Density", lw = 2, xlabel = "x", legend=:none)
-plot!(pltx, plty[:, 2], label = "Velocity", lw = 2)
-plot!(pltx, plty[:, 3], label = "Temperature", lw = 2)
+plot(pltx, plty[:, 1:3], lw = 2, xlabel = "x", legend=:none)
+
+

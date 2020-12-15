@@ -300,12 +300,13 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
     ptc = Array{Particle1D}(undef, 2 * np)
     for i in eachindex(ptc)
         m = KS.gas.m
-        v = zeros(3)
         x = 0.0
+        v = zeros(3)
+        e = 0.0
         idx = -7
-        tb = 0.0
+        tc = 0.0
 
-        ptc[i] = Particle1D(m, x, v, idx, tb)
+        ptc[i] = Particle1D(m, x, v, e, idx, tc)
     end
 
     np_tmp = 0
@@ -313,27 +314,7 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
         np = Int(ceil(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
         for j = 1:np
             np_tmp += 1
-
-            rd1 = rand(3)
-            rd2 = rand(3)
-            rd = rand()
-
-            m = KS.gas.m
-            v = @. sqrt(-log(rd1) / ctr[i].prim[end]) * sin(2.0 * π * rd2)
-            x = ctr[i].x + (rd - 0.5) * ctr[i].dx
-            idx = i
-            if v[1] < 0
-                tb = (ctr[i].x - 0.5 * ctr[i].dx - x) / v[1]
-            elseif v[1] > 0
-                tb = (ctr[i].x + 0.5 * ctr[i].dx - x) / v[1]
-            else
-                tb = 1.0
-            end
-
-            ptc[np_tmp].x = x
-            ptc[np_tmp].v .= v
-            ptc[np_tmp].idx = idx
-            ptc[np_tmp].tb = tb
+            sample_particle!(ptc[np_tmp], KS, ctr[i], i)
         end
     end
 
