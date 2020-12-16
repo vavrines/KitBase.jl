@@ -103,7 +103,7 @@ function solve!(ks, ctr, ptc, ptc_new, t, dt, res, nt=10)
     return t
 end
 
-t = solve!(ks, ctr, ptc, ptc_new, t, dt, res, 5)
+t = solve!(ks, ctr, ptc, ptc_new, t, dt, res, 2)
 
 KitBase.plot_line(ks, ctr)
 

@@ -45,13 +45,14 @@ function flux_equilibrium!(
         prim = conserve_prim(w, γ)
 
         tau =
-            vhs_collision_time(prim, μᵣ, ω) +
-            2.0 * dt * abs(primL[1] / primL[end] - primR[1] / primR[end]) /
-            (primL[1] / primL[end] + primR[1] / primR[end])
+            vhs_collision_time(prim, μᵣ, ω) #+
+            #2.0 * dt * abs(primL[1] / primL[end] - primR[1] / primR[end]) /
+            #(primL[1] / primL[end] + primR[1] / primR[end])
 
         # time-integration constants
-        Mt = zeros(5)
-        Mt[1] = dt - Mt[4]
+        Mt = zeros(2)
+        Mt[2] = tau * (1.0 - exp(-dt / tau))
+        Mt[1] = dt - Mt[2]
 
         # flux related to central distribution
         Mu, Mxi, MuL, MuR = gauss_moments(prim, inK)

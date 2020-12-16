@@ -16,13 +16,13 @@ maxTime = 50.0
 # phase space
 x0 = -25.0
 x1 = 25.0
-nx = 60
+nx = 50
 pMeshType = uniform
 nxg = 2
 
 # velocity space
-umin = -12.0
-umax = 12.0
+umin = -5.0
+umax = 5.0
 nu = 64
 vMeshType = rectangle
 nug = 0
@@ -35,4 +35,4 @@ inK = 2.0
 omega = 0.81
 alphaRef = 1.0
 omegaRef = 0.5
-mass = 0.0005
+mass = 0.001
