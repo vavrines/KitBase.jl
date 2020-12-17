@@ -8,7 +8,7 @@ end
 #--- settings ---#
 Setup()
 Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01)
-Particle(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000)
+Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000)
 Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5)
 Plasma1D(
     [0.1, 0.5],
@@ -121,7 +121,8 @@ Flux2D1F(zeros(2), w, w, h, zeros(2), w, w, h)
 Flux2D2F(zeros(2), w, w, h, h, zeros(2), w, w, h, h)
 
 #--- particle ---#
-Particle1D(1e-4, 0.1, randn(3), 1.0, 34, 0.2)
-Particle2D(1e-4, 0.1, 0.3, randn(3), 34, 21, 0.2)
+Particle(ones(50) .* 1e-3, randn(50), randn(50, 3), rand(50), collect(1:50), zeros(Int64, 50), zeros(50))
+Particle1D(1e-4, 0.1, randn(3), 1.0, 34)
+Particle2D(1e-4, 0.1, 0.3, randn(3), 34, 21)
 ControlVolumeParticle1D(x, dx, w, prim)
 ControlVolumeParticle2D(x, dx, x, dx, w, prim)

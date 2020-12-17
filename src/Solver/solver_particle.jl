@@ -2,6 +2,65 @@
 # Update Algorithm for Particle Simulations
 # ============================================================
 
+"""
+    sample_particle!(ptc::Particle1D, m, x, v, idx, tb)
+    sample_particle!(ptc::Particle1D, KS, ctr, idx, t0 = 1.0)
+
+Sample particles from local flow conditions
+
+"""
+function sample_particle!(ptc::Particle1D, m, x, v, e, idx, flag, tc)
+    ptc.m = m
+    ptc.x = x
+    ptc.v = v
+    ptc.e = e
+    ptc.idx = idx
+    ptc.flag = flag
+    ptc.tc = tc
+
+    return nothing
+end
+
+function sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
+    ptc.m = m
+    ptc.x = x + (rand() - 0.5) * dx
+    ptc.v = sample_velocity(prim)
+    ptc.e = 0.5 / prim[end]
+    ptc.idx = idx
+    ptc.flag = flag
+    τ = vhs_collision_time(prim, μᵣ, ω)
+    ptc.tc = next_collision_time(τ)
+
+    return nothing
+end
+
+function sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
+    ptc.m = m
+    ptc.x = x + (rand() - 0.5) * dx
+    ptc.v = sample_velocity(prim, umin, umax)
+    ptc.e = 0.5 / prim[end]
+    ptc.idx = idx
+    ptc.flag = flag
+    τ = vhs_collision_time(prim, μᵣ, ω)
+    ptc.tc = next_collision_time(τ)
+
+    return nothing
+end
+
+function sample_particle!(ptc::Particle1D, KS, ctr, idx)
+    ptc.m = KS.gas.m
+    ptc.x = ctr.x + (rand() - 0.5) * ctr.dx
+    ptc.v = sample_velocity(ctr.prim)
+    ptc.e = 0.5 / ctr.prim[end]
+    ptc.idx = idx
+    ptc.flag = 0
+    τ = vhs_collision_time(ctr.prim, KS.gas.μᵣ, KS.gas.ω)
+    ptc.tc = next_collision_time(τ)
+
+    return nothing
+end
+
+
 function update!(
     KS::AbstractSolverSet,
     ctr::AbstractArray{ControlVolumeParticle1D,1},
@@ -228,63 +287,6 @@ function duplicate!(ptc, ptc_new, n=length(ptc))
         ptc[i].idx = ptc_new[i].idx
         ptc[i].tc = ptc_new[i].tc
     end
-
-    return nothing
-end
-
-
-"""
-    sample_particle!(ptc::Particle1D, m, x, v, idx, tb)
-    sample_particle!(ptc::Particle1D, KS, ctr, idx, t0 = 1.0)
-
-Sample particles from local flow conditions
-
-"""
-function sample_particle!(ptc::Particle1D, m, x, v, e, idx, tc)
-    ptc.m = m
-    ptc.x = x
-    ptc.v = v
-    ptc.e = e
-    ptc.idx = idx
-    ptc.tc = tc
-
-    return nothing
-end
-
-function sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω) where {T<:AbstractArray{<:Real,1}}
-    ptc.m = m
-    ptc.x = x + (rand() - 0.5) * dx
-    ptc.v = sample_velocity(prim)
-    ptc.e = 0.5 / prim[end]
-    ptc.idx = idx
-    τ = vhs_collision_time(prim, μᵣ, ω)
-    ptc.tc = next_collision_time(τ)
-
-    return nothing
-end
-
-function sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω) where {T<:AbstractArray{<:Real,1}}
-    ptc.m = m
-    ptc.x = x + (rand() - 0.5) * dx
-    ptc.v = sample_velocity(prim)
-    #ptc.v = sample_velocity(prim, umin, umax)
-    ptc.e = 0.5 / prim[end]
-    ptc.idx = idx
-    τ = vhs_collision_time(prim, μᵣ, ω)
-    ptc.tc = next_collision_time(τ)
-
-    return nothing
-end
-
-function sample_particle!(ptc::Particle1D, KS, ctr, idx)
-    ptc.m = KS.gas.m
-    ptc.x = ctr.x + (rand() - 0.5) * ctr.dx
-    ptc.v = sample_velocity(ctr.prim)
-    #ptc.v = sample_velocity(ctr.prim, KS.vSpace.u0, KS.vSpace.u1)
-    ptc.e = 0.5 / ctr.prim[end]
-    ptc.idx = idx
-    τ = vhs_collision_time(ctr.prim, KS.gas.μᵣ, KS.gas.ω)
-    ptc.tc = next_collision_time(τ)
 
     return nothing
 end

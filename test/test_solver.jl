@@ -1,7 +1,7 @@
 cd(@__DIR__)
 ks, ctr, face, simTime = KitBase.initialize("config.txt")
 
-particle = Particle(
+gas = Gas(
     ks.gas.Kn,
     ks.gas.Ma,
     ks.gas.Pr,
@@ -15,5 +15,5 @@ particle = Particle(
     1000,
 )
 
-ks1 = SolverSet(ks.set, ks.pSpace, ks.vSpace, particle, ks.ib, ks.outputFolder)
+ks1 = SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolder)
 KitBase.init_ptc(ks1, ctr)

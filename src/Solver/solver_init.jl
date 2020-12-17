@@ -304,9 +304,10 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
         v = zeros(3)
         e = 0.0
         idx = -7
+        flag = 0
         tc = 0.0
 
-        ptc[i] = Particle1D(m, x, v, e, idx, tc)
+        ptc[i] = Particle1D(m, x, v, e, idx, flag, tc)
     end
 
     np_tmp = 0

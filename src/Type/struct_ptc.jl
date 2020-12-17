@@ -3,6 +3,39 @@
 # ============================================================
 
 """
+particle
+
+    Particle(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
+
+- @vars: m, x, v, e, idx, flag, tc
+
+"""
+mutable struct Particle{T1,T2,T3} <: AbstractParticle1D
+
+    m::T1
+    x::T1
+    v::T2
+    e::T1
+    idx::T3
+    flag::T3
+    tc::T1
+
+    function Particle(M, X, V, E, IDX, FLAG = zero(IDX), T = zero(M))
+        m = deepcopy(M)
+        x = deepcopy(X)
+        v = deepcopy(V)
+        e = deepcopy(E)
+        idx = deepcopy(IDX)
+        flag = deepcopy(FLAG)
+        tc = deepcopy(T)
+
+        new{typeof(m),typeof(v),typeof(idx)}(m, x, v, e, idx, flag, tc)
+    end
+
+end
+
+
+"""
 1D particle
 
     Particle1D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
@@ -17,17 +50,19 @@ mutable struct Particle1D{T1,T2,T3} <: AbstractParticle1D
     v::T2
     e::T1
     idx::T3
+    flag::T3
     tc::T1
 
-    function Particle1D(M, X, V, E, IDX::Integer, T = zero(M))
+    function Particle1D(M, X, V, E, IDX::Integer, FLAG = zero(IDX), T = zero(M))
         m = deepcopy(M)
         x = deepcopy(X)
         v = deepcopy(V)
         e = deepcopy(E)
         idx = deepcopy(IDX)
-        tb = deepcopy(T)
+        flag = deepcopy(FLAG)
+        tc = deepcopy(T)
 
-        new{typeof(m),typeof(v),typeof(idx)}(m, x, v, e, idx, tb)
+        new{typeof(m),typeof(v),typeof(idx)}(m, x, v, e, idx, flag, tc)
     end
 
 end
@@ -41,15 +76,16 @@ end
 - @vars: m, x, v, idx, tb
 
 """
-mutable struct Particle2D{T1,T2,T3,T4,T5} <: AbstractParticle2D
+mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
 
     m::T1
-    x::T2
-    y::T2
-    v::T3
-    idx::T4
-    idy::T4
-    tc::T5
+    x::T1
+    y::T1
+    v::T2
+    idx::T3
+    idy::T3
+    flag::T3
+    tc::T1
 
     function Particle2D(
         M::AbstractFloat,
@@ -58,7 +94,8 @@ mutable struct Particle2D{T1,T2,T3,T4,T5} <: AbstractParticle2D
         V::AbstractArray,
         IDX::Integer,
         IDY::Integer,
-        T = 0.0::Real,
+        FLAG = zero(IDX),
+        T = zero(M)::Real,
     )
         m = deepcopy(M)
         x = deepcopy(X)
@@ -66,9 +103,10 @@ mutable struct Particle2D{T1,T2,T3,T4,T5} <: AbstractParticle2D
         v = deepcopy(V)
         idx = deepcopy(IDX)
         idy = deepcopy(IDY)
-        tb = deepcopy(T)
+        flag = deepcopy(FLAG)
+        tc = deepcopy(T)
 
-        new{typeof(m),typeof(x),typeof(v),typeof(idx),typeof(tb)}(m, x, y, v, idx, idy, tb)
+        new{typeof(m),typeof(v),typeof(idx)}(m, x, y, v, idx, idy, flag, tc)
     end
 
 end

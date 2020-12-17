@@ -14,7 +14,7 @@ begin
     pSpace = KitBase.PSpace1D(x0, x1, nx, pMeshType, nxg)
     vSpace = KitBase.VSpace1D(umin, umax, nu, vMeshType, nug)
     μᵣ = KitBase.ref_vhs_vis(knudsen, alphaRef, omegaRef)
-    gas = KitBase.Particle(
+    gas = KitBase.Gas(
         knudsen,
         mach,
         prandtl,

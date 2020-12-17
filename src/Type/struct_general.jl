@@ -50,67 +50,12 @@ end
 
 
 """
-Gas property
-
-    @consts: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ
-
-"""
-struct Gas{A,B,C,D,E,F,G,H,I} <: AbstractProperty
-
-    Kn::A
-    Ma::B
-    Pr::C
-    K::D
-    γ::E
-    ω::F
-    αᵣ::G
-    ωᵣ::H
-    μᵣ::I
-
-    function Gas(
-        Kn::Union{Real,AbstractArray}, # unified consideration of
-        Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
-        Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
-        K::Union{Real,AbstractArray},
-        γ::Union{Real,AbstractArray},
-        ω::Union{Real,AbstractArray},
-        αᵣ::Union{Real,AbstractArray},
-        ωᵣ::Union{Real,AbstractArray},
-        μᵣ::Union{Real,AbstractArray},
-    )
-        new{
-            typeof(Kn),
-            typeof(Ma),
-            typeof(Pr),
-            typeof(K),
-            typeof(γ),
-            typeof(ω),
-            typeof(αᵣ),
-            typeof(ωᵣ),
-            typeof(μᵣ),
-        }(
-            Kn,
-            Ma,
-            Pr,
-            K,
-            γ,
-            ω,
-            αᵣ,
-            ωᵣ,
-            μᵣ,
-        )
-    end
-
-end
-
-
-"""
 Particle property
 
     @vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np
 
 """
-mutable struct Particle{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
+mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
 
     Kn::A
     Ma::B
@@ -124,7 +69,7 @@ mutable struct Particle{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
     m::J
     np::K
 
-    function Particle(
+    function Gas(
         _Kn::Union{Real,AbstractArray}, # unified consideration of
         _Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
         _Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
@@ -134,8 +79,8 @@ mutable struct Particle{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
         _αᵣ::Union{Real,AbstractArray},
         _ωᵣ::Union{Real,AbstractArray},
         _μᵣ::Union{Real,AbstractArray},
-        _m::Union{Real,AbstractArray},
-        _np::Union{Integer,AbstractArray},
+        _m = 1e-3::Union{Real,AbstractArray},
+        _np = 1000::Union{Integer,AbstractArray},
     )
         Kn = deepcopy(_Kn)
         Ma = deepcopy(_Ma)

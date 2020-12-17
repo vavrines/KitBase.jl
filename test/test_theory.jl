@@ -58,5 +58,5 @@ shift_pdf!(M, 1.0, 1e-4, 1e-4)
 sample_velocity([1.0, 0.0, 1.0])
 next_collision_time(1.0)
 
-ptc = Particle1D(1e-3, 0.0, randn(3), 0.1, 1, 0.01)
+ptc = Particle1D(1e-3, 0.0, randn(3), 0.1, 1)
 KitBase.sample_particle!(ptc, 1e-4, rand(), randn(3), rand(), 2, 0.1)
