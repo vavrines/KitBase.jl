@@ -24,7 +24,7 @@ end
 function sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
     ptc.m = m
     ptc.x = x + (rand() - 0.5) * dx
-    ptc.v = sample_velocity(prim)
+    ptc.v = sample_maxwell(prim)
     ptc.e = 0.5 / prim[end]
     ptc.idx = idx
     ptc.flag = flag
@@ -37,7 +37,7 @@ end
 function sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
     ptc.m = m
     ptc.x = x + (rand() - 0.5) * dx
-    ptc.v = sample_velocity(prim, umin, umax)
+    ptc.v = sample_maxwell(prim, umin, umax)
     ptc.e = 0.5 / prim[end]
     ptc.idx = idx
     ptc.flag = flag
@@ -50,7 +50,7 @@ end
 function sample_particle!(ptc::Particle1D, KS, ctr, idx)
     ptc.m = KS.gas.m
     ptc.x = ctr.x + (rand() - 0.5) * ctr.dx
-    ptc.v = sample_velocity(ctr.prim)
+    ptc.v = sample_maxwell(ctr.prim)
     ptc.e = 0.5 / ctr.prim[end]
     ptc.idx = idx
     ptc.flag = 0
@@ -59,6 +59,216 @@ function sample_particle!(ptc::Particle1D, KS, ctr, idx)
 
     return nothing
 end
+
+
+
+function particle_transport!(KS, x, v, flag, dt, np=length(x))
+
+    x_old = deepcopy(x)
+    for i in 1:np
+        x[i] += v[i,1]*dt
+
+        flag[i] = 0
+        if x[i] < KS.pSpace.x0
+            flag[i] = 1
+        elseif x[i] > KS.pSpace.x1
+            flag[i] = 2
+        end
+        
+        if flag[i] != 0
+            x0 = x[i] - v[i,1]*dt
+            vi = @view v[i, :]
+            x[i] = particle_boundary_maxwell!(x[i], vi, (KS.ib, x0, KS.pSpace.x0, KS.pSpace.x1, flag[i], dt))
+        end
+    end
+
+    return nothing
+
+end
+
+#=
+using Distributions
+d = truncated(Normal(0.0, sqrt(1.0/ks.ib.primL[end])), 0, Inf) # Distributions.jl
+a = rand(d, 10000)
+
+histogram(a)
+
+b = zeros(10000)
+for i in axes(b,1)
+    b[i] = sqrt(-log(1. - rand())) * sin(1.0 * π * rand())
+end
+histogram(b)
+=#
+
+function particle_boundary_maxwell!(x, v, p)
+
+    ib, x_old, xL, xR, flag, dt = p
+
+    vyInit = v[2]
+
+    if flag == 1
+        #v[1] = sqrt(-log(1.0-rand()))
+        v[1] = sample_maxwell(ib.primL[end], 0, Inf)
+        v[2] = sample_maxwell(ib.primL[end], ib.vL[2])
+        v[3] = sample_maxwell(ib.primL[end])
+        
+        dtr = dt * (x - xL) / (x - x_old)
+        x = xL + v[1] * dtr
+    elseif flag == 2
+        #v[1] = -sqrt(-log(1.0-rand()))
+        v[1] = sample_maxwell(ib.primR[end], -Inf, 0)
+        v[2] = sample_maxwell(ib.primR[end], ib.vR[2])
+        v[3] = sample_maxwell(ib.primR[end])
+
+        dtr = dt * (x - xR) / (x - x_old)
+        x = xR + v[1] * dtr
+    end
+
+    return x
+
+end
+
+
+
+
+
+function particle_sort!(KS, ctr, x, idx, ref, np=length(idx); mode=:uniform)
+
+    # ccalculate cell indices of particles
+    for i in 1:np
+        idx[i] = find_idx(KS.pSpace.x[1:end], x[i], mode=mode)
+    end
+
+    # count the number of particles in each cell
+    @inbounds Threads.@threads for i in 1:KS.pSpace.nx
+        ctr[i].np = 0
+    end
+    for i in 1:np
+        ctr[idx[i]].np += 1
+    end
+
+    # build index list as cumulative sum of the number of particles in each cell
+    m = 1
+    @inbounds for jcell in 1:KS.pSpace.nx
+        ctr[jcell].ip = m
+        m += ctr[jcell].np
+    end
+
+    # build cross-reference list
+    temp = zeros(Int, KS.pSpace.nx)
+    @inbounds for i=1:np
+        jcell = idx[i]
+        k = ctr[jcell].ip + temp[jcell]
+        ref[k] = i
+        temp[jcell] += 1
+    end
+
+    return nothing
+
+end
+
+
+
+
+
+
+
+
+
+
+function particle_collision!(KS, ctr, ref, v, dt, ne=1)
+
+    vcm = zeros(3)
+    vrel = zeros(3)
+    col = 0
+
+    for jcell=1:KS.pSpace.nx
+
+        number = ctr[jcell].np
+        if number > 1
+
+            #select = coeff*number**2*vrmax(jcell) + remainder(jcell)
+            select = ne * 0.5 / √2 * dt / ctr[jcell].dx / KS.gas.Kn * number^2*ctr[jcell].vrmax + ctr[jcell].remainder
+
+            nsel = Int(floor(select))
+            ctr[jcell].remainder = select-nsel 
+            crm = ctr[jcell].vrmax
+
+            for isel=1:nsel
+
+                # pick two particles at random out of this cell
+                k = floor( rand()*number ) |> Int
+                kk = mod( Int(floor(k+rand()*(number-1))+1), number )
+                ip1 = ref[ k+ctr[jcell].ip ]  # first particle
+                ip2 = ref[ kk+ctr[jcell].ip ] # second particle
+
+                # calculate pair's relative speed
+                cr = sqrt( (v[ip1,1]-v[ip2,1])^2 + (v[ip1,2]-v[ip2,2])^2 + (v[ip1,3]-v[ip2,3])^2 )
+                if cr > crm    # If relative speed larger than crm,
+                    crm = cr                # then reset crm to larger value
+                end
+
+                # accept or reject candidate pair according to relative speed
+                if cr/ctr[jcell].vrmax > rand()
+                    # If pair accepted, select post-collision velocities
+                    col += 1                     # Collision counter
+                    for k=1:3
+                        vcm[k] = 0.5*(v[ip1,k] + v[ip2,k])       # Center of mass velocity
+                    end
+                    cos_th = 1.0 - 2.0*rand()       # Cosine and sine of
+                    sin_th = sqrt(1.0 - cos_th^2)      # collision angle theta
+                    phi = 2.0*pi*rand()             # Collision angle phi
+                    vrel[1] = cr*cos_th                 # Compute post-collision
+                    vrel[2] = cr*sin_th*cos(phi)        # relative velocity
+                    vrel[3] = cr*sin_th*sin(phi)
+                    for  k=1:3
+                        v[ip1,k] = vcm[k] + 0.5*vrel[k]   # Update post-collision
+                        v[ip2,k] = vcm[k] - 0.5*vrel[k]   # velocities
+                    end
+
+                end
+                ctr[jcell].vrmax = crm     # Update max relative speed
+
+            end
+        end
+    end
+
+    return col
+
+end
+
+
+function particle_stat!(KS, ctr, ptc)
+    for i in 1:KS.pSpace.nx
+        ctr[i].w .= 0.
+    end
+
+    for i in eachindex(ptc.x)
+        ctr[ptc.idx[i]].w[1] += ptc.m[i] / ctr[ptc.idx[i]].dx
+        ctr[ptc.idx[i]].w[2] += ptc.m[i] * ptc.v[i, 1] / ctr[ptc.idx[i]].dx
+        ctr[ptc.idx[i]].w[3] += ptc.m[i] * ptc.v[i, 2] / ctr[ptc.idx[i]].dx
+        ctr[ptc.idx[i]].w[4] += 0.5 * ptc.m[i] * sum(ptc.v[i, :] .^ 2) / ctr[ptc.idx[i]].dx
+    end
+
+    for i in 1:KS.pSpace.nx
+        ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
+    end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function update!(

@@ -3,43 +3,43 @@
 # ============================================================
 
 """
-particle
+    Particle(M, X, V, E, IDX, FLAG = zeros(eltype(IDX), axes(IDX, 1)), T = zero(M))
 
-    Particle(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
-
+Struct of arrays for particle simulation
 - @vars: m, x, v, e, idx, flag, tc
 
 """
-mutable struct Particle{T1,T2,T3} <: AbstractParticle1D
+mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
 
     m::T1
-    x::T1
-    v::T2
+    x::T2
+    v::T3
     e::T1
-    idx::T3
-    flag::T3
+    idx::T4
+    ref::T4
+    flag::T5
     tc::T1
 
-    function Particle(M, X, V, E, IDX, FLAG = zero(IDX), T = zero(M))
+    function Particle(M, X, V, E, IDX, REF = zeros(eltype(IDX), axes(IDX, 1)), FLAG = zeros(eltype(IDX), axes(IDX, 1)), T = zero(M))
         m = deepcopy(M)
         x = deepcopy(X)
         v = deepcopy(V)
         e = deepcopy(E)
         idx = deepcopy(IDX)
+        ref = deepcopy(REF)
         flag = deepcopy(FLAG)
         tc = deepcopy(T)
 
-        new{typeof(m),typeof(v),typeof(idx)}(m, x, v, e, idx, flag, tc)
+        new{typeof(m),typeof(x),typeof(v),typeof(idx),typeof(flag)}(m, x, v, e, idx, ref, flag, tc)
     end
 
 end
 
 
 """
-1D particle
-
     Particle1D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
 
+1D particle
 - @vars: m, x, v, e, idx, tc
 
 """
@@ -69,10 +69,9 @@ end
 
 
 """
-2D particle
-
     Particle2D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
 
+2D particle
 - @vars: m, x, v, idx, tb
 
 """
@@ -113,14 +112,13 @@ end
 
 
 """
-1D control volume in correspondence with particle simulation
-
     ControlVolume1D(X::Real, DX::Real, W::AbstractArray, PRIM::AbstractArray)
 
-- @vars: x, dx, w, prim, sw, wg, τ
+1D control volume in correspondence with particle simulation
+- @vars: x, dx, w, prim, sw, wg, τ, np, vrmax, remainder
 
 """
-mutable struct ControlVolumeParticle1D{F,A} <: AbstractControlVolume1D
+mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1D
 
     x::F
     dx::F
@@ -133,12 +131,21 @@ mutable struct ControlVolumeParticle1D{F,A} <: AbstractControlVolume1D
     wp::A
     τ::F
 
+    np::I
+    ip::I
+    vrmax::F
+    remainder::F
+
     function ControlVolumeParticle1D(
         X::Real,
         DX::Real,
         W::AbstractArray,
         PRIM::AbstractArray,
         TAU = 0.0::Real,
+        NP = 0::Integer,
+        IP = 0::Integer,
+        VR = 3. * sqrt(PRIM[end])::Real,
+        RE = 0::Integer,
     )
         x = deepcopy(X)
         dx = deepcopy(DX)
@@ -151,21 +158,25 @@ mutable struct ControlVolumeParticle1D{F,A} <: AbstractControlVolume1D
         wp = zero(W)
         τ = deepcopy(TAU)
 
-        new{typeof(x),typeof(w)}(x, dx, w, prim, sw, wf, wp, τ)
+        np = deepcopy(NP)
+        ip = deepcopy(IP)
+        vrmax = deepcopy(VR)
+        remainder = deepcopy(RE)
+
+        new{typeof(x),typeof(w),typeof(np)}(x, dx, w, prim, sw, wf, wp, τ, np, ip, vrmax, remainder)
     end
 
 end
 
 
 """
-2D control volume in correspondence with particle simulation
-
     ControlVolume2D(X::Real, DX::Real, Y::Real, DY::Real, W::AbstractArray, PRIM::AbstractArray)
 
-- @vars: x, y, dx, dy, w, prim, sw, wg, τ
+2D control volume in correspondence with particle simulation
+- @vars: x, y, dx, dy, w, prim, sw, wg, τ, np, vrmax, remainder
 
 """
-mutable struct ControlVolumeParticle2D{F,A,B} <: AbstractControlVolume2D
+mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
 
     x::F
     y::F
@@ -180,6 +191,11 @@ mutable struct ControlVolumeParticle2D{F,A,B} <: AbstractControlVolume2D
     wp::A
     τ::F
 
+    np::I
+    ip::I
+    vrmax::F
+    remainder::F
+
     function ControlVolumeParticle2D(
         X::Real,
         DX::Real,
@@ -188,6 +204,10 @@ mutable struct ControlVolumeParticle2D{F,A,B} <: AbstractControlVolume2D
         W::AbstractArray,
         PRIM::AbstractArray,
         TAU = 0.0::Real,
+        NP = 0::Integer,
+        IP = 0::Integer,
+        VR = 3. * sqrt(PRIM[end])::Real,
+        RE = 0::Integer,
     )
 
         x = deepcopy(X)
@@ -203,7 +223,12 @@ mutable struct ControlVolumeParticle2D{F,A,B} <: AbstractControlVolume2D
         wp = zero(W)
         τ = deepcopy(TAU)
 
-        new{typeof(x),typeof(w),typeof(sw)}(x, dx, y, dy, w, prim, sw, wf, wp, τ)
+        np = deepcopy(NP)
+        ip = deepcopy(IP)
+        vrmax = deepcopy(VR)
+        remainder = deepcopy(RE)
+
+        new{typeof(x),typeof(w),typeof(sw),typeof(np)}(x, dx, y, dy, w, prim, sw, wf, wp, τ, np, ip, vrmax, remainder)
 
     end
 

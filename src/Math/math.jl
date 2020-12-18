@@ -4,8 +4,6 @@
 
 export linspace, heaviside, fortsign, mat_split
 export central_diff, central_diff!, upwind_diff, upwind_diff!, unstruct_diff
-export find_idx
-
 
 """
 Python linspace function
@@ -392,26 +390,4 @@ function extract_last(a::AbstractArray, idx::Int; mode = :view::Symbol)
     end
 
     return sw
-end
-
-
-"""
-    find_idx(x::AbstractArray{<:Real,1}, p::Real; mode = :uniform::Symbol)
-
-Find the location index of a point in mesh
-
-"""
-function find_idx(
-    x::T, 
-    p::Real; 
-    mode = :nonuniform::Symbol,
-) where {T<:AbstractArray{<:Real,1}}
-    
-    if mode == :uniform    
-        dx = x[2] - x[1]
-        return Int(ceil((p - x[1]) / dx))
-    else
-        return argmin(abs.(x .- p))
-    end
-
 end

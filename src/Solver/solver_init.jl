@@ -290,7 +290,20 @@ end
 Initialize particles
 
 """
-function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+function init_ptc!(KS::SolverSet, ctr::T; mode = :soa::Symbol) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+    if mode == :soa
+        init_ptc_soa!(KS, ctr)
+    elseif mode == :aos
+        init_ptc_aos!(KS, ctr)
+    end
+end
+
+
+"""
+Array of structs
+
+"""
+function init_ptc_aos!(KS::SolverSet, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
     np = 0
     for i in eachindex(ctr)
@@ -318,6 +331,44 @@ function init_ptc(KS, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,
             sample_particle!(ptc[np_tmp], KS, ctr[i], i)
         end
     end
+
+    return ptc
+
+end
+
+
+"""
+Struct of arrays
+
+"""
+function init_ptc_soa!(KS::SolverSet, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+
+    np = 0
+    for i in 1:KS.pSpace.nx
+        np += round(ctr[i].prim[1] * ctr[i].dx / KS.gas.m) |> Int
+    end
+    KS.gas.np = np
+
+    m = zeros(np)
+    x = zeros(np)
+    v = zeros(np, 3)
+    e = zeros(np)
+    idx = zeros(Int, np)
+    ref = zeros(Int, np) # default
+    flag = zeros(Int, np) # default
+    tc = zeros(np)
+
+    for i in 1:np
+        m[i] = KS.gas.m
+        x[i] = KS.pSpace.x0 + rand() * (KS.pSpace.x1 - KS.pSpace.x0)
+        idx[i] = find_idx(KS.pSpace.x[1:end], x[i], mode=:uniform)
+        v[i, :] .= sample_maxwell(ctr[idx[i]].prim)
+        e[i] = 0.5 / ctr[idx[i]].prim[end]
+        τ = vhs_collision_time(ctr[idx[i]].prim, KS.gas.μᵣ, KS.gas.ω)
+        tc[i] = next_collision_time(τ)
+    end
+
+    ptc = Particle(m, x, v, e, idx, ref, flag, tc)
 
     return ptc
 

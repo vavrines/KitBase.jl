@@ -8,7 +8,7 @@ Initial & boundary condition with no distribution function
     @consts: wL, primL, bcL, wR, primR, bcR, bcU, bcD
 
 """
-struct IB{A} <: AbstractCondition
+struct IB{A,B} <: AbstractCondition
 
     wL::A
     primL::A
@@ -21,6 +21,9 @@ struct IB{A} <: AbstractCondition
     bcU::A
     bcD::A
 
+    vL::B
+    vR::B
+
     # works for both 1V/3V and single-/multi-component gases
     function IB(
         wL::AbstractArray,
@@ -32,7 +35,37 @@ struct IB{A} <: AbstractCondition
         bcU = deepcopy(bcR)::AbstractArray,
         bcD = deepcopy(bcR)::AbstractArray,
     )
-        new{typeof(wL)}(wL, primL, bcL, wR, primR, bcR, bcU, bcD)
+        if ndims(primL) == 1
+            vL = zeros(eltype(primL), 3)
+            vR = zeros(eltype(primR), 3)
+
+            if size(primL, 1) == 3
+                vL[1] = primL[2]
+                vR[1] = primR[2]
+            elseif size(primL, 1) == 4
+                vL[1:2] .= primL[2:3]
+                vR[1:2] .= primR[2:3]
+            elseif size(primL, 1) == 5
+                vL .= primL[2:4]
+                vR .= primR[2:4]
+            end
+        elseif ndims(primL) == 2
+            vL = zeros(eltype(primL), 3, size(primL, 2))
+            vR = zeros(eltype(primR), 3, size(primR, 2))
+
+            if size(primL, 1) == 3
+                vL[1, :] .= primL[2, :]
+                vR[1, :] .= primR[2, :]
+            elseif size(primL, 1) == 4
+                vL[1:2, :] .= primL[2:3, :]
+                vR[1:2, :] .= primR[2:3, :]
+            elseif size(primL, 1) == 5
+                vL .= primL[2:4, :]
+                vR .= primR[2:4, :]
+            end
+        end
+
+        new{typeof(wL),typeof(vL)}(wL, primL, bcL, wR, primR, bcR, bcU, bcD, vL, vR)
     end
 
 end
