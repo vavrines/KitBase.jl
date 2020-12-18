@@ -16,4 +16,4 @@ gas = Gas(
 )
 
 ks1 = SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolder)
-KitBase.init_ptc(ks1, ctr)
+KitBase.init_ptc!(ks1, ctr)

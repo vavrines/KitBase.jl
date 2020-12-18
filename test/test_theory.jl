@@ -55,7 +55,7 @@ aap_hs_diffeq!(similar(mprim), mprim, [τ[1], τ[2], 1.0, 0.5, 0.5, 0.5, 1.0, 3.
 shift_pdf!(M, 1.0, 1e-4, 1e-4)
 
 #--- particle ---#
-sample_velocity([1.0, 0.0, 1.0])
+sample_maxwell([1.0, 0.0, 1.0])
 next_collision_time(1.0)
 
 ptc = Particle1D(1e-3, 0.0, randn(3), 0.1, 1)
