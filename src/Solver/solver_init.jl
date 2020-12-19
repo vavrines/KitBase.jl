@@ -290,11 +290,11 @@ end
 Initialize particles
 
 """
-function init_ptc!(KS::SolverSet, ctr::T; mode = :soa::Symbol) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+function init_ptc!(KS::SolverSet, ctr::T; mode = :soa::Symbol, factor = 1::Real) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
     if mode == :soa
-        init_ptc_soa!(KS, ctr)
+        init_ptc_soa!(KS, ctr, factor)
     elseif mode == :aos
-        init_ptc_aos!(KS, ctr)
+        init_ptc_aos!(KS, ctr, factor)
     end
 end
 
@@ -303,14 +303,16 @@ end
 Array of structs
 
 """
-function init_ptc_aos!(KS::SolverSet, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+function init_ptc_aos!(KS::SolverSet, ctr::T, factor = 1) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
     np = 0
     for i in eachindex(ctr)
         np += Int(round(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
     end
+    KS.gas.np = np
+    np *= round(factor) |> Int
 
-    ptc = Array{Particle1D}(undef, 2 * np)
+    ptc = Array{Particle1D}(undef, np)
     for i in eachindex(ptc)
         m = KS.gas.m
         x = 0.0
@@ -341,13 +343,14 @@ end
 Struct of arrays
 
 """
-function init_ptc_soa!(KS::SolverSet, ctr::T) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+function init_ptc_soa!(KS::SolverSet, ctr::T, factor = 1) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
     np = 0
     for i in 1:KS.pSpace.nx
         np += round(ctr[i].prim[1] * ctr[i].dx / KS.gas.m) |> Int
     end
     KS.gas.np = np
+    np *= round(factor) |> Int
 
     m = zeros(np)
     x = zeros(np)
@@ -358,7 +361,8 @@ function init_ptc_soa!(KS::SolverSet, ctr::T) where {T<:AbstractArray{<:Abstract
     flag = zeros(Int, np) # default
     tc = zeros(np)
 
-    for i in 1:np
+    # computing particles at present
+    for i in 1:KS.gas.np
         m[i] = KS.gas.m
         x[i] = KS.pSpace.x0 + rand() * (KS.pSpace.x1 - KS.pSpace.x0)
         idx[i] = find_idx(KS.pSpace.x[1:end], x[i], mode=:uniform)
@@ -366,6 +370,16 @@ function init_ptc_soa!(KS::SolverSet, ctr::T) where {T<:AbstractArray{<:Abstract
         e[i] = 0.5 / ctr[idx[i]].prim[end]
         τ = vhs_collision_time(ctr[idx[i]].prim, KS.gas.μᵣ, KS.gas.ω)
         tc[i] = next_collision_time(τ)
+    end
+    # placeholder particles
+    for i in KS.gas.np+1:np
+        m[i] = KS.gas.m
+        x[i] = 0.0
+        idx[i] = -7
+        v[i, :] .= 0.0
+        e[i] = 0.0
+        τ = -1e8
+        tc[i] = 1e8
     end
 
     ptc = Particle(m, x, v, e, idx, ref, flag, tc)
