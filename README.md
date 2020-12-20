@@ -6,4 +6,4 @@
 [![codecov](https://codecov.io/gh/vavrines/KitBase.jl/branch/main/graph/badge.svg?token=vGgQhyGJ6L)](https://codecov.io/gh/vavrines/KitBase.jl)
 [![deps](https://juliahub.com/docs/KitBase/deps.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS?t=2)
 
-The lightweight prototype with physical formulations of Kinetic.jl
+The lightweight prototype with physical formulations of [Kinetic.jl](https://github.com/vavrines/Kinetic.jl)
