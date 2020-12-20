@@ -19,6 +19,7 @@ using ProgressMeter
 using Distributions
 using PyCall
 
+include("Data/data.jl")
 include("Type/type.jl")
 include("IO/io.jl")
 include("Math/math.jl")

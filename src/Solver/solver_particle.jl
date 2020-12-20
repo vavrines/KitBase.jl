@@ -61,11 +61,15 @@ function sample_particle!(ptc::Particle1D, KS, ctr, idx)
 end
 
 
+"""
+    free_transport!(KS, x, v, flag, dt, np=length(x))
 
-function particle_transport!(KS, x, v, flag, dt, np=length(x))
+Flight particles along trajectories
 
-    x_old = deepcopy(x)
-    for i in 1:np
+"""
+function transport!(KS, x, v, flag, dt, np = length(x))
+
+    @inbounds for i in 1:np
         x[i] += v[i,1]*dt
 
         flag[i] = 0
@@ -76,9 +80,9 @@ function particle_transport!(KS, x, v, flag, dt, np=length(x))
         end
         
         if flag[i] != 0
-            x0 = x[i] - v[i,1]*dt
+            x0 = x[i] - v[i, 1]*dt
             vi = @view v[i, :]
-            x[i] = particle_boundary_maxwell!(x[i], vi, (KS.ib, x0, KS.pSpace.x0, KS.pSpace.x1, flag[i], dt))
+            x[i] = boundary!(x[i], vi, (KS.ib, [KS.pSpace.x0, KS.pSpace.x1], x0, flag[i], dt))
         end
     end
 
@@ -86,42 +90,19 @@ function particle_transport!(KS, x, v, flag, dt, np=length(x))
 
 end
 
-#=
-using Distributions
-d = truncated(Normal(0.0, sqrt(1.0/ks.ib.primL[end])), 0, Inf) # Distributions.jl
-a = rand(d, 10000)
 
-histogram(a)
+function boundary!(x, v, p; bc = :maxwell::Symbol)
 
-b = zeros(10000)
-for i in axes(b,1)
-    b[i] = sqrt(-log(1. - rand())) * sin(1.0 * π * rand())
-end
-histogram(b)
-=#
+    ib, xw, x0, flag, dt = p
 
-function particle_boundary_maxwell!(x, v, p)
+    primB = [ib.primL, ib.primR]
+    bound = [[0., Inf], [-Inf, 0.]]
+    vw = [ib.vL, ib.vR]
 
-    ib, x_old, xL, xR, flag, dt = p
-
-    vyInit = v[2]
-
-    if flag == 1
-        #v[1] = sqrt(-log(1.0-rand()))
-        v[1] = sample_maxwell(ib.primL[end], 0, Inf)
-        v[2] = sample_maxwell(ib.primL[end], ib.vL[2])
-        v[3] = sample_maxwell(ib.primL[end])
-        
-        dtr = dt * (x - xL) / (x - x_old)
-        x = xL + v[1] * dtr
-    elseif flag == 2
-        #v[1] = -sqrt(-log(1.0-rand()))
-        v[1] = sample_maxwell(ib.primR[end], -Inf, 0)
-        v[2] = sample_maxwell(ib.primR[end], ib.vR[2])
-        v[3] = sample_maxwell(ib.primR[end])
-
-        dtr = dt * (x - xR) / (x - x_old)
-        x = xR + v[1] * dtr
+    if bc == :maxwell
+        x = maxwell_reflection!(x, v, (primB[flag], bound[flag], xw[flag], vw[flag], x0, dt))
+    else
+        throw("unavailable boundary condition")
     end
 
     return x
@@ -129,18 +110,38 @@ function particle_boundary_maxwell!(x, v, p)
 end
 
 
+"""
+    particle_boundary_maxwell!(x, v, p)
+
+Maxwell diffusive boundary for particle reflection
+
+"""
+function maxwell_reflection!(x, v, p)
+
+    primw, bound, xw, vw, x0, dt = p
+
+    #v[1] = sqrt(-log(1.0-rand()))
+    v[1] = sample_maxwell(primw[end], bound[1], bound[2])
+    v[2] = sample_maxwell(primw[end], vw[2])
+    v[3] = sample_maxwell(primw[end], vw[3])
+    
+    dtr = dt * (x - xw) / (x - x0)
+    x = xw + v[1] * dtr
+
+    return x
+
+end
 
 
+function sort!(KS, ctr::T, x, idx, ref, np=length(idx); mode=:uniform) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
-function particle_sort!(KS, ctr, x, idx, ref, np=length(idx); mode=:uniform)
-
-    # ccalculate cell indices of particles
-    for i in 1:np
+    # calculate cell indices of particles
+    @inbounds for i in 1:np
         idx[i] = find_idx(KS.pSpace.x[1:end], x[i], mode=mode)
     end
 
     # count the number of particles in each cell
-    @inbounds Threads.@threads for i in 1:KS.pSpace.nx
+    @inbounds for i in eachindex(ctr)
         ctr[i].np = 0
     end
     for i in 1:np
@@ -149,13 +150,13 @@ function particle_sort!(KS, ctr, x, idx, ref, np=length(idx); mode=:uniform)
 
     # build index list as cumulative sum of the number of particles in each cell
     m = 1
-    @inbounds for jcell in 1:KS.pSpace.nx
+    @inbounds for jcell in eachindex(ctr)
         ctr[jcell].ip = m
         m += ctr[jcell].np
     end
 
     # build cross-reference list
-    temp = zeros(Int, KS.pSpace.nx)
+    temp = zeros(Int, axes(ctr))
     @inbounds for i=1:np
         jcell = idx[i]
         k = ctr[jcell].ip + temp[jcell]
@@ -168,21 +169,13 @@ function particle_sort!(KS, ctr, x, idx, ref, np=length(idx); mode=:uniform)
 end
 
 
-
-
-
-
-
-
-
-
-function particle_collision!(KS, ctr, ref, v, dt, ne=1)
+function dsmc!(KS, ctr, ref, v, dt, ne=1)
 
     vcm = zeros(3)
     vrel = zeros(3)
     col = 0
 
-    for jcell=1:KS.pSpace.nx
+    for jcell in eachindex(ctr)
 
         number = ctr[jcell].np
         if number > 1
@@ -238,37 +231,22 @@ function particle_collision!(KS, ctr, ref, v, dt, ne=1)
 end
 
 
-function particle_stat!(KS, ctr, ptc)
-    for i in 1:KS.pSpace.nx
+function stat!(KS, ctr, ptc)
+    @inbounds Threads.@threads for i in 1:KS.pSpace.nx
         ctr[i].w .= 0.
     end
 
-    for i in eachindex(ptc.x)
+    @inbounds Threads.@threads for i in eachindex(ptc.x)
         ctr[ptc.idx[i]].w[1] += ptc.m[i] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[2] += ptc.m[i] * ptc.v[i, 1] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[3] += ptc.m[i] * ptc.v[i, 2] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[4] += 0.5 * ptc.m[i] * sum(ptc.v[i, :] .^ 2) / ctr[ptc.idx[i]].dx
     end
 
-    for i in 1:KS.pSpace.nx
+    @inbounds Threads.@threads for i in 1:KS.pSpace.nx
         ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
     end
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function update!(

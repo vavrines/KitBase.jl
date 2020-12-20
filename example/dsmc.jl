@@ -64,10 +64,10 @@ end
 ptc = KitBase.init_ptc!(ks, ctr)
 
 @showprogress for iter in 1:100
-    KitBase.particle_transport!(ks, ptc.x, ptc.v, ptc.flag, dt)
-    KitBase.particle_sort!(ks, ctr, ptc.x, ptc.idx, ptc.ref)
-    KitBase.particle_collision!(ks, ctr, ptc.ref, ptc.v, dt)
-    KitBase.particle_stat!(ks, ctr, ptc)
+    KitBase.transport!(ks, ptc.x, ptc.v, ptc.flag, dt)
+    KitBase.sort!(ks, ctr, ptc.x, ptc.idx, ptc.ref)
+    KitBase.dsmc!(ks, ctr, ptc.ref, ptc.v, dt)
+    KitBase.stat!(ks, ctr, ptc)
 end
 
 begin
