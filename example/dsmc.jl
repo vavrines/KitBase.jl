@@ -10,23 +10,22 @@ begin
     end
 
     γ = KitBase.heat_capacity_ratio(inK, 1)
-    set = KitBase.Setup(case, space, flux, collision, nSpecies, interpOrder, limiter, cfl, maxTime)
+    set = KitBase.Setup(
+        case,
+        space,
+        flux,
+        collision,
+        nSpecies,
+        interpOrder,
+        limiter,
+        cfl,
+        maxTime,
+    )
     pSpace = KitBase.PSpace1D(x0, x1, nx, pMeshType, nxg)
     vSpace = KitBase.VSpace1D(umin, umax, nu, vMeshType, nug)
     μᵣ = KitBase.ref_vhs_vis(knudsen, alphaRef, omegaRef)
-    gas = KitBase.Gas(
-        knudsen,
-        mach,
-        prandtl,
-        inK,
-        γ,
-        omega,
-        alphaRef,
-        omegaRef,
-        μᵣ,
-        mass,
-        0,
-    )
+    gas =
+        KitBase.Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ, mass, 0)
 
     primL = [1.0, 0.0, -1.0, 1.0] # left wall
     primR = [1.0, 0.0, 1.0, 1.0] # right wall
@@ -63,7 +62,7 @@ end
 
 ptc = KitBase.init_ptc!(ks, ctr)
 
-@showprogress for iter in 1:100
+@showprogress for iter = 1:100
     KitBase.transport!(ks, ptc.x, ptc.v, ptc.flag, dt)
     KitBase.sort!(ks, ctr, ptc.x, ptc.idx, ptc.ref)
     KitBase.dsmc!(ks, ctr, ptc.ref, ptc.v, dt)
@@ -73,7 +72,7 @@ end
 begin
     using Plots
     sol = zeros(ks.pSpace.nx, 4)
-    for i in 1:ks.pSpace.nx
+    for i = 1:ks.pSpace.nx
         sol[i, :] .= ctr[i].prim
     end
 

@@ -77,6 +77,18 @@ next_collision_time(τ) = -τ * log(rand())
 Calculate traveling time to edges
 
 """
+function boundary_time(x, v::Real, xL, xR)
+    if v < 0.
+        tb = (xL - x) / v
+    elseif v > 0.
+        tb = (xR - x) / v
+    else
+        tb = 1e8
+    end
+
+    return tb
+end
+
 function boundary_time(x, v::T, xL, xR) where {T<:AbstractArray{<:Real,1}}
     if v[1] < 0.
         tb = (xL - x) / v[1]

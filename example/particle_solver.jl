@@ -10,24 +10,24 @@ begin
     end
 
     γ = KitBase.heat_capacity_ratio(inK, 1)
-    set = KitBase.Setup(case, space, flux, collision, nSpecies, interpOrder, limiter, cfl, maxTime)
+    set = KitBase.Setup(
+        case,
+        space,
+        flux,
+        collision,
+        nSpecies,
+        interpOrder,
+        limiter,
+        cfl,
+        maxTime,
+    )
     pSpace = KitBase.PSpace1D(x0, x1, nx, pMeshType, nxg)
     vSpace = KitBase.VSpace1D(umin, umax, nu, vMeshType, nug)
     μᵣ = KitBase.ref_vhs_vis(knudsen, alphaRef, omegaRef)
-    gas = KitBase.Gas(
-        knudsen,
-        mach,
-        prandtl,
-        inK,
-        γ,
-        omega,
-        alphaRef,
-        omegaRef,
-        μᵣ,
-        mass,
-        0,
-    )
-    wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR = KitBase.ib_rh(gas.Ma, gas.γ, gas.K, vSpace.u)
+    gas =
+        KitBase.Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ, mass, 0)
+    wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
+        KitBase.ib_rh(gas.Ma, gas.γ, gas.K, vSpace.u)
     ib = KitBase.IB(wL, primL, bcL, wR, primR, bcR)
     ks = KitBase.SolverSet(set, pSpace, vSpace, gas, ib, pwd())
 
@@ -69,11 +69,11 @@ t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
 res = zeros(3)
 
-function solve!(ks, ctr, ptc, ptc_new, t, dt, res, nt=10)
-    @showprogress for iter in 1:nt
-    #for iter in 1:10
+function solve!(ks, ctr, ptc, ptc_new, t, dt, res, nt = 10)
+    @showprogress for iter = 1:nt
+        #for iter in 1:10
         #KitBase.reconstruct!(ks, ctr)
-        
+
         @inbounds Threads.@threads for i = 1:ks.pSpace.nx+1
             KitBase.flux_equilibrium!(
                 face[i].fw,
@@ -89,14 +89,14 @@ function solve!(ks, ctr, ptc, ptc_new, t, dt, res, nt=10)
                 0.5 * ctr[i].dx,
             )
         end
-        
+
         #KitBase.update!(ks, ctr, ptc, ptc_new, face, dt, res; coll = :bgk, bc = :fix)
-        
+
         KitBase.particle_transport!(ks, ctr, ptc, ptc_new, dt)
         KitBase.particle_collision!(ks, ctr, ptc_new, face, res, :bgk)
         KitBase.particle_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
         KitBase.duplicate!(ptc, ptc_new, ks.gas.np)
-        
+
         t += dt
     end
     @show res
@@ -108,10 +108,10 @@ t = solve!(ks, ctr, ptc, ptc_new, t, dt, res, 2)
 KitBase.plot_line(ks, ctr)
 
 #for i = 1:1
-    KitBase.particle_transport!(ks, ctr, ptc, ptc_new, dt)
-    KitBase.particle_collision!(ks, ctr, ptc_new, face, res, :bgk)
-    KitBase.particle_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
-    KitBase.duplicate!(ptc, ptc_new, ks.gas.np)
+KitBase.particle_transport!(ks, ctr, ptc, ptc_new, dt)
+KitBase.particle_collision!(ks, ctr, ptc_new, face, res, :bgk)
+KitBase.particle_boundary!(ks, ctr, ptc, ptc_new, face, dt, :bgk, :fix)
+KitBase.duplicate!(ptc, ptc_new, ks.gas.np)
 #end
 
 begin
@@ -124,5 +124,5 @@ begin
         end
         plty[i, 3] = ctr[i].wf[end] + ctr[i].wp[end]
     end
-    plot(pltx, plty[:, 1:3], lw = 2, legend=:none)
+    plot(pltx, plty[:, 1:3], lw = 2, legend = :none)
 end
