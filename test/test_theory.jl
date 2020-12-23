@@ -51,7 +51,12 @@ KitBase.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), 1.0, 5, phi, psi, phi
 τ = KitBase.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)
 
-KitBase.aap_hs_diffeq!(similar(mprim), mprim, [τ[1], τ[2], 1.0, 0.5, 0.5, 0.5, 1.0, 3.0], 0.0)
+KitBase.aap_hs_diffeq!(
+    similar(mprim),
+    mprim,
+    [τ[1], τ[2], 1.0, 0.5, 0.5, 0.5, 1.0, 3.0],
+    0.0,
+)
 KitBase.shift_pdf!(M, 1.0, 1e-4, 1e-4)
 
 #--- particle ---#

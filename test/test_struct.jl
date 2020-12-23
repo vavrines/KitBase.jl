@@ -51,6 +51,52 @@ b = h .* inK ./ (2.0 * prim[end])
 x = Float64(x0) # x & dx should be of same type
 dx = x0 / nx
 
+KitBase.IB(w, prim, prim, w, prim, prim)
+KitBase.IB1F(w, prim, h, prim, w, prim, h, prim)
+KitBase.IB2F(w, prim, h, h, prim, w, prim, h, h, prim)
+KitBase.IB3F(
+    w,
+    prim,
+    h,
+    h,
+    h,
+    prim,
+    zeros(3),
+    zeros(3),
+    zeros(3),
+    w,
+    prim,
+    h,
+    h,
+    h,
+    prim,
+    zeros(3),
+    zeros(3),
+    zeros(3),
+)
+KitBase.IB4F(
+    w,
+    prim,
+    h,
+    h,
+    h,
+    h,
+    prim,
+    zeros(3),
+    zeros(3),
+    zeros(3),
+    w,
+    prim,
+    h,
+    h,
+    h,
+    h,
+    prim,
+    zeros(3),
+    zeros(3),
+    zeros(3),
+)
+
 #--- control volume ---#
 KitBase.ControlVolume1D(x, dx, w, prim)
 KitBase.ControlVolume1D1F(x, dx, w, prim, h)
@@ -105,7 +151,6 @@ KitBase.ControlVolume1D4F(
     zeros(3, 7),
     zeros(3, 7, 2),
 )
-
 KitBase.ControlVolume2D(x, dx, x, dx, w, prim)
 KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h)
 KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b)
@@ -116,7 +161,9 @@ KitBase.Interface1D(w)
 KitBase.Interface1D1F(w, h)
 KitBase.Interface1D2F(w, h)
 KitBase.Interface1D3F(w, h, zeros(3))
+KitBase.Interface1D3F(zeros(5, 7, 2), zeros(21, 21, 7, 2), zeros(3, 7))
 KitBase.Interface1D4F(w, h, zeros(3))
+KitBase.Interface1D4F(zeros(5, 7, 2), zeros(21, 7, 2), zeros(3, 7))
 cosa = 1 / √2
 sina = 1 / √2
 KitBase.Interface2D(dx, cosa, sina, w)
@@ -129,14 +176,34 @@ sol_prim = [prim for i = 1:2]
 sol_h = [h for i = 1:2]
 KitBase.Solution1D(sol_w, sol_prim)
 KitBase.Solution1D1F(sol_w, sol_prim, sol_h)
+KitBase.Solution1D1F(sol_w, sol_prim, similar(sol_w), sol_h, similar(sol_h))
 KitBase.Solution1D2F(sol_w, sol_prim, sol_h, sol_h)
+KitBase.Solution1D2F(
+    sol_w,
+    sol_prim,
+    similar(sol_w),
+    sol_h,
+    sol_h,
+    similar(sol_h),
+    similar(sol_h),
+)
 
 sol_w = [w for i = 1:2, j = 1:2]
 sol_prim = [prim for i = 1:2, j = 1:2]
 sol_h = [h for i = 1:2, j = 1:2]
 KitBase.Solution2D(sol_w, sol_prim)
 KitBase.Solution2D1F(sol_w, sol_prim, sol_h)
+KitBase.Solution2D1F(sol_w, sol_prim, similar(sol_w), sol_h, similar(sol_h))
 KitBase.Solution2D2F(sol_w, sol_prim, sol_h, sol_h)
+KitBase.Solution2D2F(
+    sol_w,
+    sol_prim,
+    similar(sol_w),
+    sol_h,
+    sol_h,
+    similar(sol_h),
+    similar(sol_h),
+)
 
 #--- flux ---#
 KitBase.Flux1D(w, w)
@@ -147,7 +214,15 @@ KitBase.Flux2D1F(zeros(2), w, w, h, zeros(2), w, w, h)
 KitBase.Flux2D2F(zeros(2), w, w, h, h, zeros(2), w, w, h, h)
 
 #--- particle ---#
-KitBase.Particle(ones(50) .* 1e-3, randn(50), randn(50, 3), rand(50), collect(1:50), zeros(Int64, 50), zeros(50))
+KitBase.Particle(
+    ones(50) .* 1e-3,
+    randn(50),
+    randn(50, 3),
+    rand(50),
+    collect(1:50),
+    zeros(Int64, 50),
+    zeros(50),
+)
 KitBase.Particle1D(1e-4, 0.1, randn(3), 1.0, 34)
 KitBase.Particle2D(1e-4, 0.1, 0.3, randn(3), 34, 21)
 KitBase.ControlVolumeParticle1D(x, dx, w, prim)
