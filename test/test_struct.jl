@@ -52,6 +52,14 @@ x = Float64(x0) # x & dx should be of same type
 dx = x0 / nx
 
 KitBase.IB(w, prim, prim, w, prim, prim)
+KitBase.IB(
+    hcat(w, w),
+    hcat(prim, prim),
+    hcat(prim, prim),
+    hcat(w, w),
+    hcat(prim, prim),
+    hcat(prim, prim),
+)
 KitBase.IB1F(w, prim, h, prim, w, prim, h, prim)
 KitBase.IB2F(w, prim, h, h, prim, w, prim, h, h, prim)
 KitBase.IB3F(
@@ -63,7 +71,7 @@ KitBase.IB3F(
     prim,
     zeros(3),
     zeros(3),
-    zeros(3),
+    zeros(3, 2),
     w,
     prim,
     h,
@@ -72,7 +80,7 @@ KitBase.IB3F(
     prim,
     zeros(3),
     zeros(3),
-    zeros(3),
+    zeros(3, 2),
 )
 KitBase.IB4F(
     w,
@@ -84,7 +92,7 @@ KitBase.IB4F(
     prim,
     zeros(3),
     zeros(3),
-    zeros(3),
+    zeros(3, 2),
     w,
     prim,
     h,
@@ -94,7 +102,7 @@ KitBase.IB4F(
     prim,
     zeros(3),
     zeros(3),
-    zeros(3),
+    zeros(3, 2),
 )
 
 #--- control volume ---#
