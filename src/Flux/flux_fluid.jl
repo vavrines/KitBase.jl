@@ -52,16 +52,16 @@ function flux_hll!(
     λmax = primR[2] + aR
 
     if λmin >= 0.0
-        fw .= euler_flux(wL, γ)
+        fw .= euler_flux(wL, γ)[1]
     elseif λmax <= 0.0
-        fw .= euler_flux(wR, γ)
+        fw .= euler_flux(wR, γ)[1]
     else
         factor = 1.0 / (λmax - λmin)
 
-        flux1 = euler_flux(wL, γ)
-        flux2 = euler_flux(wR, γ)
+        flux1 = euler_flux(wL, γ)[1]
+        flux2 = euler_flux(wR, γ)[1]
 
-        fw .= factor * (λmax * flux1 - λmin * flux2 + λmax * λmin * (wR - wL))
+        @. fw = factor * (λmax * flux1 - λmin * flux2 + λmax * λmin * (wR - wL))
     end
 
     fw .*= dt
@@ -92,8 +92,8 @@ function flux_roe!(
     wR::Y,
     γ,
     dt,
-    n = [1.0, 0.0]::Z,
-) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:Real,1}}
+    n = [1.0, 0.0],
+) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -161,7 +161,7 @@ function flux_roe!(
         R[3, 3] = H + v * a
 
         # compute average flux
-        fw .= 0.5 .* (euler_flux(wL, γ)[1] + physical_flux(wR)[1])
+        fw .= 0.5 .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1])
 
         # add matrix dissipation term to complete Roe flux
         for j = 1:3, k = 1:3
