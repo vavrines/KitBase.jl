@@ -236,21 +236,8 @@ end
 """
 Initialize lid-driven cavity
 
-- 2d1f2v: `ib_cavity(
-    gam,
-    Um,
-    Vm,
-    Tm,
-    u::T,
-    v::T) where {T<:AbstractArray{<:AbstractFloat,2}}`
-- 2d2f2v: `ib_cavity(
-    gam,
-    Um,
-    Vm,
-    Tm,
-    u::T,
-    v::T,
-    K) where {T<:AbstractArray{<:AbstractFloat,2}}`
+- 2d1f2v: `ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}}`
+- 2d2f2v: `ib_cavity(gam, Um, Vm, Tm, u::T, v::T, K) where {T<:AbstractArray{<:AbstractFloat,2}}`
 
 """
 function ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}} # 2D1F2V
