@@ -1,4 +1,5 @@
-using Test, KitBase
+using Test
+import KitBase
 
 include("test_struct.jl")
 include("test_io.jl")

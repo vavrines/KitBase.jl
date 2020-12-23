@@ -1,3 +1,3 @@
 # spherical quadrature
-legendre_quadrature(6)
-octa_quadrature(8)
+KitBase.legendre_quadrature(6)
+KitBase.octa_quadrature(8)

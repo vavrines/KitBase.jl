@@ -260,7 +260,7 @@ function set_ib(
             ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
         elseif set.space[3:end] == "2f1v"
             wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                ib_rh(gas.mach, gas.γ, gas.K, vSpace.u)
+                ib_rh(gas.Ma, gas.γ, gas.K, vSpace.u)
             ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
         end
 

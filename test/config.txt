@@ -4,7 +4,7 @@
 
 # setup
 case = shock
-space = 1d1f1v
+space = 1d2f1v
 flux = kfvs
 collision = bgk
 nSpecies = 1
@@ -31,7 +31,7 @@ nug = 0
 knudsen = 1.0
 mach = 2.0
 prandtl = 1.0
-inK = 0.0
+inK = 2.0
 omega = 0.72
 alphaRef = 1.0
 omegaRef = 0.5

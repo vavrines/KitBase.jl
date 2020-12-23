@@ -17,14 +17,14 @@ Read text into dictionary
 """
 function read_dict(filename::T, allowed) where {T<:AbstractString}
 
-    #println("Reading config from $filename")
+    @info "Reading config from $filename \n"
+    println("")
     f = open(filename)
     vars = Dict{String,Any}()
 
     for line in eachline(f)
         # skip comments
         if length(line) == 0 || line[1] == '#'
-            #println("skip comment line")
             continue
         end
 
@@ -53,6 +53,8 @@ end
 
 function read_dict(filename::T) where {T<:AbstractString}
 
+    @info "Reading config from $filename"
+    println("")
     f = open(filename)
     vars = Dict{String,Any}()
 
