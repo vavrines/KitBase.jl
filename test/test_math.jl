@@ -20,7 +20,6 @@ KitBase.central_diff!(res, y, x0)
 
 KitBase.upwind_diff(y, x; stream = :right)
 KitBase.upwind_diff(y, x; stream = :left)
-KitBase.upwind_diff(y, x; stream = :unknown)
 KitBase.upwind_diff(y, x0)
 
 KitBase.upwind_diff!(res, y, x)
@@ -28,7 +27,6 @@ KitBase.upwind_diff!(res, y, x0)
 
 KitBase.unstruct_diff(y, x, 4; mode = :central)
 KitBase.unstruct_diff(y, x, 4; mode = :upwind)
-KitBase.unstruct_diff(y, x, 4; mode = :unknown)
 KitBase.unstruct_diff(sin, randn(12), 4, 1)
 KitBase.unstruct_diff(sin, randn(12), 4, 2)
 
