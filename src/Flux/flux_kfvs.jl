@@ -87,8 +87,8 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sfL = zeros(eltype(hL), axes(hL))::Z,
-    sfR = zeros(eltype(hR), axes(hR))::Z,
+    sfL = zeros(eltype(fL), axes(fL))::Z,
+    sfR = zeros(eltype(fR), axes(fR))::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,2},
     Y<:AbstractArray{<:AbstractFloat,2},
