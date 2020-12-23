@@ -6,8 +6,8 @@ KitBase.linspace(x0, x1, nx)
 KitBase.heaviside(x0)
 KitBase.fortsign(x0, x1)
 
-m = randn(2, 2)
-KitBase.mat_split(m)
+KitBase.mat_split(randn(2, 2))
+KitBase.mat_split(randn(3, 3))
 
 x = randn(16)
 y = randn(16)
@@ -18,15 +18,21 @@ res = similar(x)
 KitBase.central_diff!(res, y, x)
 KitBase.central_diff!(res, y, x0)
 
-KitBase.upwind_diff(y, x)
+KitBase.upwind_diff(y, x; stream = :right)
+KitBase.upwind_diff(y, x; stream = :left)
+KitBase.upwind_diff(y, x; stream = :unknown)
 KitBase.upwind_diff(y, x0)
+
 KitBase.upwind_diff!(res, y, x)
 KitBase.upwind_diff!(res, y, x0)
 
-KitBase.unstruct_diff(y, x, 4)
+KitBase.unstruct_diff(y, x, 4; mode = :central)
+KitBase.unstruct_diff(y, x, 4; mode = :upwind)
+KitBase.unstruct_diff(y, x, 4; mode = :unknown)
 KitBase.unstruct_diff(sin, randn(12), 4, 1)
+KitBase.unstruct_diff(sin, randn(12), 4, 2)
 
 KitBase.lgwt(12, -1, 1)
-KitBase.extract_last(randn(2, 3), 2; mode = :view)
 
-KitBase.find_idx(randn(20), 0.13)
+KitBase.extract_last(randn(2, 3), 2; mode = :view)
+KitBase.extract_last(randn(2, 3), 2; mode = :copy)

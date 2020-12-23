@@ -19,6 +19,9 @@ z = collect(0:0.1:1)
 KitBase.meshgrid(x, y)
 KitBase.meshgrid(x, y, z)
 
+KitBase.find_idx(randn(20), 0.13, mode = :uniform)
+KitBase.find_idx(randn(20), 0.13, mode = :nonuniform)
+
 #--- unstructure mesh ---#
 cd(@__DIR__)
 #=

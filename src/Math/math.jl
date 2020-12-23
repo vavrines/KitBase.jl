@@ -38,14 +38,14 @@ Split matrix into row vectors
     mat_split(m::AbstractArray)
 
 """
-function mat_split(m::T) where {T<:AbstractArray}
+function mat_split(m::T) where {T<:AbstractArray{<:Number,2}}
 
-    if ndims(m) == 2
+    if length(m[1, :]) == 2
         nx = eltype(m).([1.0 0.0])
         ny = eltype(m).([0.0 1.0])
 
         return nx * m, ny * m
-    elseif ndims(m) == 3
+    elseif length(m[1, :]) == 3
         nx = eltype(m).([1.0 0.0 0.0])
         ny = eltype(m).([0.0 1.0 0.0])
         nz = eltype(m).([0.0 0.0 1.0])
