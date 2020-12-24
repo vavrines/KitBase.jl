@@ -122,6 +122,9 @@ function flux_equilibrium!(
     swR = zeros(eltype(fw), axes(wR))::T1,
 ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}}
 
+    primL = conserve_prim(wL, γ)
+    primR = conserve_prim(wR, γ)
+
     Mu1, Mv1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)
     Mu2, Mv2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
 

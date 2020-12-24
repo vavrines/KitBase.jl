@@ -348,7 +348,7 @@ function flux_emy!(
             A2n[i, 7] * (ϕR - ϕL) +
             A2n[i, 8] * (ψR - ψL) +
             0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dyL + dyR)) .* abs.(D)) .*
+                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
                 slop[i, :],
             )
         femR[i] =
@@ -357,7 +357,7 @@ function flux_emy!(
             A2p[i, 7] * (ϕR - ϕL) +
             A2p[i, 8] * (ψR - ψL) -
             0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dyL + dyR)) .* abs.(D)) .*
+                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
                 slop[i, :],
             )
     end
@@ -366,10 +366,10 @@ function flux_emy!(
     for i = 1:8
         femL[i] +=
             0.5 *
-            sum(fortsign.(1.0, D) .* (1.0 .- dt / (dyL + dyR) .* abs.(D)) .* slop[i, :])
+            sum(fortsign.(1.0, D) .* (1.0 .- dt / (dxL + dxR) .* abs.(D)) .* slop[i, :])
         femR[i] -=
             0.5 *
-            sum(fortsign.(1.0, D) .* (1.0 .- dt / (dyL + dyR) .* abs.(D)) .* slop[i, :])
+            sum(fortsign.(1.0, D) .* (1.0 .- dt / (dxL + dxR) .* abs.(D)) .* slop[i, :])
     end
 
     # transverse correction
@@ -379,10 +379,10 @@ function flux_emy!(
         femLU[i] = sum(A1p[i, :] .* femL)
         femLD[i] = sum(A1n[i, :] .* femL)
     end
-    femRU .*= -0.5 * dt / (dyL + dyR)
-    femRD .*= -0.5 * dt / (dyL + dyR)
-    femLU .*= -0.5 * dt / (dyL + dyR)
-    femLD .*= -0.5 * dt / (dyL + dyR)
+    femRU .*= -0.5 * dt / (dxL + dxR)
+    femRD .*= -0.5 * dt / (dxL + dxR)
+    femLU .*= -0.5 * dt / (dxL + dxR)
+    femLD .*= -0.5 * dt / (dxL + dxR)
 
     return nothing
 

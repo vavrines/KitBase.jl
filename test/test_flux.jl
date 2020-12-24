@@ -20,11 +20,13 @@ fw = similar(wL)
 fh = similar(hL)
 fb = similar(bL)
 
+#--- fluid flux ---#
 KitBase.flux_lax!(fw, wL, wR, γ, dt, dx)
 KitBase.flux_hll!(fw, wL, wR, γ, dt)
 KitBase.flux_roe!(fw, wL, wR, γ, dt)
 KitBase.flux_roe!(zeros(4), [1., 0.3, 0., 1.], [0.3, -0.1, 0., 2.], γ, dt)
 
+#--- gks flux ---#
 KitBase.flux_gks(0.3, 1e-3, dt, 1e-1, 0)
 KitBase.flux_gks(0.3, 1e-3, dt, 1e-1, 1.)
 KitBase.flux_gks(1., 0.125, 1e-3, dt, 1e-2, 1e-2, 0.1, 0.3)
@@ -121,6 +123,7 @@ KitBase.flux_ugks!(
     dx,
 )
 
+#--- kfvs flux ---#
 KitBase.flux_kfvs!(fh, hL, hR, u, dt)
 KitBase.flux_kfvs!(fw, fh, hL, hR, u, ω, dt)
 KitBase.flux_kfvs!(zeros(3, 2), zeros(16, 2), rand(16, 2), rand(16, 2), randn(16, 2), ones(16, 2), dt)
@@ -243,4 +246,404 @@ KitBase.flux_kfvs!(
     ones(16, 16, 2),
     dt,
     dx,
+)
+
+#--- kinetic central-upwind flux ---#
+# 1F1V
+KitBase.flux_kcu!(
+    fw,
+    fh,
+    wL,
+    hL,
+    wR,
+    hR,
+    u,
+    ω,
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+)
+KitBase.flux_kcu!(
+    hcat(fw, fw), 
+    hcat(fh, fh),
+    hcat(wL, wL),
+    hcat(hL, hL),
+    hcat(wR, wR),
+    hcat(hR, hR),
+    hcat(u, u),
+    hcat(ω, ω),
+    inK,
+    γ,
+    1.,
+    1.,
+    0.5,
+    1.,
+    0.01,
+    dt,
+)
+# 2F1V
+KitBase.flux_kcu!(
+    fw,
+    fh,
+    fb,
+    wL,
+    hL,
+    bL,
+    wR,
+    hR,
+    bR,
+    u,
+    ω,
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+)
+KitBase.flux_kcu!(
+    zeros(3, 2),
+    zeros(16, 2),
+    zeros(16, 2),
+    zeros(3, 2),
+    rand(16, 2),
+    rand(16, 2),
+    zeros(3, 2),
+    rand(16, 2),
+    rand(16, 2),
+    rand(16, 2),
+    ones(16, 2),
+    inK,
+    γ,
+    1.,
+    1.,
+    0.5,
+    1.,
+    0.01,
+    dt,
+)
+# 4F1V
+KitBase.flux_kcu!(
+    zeros(5),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(5),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    zeros(5),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    ones(16),
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+)
+KitBase.flux_kcu!(
+    zeros(5, 2),
+    zeros(16, 2),
+    zeros(16, 2),
+    zeros(16, 2),
+    zeros(16, 2),
+    zeros(5, 2),
+    rand(16, 2),
+    rand(16, 2),
+    rand(16, 2),
+    rand(16, 2),
+    zeros(5, 2),
+    rand(16, 2),
+    rand(16, 2),
+    rand(16, 2),
+    rand(16, 2),
+    rand(16, 2),
+    ones(16, 2),
+    inK,
+    γ,
+    1.,
+    1.,
+    0.5,
+    1.,
+    0.01,
+    dt,
+)
+# 1F2V
+KitBase.flux_kcu!(
+    zeros(4),
+    zeros(16, 16),
+    zeros(4),
+    rand(16, 16),
+    zeros(4),
+    rand(16, 16),
+    rand(16, 16),
+    rand(16, 16),
+    ones(16, 16),
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+    dx,
+)
+# 2F2V
+KitBase.flux_kcu!(
+    zeros(4),
+    zeros(16, 16),
+    zeros(16, 16),
+    zeros(4),
+    rand(16, 16),
+    rand(16, 16),
+    zeros(4),
+    rand(16, 16),
+    rand(16, 16),
+    rand(16, 16),
+    rand(16, 16),
+    ones(16, 16),
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+    dx,
+)
+# 3F2V
+KitBase.flux_kcu!(
+    zeros(5),
+    zeros(16, 16),
+    zeros(16, 16),
+    zeros(16, 16),
+    zeros(5),
+    rand(16, 16),
+    rand(16, 16),
+    rand(16, 16),
+    zeros(5),
+    rand(16, 16),
+    rand(16, 16),
+    rand(16, 16),
+    rand(16, 16),
+    rand(16, 16),
+    ones(16, 16),
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+    dx,
+)
+KitBase.flux_kcu!(
+    zeros(5, 2),
+    zeros(16, 16, 2),
+    zeros(16, 16, 2),
+    zeros(16, 16, 2),
+    zeros(5, 2),
+    rand(16, 16, 2),
+    rand(16, 16, 2),
+    rand(16, 16, 2),
+    zeros(5, 2),
+    rand(16, 16, 2),
+    rand(16, 16, 2),
+    rand(16, 16, 2),
+    rand(16, 16, 2),
+    rand(16, 16, 2),
+    ones(16, 16, 2),
+    inK,
+    γ,
+    1.,
+    1.,
+    0.5,
+    1.,
+    0.01,
+    dt,
+    dx,
+)
+
+#--- boundary flux ---#
+KitBase.flux_boundary_maxwell!(
+    zeros(4),
+    zeros(16, 16),
+    zeros(16, 16),
+    [1., 0.3, -0.2, 0.89],
+    rand(16, 16),
+    rand(16, 16),
+    randn(16, 16),
+    randn(16, 16),
+    ones(16, 16),
+    inK,
+    dt,
+    dx,
+    1,
+)
+
+#--- pure equilibrium flux ---#
+KitBase.flux_equilibrium!(
+    fw,
+    wL,
+    wR,
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+    dx,
+    dx,
+)
+KitBase.flux_equilibrium!(
+    zeros(4),
+    zeros(4),
+    zeros(4),
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+    dx,
+    dx,
+    dx,
+)
+
+#--- electromagnetic flux ---#
+sol = 100.
+χ = 1.
+ν = 1.
+# A^+
+Ap = Array{Float64}(undef, 8, 8)
+Ap[1, 1] = (sol * χ) / 2.0
+Ap[7, 1] = χ / 2.0
+Ap[2, 2] = sol / 2.0
+Ap[6, 2] = 0.5
+Ap[3, 3] = sol / 2.0
+Ap[5, 3] = -1.0 / 2.0
+Ap[4, 4] = (sol * ν) / 2.0
+Ap[8, 4] = (sol^2 * ν) / 2.0
+Ap[3, 5] = -sol^2 / 2.0
+Ap[5, 5] = sol / 2.0
+Ap[2, 6] = sol^2 / 2.0
+Ap[6, 6] = sol / 2.0
+Ap[1, 7] = (sol^2 * χ) / 2.0
+Ap[7, 7] = (sol * χ) / 2.0
+Ap[4, 8] = ν / 2.0
+Ap[8, 8] = (sol * ν) / 2.0
+# A^-
+An = Array{Float64}(undef, 8, 8)
+An[1, 1] = -(sol * χ) / 2.0
+An[7, 1] = χ / 2.0
+An[2, 2] = -sol / 2.0
+An[6, 2] = 1.0 / 2.0
+An[3, 3] = -sol / 2.0
+An[5, 3] = -1.0 / 2.0
+An[4, 4] = -(sol * ν) / 2.0
+An[8, 4] = (sol^2 * ν) / 2.0
+An[3, 5] = -sol^2 / 2.0
+An[5, 5] = -sol / 2.0
+An[2, 6] = sol^2 / 2.0
+An[6, 6] = -sol / 2.0
+An[1, 7] = (sol^2 * χ) / 2.0
+An[7, 7] = -(sol * χ) / 2.0
+An[4, 8] = ν / 2.0
+An[8, 8] = -(sol * ν) / 2.0
+# eigenvalues
+D = [sol, sol, sol * χ, sol * ν, -sol, -sol, -sol * χ, -sol * ν]
+
+KitBase.flux_em!(
+    zeros(8),
+    zeros(8),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    0.,
+    0.,
+    0.,
+    0.,
+    dx,
+    dx,
+    Ap,
+    An,
+    D,
+    100.,
+    1.,
+    1.,
+    dt,
+)
+KitBase.flux_emx!(
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    0.,
+    0.,
+    0.,
+    0.,
+    dx,
+    dx,
+    Ap,
+    An,
+    Ap,
+    An,
+    D,
+    100.,
+    1.,
+    1.,
+    dt,
+)
+KitBase.flux_emy!(
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    zeros(8),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    randn(3),
+    0.,
+    0.,
+    0.,
+    0.,
+    dx,
+    dx,
+    Ap,
+    An,
+    Ap,
+    An,
+    D,
+    100.,
+    1.,
+    1.,
+    dt,
 )
