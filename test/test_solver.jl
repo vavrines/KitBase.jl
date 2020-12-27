@@ -16,4 +16,4 @@ gas = KitBase.Gas(
 )
 
 ks1 = KitBase.SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolder)
-KitBase.init_ptc!(ks1, ctr)
+ptc = KitBase.init_ptc!(ks1, ctr)
