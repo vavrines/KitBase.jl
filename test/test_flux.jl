@@ -473,6 +473,19 @@ KitBase.flux_kcu!(
 
 #--- boundary flux ---#
 KitBase.flux_boundary_maxwell!(
+    zeros(3),
+    zeros(16),
+    zeros(16),
+    [1., 0.3, 0.89],
+    rand(16),
+    rand(16),
+    randn(16),
+    ones(16),
+    inK,
+    dt,
+    1,
+)
+KitBase.flux_boundary_maxwell!(
     zeros(4),
     zeros(16, 16),
     zeros(16, 16),

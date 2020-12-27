@@ -14,6 +14,57 @@ function flux_boundary_maxwell!(
     h::T4,
     b::T4,
     u::T5,
+    ω::T5,
+    inK,
+    dt,
+    rot = 1,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,1},
+    T3<:Array{<:Real,1},
+    T4<:AbstractArray{<:AbstractFloat,1},
+    T5<:AbstractArray{<:AbstractFloat,1},
+}
+
+    @assert length(bc) == 3
+
+    δ = heaviside.(u .* rot)
+    SF = sum(ω .* u .* h .* (1.0 .- δ))
+    SG =
+        (bc[end] / π) ^ 0.5 *
+        sum(ω .* u .* exp.(-bc[end] .* (u .- bc[2]) .^ 2) .* δ)
+    prim = [-SF / SG; bc[2:end]]
+
+    H = maxwellian(u, prim)
+    B = H .* inK ./ (2.0 * prim[end])
+
+    hWall = H .* δ .+ h .* (1.0 .- δ)
+    bWall = B .* δ .+ b .* (1.0 .- δ)
+
+    fw[1] = discrete_moments(hWall, u, ω, 1) * dt
+    fw[2] = discrete_moments(hWall, u, ω, 2) * dt
+    fw[3] =
+        (
+            0.5 * discrete_moments(hWall .* u .^ 2, u, ω, 1) +
+            0.5 * discrete_moments(bWall, u, ω, 1)
+        ) * dt
+
+    @. fh = u * hWall * dt
+    @. fb = u * bWall * dt
+
+    return nothing
+
+end
+
+
+function flux_boundary_maxwell!(
+    fw::T1,
+    fh::T2,
+    fb::T2,
+    bc::T3,
+    h::T4,
+    b::T4,
+    u::T5,
     v::T5,
     ω::T5,
     inK,

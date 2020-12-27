@@ -10,6 +10,7 @@ collision = bgk
 nSpecies = 1
 interpOrder = 2
 limiter = vanleer
+boundary = fix
 cfl = 0.95
 maxTime = 0.1
 
@@ -18,7 +19,7 @@ x0 = -35.0
 x1 = 35.0
 nx = 100
 pMeshType = uniform
-nxg = 0
+nxg = 1
 
 # velocity space
 umin = -12.0

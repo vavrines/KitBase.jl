@@ -16,4 +16,8 @@ gas = KitBase.Gas(
 )
 
 ks1 = KitBase.SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolder)
-ptc = KitBase.init_ptc!(ks1, ctr)
+KitBase.init_ptc!(ks1, ctr, mode = :soa)
+KitBase.init_ptc!(ks1, ctr, mode = :aos)
+
+t = 0.
+t = KitBase.solve!(ks, ctr, face, t)

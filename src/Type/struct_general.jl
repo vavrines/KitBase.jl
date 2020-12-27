@@ -17,10 +17,11 @@ struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
     nSpecies::I
     interpOrder::I
     limiter::S
+    boundary::S
     cfl::E
     maxTime::F
 
-    Setup() = Setup("sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", 0.5, 2.0)
+    Setup() = Setup("sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", "fix", 0.5, 2.0)
 
     function Setup(
         case::AbstractString,
@@ -30,6 +31,7 @@ struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
         nSpecies::Int,
         interpOrder::Int,
         limiter::AbstractString,
+        boundary::AbstractString,
         cfl::Real,
         maxTime::Real,
     )
@@ -41,6 +43,7 @@ struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
             nSpecies,
             interpOrder,
             limiter,
+            boundary,
             cfl,
             maxTime,
         )

@@ -629,6 +629,7 @@ function evolve!(
     face::Z,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
+    bc = :fix::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
 ) where {
@@ -637,14 +638,18 @@ function evolve!(
     Z<:AbstractArray{<:AbstractInterface1D,1},
 }
 
-    #if KS.set.case == "heat"
-    #		flux_maxwell!(KS.ib.bcL, face[1], ctr[1], 1, dt)
-    #    end
+    if firstindex(KS.pSpace.x) < 1
+        idx0 = 1
+        idx1 = KS.pSpace.nx + 1
+    else
+        idx0 = 2
+        idx1 = KS.pSpace.nx
+    end
 
     if KS.set.space[3:end] == "1f1v"
 
         if mode == :kfvs
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kfvs!(
                     face[i].fw,
                     face[i].ff,
@@ -658,7 +663,7 @@ function evolve!(
                 )
             end
         elseif mode == :kcu
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kcu!(
                     face[i].fw,
                     face[i].ff,
@@ -681,7 +686,7 @@ function evolve!(
     elseif KS.set.space[3:end] == "1f3v"
 
         if mode == :kfvs
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kfvs!(
                     face[i].fw,
                     face[i].ff,
@@ -702,7 +707,7 @@ function evolve!(
     elseif KS.set.space[3:end] == "2f1v"
 
         if mode == :kfvs
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kfvs!(
                     face[i].fw,
                     face[i].fh,
@@ -721,7 +726,7 @@ function evolve!(
                 )
             end
         elseif mode == :kcu
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kcu!(
                     face[i].fw,
                     face[i].fh,
@@ -747,7 +752,7 @@ function evolve!(
     elseif KS.set.space[3:end] == "4f1v"
 
         if mode == :kcu
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kcu!(
                     face[i].fw,
                     face[i].fh0,
@@ -778,7 +783,7 @@ function evolve!(
                 )
             end
         elseif mode == :kfvs
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kfvs!(
                     face[i].fw,
                     face[i].fh0,
@@ -809,7 +814,7 @@ function evolve!(
         end
 
         if isPlasma
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_em!(
                     face[i].femL,
                     face[i].femR,
@@ -841,7 +846,7 @@ function evolve!(
     elseif KS.set.space[3:end] == "3f2v"
 
         if mode == :kcu
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kcu!(
                     face[i].fw,
                     face[i].fh0,
@@ -871,7 +876,7 @@ function evolve!(
                 )
             end
         elseif mode == :kfvs
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_kfvs!(
                     face[i].fw,
                     face[i].fh0,
@@ -897,7 +902,7 @@ function evolve!(
                 )
             end
         elseif mode == :ugks
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_ugks!(
                     face[i].fw,
                     face[i].fh0,
@@ -936,7 +941,7 @@ function evolve!(
         end
 
         if isPlasma
-            @inbounds Threads.@threads for i = 1:KS.pSpace.nx+1
+            @inbounds Threads.@threads for i = idx0:idx1
                 flux_em!(
                     face[i].femL,
                     face[i].femR,
@@ -965,6 +970,37 @@ function evolve!(
             end
         end
 
+    end
+
+    if KS.set.boundary == "maxwell"
+        if KS.set.space[3:end] == "2f1v"
+            flux_boundary_maxwell!(
+                face[1].fw,
+                face[1].fh,
+                face[1].fb,
+                KS.ib.bcL,
+                ctr[1].h,
+                ctr[1].b,
+                KS.vSpace.u,
+                KS.vSpace.weights,
+                KS.gas.inK,
+                dt,
+                1,
+            )
+            flux_boundary_maxwell!(
+                face[KS.pSpace.nx+1].fw,
+                face[KS.pSpace.nx+1].fh,
+                face[KS.pSpace.nx+1].fb,
+                KS.ib.bcR,
+                ctr[KS.pSpace.nx].h,
+                ctr[KS.pSpace.nx].b,
+                KS.vSpace.u,
+                KS.vSpace.weights,
+                KS.gas.inK,
+                dt,
+                -1,
+            )
+        end
     end
 
 end

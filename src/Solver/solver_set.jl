@@ -44,6 +44,7 @@ mutable struct SolverSet <: AbstractSolverSet
             nSpecies,
             interpOrder,
             limiter,
+            boundary,
             cfl,
             maxTime,
         )
