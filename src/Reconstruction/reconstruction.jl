@@ -66,8 +66,7 @@ vanalbaba(sL::T, sR::T) where {T} = (sL^2 * sR + sL * sR^2) / (sL^2 + sR^2 + 1.e
 Two-cell reconstruction
 
 """
-reconstruct2(wL::X, wR::X, Δx::Y) where {X,Y} = (wR - wL) / Δx
-
+reconstruct2(wL, wR, Δx) = (wR - wL) / Δx
 
 reconstruct2(wL::T, wR::T, Δx) where {T<:AbstractArray{<:Real,1}} = (wR .- wL) ./ Δx
 
