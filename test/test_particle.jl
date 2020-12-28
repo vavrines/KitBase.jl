@@ -29,6 +29,18 @@ ks, ctr, face, simTime = KitBase.initialize("config.txt")
 
 KitBase.sample_particle!(ptc1, ks, ctr[1], 1)
 
+KitBase.Particle(
+    ones(50) .* 1e-3,
+    randn(50),
+    randn(50, 3),
+    rand(50),
+    collect(1:50),
+    zeros(Int64, 50),
+    zeros(50),
+)
+KitBase.ControlVolumeParticle1D(x, dx, w, prim)
+KitBase.ControlVolumeParticle2D(x, dx, x, dx, w, prim)
+
 using OffsetArrays
 
 begin

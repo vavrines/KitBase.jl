@@ -220,18 +220,3 @@ KitBase.Flux1D2F(w, w, h, h)
 KitBase.Flux2D(zeros(2), w, w, zeros(2), w, w)
 KitBase.Flux2D1F(zeros(2), w, w, h, zeros(2), w, w, h)
 KitBase.Flux2D2F(zeros(2), w, w, h, h, zeros(2), w, w, h, h)
-
-#--- particle ---#
-KitBase.Particle(
-    ones(50) .* 1e-3,
-    randn(50),
-    randn(50, 3),
-    rand(50),
-    collect(1:50),
-    zeros(Int64, 50),
-    zeros(50),
-)
-KitBase.Particle1D(1e-4, 0.1, randn(3), 1.0, 34)
-KitBase.Particle2D(1e-4, 0.1, 0.3, randn(3), 34, 21)
-KitBase.ControlVolumeParticle1D(x, dx, w, prim)
-KitBase.ControlVolumeParticle2D(x, dx, x, dx, w, prim)
