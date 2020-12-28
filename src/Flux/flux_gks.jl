@@ -143,7 +143,8 @@ function flux_gks!(
     μᵣ::Real,
     ω::Real,
     dt::Real,
-    dx::Real,
+    dxL::Real,
+    dxR::Real,
     swL = zeros(eltype(fw), axes(wL))::X,
     swR = zeros(eltype(fw), axes(wR))::X,
 ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
@@ -172,8 +173,8 @@ function flux_gks!(
     faTR = pdf_slope(primR, sw, inK)
 
     Mu, Mxi, MuL, MuR = gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ (0.5 * dx)
-    sw0R = (wR .- w) ./ (0.5 * dx)
+    sw0L = (w .- wL) ./ dxL
+    sw0R = (wR .- w) ./ dxR
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
@@ -234,7 +235,8 @@ function flux_gks!(
     μᵣ::Real,
     ω::Real,
     dt::Real,
-    dx::Real,
+    dxL::Real,
+    dxR::Real,
     dy::Real,
     swL = zeros(eltype(fw), axes(wL))::X,
     swR = zeros(eltype(fw), axes(wR))::X,
@@ -264,8 +266,8 @@ function flux_gks!(
     faTR = pdf_slope(primR, sw, inK)
 
     Mu, Mv, Mxi, MuL, MuR = gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ (0.5 * dx)
-    sw0R = (wR .- w) ./ (0.5 * dx)
+    sw0L = (w .- wL) ./ dxL
+    sw0R = (wR .- w) ./ dxR
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
