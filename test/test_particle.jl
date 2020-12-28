@@ -38,8 +38,8 @@ KitBase.Particle(
     zeros(Int64, 50),
     zeros(50),
 )
-KitBase.ControlVolumeParticle1D(x, dx, w, prim)
-KitBase.ControlVolumeParticle2D(x, dx, x, dx, w, prim)
+KitBase.ControlVolumeParticle1D(rand(), rand(), KitBase.prim_conserve([1., 0., 1.], 1.67), [1., 0., 1.])
+KitBase.ControlVolumeParticle2D(rand(), rand(), rand(), rand(), KitBase.prim_conserve([1., 0., 0., 1.], 1.67), [1., 0., 0., 1.])
 
 using OffsetArrays
 
