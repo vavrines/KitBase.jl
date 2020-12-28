@@ -3,6 +3,8 @@ cosa = cos(0.5)
 sina = sin(0.5)
 KitBase.global_frame(w, cosa, sina)
 KitBase.local_frame(w, cosa, sina)
+KitBase.global_frame(rand(5), rand(3, 3))
+KitBase.local_frame(rand(5), rand(3, 3))
 
 #--- structure mesh ---#
 KitBase.PSpace1D()
