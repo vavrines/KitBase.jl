@@ -1,0 +1,39 @@
+# ------------------------------------------------------------
+# Configuration of 1D shock structure
+# ------------------------------------------------------------
+
+# setup
+case = sod
+space = 1d0f0v
+flux = kfvs
+collision = bgk
+nSpecies = 1
+interpOrder = 1
+limiter = vanleer
+boundary = fix
+cfl = 0.5
+maxTime = 0.2
+
+# phase space
+x0 = 0.0
+x1 = 1.0
+nx = 50
+pMeshType = uniform
+nxg = 0
+
+# velocity space
+umin = -5
+umax = 5
+nu = 36
+vMeshType = rectangle
+nug = 0
+
+# gas
+knudsen = 1.0
+mach = 0.0
+prandtl = 1.0
+inK = 2.0
+omega = 0.72
+alphaRef = 1.0
+omegaRef = 0.5
+mass = 0.0002

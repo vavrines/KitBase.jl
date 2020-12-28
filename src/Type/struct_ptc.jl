@@ -81,6 +81,7 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
     x::T1
     y::T1
     v::T2
+    e::T1
     idx::T3
     idy::T3
     flag::T3
@@ -91,6 +92,7 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
         X::Real,
         Y::Real,
         V::AbstractArray,
+        E,
         IDX::Integer,
         IDY::Integer,
         FLAG = zero(IDX),
@@ -100,12 +102,13 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
         x = deepcopy(X)
         y = deepcopy(Y)
         v = deepcopy(V)
+        e = deepcopy(E)
         idx = deepcopy(IDX)
         idy = deepcopy(IDY)
         flag = deepcopy(FLAG)
         tc = deepcopy(T)
 
-        new{typeof(m),typeof(v),typeof(idx)}(m, x, y, v, idx, idy, flag, tc)
+        new{typeof(m),typeof(v),typeof(idx)}(m, x, y, v, e, idx, idy, flag, tc)
     end
 
 end

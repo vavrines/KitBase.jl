@@ -14,7 +14,7 @@ Sample particles from local flow conditions
 function sample_particle!(ptc::Particle1D, m, x, v, e, idx, flag, tc)
     ptc.m = m
     ptc.x = x
-    ptc.v = v
+    ptc.v .= v
     ptc.e = e
     ptc.idx = idx
     ptc.flag = flag
@@ -23,10 +23,10 @@ function sample_particle!(ptc::Particle1D, m, x, v, e, idx, flag, tc)
     return nothing
 end
 
-function sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
+function sample_particle!(ptc::Particle1D, m, x, dx, prim::T, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
     ptc.m = m
     ptc.x = x + (rand() - 0.5) * dx
-    ptc.v = sample_maxwell(prim)
+    ptc.v .= sample_maxwell(prim)
     ptc.e = 0.5 / prim[end]
     ptc.idx = idx
     ptc.flag = flag
@@ -36,10 +36,10 @@ function sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, fl
     return nothing
 end
 
-function sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
+function sample_particle!(ptc::Particle1D, m, x, dx, prim::T, umin, umax, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
     ptc.m = m
     ptc.x = x + (rand() - 0.5) * dx
-    ptc.v = sample_maxwell(prim, umin, umax)
+    ptc.v .= sample_maxwell(prim, umin, umax)
     ptc.e = 0.5 / prim[end]
     ptc.idx = idx
     ptc.flag = flag
@@ -52,7 +52,7 @@ end
 function sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx)
     ptc.m = KS.gas.m
     ptc.x = ctr.x + (rand() - 0.5) * ctr.dx
-    ptc.v = sample_maxwell(ctr.prim)
+    ptc.v .= sample_maxwell(ctr.prim)
     ptc.e = 0.5 / ctr.prim[end]
     ptc.idx = idx
     ptc.flag = 0
@@ -252,7 +252,7 @@ function boundary!(KS, ctr, ptc, face, dt, bc = :maxwell::Symbol)
             if ptc.flag[i] != 0
                 x0 = ptc.x[i] - ptc.v[i, 1] * dt
                 vi = @view ptc.v[i, :]
-                ptc.x[i] = maxwell_boundary!(x[i], vi, (KS.ib, [KS.pSpace.x0, KS.pSpace.x1], x0, ptc.flag[i], dt))
+                ptc.x[i] = maxwell_boundary!(ptc.x[i], vi, (KS.ib, [KS.pSpace.x0, KS.pSpace.x1], x0, ptc.flag[i], dt))
             end
         end
 
@@ -286,9 +286,9 @@ function maxwell_boundary!(x, v, p)
     end
 
     #v[1] = sqrt(-log(1.0-rand()))
-    v[1] = sample_maxwell(primw[end], bound[1], bound[2])
-    v[2] = sample_maxwell(primw[end], vw[2])
-    v[3] = sample_maxwell(primw[end], vw[3])
+    v[1] = sample_maxwell(primB[end], bound[1], bound[2])
+    v[2] = sample_maxwell(primB[end], vw[2])
+    v[3] = sample_maxwell(primB[end], vw[3])
     
     dtr = dt * (x - xw) / (x - x0)
     x = xw + v[1] * dtr
@@ -361,12 +361,6 @@ function bgk_collision!(
     return nothing
 
 end
-
-
-
-
-
-
 
 
 function sort!(KS, ctr::T, x, idx, ref, np=length(idx); mode=:uniform) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
@@ -702,6 +696,10 @@ function particle_boundary!(
 end
 
 
+"""
+Duplicate particles: ptc_new -> ptc
+
+"""
 function duplicate!(ptc, ptc_new, n=length(ptc))
     @inbounds Threads.@threads for i in 1:n
         ptc[i].m = ptc_new[i].m

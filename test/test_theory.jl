@@ -58,10 +58,3 @@ KitBase.aap_hs_diffeq!(
     0.0,
 )
 KitBase.shift_pdf!(M, 1.0, 1e-4, 1e-4)
-
-#--- particle ---#
-KitBase.sample_maxwell([1.0, 0.0, 1.0])
-KitBase.next_collision_time(1.0)
-
-ptc = KitBase.Particle1D(1e-3, 0.0, randn(3), 0.1, 1)
-KitBase.sample_particle!(ptc, 1e-4, rand(), randn(3), rand(), 2, 0, 0.1)
