@@ -720,6 +720,7 @@ function full_distribution(
     end
 
     return f
+
 end
 
 full_distribution(
@@ -740,18 +741,20 @@ full_distribution(
 
 
 """
-Calculate reference viscosity
-* variable hard sphere (VHS) model
+    ref_vhs_vis(Kn, alpha, omega)
+
+Calculate reference viscosity with variable hard sphere (VHS) model
 
 """
-ref_vhs_vis(Kn, alpha, omega) =
+ref_vhs_vis(Kn::T, alpha, omega) where {T<:Real} =
     5.0 * (alpha + 1.0) * (alpha + 2.0) * √π /
     (4.0 * alpha * (5.0 - 2.0 * omega) * (7.0 - 2.0 * omega)) * Kn
 
 
 """
-Calculate collision time
-* variable hard sphere (VHS) model
+    vhs_collision_time(prim::T, muRef, omega) where {T<:AbstractArray{<:Real,1}}
+
+Calculate collision time with variable hard sphere (VHS) model
 
 """
 vhs_collision_time(prim::T, muRef, omega) where {T<:AbstractArray{<:Real,1}} =
@@ -759,8 +762,8 @@ vhs_collision_time(prim::T, muRef, omega) where {T<:AbstractArray{<:Real,1}} =
 
 
 """
-# Calculate effective Knudsen number for fast spectral method
-* hard sphere (HS) model
+Calculate effective Knudsen number for fast spectral method with hard sphere (HS) model
+    
 """
 hs_boltz_kn(mu_ref, alpha) =
     64 * sqrt(2.0)^alpha / 5.0 * gamma((alpha + 3) / 2) * gamma(2.0) * sqrt(pi) * mu_ref

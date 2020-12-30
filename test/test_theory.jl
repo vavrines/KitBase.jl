@@ -61,7 +61,9 @@ KitBase.shakhov!(randn(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8), rand(8, 8, 8), 
 
 KitBase.reduce_distribution(randn(16, 51), ω, 1)
 KitBase.reduce_distribution(randn(16, 24, 24), ones(24, 24), 1)
+KitBase.reduce_distribution(randn(16, 24, 24), randn(16, 24, 24), randn(16, 24, 24), ones(24, 24), 1)
 KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), 1.0, 3.0)
+KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), prim, 3.0)
 
 KitBase.ref_vhs_vis(1.0, 1.0, 0.5)
 KitBase.vhs_collision_time(prim, 1e-3, 0.81)
@@ -73,6 +75,8 @@ KitBase.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), 1.0, 5, phi, psi, phi
 
 τ = KitBase.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)
+KitBase.aap_hs_prim(rand(4, 2), rand(2), 1.0, 0.5, 0.5, 0.5, 1e-2)
+KitBase.aap_hs_prim(rand(5, 2), rand(2), 1.0, 0.5, 0.5, 0.5, 1e-2)
 
 KitBase.aap_hs_diffeq!(
     similar(mprim),
@@ -81,3 +85,4 @@ KitBase.aap_hs_diffeq!(
     0.0,
 )
 KitBase.shift_pdf!(M, 1.0, 1e-4, 1e-4)
+KitBase.shift_pdf!(rand(16, 2), randn(2), rand(2), 1e-4)
