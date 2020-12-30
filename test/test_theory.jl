@@ -29,7 +29,15 @@ KitBase.mixture_pdf_slope(mprim, randn(5, 2), 0.0)
 u = collect(-5:0.2:5)
 ω = ones(51) .* 0.2
 prim = [1.0, 0.0, 1.0]
+
 M = KitBase.maxwellian(u, prim)
+KitBase.maxwellian(randn(16, 16), randn(16, 16), [1., 0., 0., 1.])
+KitBase.maxwellian(randn(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8), [1., 0., 0., 0., 1.])
+
+KitBase.maxwellian!(rand(16), rand(16), prim)
+KitBase.maxwellian!(rand(16, 16), randn(16, 16), randn(16, 16), [1., 0., 0., 1.])
+KitBase.maxwellian!(rand(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8), [1., 0., 0., 0., 1.])
+
 mprim = hcat(prim, prim)
 KitBase.mixture_maxwellian(hcat(u, u), mprim)
 

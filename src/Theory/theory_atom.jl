@@ -1,12 +1,12 @@
 """
-Calculate slope of particle distribution function, assuming a = a1 + u * a2 + 0.5 * u^2 * a3
+Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
     pdf_slope(u, Δ)
 
     pdf_slope(prim::A, sw::B, inK) where {A<:AbstractArray{<:Real,1},B<:AbstractArray{<:Real,1}}
 
 """
-pdf_slope(u, Δ) = Δ / u
+pdf_slope(u, Δ::T) where {T<:Real} = Δ / u
 
 function pdf_slope(
     prim::X,
@@ -64,8 +64,7 @@ end
 
 
 """
-Calculate slope of multi-component particle distribution function,
-assuming `a = a1 + u * a2 + 0.5 * u^2 * a3`
+Calculate slope of multi-component particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
     mixture_pdf_slope(prim::X, sw::Y, inK) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,2}}
 
@@ -126,6 +125,56 @@ maxwellian(
     prim::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,1}} =
     maxwellian(u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
+
+
+"""
+In-place Maxwellian
+
+* @args: particle velocity quadrature points
+* @args: density, velocity and inverse of temperature
+* @return: Maxwellian distribution function
+
+"""
+function maxwellian!(M::T, u::T, ρ, U, λ) where {T<:AbstractArray{<:AbstractFloat,1}}
+    @. M = ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
+    return nothing
+end
+
+maxwellian!(
+    M::T1,
+    u::T1,
+    prim::T2,
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}} =
+    maxwellian!(M, u, prim[1], prim[2], prim[end])
+
+#--- 2V ---#
+function maxwellian!(M::T, u::T, v::T, ρ, U, V, λ) where {T<:AbstractArray{<:AbstractFloat,2}}
+    @. M = ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
+    return nothing
+end
+
+maxwellian!(
+    M::T1,
+    u::T1,
+    v::T1,
+    prim::T2,
+) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:Real,1}} =
+    maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
+
+#--- 3V ---#
+function maxwellian!(M::T, u::T, v::T, w::T, ρ, U, V, W, λ) where {T<:AbstractArray{<:AbstractFloat,3}}
+    @. M = ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
+    return nothing
+end
+
+maxwellian!(
+    M::T1,
+    u::T1,
+    v::T1,
+    w::T1,
+    prim::T2,
+) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:Real,1}} =
+    maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
 
 """
