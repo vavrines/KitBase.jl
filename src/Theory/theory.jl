@@ -39,7 +39,9 @@ export gauss_moments,
        hs_boltz_kn,
        kernel_mode,
        boltzmann_fft,
-       boltzmann_fft!
+       boltzmann_fft!,
+       boltzmann_ode!,
+       bgk_ode!
 export heat_capacity_ratio, sound_speed
 export sample_maxwell, next_collision_time, boundary_time
 

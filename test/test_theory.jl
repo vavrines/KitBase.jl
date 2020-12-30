@@ -146,6 +146,19 @@ phi, psi, phipsi =
 KitBase.boltzmann_fft(rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
 KitBase.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
 
+KitBase.boltzmann_ode!(
+    zeros(16, 16, 16),
+    rand(16, 16, 16),
+    (1.0, 5, phi, psi, phipsi),
+    0.0,
+)
+KitBase.bgk_ode!(
+    zeros(16, 16, 16),
+    rand(16, 16, 16),
+    (rand(16, 16, 16), 1e-2),
+    0.0,
+)
+
 τ = KitBase.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(rand(4, 2), rand(2), 1.0, 0.5, 0.5, 0.5, 1e-2)

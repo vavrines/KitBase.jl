@@ -1401,3 +1401,25 @@ function shift_pdf!(
 
     return nothing
 end
+
+
+"""
+    boltzmann_ode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+
+RHS-ODE of Boltzmann equation
+"""
+function boltzmann_ode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+    Kn, M, phi, psi, phipsi = p
+    df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
+end
+
+
+"""
+    bgk_ode!(df, f::T, p, t) where {T<:AbstractArray}
+    
+RHS-ODE of BGK equation
+"""
+function bgk_ode!(df, f::T, p, t) where {T<:AbstractArray}
+    g, τ = p
+    df .= (g .- f) ./ τ
+end
