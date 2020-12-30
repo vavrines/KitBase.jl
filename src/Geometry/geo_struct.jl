@@ -188,12 +188,12 @@ Find the location index of a point in mesh
 
 """
 function find_idx(
-    x::T, 
-    p::Real; 
+    x::T,
+    p::Real;
     mode = :nonuniform::Symbol,
 ) where {T<:AbstractArray{<:Real,1}}
-    
-    if mode == :uniform    
+
+    if mode == :uniform
         dx = x[2] - x[1]
         return Int(ceil((p - x[1] + 0.5 * dx) / dx)) # point location
     else

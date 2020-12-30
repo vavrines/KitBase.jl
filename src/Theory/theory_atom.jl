@@ -136,10 +136,10 @@ In-place Maxwellian
 
 """
 function maxwellian!(
-    M::T1, 
-    u::T2, 
-    ρ, 
-    U, 
+    M::T1,
+    u::T2,
+    ρ,
+    U,
     λ,
 ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
     @. M = ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
@@ -150,11 +150,22 @@ maxwellian!(
     M::T1,
     u::T2,
     prim::T3,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1},T3<:AbstractArray{<:Real,1}} =
-    maxwellian!(M, u, prim[1], prim[2], prim[end])
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,1},
+    T3<:AbstractArray{<:Real,1},
+} = maxwellian!(M, u, prim[1], prim[2], prim[end])
 
 #--- 2V ---#
-function maxwellian!(M::T1, u::T2, v::T2, ρ, U, V, λ) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2}}
+function maxwellian!(
+    M::T1,
+    u::T2,
+    v::T2,
+    ρ,
+    U,
+    V,
+    λ,
+) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2}}
     @. M = ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
     return nothing
 end
@@ -164,11 +175,24 @@ maxwellian!(
     u::T2,
     v::T2,
     prim::T3,
-) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2},T3<:AbstractArray{<:Real,1}} =
-    maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
+) where {
+    T1<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat,2},
+    T3<:AbstractArray{<:Real,1},
+} = maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
 
 #--- 3V ---#
-function maxwellian!(M::T1, u::T2, v::T2, w::T2, ρ, U, V, W, λ) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3}}
+function maxwellian!(
+    M::T1,
+    u::T2,
+    v::T2,
+    w::T2,
+    ρ,
+    U,
+    V,
+    W,
+    λ,
+) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3}}
     @. M = ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
     return nothing
 end
@@ -179,8 +203,11 @@ maxwellian!(
     v::T2,
     w::T2,
     prim::T3,
-) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3},T3<:AbstractArray{<:Real,1}} =
-    maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
+) where {
+    T1<:AbstractArray{<:AbstractFloat,3},
+    T2<:AbstractArray{<:AbstractFloat,3},
+    T3<:AbstractArray{<:Real,1},
+} = maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
 
 """
@@ -257,8 +284,12 @@ function mixture_maxwellian!(
     M::T1,
     u::T2,
     prim::T3,
-) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2},T3<:AbstractArray{<:Real,2}}
-    
+) where {
+    T1<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat,2},
+    T3<:AbstractArray{<:Real,2},
+}
+
     for j in axes(M, 2)
         _M = @view M[:, j]
         maxwellian!(_M, u[:, j], prim[:, j])
@@ -273,7 +304,11 @@ function mixture_maxwellian!(
     u::T2,
     v::T2,
     prim::T3,
-) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3},T3<:AbstractArray{<:Real,2}}
+) where {
+    T1<:AbstractArray{<:AbstractFloat,3},
+    T2<:AbstractArray{<:AbstractFloat,3},
+    T3<:AbstractArray{<:Real,2},
+}
 
     for k in axes(M, 3)
         _M = @view M[:, :, k]
@@ -290,7 +325,11 @@ function mixture_maxwellian!(
     v::T2,
     w::T2,
     prim::T3,
-) where {T1<:AbstractArray{<:AbstractFloat,4},T2<:AbstractArray{<:AbstractFloat,4},T3<:AbstractArray{<:Real,2}}
+) where {
+    T1<:AbstractArray{<:AbstractFloat,4},
+    T2<:AbstractArray{<:AbstractFloat,4},
+    T3<:AbstractArray{<:Real,2},
+}
 
     for l in axes(M, 4)
         _M = @view M[:, :, :, l]
@@ -457,10 +496,7 @@ function shakhov!(
     q,
     prim,
     Pr,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-} # 1F1V
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}} # 1F1V
 
     @. S = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
@@ -483,21 +519,20 @@ function shakhov!(
     prim,
     Pr,
     K,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-}
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
 
-    @. SH = 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
-       (u - prim[2]) *
-       q *
-       (2.0 * prim[end] * (u - prim[2])^2 + K - 5.0) *
-       H
-    @. SB = 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
-       (u - prim[2]) *
-       q *
-       (2.0 * prim[end] * (u - prim[2])^2 + K - 3.0) *
-       B
+    @. SH =
+        0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
+        (u - prim[2]) *
+        q *
+        (2.0 * prim[end] * (u - prim[2])^2 + K - 5.0) *
+        H
+    @. SB =
+        0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
+        (u - prim[2]) *
+        q *
+        (2.0 * prim[end] * (u - prim[2])^2 + K - 3.0) *
+        B
 
     return nothing
 
@@ -518,10 +553,11 @@ function shakhov!(
     T3<:AbstractArray{<:Real,1},
 }
 
-    @. S = 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
-       ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-       (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) - 5.0) *
-       M
+    @. S =
+        0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
+        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+        (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) - 5.0) *
+        M
 
     return nothing
 
@@ -545,14 +581,16 @@ function shakhov!(
     T3<:AbstractArray{<:Real,1},
 }
 
-    @. SH = 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
-       ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-       (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0) *
-       H
-    @. SB = 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
-       ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-       (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0) *
-       B
+    @. SH =
+        0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
+        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+        (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0) *
+        H
+    @. SB =
+        0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
+        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+        (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0) *
+        B
 
     return nothing
 
@@ -574,10 +612,11 @@ function shakhov!(
     T3<:AbstractArray{<:Real,1},
 }
 
-    @. S = 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
-       ((u - prim[2]) * q[1] + (v - prim[3]) * q[2] + (w - prim[4]) * q[3]) *
-       (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2) - 5.0) *
-       M
+    @. S =
+        0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
+        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2] + (w - prim[4]) * q[3]) *
+        (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2) - 5.0) *
+        M
 
     return nothing
 

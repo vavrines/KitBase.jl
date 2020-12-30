@@ -290,7 +290,12 @@ end
 Initialize particles
 
 """
-function init_ptc!(KS::SolverSet, ctr::T; mode = :soa::Symbol, factor = 1::Real) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+function init_ptc!(
+    KS::SolverSet,
+    ctr::T;
+    mode = :soa::Symbol,
+    factor = 1::Real,
+) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
     if mode == :soa
         init_ptc_soa!(KS, ctr, factor)
     elseif mode == :aos
@@ -303,7 +308,11 @@ end
 Array of structs
 
 """
-function init_ptc_aos!(KS::SolverSet, ctr::T, factor = 1) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+function init_ptc_aos!(
+    KS::SolverSet,
+    ctr::T,
+    factor = 1,
+) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
     np = 0
     for i in eachindex(ctr)
@@ -343,7 +352,11 @@ end
 Struct of arrays
 
 """
-function init_ptc_soa!(KS::SolverSet, ctr::T, factor = 1) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+function init_ptc_soa!(
+    KS::SolverSet,
+    ctr::T,
+    factor = 1,
+) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
     np = 0
     for i in eachindex(ctr)
@@ -367,7 +380,7 @@ function init_ptc_soa!(KS::SolverSet, ctr::T, factor = 1) where {T<:AbstractArra
         npl = Int(round(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
         for j = 1:npl
             np_tmp += 1
-            
+
             m[np_tmp] = KS.gas.m
             x[np_tmp] = ctr[i].x + (rand() - 0.5) * ctr[i].dx
             v[np_tmp, :] .= sample_maxwell(ctr[i].prim)
@@ -385,7 +398,7 @@ function init_ptc_soa!(KS::SolverSet, ctr::T, factor = 1) where {T<:AbstractArra
     end
 
     # placeholder particles
-    for i in KS.gas.np+1:np
+    for i = KS.gas.np+1:np
         m[i] = KS.gas.m
         x[i] = 0.0
         idx[i] = -7

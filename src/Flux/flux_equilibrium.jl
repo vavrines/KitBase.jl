@@ -44,10 +44,9 @@ function flux_equilibrium!(
             primR[1] .* moments_conserve(MuR2, Mxi2, 0, 0)
         prim = conserve_prim(w, γ)
 
-        tau =
-            vhs_collision_time(prim, μᵣ, ω) #+
-            #2.0 * dt * abs(primL[1] / primL[end] - primR[1] / primR[end]) /
-            #(primL[1] / primL[end] + primR[1] / primR[end])
+        tau = vhs_collision_time(prim, μᵣ, ω) #+
+        #2.0 * dt * abs(primL[1] / primL[end] - primR[1] / primR[end]) /
+        #(primL[1] / primL[end] + primR[1] / primR[end])
 
         # time-integration constants
         Mt = zeros(2)
@@ -99,7 +98,7 @@ function flux_equilibrium!(
             Mt[3] .* prim[1] .* MauT
         # fw .= Mt[1] .* prim[1] .* Muv .+ Mt[2] .* prim[1] .* Mau .+ Mt[3] .* prim[1] .* MauT
     end
-    
+
     return nothing
 
 end

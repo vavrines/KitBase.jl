@@ -1,28 +1,40 @@
-KitBase.sample_maxwell(0.8, 1.)
+KitBase.sample_maxwell(0.8, 1.0)
 KitBase.sample_maxwell([1.0, 0.0, 1.0])
-KitBase.sample_maxwell([1.0, 0.0, 0., 1.0])
-KitBase.sample_maxwell([1.0, 0.0, 0., 0., 1.0])
-KitBase.sample_maxwell(1., -2., 2.)
-KitBase.sample_maxwell(1., 0.3, -2., 2.)
-KitBase.sample_maxwell([1.0, 0.0, 1.0], -1., 1.)
-KitBase.sample_maxwell([1.0, 0.0, 0., 1.0], -1., 1.)
-KitBase.sample_maxwell([1.0, 0.0, 0., 0., 1.0], -1., 1.)
+KitBase.sample_maxwell([1.0, 0.0, 0.0, 1.0])
+KitBase.sample_maxwell([1.0, 0.0, 0.0, 0.0, 1.0])
+KitBase.sample_maxwell(1.0, -2.0, 2.0)
+KitBase.sample_maxwell(1.0, 0.3, -2.0, 2.0)
+KitBase.sample_maxwell([1.0, 0.0, 1.0], -1.0, 1.0)
+KitBase.sample_maxwell([1.0, 0.0, 0.0, 1.0], -1.0, 1.0)
+KitBase.sample_maxwell([1.0, 0.0, 0.0, 0.0, 1.0], -1.0, 1.0)
 
 KitBase.next_collision_time(1.0)
 
-KitBase.boundary_time(1., 1., 0.5, 1.5)
-KitBase.boundary_time(1., -1., 0.5, 1.5)
-KitBase.boundary_time(1., 0., 0.5, 1.5)
-KitBase.boundary_time(1., [1., 0., 0.], 0.5, 1.5)
-KitBase.boundary_time(1., [-1., 0., 0.], 0.5, 1.5)
-KitBase.boundary_time(1., [0., 0., 0.], 0.5, 1.5)
+KitBase.boundary_time(1.0, 1.0, 0.5, 1.5)
+KitBase.boundary_time(1.0, -1.0, 0.5, 1.5)
+KitBase.boundary_time(1.0, 0.0, 0.5, 1.5)
+KitBase.boundary_time(1.0, [1.0, 0.0, 0.0], 0.5, 1.5)
+KitBase.boundary_time(1.0, [-1.0, 0.0, 0.0], 0.5, 1.5)
+KitBase.boundary_time(1.0, [0.0, 0.0, 0.0], 0.5, 1.5)
 
-ptc1 = KitBase.Particle1D(1e-3, 0., randn(3), 0.1, 1)
-ptc2 = KitBase.Particle2D(1e-3, 0., 0., randn(3), 0.1, 1, 1)
+ptc1 = KitBase.Particle1D(1e-3, 0.0, randn(3), 0.1, 1)
+ptc2 = KitBase.Particle2D(1e-3, 0.0, 0.0, randn(3), 0.1, 1, 1)
 
 KitBase.sample_particle!(ptc1, 1e-4, rand(), randn(3), rand(), 2, 0, 0.1)
-KitBase.sample_particle!(ptc1, 1e-4, rand(), rand(), [1., 0., 1.], 2, 1e-3, 0.72, 0)
-KitBase.sample_particle!(ptc1, 1e-4, rand(), rand(), [1., 0., 1.], -1., 1., 2, 1e-3, 0.72, 0)
+KitBase.sample_particle!(ptc1, 1e-4, rand(), rand(), [1.0, 0.0, 1.0], 2, 1e-3, 0.72, 0)
+KitBase.sample_particle!(
+    ptc1,
+    1e-4,
+    rand(),
+    rand(),
+    [1.0, 0.0, 1.0],
+    -1.0,
+    1.0,
+    2,
+    1e-3,
+    0.72,
+    0,
+)
 
 cd(@__DIR__)
 ks, ctr, face, simTime = KitBase.initialize("config.txt")
@@ -38,8 +50,20 @@ KitBase.Particle(
     zeros(Int64, 50),
     zeros(50),
 )
-KitBase.ControlVolumeParticle1D(rand(), rand(), KitBase.prim_conserve([1., 0., 1.], 1.67), [1., 0., 1.])
-KitBase.ControlVolumeParticle2D(rand(), rand(), rand(), rand(), KitBase.prim_conserve([1., 0., 0., 1.], 1.67), [1., 0., 0., 1.])
+KitBase.ControlVolumeParticle1D(
+    rand(),
+    rand(),
+    KitBase.prim_conserve([1.0, 0.0, 1.0], 1.67),
+    [1.0, 0.0, 1.0],
+)
+KitBase.ControlVolumeParticle2D(
+    rand(),
+    rand(),
+    rand(),
+    rand(),
+    KitBase.prim_conserve([1.0, 0.0, 0.0, 1.0], 1.67),
+    [1.0, 0.0, 0.0, 1.0],
+)
 
 using OffsetArrays
 

@@ -5,7 +5,7 @@ Sample particle velocity from Maxwellian. Unconstraint methods use Box-Muller sa
 while constraint one depends on Distributions.jl.
 
 """
-function sample_maxwell(λ::Real, v=0.0::Real)
+function sample_maxwell(λ::Real, v = 0.0::Real)
     rd1 = rand()
     rd2 = rand()
 
@@ -13,7 +13,7 @@ function sample_maxwell(λ::Real, v=0.0::Real)
 end
 
 function sample_maxwell(prim::T) where {T<:AbstractArray{<:Real,1}}
-    
+
     u = prim[2]
     if length(prim) == 3
         v = 0.0
@@ -35,12 +35,12 @@ end
 
 #--- truncated sampling with Distributions.jl ---#
 function sample_maxwell(λ::Real, l, u)
-    d = truncated(Normal(0.0, sqrt(1.0 / λ)), l, u) 
+    d = truncated(Normal(0.0, sqrt(1.0 / λ)), l, u)
     return rand(d)
 end
 
 function sample_maxwell(λ::Real, v, l, u)
-    d = truncated(Normal(0.0, sqrt(1.0 / λ)), l, u) 
+    d = truncated(Normal(0.0, sqrt(1.0 / λ)), l, u)
     return rand(d) + v
 end
 
@@ -78,9 +78,9 @@ Calculate traveling time to edges
 
 """
 function boundary_time(x, v::Real, xL, xR)
-    if v < 0.
+    if v < 0.0
         tb = (xL - x) / v
-    elseif v > 0.
+    elseif v > 0.0
         tb = (xR - x) / v
     else
         tb = 1e8
@@ -90,9 +90,9 @@ function boundary_time(x, v::Real, xL, xR)
 end
 
 function boundary_time(x, v::T, xL, xR) where {T<:AbstractArray{<:Real,1}}
-    if v[1] < 0.
+    if v[1] < 0.0
         tb = (xL - x) / v[1]
-    elseif v[1] > 0.
+    elseif v[1] > 0.0
         tb = (xR - x) / v[1]
     else
         tb = 1e8

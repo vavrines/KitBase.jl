@@ -19,5 +19,5 @@ ks1 = KitBase.SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolde
 KitBase.init_ptc!(ks1, ctr, mode = :soa)
 KitBase.init_ptc!(ks1, ctr, mode = :aos)
 
-t = 0.
+t = 0.0
 t = KitBase.solve!(ks, ctr, face, t)

@@ -5,10 +5,7 @@ Reconstructor
 * 2D solver: `reconstruct!(KS::SolverSet, ctr::AbstractArray{ControlVolume2D2F,2})`
 
 """
-function reconstruct!(
-    KS::SolverSet,
-    ctr::T,
-) where {T<:AbstractArray{ControlVolume1D,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -29,10 +26,7 @@ function reconstruct!(
 
 end
 
-function reconstruct!(
-    KS::SolverSet,
-    ctr::T,
-) where {T<:AbstractArray{ControlVolume1D1F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D1F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -64,10 +58,7 @@ function reconstruct!(
 
 end
 
-function reconstruct!(
-    KS::SolverSet,
-    ctr::T,
-) where {T<:AbstractArray{ControlVolume1D2F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D2F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -105,13 +96,10 @@ function reconstruct!(
             Symbol(KS.set.limiter),
         )
     end
-    
+
 end
 
-function reconstruct!(
-    KS::SolverSet,
-    ctr::T,
-) where {T<:AbstractArray{ControlVolume1D3F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D3F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -158,13 +146,10 @@ function reconstruct!(
             Symbol(KS.set.limiter),
         )
     end
-    
+
 end
 
-function reconstruct!(
-    KS::SolverSet,
-    ctr::T,
-) where {T<:AbstractArray{ControlVolume1D4F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D4F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -220,7 +205,7 @@ function reconstruct!(
             Symbol(KS.set.limiter),
         )
     end
-    
+
 end
 
 function reconstruct!(

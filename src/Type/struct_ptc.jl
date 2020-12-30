@@ -20,7 +20,16 @@ mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
     flag::T5
     tc::T1
 
-    function Particle(M, X, V, E, IDX, REF = zeros(eltype(IDX), axes(IDX, 1)), FLAG = zeros(eltype(IDX), axes(IDX, 1)), T = zero(M))
+    function Particle(
+        M,
+        X,
+        V,
+        E,
+        IDX,
+        REF = zeros(eltype(IDX), axes(IDX, 1)),
+        FLAG = zeros(eltype(IDX), axes(IDX, 1)),
+        T = zero(M),
+    )
         m = deepcopy(M)
         x = deepcopy(X)
         v = deepcopy(V)
@@ -30,7 +39,16 @@ mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
         flag = deepcopy(FLAG)
         tc = deepcopy(T)
 
-        new{typeof(m),typeof(x),typeof(v),typeof(idx),typeof(flag)}(m, x, v, e, idx, ref, flag, tc)
+        new{typeof(m),typeof(x),typeof(v),typeof(idx),typeof(flag)}(
+            m,
+            x,
+            v,
+            e,
+            idx,
+            ref,
+            flag,
+            tc,
+        )
     end
 
 end
@@ -147,7 +165,7 @@ mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1
         TAU = 0.0::Real,
         NP = 0::Integer,
         IP = 0::Integer,
-        VR = 3. * sqrt(PRIM[end])::Real,
+        VR = 3.0 * sqrt(PRIM[end])::Real,
         RE = 0::Integer,
     )
         x = deepcopy(X)
@@ -166,7 +184,20 @@ mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1
         vrmax = deepcopy(VR)
         remainder = deepcopy(RE)
 
-        new{typeof(x),typeof(w),typeof(np)}(x, dx, w, prim, sw, wf, wp, τ, np, ip, vrmax, remainder)
+        new{typeof(x),typeof(w),typeof(np)}(
+            x,
+            dx,
+            w,
+            prim,
+            sw,
+            wf,
+            wp,
+            τ,
+            np,
+            ip,
+            vrmax,
+            remainder,
+        )
     end
 
 end
@@ -209,7 +240,7 @@ mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
         TAU = 0.0::Real,
         NP = 0::Integer,
         IP = 0::Integer,
-        VR = 3. * sqrt(PRIM[end])::Real,
+        VR = 3.0 * sqrt(PRIM[end])::Real,
         RE = 0::Integer,
     )
 
@@ -231,7 +262,22 @@ mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
         vrmax = deepcopy(VR)
         remainder = deepcopy(RE)
 
-        new{typeof(x),typeof(w),typeof(sw),typeof(np)}(x, dx, y, dy, w, prim, sw, wf, wp, τ, np, ip, vrmax, remainder)
+        new{typeof(x),typeof(w),typeof(sw),typeof(np)}(
+            x,
+            dx,
+            y,
+            dy,
+            w,
+            prim,
+            sw,
+            wf,
+            wp,
+            τ,
+            np,
+            ip,
+            vrmax,
+            remainder,
+        )
 
     end
 

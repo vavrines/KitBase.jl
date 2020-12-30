@@ -11,7 +11,8 @@ Python linspace function
     linspace(start::Real, stop::Real, n::Int)
 
 """
-linspace(start, stop, n::T) where {T<:Integer} = collect(range(start, stop = stop, length = n))
+linspace(start, stop, n::T) where {T<:Integer} =
+    collect(range(start, stop = stop, length = n))
 
 
 """

@@ -30,9 +30,7 @@ function flux_boundary_maxwell!(
 
     δ = heaviside.(u .* rot)
     SF = sum(ω .* u .* h .* (1.0 .- δ))
-    SG =
-        (bc[end] / π) ^ 0.5 *
-        sum(ω .* u .* exp.(-bc[end] .* (u .- bc[2]) .^ 2) .* δ)
+    SG = (bc[end] / π)^0.5 * sum(ω .* u .* exp.(-bc[end] .* (u .- bc[2]) .^ 2) .* δ)
     prim = [-SF / SG; bc[2:end]]
 
     H = maxwellian(u, prim)

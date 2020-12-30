@@ -11,10 +11,7 @@ function evolve!(
     bc = :fix::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
-) where {
-    T1<:AbstractArray{ControlVolume1D,1},
-    T2<:AbstractArray{Interface1D,1},
-}
+) where {T1<:AbstractArray{ControlVolume1D,1},T2<:AbstractArray{Interface1D,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -66,10 +63,7 @@ function evolve!(
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
     bc = :fix::Symbol,
-) where {
-    T1<:AbstractArray{ControlVolume1D1F,1},
-    T2<:AbstractArray{Interface1D1F,1},
-}
+) where {T1<:AbstractArray{ControlVolume1D1F,1},T2<:AbstractArray{Interface1D1F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -148,10 +142,7 @@ function evolve!(
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
     bc = :fix::Symbol,
-) where {
-    T1<:AbstractArray{ControlVolume1D2F,1},
-    T2<:AbstractArray{Interface1D2F,1},
-}
+) where {T1<:AbstractArray{ControlVolume1D2F,1},T2<:AbstractArray{Interface1D2F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -248,10 +239,7 @@ function evolve!(
     bc = :fix::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
-) where {
-    T1<:AbstractArray{ControlVolume1D4F,1},
-    T2<:AbstractArray{Interface1D4F,1},
-}
+) where {T1<:AbstractArray{ControlVolume1D4F,1},T2<:AbstractArray{Interface1D4F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -364,10 +352,7 @@ function evolve!(
     bc = :fix::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
-) where {
-    T1<:AbstractArray{ControlVolume1D3F,1},
-    T2<:AbstractArray{Interface1D3F,1},
-}
+) where {T1<:AbstractArray{ControlVolume1D3F,1},T2<:AbstractArray{Interface1D3F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1

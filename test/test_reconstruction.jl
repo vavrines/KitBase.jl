@@ -36,7 +36,21 @@ KitBase.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :linear)
 KitBase.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :vanleer)
 KitBase.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :minmod)
 KitBase.reconstruct3!(randn(3, 2), randn(3, 2), randn(3, 2), randn(3, 2), dx, dx)
-KitBase.reconstruct3!(randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), dx, dx)
-KitBase.reconstruct3!(randn(3, 2, 2, 2), randn(3, 2, 2, 2), randn(3, 2, 2, 2), randn(3, 2, 2, 2), dx, dx)
+KitBase.reconstruct3!(
+    randn(3, 2, 2),
+    randn(3, 2, 2),
+    randn(3, 2, 2),
+    randn(3, 2, 2),
+    dx,
+    dx,
+)
+KitBase.reconstruct3!(
+    randn(3, 2, 2, 2),
+    randn(3, 2, 2, 2),
+    randn(3, 2, 2, 2),
+    randn(3, 2, 2, 2),
+    dx,
+    dx,
+)
 
-KitBase.weno5(-2., -1., 0., 1., 2.) 
+KitBase.weno5(-2.0, -1.0, 0.0, 1.0, 2.0)
