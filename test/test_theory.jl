@@ -40,9 +40,24 @@ KitBase.maxwellian!(rand(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8
 
 mprim = hcat(prim, prim)
 KitBase.mixture_maxwellian(hcat(u, u), mprim)
+KitBase.mixture_maxwellian(randn(8, 8, 2), randn(8, 8, 2), rand(4, 2))
+KitBase.mixture_maxwellian(randn(8, 8, 8, 2), randn(8, 8, 8, 2), randn(8, 8, 8, 2), rand(5, 2))
+
+KitBase.mixture_maxwellian!(randn(8, 2), randn(8, 2), rand(3, 2))
+KitBase.mixture_maxwellian!(randn(8, 8, 2), randn(8, 8, 2), randn(8, 8, 2), rand(4, 2))
+KitBase.mixture_maxwellian!(randn(8, 8, 8, 2), randn(8, 8, 8, 2), randn(8, 8, 8, 2), randn(8, 8, 8, 2), rand(5, 2))
 
 KitBase.shakhov(u, M, 0.01, prim, 1.0)
 KitBase.shakhov(u, M, M, 0.01, prim, 1.0, 2.0)
+KitBase.shakhov(randn(16, 16), randn(16, 16), rand(16, 16), rand(2), [1., 0., 1.], 1.)
+KitBase.shakhov(randn(16, 16), randn(16, 16), rand(16, 16), rand(16, 16), rand(2), [1., 0., 0., 1.], 1., 1.)
+KitBase.shakhov(randn(8, 8, 8), randn(8, 8, 8), rand(8, 8, 8), rand(8, 8, 8), rand(3), [1., 0., 0., 0., 1.], 1.)
+
+KitBase.shakhov!(randn(16), randn(16), rand(16), 0.01, prim, 1.0)
+KitBase.shakhov!(randn(16), randn(16), randn(16), rand(16), rand(16), 0.01, prim, 1.0, 2.0)
+KitBase.shakhov!(randn(16, 16), randn(16, 16), randn(16, 16), rand(16, 16), rand(2), [1., 0., 1.], 1.)
+KitBase.shakhov!(randn(16, 16), randn(16, 16), randn(16, 16), randn(16, 16), rand(16, 16), rand(16, 16), rand(2), [1., 0., 0., 1.], 1., 1.)
+KitBase.shakhov!(randn(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8), rand(8, 8, 8), rand(8, 8, 8), rand(3), [1., 0., 0., 0., 1.], 1.)
 
 KitBase.reduce_distribution(randn(16, 51), ω, 1)
 KitBase.reduce_distribution(randn(16, 24, 24), ones(24, 24), 1)
