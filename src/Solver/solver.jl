@@ -2,7 +2,11 @@
 # Solver
 # ============================================================
 
-export SolverSet, set_ib
+export SolverSet, 
+       set_geometry, 
+       set_velocity,
+       set_property,
+       set_ib
 
 include("solver_set.jl")
 include("solver_reconstruction.jl")
