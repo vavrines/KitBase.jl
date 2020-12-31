@@ -2,7 +2,7 @@
 Structure of solver setup
 
 """
-mutable struct SolverSet <: AbstractSolverSet
+struct SolverSet <: AbstractSolverSet
 
     # setup
     set::AbstractSetup
@@ -52,9 +52,9 @@ mutable struct SolverSet <: AbstractSolverSet
         # physical space
         Dx = parse(Int, space[1])
         if Dx == 1
-            pSpace = PSpace1D(x0, x1, nx, pMeshType, nxg)
+            pSpace = PSpace1D(x0, x1, nx, nxg)
         elseif Dx == 2
-            pSpace = PSpace2D(x0, x1, nx, y0, y1, ny, pMeshType, nxg, nyg)
+            pSpace = PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
         else
             throw("No preset available for 3D simulation, please set it up manually.")
         end
