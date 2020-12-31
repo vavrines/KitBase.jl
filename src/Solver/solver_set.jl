@@ -2,7 +2,14 @@
 Structure of solver setup
 
 """
-struct SolverSet{TS<:AbstractSetup,TP<:AbstractPhysicalSpace,TV<:AbstractVelocitySpace,TG<:AbstractProperty,TI<:AbstractCondition,TO<:AbstractString} <: AbstractSolverSet
+struct SolverSet{
+    TS<:AbstractSetup,
+    TP<:AbstractPhysicalSpace,
+    TV<:AbstractVelocitySpace,
+    TG<:AbstractProperty,
+    TI<:AbstractCondition,
+    TO<:AbstractString,
+} <: AbstractSolverSet
     # setup
     set::TS
     # physical space
@@ -63,7 +70,21 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     cp(configfilename, string(outputFolder, "config.txt"))
 
     # create new struct
-    return SolverSet{typeof(set),typeof(pSpace),typeof(vSpace),typeof(gas),typeof(ib),typeof(outputFolder)}(set, pSpace, vSpace, gas, ib, outputFolder)
+    return SolverSet{
+        typeof(set),
+        typeof(pSpace),
+        typeof(vSpace),
+        typeof(gas),
+        typeof(ib),
+        typeof(outputFolder),
+    }(
+        set,
+        pSpace,
+        vSpace,
+        gas,
+        ib,
+        outputFolder,
+    )
 end
 
 
