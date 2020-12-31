@@ -2,145 +2,88 @@
 1D physical space with structured mesh
 
     @consts: x0, x1, nx, x, dx
-
 """
-struct PSpace1D{T<:AbstractArray{Float64,1}} <: AbstractPhysicalSpace
+struct PSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,1}} <: AbstractPhysicalSpace
+    x0::TR
+    x1::TR
+    nx::TI
+    x::TA
+    dx::TA
+end
 
-    x0::Float64
-    x1::Float64
-    nx::Int64
-    x::T
-    dx::T
+function PSpace1D(X0::TR, X1::TR, NX::TI, NG = 0::Integer) where {TR,TI}
+    δ = (X1 - X0) / NX
+    x = OffsetArray{Float64}(undef, 1-NG:NX+NG)
+    dx = similar(x)
 
-    function PSpace1D(
-        X0::Float64,
-        X1::Float64,
-        XNUM::Int64,
-        X::AbstractArray{Float64,1},
-        DX::AbstractArray{Float64,1},
-    )
-        new{typeof(X)}(X0, X1, XNUM, X, DX)
+    # uniform mesh
+    for i in eachindex(x)
+        x[i] = X0 + (i - 0.5) * δ
+        dx[i] = δ
     end
 
-    PSpace1D() = PSpace1D(0, 1, 100)
-    PSpace1D(X0::Real, X1::Real) = PSpace1D(X0, X1, 100)
+    return PSpace1D{TR,TI,typeof(x)}(X0, X1, NX, x, dx)
+end
 
-    function PSpace1D(
-        X0::Real,
-        X1::Real,
-        XNUM::Int,
-        TYPE = "uniform"::AbstractString,
-        NG = 0::Int,
-    )
-
-        x0 = Float64(X0)
-        x1 = Float64(X1)
-        nx = XNUM
-        δ = (x1 - x0) / nx
-        x = OffsetArray{Float64}(undef, 1-NG:nx+NG)
-        dx = similar(x)
-
-        if TYPE == "uniform" # uniform mesh
-            for i in eachindex(x)
-                x[i] = x0 + (i - 0.5) * δ
-                dx[i] = δ
-            end
-        end
-
-        # inner constructor method
-        new{typeof(x)}(x0, x1, nx, x, dx)
-
-    end
-
-end # struct
+PSpace1D() = PSpace1D(0, 1, 100)
+PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 
 
 """
 2D Physical space with structured mesh
 
     @consts: x0, x1, nx, y0, y1, ny, x, y, dx, dy
-
 """
-struct PSpace2D{T<:AbstractArray{Float64,2}} <: AbstractPhysicalSpace
+struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractPhysicalSpace
+    x0::TR
+    x1::TR
+    nx::TI
+    y0::TR
+    y1::TR
+    ny::TI
+    x::TA
+    y::TA
+    dx::TA
+    dy::TA
+end
 
-    x0::Float64
-    x1::Float64
-    nx::Int64
-    y0::Float64
-    y1::Float64
-    ny::Int64
-    x::T
-    y::T
-    dx::T
-    dy::T
+function PSpace2D(
+    X0::TR,
+    X1::TR,
+    NX::TI,
+    Y0::TR,
+    Y1::TR,
+    NY::TI,
+    NGX = 0::Integer,
+    NGY = 0::Integer,
+) where {TR,TI}
+    δx = (X1 - X0) / NX
+    δy = (Y1 - Y0) / NY
+    x = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+    y = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+    dx = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+    dy = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
 
-    function PSpace1D(
-        X0::Float64,
-        X1::Float64,
-        XNUM::Int64,
-        Y0::Float64,
-        Y1::Float64,
-        YNUM::Int64,
-        X::AbstractArray{Float64,2},
-        Y::AbstractArray{Float64,2},
-        DX::AbstractArray{Float64,2},
-        DY::AbstractArray{Float64,2},
-    )
-        new{typeof(X)}(X0, X1, XNUM, Y0, Y1, YNUM, X, Y, DX, DY)
-    end
-
-    PSpace2D() = PSpace2D(0, 1, 45, 0, 1, 45)
-    PSpace2D(X0::Real, X1::Real, Y0::Real, Y1::Real) = PSpace2D(X0, X1, 45, Y0, Y1, 45)
-
-    function PSpace2D(
-        X0::Real,
-        X1::Real,
-        XNUM::Int,
-        Y0::Real,
-        Y1::Real,
-        YNUM::Int,
-        TYPE = "uniform"::String,
-        NGX = 0::Int,
-        NGY = 0::Int,
-    )
-
-        x0 = Float64(X0)
-        x1 = Float64(X1)
-        nx = XNUM
-        δx = (x1 - x0) / nx
-        y0 = Float64(Y0)
-        y1 = Float64(Y1)
-        ny = YNUM
-        δy = (y1 - y0) / ny
-        x = OffsetArray{Float64}(undef, 1-NGX:nx+NGX, 1-NGY:ny+NGY)
-        y = OffsetArray{Float64}(undef, 1-NGX:nx+NGX, 1-NGY:ny+NGY)
-        dx = OffsetArray{Float64}(undef, 1-NGX:nx+NGX, 1-NGY:ny+NGY)
-        dy = OffsetArray{Float64}(undef, 1-NGX:nx+NGX, 1-NGY:ny+NGY)
-
-        if TYPE == "uniform" # rectangular formula
-            for j in axes(x, 2)
-                for i in axes(x, 1)
-                    x[i, j] = x0 + (i - 0.5) * δx
-                    y[i, j] = y0 + (j - 0.5) * δy
-                    dx[i, j] = δx
-                    dy[i, j] = δy
-                end
-            end
+    for j in axes(x, 2)
+        for i in axes(x, 1)
+            x[i, j] = X0 + (i - 0.5) * δx
+            y[i, j] = Y0 + (j - 0.5) * δy
+            dx[i, j] = δx
+            dy[i, j] = δy
         end
-
-        # inner constructor method
-        new{typeof(x)}(x0, x1, nx, y0, y1, ny, x, y, dx, dy)
-
     end
 
-end # struct
+    return PSpace2D{TR,TI,typeof(x)}(X0, X1, NX, Y0, Y1, NY, x, y, dx, dy)
+end
+
+PSpace2D() = PSpace2D(0, 1, 45, 0, 1, 45)
+PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45)
 
 
 """
+    uniform_mesh(x0::Real, xnum::Int, dx::Real)
+
 Generate uniform mesh
-
-`uniform_mesh(x0::Real, xnum::Int, dx::Real)`
-
 """
 function uniform_mesh(x0, xnum::T, dx) where {T<:Int}
 
@@ -200,4 +143,25 @@ function find_idx(
         return argmin(abs.(x .- p)) # center location
     end
 
+end
+
+
+"""
+Extended Base.show()
+
+"""
+
+function Base.show(io::IO, ps::PSpace1D{TR,TI,TA}) where {TR,TI,TA}
+    print(io, "PhysicalSpace1D{$TR,$TI,$TA}\n",
+              "domain: ($(ps.x0),$(ps.x1))\n",
+              "resolution: $(ps.nx)\n",
+              "ghost: $(1-firstindex(ps.x))\n")
+end
+
+function Base.show(io::IO, ps::PSpace2D{TR,TI,TA}) where {TR,TI,TA}
+    print(io, "PhysicalSpace2D{$TR,$TI,$TA}\n",
+              "domain: ($(ps.x0),$(ps.x1)) × ($(ps.y0),$(ps.y1))\n",
+              "resolution: $(ps.nx) × $(ps.nx)\n",
+              "ghost in x: $(1-firstindex(ps.x[:, 1]))\n",
+              "ghost in y: $(1-firstindex(ps.y[1, :]))\n")
 end
