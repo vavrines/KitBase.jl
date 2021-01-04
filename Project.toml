@@ -1,7 +1,7 @@
 name = "KitBase"
 uuid = "86eed249-3a28-466f-8d3a-596821e1af9a"
 authors = ["Tianbai Xiao <tianbaixiao@gmail.com>"]
-version = "0.3.1"
+version = "0.3.2"
 
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
@@ -23,7 +23,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 [compat]
 CUDA = "^2"
 Conda = "^1"
-Distributions = "0.24"
+Distributions = "0.21, 0.22, 0.23, 0.24"
 FFTW = "^1"
 FastGaussQuadrature = "0.2, 0.3, 0.4"
 FileIO = "^1"
