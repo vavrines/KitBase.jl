@@ -1,7 +1,7 @@
 """
-KitBase.jl: The lightweight module of physical formulations in Kinetic.jl Ecosystem
-Copyright (c) 2020 Tianbai Xiao <tianbaixiao@gmail.com>
+KitBase.jl: The lightweight module of physical formulations in Kinetic.jl
 
+Copyright (c) 2021 Tianbai Xiao <tianbaixiao@gmail.com>
 """
 
 module KitBase
@@ -38,20 +38,22 @@ include("Solver/solver.jl")
 
 function __init__()
     threads = Threads.nthreads()
-
-    if threads > 1 
-        @info "Kinetic will use $threads threads"
+    if threads == 1
+        @info "Kinetic will run serially"
+    elseif threads > 1
+        @info "Kinetic will run with $threads threads"
 
         # https://github.com/CliMA/Oceananigans.jl/issues/1113
         FFTW.set_num_threads(4 * threads)
     end
 
     if has_cuda()
-        @debug "CUDA-enabled GPU(s) detected: "
-        for (gpu, dev) in enumerate(CUDA.devices())
-            @debug "$dev: $(CUDA.name(dev))"
+        @info "Kinetic will enable CUDA devices"
+        for (i, dev) in enumerate(CUDA.devices())
+            @info "$i: $(CUDA.name(dev))"
         end
 
+        @info "Scalar operation is disabled in CUDA"
         CUDA.allowscalar(false)
     end
 end
