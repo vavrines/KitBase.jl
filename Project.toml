@@ -1,7 +1,7 @@
 name = "KitBase"
 uuid = "86eed249-3a28-466f-8d3a-596821e1af9a"
 authors = ["Tianbai Xiao <tianbaixiao@gmail.com>"]
-version = "0.3.3"
+version = "0.3.4"
 
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"

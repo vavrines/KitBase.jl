@@ -6,7 +6,13 @@ export SolverSet,
        set_geometry, 
        set_velocity,
        set_property,
-       set_ib
+       set_ib,
+       initialize,
+       solve!,
+       timestep,
+       reconstruct!,
+       evolve!,
+       update!
 
 include("solver_set.jl")
 include("solver_reconstruction.jl")
