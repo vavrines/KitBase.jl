@@ -14,18 +14,10 @@ function initialize(configfilename::T) where {T<:AbstractString}
     println("A Lightweight Toolbox for Kinetic Modeling and Simulation")
     println("==============================================================")
     println("")
-    println("reading configurations from $(configfilename)")
+    @info "initializing solver"
     println("")
-    println("initializing solver: ")
-
-    if configfilename[end-2:end] == "txt"
-
-        ks = SolverSet(configfilename)
-        ctr, face = init_fvm(ks)
-
-        return ks, ctr, face, 0.0
-
-    elseif configfilename[end-3:end] == "jld2"
+    
+    if configfilename[end-3:end] == "jld2"
 
         _1, _2, _3 = @load configfilename KS ctr t
         ks, ctr, simTime = eval(_1), eval(_2), eval(_3)
@@ -33,6 +25,13 @@ function initialize(configfilename::T) where {T<:AbstractString}
         face = init_fvm(ks)[2]
 
         return ks, ctr, face, simTime
+    
+    else
+
+        ks = SolverSet(configfilename)
+        ctr, face = init_fvm(ks)
+
+        return ks, ctr, face, 0.0
 
     end
 

@@ -17,8 +17,8 @@ Read text into dictionary
 """
 function read_dict(filename::T, allowed) where {T<:AbstractString}
 
-    @info "Reading config from $filename \n"
-    println("")
+    @info "Reading config from $filename"
+    println("--------------------------------------------------------------")
     f = open(filename)
     vars = Dict{String,Any}()
 
@@ -33,7 +33,7 @@ function read_dict(filename::T, allowed) where {T<:AbstractString}
         var, val = split(line, "=")
         stripped = strip(var)
         if stripped in allowed
-            #println(line)
+            println(line)
 
             #vars[stripped] = parse(Float64, val)
             #vars[stripped] = strip(val)
@@ -45,7 +45,7 @@ function read_dict(filename::T, allowed) where {T<:AbstractString}
             end
         end
     end
-
+    println("--------------------------------------------------------------")
     println("")
     return vars
 
@@ -54,7 +54,7 @@ end
 function read_dict(filename::T) where {T<:AbstractString}
 
     @info "Reading config from $filename"
-    println("")
+    println("--------------------------------------------------------------")
     f = open(filename)
     vars = Dict{String,Any}()
 
@@ -75,7 +75,7 @@ function read_dict(filename::T) where {T<:AbstractString}
             vars[stripped] = isinteger(tmp) ? Int(tmp) : tmp
         end
     end
-
+    println("--------------------------------------------------------------")
     println("")
     return vars
 
