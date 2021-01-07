@@ -487,6 +487,24 @@ KitBase.flux_boundary_maxwell!(
     dx,
     1,
 )
+KitBase.flux_boundary_specular!(
+    zeros(3),
+    zeros(16),
+    rand(16),
+    randn(16),
+    ones(16),
+    dt,
+)
+KitBase.flux_boundary_specular!(
+    zeros(3),
+    zeros(16),
+    zeros(16),
+    rand(16),
+    rand(16),
+    randn(16),
+    ones(16),
+    dt,
+)
 
 #--- pure equilibrium flux ---#
 KitBase.flux_equilibrium!(fw, wL, wR, inK, γ, 1e-3, 0.81, 0.72, dt, dx, dx)

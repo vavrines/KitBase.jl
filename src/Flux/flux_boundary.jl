@@ -109,3 +109,79 @@ function flux_boundary_maxwell!(
     return nothing
 
 end
+
+
+"""
+Specular reflection boundary flux
+
+* @args: particle distribution functions and their slopes at left/right sides of interface
+* @args: particle velocity quadrature points and weights
+* @args: time step
+
+"""
+function flux_boundary_specular!(
+    fw::T1,
+    ff::T2,
+    f::T3,
+    u::T4,
+    ω::T4,
+    dt,
+) where {
+    T1<:AbstractArray{<:Real,1},
+    T2<:AbstractArray{<:AbstractFloat,1},
+    T3<:AbstractArray{<:AbstractFloat,1},
+    T4<:AbstractArray{<:AbstractFloat,1},
+}
+
+    fWall = similar(f)
+    for i in eachindex(f)
+        fWall[i] = f[end-i+1]
+    end
+
+    fw[1] = discrete_moments(fWall, u, ω, 1) * dt
+    fw[2] = discrete_moments(fWall, u, ω, 2) * dt
+    fw[3] = 0.5 * discrete_moments(fWall .* u .^ 2, u, ω, 1) * dt
+
+    @. ff = u * fWall * dt
+
+    return nothing
+
+end
+
+function flux_boundary_specular!(
+    fw::T1,
+    fh::T2,
+    fb::T2,
+    h::T3,
+    b::T3,
+    u::T4,
+    ω::T4,
+    dt,
+) where {
+    T1<:AbstractArray{<:Real,1},
+    T2<:AbstractArray{<:AbstractFloat,1},
+    T3<:AbstractArray{<:AbstractFloat,1},
+    T4<:AbstractArray{<:AbstractFloat,1},
+}
+
+    hWall = similar(h)
+    bWall = similar(b)
+    for i in eachindex(h)
+        hWall[i] = h[end-i+1]
+        bWall[i] = b[end-i+1]
+    end
+
+    fw[1] = discrete_moments(hWall, u, ω, 1) * dt
+    fw[2] = discrete_moments(hWall, u, ω, 2) * dt
+    fw[3] =
+        (
+            0.5 * discrete_moments(hWall .* u .^ 2, u, ω, 1) +
+            0.5 * discrete_moments(bWall, u, ω, 1)
+        ) * dt
+
+    @. fh = u * hWall * dt
+    @. fb = u * bWall * dt
+
+    return nothing
+
+end
