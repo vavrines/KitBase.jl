@@ -126,6 +126,79 @@ KitBase.shakhov!(
     1.0,
 )
 
+# Rykov
+KitBase.maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    rand(5),
+    4,
+    2,
+)
+KitBase.maxwellian!(
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    randn(8, 8),
+    randn(8, 8),
+    rand(6),
+    4,
+    2,
+)
+
+KitBase.rykov!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(2),
+    rand(5),
+    0.72,
+    4,
+    1/1.55,
+    0.2354,
+    0.3049,
+)
+KitBase.rykov!(
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    randn(8, 8),
+    randn(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(4),
+    rand(6),
+    0.72,
+    4,
+    1/1.55,
+    0.2354,
+    0.3049,
+)
+
 KitBase.reduce_distribution(randn(16, 51), ω, 1)
 KitBase.reduce_distribution(randn(16, 24, 24), ones(24, 24), 1)
 KitBase.reduce_distribution(

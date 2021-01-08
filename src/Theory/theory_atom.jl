@@ -156,6 +156,34 @@ maxwellian!(
     T3<:AbstractArray{<:Real,1},
 } = maxwellian!(M, u, prim[1], prim[2], prim[end])
 
+# Rykov
+function maxwellian!(
+    Ht::T1,
+    Bt::T1,
+    Rt::T1,
+    Hr::T1,
+    Br::T1,
+    Rr::T1,
+    u::T2,
+    prim::T3,
+    K,
+    Kr,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,1},
+    T3<:AbstractArray{<:Real,1},
+}
+    @. Ht = prim[1] * sqrt(prim[4] / π) * exp(-prim[4] * (u - prim[2])^2)
+    @. Bt = Ht * K / (2.0 * prim[4])
+    @. Rt = Ht * Kr / (2.0 * prim[5])
+
+    @. Hr = prim[1] * sqrt(prim[3] / π) * exp(-prim[3] * (u - prim[2])^2)
+    @. Br = Hr * K / (2.0 * prim[3])
+    @. Rr = Hr * Kr / (2.0 * prim[3])
+
+    return nothing
+end
+
 #--- 2V ---#
 function maxwellian!(
     M::T1,
@@ -180,6 +208,35 @@ maxwellian!(
     T2<:AbstractArray{<:AbstractFloat,2},
     T3<:AbstractArray{<:Real,1},
 } = maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
+
+# Rykov
+function maxwellian!(
+    Ht::T1,
+    Bt::T1,
+    Rt::T1,
+    Hr::T1,
+    Br::T1,
+    Rr::T1,
+    u::T2,
+    v::T2,
+    prim::T3,
+    K,
+    Kr,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat,2},
+    T3<:AbstractArray{<:Real,1},
+}
+    @. Ht = prim[1] * (prim[5] / π) * exp(-prim[5] * ((u - prim[2])^2 + (v - prim[3])^2))
+    @. Bt = Ht * K / (2.0 * prim[5])
+    @. Rt = Ht * Kr / (2.0 * prim[6])
+
+    @. Hr = prim[1] * (prim[4] / π) * exp(-prim[4] * ((u - prim[2])^2 + (v - prim[3])^2))
+    @. Br = Hr * K / (2.0 * prim[4])
+    @. Rr = Hr * Kr / (2.0 * prim[4])
+
+    return nothing
+end
 
 #--- 3V ---#
 function maxwellian!(
@@ -632,29 +689,63 @@ end
         Hr_plus::T1,
         Br_plus::T1,
         Rr_plus::T1,
-        vn::T2,
-        vt::T2,
+        u::T2,
         Ht::T1,
         Bt::T1,
         Rt::T1,
         Hr::T1,
         Br::T1,
         Rr::T1,
+        q::T3,
+        prim::T4,
         Pr,
         K,
         σ,
         ω0,
         ω1,
-    ) where{
-        T1<:AbstractArray{<:Real,2},
-        T2<:AbstractArray{<:Real,2},
+    ) where {
+        T1<:AbstractArray{<:Real,1},
+        T2<:AbstractArray{<:Real,1},
+        T3<:AbstractArray{<:Real,1},
+        T4<:AbstractArray{<:Real,1},
     }
 
-Rykov non-equilibrium part
+    rykov!(
+        Ht_plus::T1,
+        Bt_plus::T1,
+        Rt_plus::T1,
+        Hr_plus::T1,
+        Br_plus::T1,
+        Rr_plus::T1,
+        u::T2,
+        v::T2,
+        Ht::T1,
+        Bt::T1,
+        Rt::T1,
+        Hr::T1,
+        Br::T1,
+        Rr::T1,
+        q::T3,
+        prim::T4,
+        Pr,
+        K,
+        σ,
+        ω0,
+        ω1,
+    ) where {
+        T1<:AbstractArray{<:Real,2},
+        T2<:AbstractArray{<:Real,2},
+        T3<:AbstractArray{<:Real,1},
+        T4<:AbstractArray{<:Real,1},
+    }
 
-* @arg: particle velocity quadrature points
-* @arg: discrete Maxwellian
-* @arg: primitive variables, Prandtl number, heat flux, inner degree of freedom
+Rykov non-equilibrium part 
+
+- t: translation
+- r: rotation
+* @arg q: [qt, qr]@1D, [qtx, qty, qrx, qry]@2D
+* @arg prim: [ρ, U, λ, λₜ, λᵣ]@1D, [ρ, U, V, λ, λₜ, λᵣ]@2D
+* @arg σ, ω0, ω1: rotation parameters
 
 """
 function rykov!(
@@ -664,37 +755,151 @@ function rykov!(
     Hr_plus::T1,
     Br_plus::T1,
     Rr_plus::T1,
-    vn::T2,
-    vt::T2,
+    u::T2,
     Ht::T1,
     Bt::T1,
     Rt::T1,
     Hr::T1,
     Br::T1,
     Rr::T1,
+    q::T3,
+    prim::T4,
     Pr,
     K,
     σ,
     ω0,
     ω1,
-) where{
-    T1<:AbstractArray{<:Real,2},
-    T2<:AbstractArray{<:Real,2},
+) where {
+    T1<:AbstractArray{<:Real,1},
+    T2<:AbstractArray{<:Real,1},
+    T3<:AbstractArray{<:Real,1},
+    T4<:AbstractArray{<:Real,1},
 }
 
-    @. Ht_plus = (0.8*(1.0 - Pr)*prim[5]^2/prim[1]*
-         ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[5]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5.0))*Ht
-    @. Bt_plus = (0.8*(1.0 - Pr)*prim[5]^2/prim[1]*
-            ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[5]*((vn-prim[2])^2+(vt-prim[3])^2)+K-3.0))*Bt
-    @. Rt_plus = (0.8*(1.0 - Pr)*prim[5]^2/prim[1]*((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*
-            (2.0*prim[5]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5)+4.0*(1-σ)*((vn-prim[2])*qf[3]+(vt-prim[3])*qf[4])/prim[1]*prim[5]*prim[6])*Rt
+    @. Ht_plus =
+        (
+            0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+            (u - prim[2]) *
+            q[1] *
+            (2.0 * prim[4] * (u - prim[2])^2 + K - 5.0)
+        ) * Ht
+    @. Bt_plus =
+        (
+            0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+            (u - prim[2]) *
+            q[1] *
+            (2.0 * prim[4] * (u - prim[2])^2 + K - 3.0)
+        ) * Bt
+    @. Rt_plus =
+        (
+            0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+            (u - prim[2]) *
+            q[1] *
+            (2.0 * prim[4] * (u - prim[2])^2 + K - 5.0) +
+            4.0 * (1 - σ) * (u - prim[2]) * q[2] / prim[1] * prim[4] * prim[5]
+        ) * Rt
 
-    @. Hr_plus = (0.8*ω0*(1.0-Pr)*prim[4]^2/prim[1]*
-            ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[4]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5.0))*Hr
-    @. Br_plus = (0.8*ω0*(1.0-Pr)*prim[4]^2/prim[1]*
-            ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[4]*((vn-prim[2])^2+(vt-prim[3])^2)+K-3.0))*Br
-    @. Rr_plus = (0.8*ω0*(1.0-Pr)*prim[4]^2/prim[1]*((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*
-            (2.0*prim[4]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5.0)+4.0*ω1*(1-σ)*((vn-prim[2])*qf[3]+(vt-prim[3])*qf[4])/prim[1]*prim[4]*prim[4])*Rr
+    @. Hr_plus =
+        (
+            0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
+            (u - prim[2]) *
+            q[1] *
+            (2.0 * prim[3] * (u - prim[2])^2 + K - 5.0)
+        ) * Hr
+    @. Br_plus =
+        (
+            0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
+            (u - prim[2]) *
+            q[1] *
+            (2.0 * prim[3] * (u - prim[2])^2 + K - 3.0)
+        ) * Br
+    @. Rr_plus =
+        (
+            0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
+            (u - prim[2]) *
+            q[1] *
+            (2.0 * prim[3] * (u - prim[2])^2 + K - 5.0) +
+            4.0 * ω1 * (1 - σ) * (u - prim[2]) * q[2] / prim[1] * prim[3] * prim[3]
+        ) * Rr
+
+    return nothing
+
+end
+
+function rykov!(
+    Ht_plus::T1,
+    Bt_plus::T1,
+    Rt_plus::T1,
+    Hr_plus::T1,
+    Br_plus::T1,
+    Rr_plus::T1,
+    u::T2,
+    v::T2,
+    Ht::T1,
+    Bt::T1,
+    Rt::T1,
+    Hr::T1,
+    Br::T1,
+    Rr::T1,
+    q::T3,
+    prim::T4,
+    Pr,
+    K,
+    σ,
+    ω0,
+    ω1,
+) where {
+    T1<:AbstractArray{<:Real,2},
+    T2<:AbstractArray{<:Real,2},
+    T3<:AbstractArray{<:Real,1},
+    T4<:AbstractArray{<:Real,1},
+}
+
+    @. Ht_plus =
+        (
+            0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
+            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+            (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0)
+        ) * Ht
+    @. Bt_plus =
+        (
+            0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
+            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+            (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0)
+        ) * Bt
+    @. Rt_plus =
+        (
+            0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
+            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+            (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5) +
+            4.0 * (1 - σ) * ((u - prim[2]) * q[3] + (v - prim[3]) * q[4]) / prim[1] *
+            prim[5] *
+            prim[6]
+        ) * Rt
+
+    @. Hr_plus =
+        (
+            0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+            (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0)
+        ) * Hr
+    @. Br_plus =
+        (
+            0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+            (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0)
+        ) * Br
+    @. Rr_plus =
+        (
+            0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+            (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0) +
+            4.0 * ω1 * (1 - σ) * ((u - prim[2]) * q[3] + (v - prim[3]) * q[4]) / prim[1] *
+            prim[4] *
+            prim[4]
+        ) * Rr
+
+    return nothing
 
 end
 
@@ -824,7 +1029,9 @@ function full_distribution(
     Z<:AbstractArray{<:AbstractFloat,3},
 }
 
-    @assert length(h) == size(v, 1) throw(DimensionMismatch("reduced and full distribution function mismatch"))
+    @assert length(h) == size(v, 1) throw(
+        DimensionMismatch("reduced and full distribution function mismatch"),
+    )
 
     Ei = 0.5 * discrete_moments(b, u, weights, 0)
     λi = 0.5 * ρ / (γ - 1.0) / Ei / 3.0 * 2.0
