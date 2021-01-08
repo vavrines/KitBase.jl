@@ -624,6 +624,82 @@ end
 
 
 """
+
+    rykov!(
+        Ht_plus::T1,
+        Bt_plus::T1,
+        Rt_plus::T1,
+        Hr_plus::T1,
+        Br_plus::T1,
+        Rr_plus::T1,
+        vn::T2,
+        vt::T2,
+        Ht::T1,
+        Bt::T1,
+        Rt::T1,
+        Hr::T1,
+        Br::T1,
+        Rr::T1,
+        Pr,
+        K,
+        σ,
+        ω0,
+        ω1,
+    ) where{
+        T1<:AbstractArray{<:Real,2},
+        T2<:AbstractArray{<:Real,2},
+    }
+
+Rykov non-equilibrium part
+
+* @arg: particle velocity quadrature points
+* @arg: discrete Maxwellian
+* @arg: primitive variables, Prandtl number, heat flux, inner degree of freedom
+
+"""
+function rykov!(
+    Ht_plus::T1,
+    Bt_plus::T1,
+    Rt_plus::T1,
+    Hr_plus::T1,
+    Br_plus::T1,
+    Rr_plus::T1,
+    vn::T2,
+    vt::T2,
+    Ht::T1,
+    Bt::T1,
+    Rt::T1,
+    Hr::T1,
+    Br::T1,
+    Rr::T1,
+    Pr,
+    K,
+    σ,
+    ω0,
+    ω1,
+) where{
+    T1<:AbstractArray{<:Real,2},
+    T2<:AbstractArray{<:Real,2},
+}
+
+    @. Ht_plus = (0.8*(1.0 - Pr)*prim[5]^2/prim[1]*
+         ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[5]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5.0))*Ht
+    @. Bt_plus = (0.8*(1.0 - Pr)*prim[5]^2/prim[1]*
+            ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[5]*((vn-prim[2])^2+(vt-prim[3])^2)+K-3.0))*Bt
+    @. Rt_plus = (0.8*(1.0 - Pr)*prim[5]^2/prim[1]*((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*
+            (2.0*prim[5]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5)+4.0*(1-σ)*((vn-prim[2])*qf[3]+(vt-prim[3])*qf[4])/prim[1]*prim[5]*prim[6])*Rt
+
+    @. Hr_plus = (0.8*ω0*(1.0-Pr)*prim[4]^2/prim[1]*
+            ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[4]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5.0))*Hr
+    @. Br_plus = (0.8*ω0*(1.0-Pr)*prim[4]^2/prim[1]*
+            ((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*(2.0*prim[4]*((vn-prim[2])^2+(vt-prim[3])^2)+K-3.0))*Br
+    @. Rr_plus = (0.8*ω0*(1.0-Pr)*prim[4]^2/prim[1]*((vn-prim[2])*qf[1]+(vt-prim[3])*qf[2])*
+            (2.0*prim[4]*((vn-prim[2])^2+(vt-prim[3])^2)+K-5.0)+4.0*ω1*(1-σ)*((vn-prim[2])*qf[3]+(vt-prim[3])*qf[4])/prim[1]*prim[4]*prim[4])*Rr
+
+end
+
+
+"""
 Reduced distribution function
 
 * @arg : particle distribution function with full velocity space
