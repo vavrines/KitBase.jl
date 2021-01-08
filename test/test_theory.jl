@@ -12,6 +12,12 @@ KitBase.conserve_prim(prim, 3.0)
 KitBase.conserve_prim(prim[1], prim[2], prim[3], 3.0)
 KitBase.mixture_conserve_prim(mprim, 3.0)
 
+# Rykov
+KitBase.prim_conserve([1.0, 0.0, 1.0, 1.0, 1.0], 5/3, 2)
+KitBase.prim_conserve([1.0, 0.0, 0.0, 1.0, 1.0, 1.0], 5/3, 2)
+KitBase.conserve_prim([1.0, 0.0, 1.0, 0.1], 5/3, 2)
+KitBase.conserve_prim([1.0, 0.0, 0.0, 1.0, 0.1], 5/3, 2)
+
 prim = [1.0, 0.2, 0.3, -0.1, 1.0]
 mprim = hcat(prim, prim)
 KitBase.em_coefficients(mprim, randn(3), randn(3), 100, 0.01, 0.01, 0.001)

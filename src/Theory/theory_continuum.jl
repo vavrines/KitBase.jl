@@ -53,6 +53,34 @@ prim_conserve(ρ, U, V, λ, γ) = prim_conserve([ρ, U, V, λ], γ)
 
 prim_conserve(ρ, U, V, W, λ, γ) = prim_conserve([ρ, U, V, W, λ], γ)
 
+#--- Rykov ---#
+function prim_conserve(prim::T, γ, Kr) where {T<:AbstractArray{<:Real,1}}
+
+    if eltype(prim) <: Int
+        W = similar(prim, Float64, length(prim) - 1)
+    else
+        W = similar(prim, length(prim) - 1)
+    end
+
+    if length(prim) == 5 # 1D
+        W[1] = prim[1]
+        W[2] = prim[1] * prim[2]
+        W[3] = 0.5 * prim[1] / prim[3] / (γ - 1.0) + 0.5 * prim[1] * prim[2]^2
+        W[4] = 0.25 * prim[1] * Kr / prim[5]
+    elseif length(prim) == 6 # 2D
+        W[1] = prim[1]
+        W[2] = prim[1] * prim[2]
+        W[3] = prim[1] * prim[3]
+        W[4] = 0.5 * prim[1] / prim[4] / (γ - 1.0) + 0.5 * prim[1] * (prim[2]^2 + prim[3]^2)
+        W[5] = 0.25 * prim[1] * Kr / prim[6]
+    else
+        throw("prim -> w : dimension error")
+    end
+
+    return W
+
+end
+
 
 """
 Transform multi-component primitive -> conservative variables
@@ -135,6 +163,36 @@ conserve_prim(ρ, M, E, γ) = conserve_prim([ρ, M, E], γ)
 conserve_prim(ρ, MX, MY, E, γ) = conserve_prim([ρ, MX, MY, E], γ)
 
 conserve_prim(ρ, MX, MY, MZ, E, γ) = conserve_prim([ρ, MX, MY, MZ, E], γ)
+
+#--- Rykov ---#
+function conserve_prim(w::T, K, Kr) where {T<:AbstractArray{<:Real,1}}
+    
+    if eltype(w) <: Int
+        prim = similar(w, Float64, length(w) + 1)
+    else
+        prim = similar(w, length(w) + 1)
+    end
+    
+    if length(w) == 4 # 1D
+        prim[1] = w[1]
+        prim[2] = w[2] / w[1]
+        prim[3] = 0.25 * w[1] * (K + Kr + 2.0) / (w[3] - 0.5 * w[2]^2 / w[1])
+        prim[4] = 0.25 * w[1] * (K + 2.0) / (w[3] - w[4] - 0.5 * w[2]^2 / w[1])
+        prim[5] = 0.25 * w[1] * Kr / w[4]
+    elseif length(w) == 5 # 2D
+        prim[1] = w[1]
+        prim[2] = w[2] / w[1]
+        prim[3] = w[3] / w[1]
+        prim[4] = 0.25 * w[1] * (K + Kr + 2.0) / (w[4] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
+        prim[5] = 0.25 * w[1] * (K + 2.0) / (w[4] - w[5] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
+        prim[6] = 0.25 * w[1] * Kr / w[5]
+    else
+        throw("w -> prim : dimension dismatch")
+    end
+
+    return prim
+
+end
 
 
 """
