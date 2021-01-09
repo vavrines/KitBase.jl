@@ -1079,8 +1079,20 @@ ref_vhs_vis(Kn::T, alpha, omega) where {T<:Real} =
 Calculate collision time with variable hard sphere (VHS) model
 
 """
+vhs_collision_time(ρ::T, λ, μᵣ, ω) where {T<:Real} =
+    μᵣ * 2.0 * λ^(1.0 - ω) / ρ
+
 vhs_collision_time(prim::T, muRef, omega) where {T<:AbstractArray{<:Real,1}} =
-    muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1]
+    muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov prim[end] should be λₜ
+
+
+"""
+    rykov_zr(Tₜ, T₀, Z₀)
+
+Calculate dimensionless rotationa number in Rykov model
+
+"""
+rykov_zr(Tₜ, T₀, Z₀) = Z₀ / (1.0 + π^1.5 / 2.0 * sqrt(T₀ / Tₜ) + (π + 0.25 * π^2) * T₀ / Tₜ)
 
 
 """
