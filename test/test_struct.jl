@@ -136,15 +136,7 @@ KitBase.ControlVolume1D3F(
     zeros(3, 7, 2),
 )
 # Rykov
-KitBase.ControlVolume1D3F(
-    x,
-    dx,
-    rand(4),
-    rand(5),
-    rand(nu),
-    rand(nu),
-    rand(nu),
-)
+KitBase.ControlVolume1D3F(x, dx, rand(4), rand(5), rand(nu), rand(nu), rand(nu))
 KitBase.ControlVolume1D4F(
     x,
     dx,
@@ -176,7 +168,17 @@ KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h)
 KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b)
 KitBase.ControlVolume2D3F(x, dx, x, dx, w, prim, h, b, b, zeros(3), zeros(3), zeros(3, 2))
 # Rykov
-KitBase.ControlVolume2D3F(x, dx, x, dx, rand(4), rand(4), rand(8, 8), rand(8, 8), rand(8, 8))
+KitBase.ControlVolume2D3F(
+    x,
+    dx,
+    x,
+    dx,
+    rand(4),
+    rand(4),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+)
 
 #--- interface ---#
 KitBase.Interface1D(w)

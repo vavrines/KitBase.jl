@@ -80,7 +80,7 @@ KitBase.duplicate!(ptc, ptc_new, ks.gas.np)
 
 
 @showprogress for iter = 1:100#nt
-    
+
     @inbounds Threads.@threads for i = 1:ks.pSpace.nx+1
         KitBase.flux_equilibrium!(
             face[i].fw,
@@ -96,7 +96,7 @@ KitBase.duplicate!(ptc, ptc_new, ks.gas.np)
             0.5 * ctr[i].dx,
         )
     end
-    
+
     #KitBase.update!(ks, ctr, ptc, ptc_new, face, dt, res; coll = :bgk, bc = :fix)
 
     KitBase.bgk_transport!(ks, ctr, ptc, ptc_new, dt)
