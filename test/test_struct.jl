@@ -186,6 +186,7 @@ KitBase.Interface1D1F(w, h)
 KitBase.Interface1D2F(w, h)
 KitBase.Interface1D3F(w, h, zeros(3))
 KitBase.Interface1D3F(zeros(5, 7, 2), zeros(21, 21, 7, 2), zeros(3, 7))
+KitBase.Interface1D3F(w, h) # Rykov
 KitBase.Interface1D4F(w, h, zeros(3))
 KitBase.Interface1D4F(zeros(5, 7, 2), zeros(21, 7, 2), zeros(3, 7))
 cosa = 1 / √2
@@ -193,6 +194,9 @@ sina = 1 / √2
 KitBase.Interface2D(dx, cosa, sina, w)
 KitBase.Interface2D1F(dx, cosa, sina, w, h)
 KitBase.Interface2D2F(dx, cosa, sina, w, h)
+KitBase.Interface2D3F(dx, cosa, sina, w, h, zeros(3))
+KitBase.Interface2D3F(dx, cosa, sina, w, h, zeros(3, 7))
+KitBase.Interface2D3F(dx, cosa, sina, w, h)
 
 #--- solution ---#
 sol_w = [w for i = 1:2]

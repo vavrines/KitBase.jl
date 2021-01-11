@@ -10,9 +10,9 @@
 """
 1D cell interface with no distribution function
 
-    @vars: fw
+@vars: fw
 
-`Interface1D(w::AbstractArray)`
+@new: `Interface1D(w::AbstractArray)`
 
 """
 mutable struct Interface1D{A} <: AbstractInterface1D
@@ -20,19 +20,23 @@ mutable struct Interface1D{A} <: AbstractInterface1D
     fw::A
 
     function Interface1D(w::AbstractArray)
-        fw = zeros(eltype(w), axes(w))
+        fw = zero(w)
         new{typeof(fw)}(fw)
     end
 
+end
+
+function Base.show(io::IO, ctr::Interface1D{A}) where {A}
+    print(io, "Interface1D{$A}\n", "conservative fluxes: $(ctr.fw)\n")
 end
 
 
 """
 1D cell interface with 1 distribution function
 
-    @vars: fw, ff
+@vars: fw, ff
 
-`Interface1D1F(w::AbstractArray, f::AbstractArray)`
+@new: `Interface1D1F(w::AbstractArray, f::AbstractArray)`
 
 """
 mutable struct Interface1D1F{A,B} <: AbstractInterface1D
@@ -41,21 +45,30 @@ mutable struct Interface1D1F{A,B} <: AbstractInterface1D
     ff::B
 
     function Interface1D1F(w::AbstractArray, f::AbstractArray)
-        fw = zeros(eltype(w), axes(w))
-        ff = zeros(eltype(f), axes(f))
+        fw = zero(w)
+        ff = zero(f)
 
         new{typeof(fw),typeof(ff)}(fw, ff)
     end
 
 end
 
+function Base.show(io::IO, ctr::Interface1D1F{A,B}) where {A,B}
+    print(
+        io,
+        "Interface1D1F{$A,$B}\n",
+        "conservative fluxes: $(ctr.fw)\n",
+        "pdf fluxes: ff\n",
+    )
+end
+
 
 """
 1D cell interface with 2 distribution functions
 
-    @vars: fw, fh, fb
+@vars: fw, fh, fb
 
-`Interface1D2F(w::AbstractArray, f::AbstractArray)`
+@new: `Interface1D2F(w::AbstractArray, f::AbstractArray)`
 
 """
 mutable struct Interface1D2F{A,B} <: AbstractInterface1D
@@ -65,23 +78,34 @@ mutable struct Interface1D2F{A,B} <: AbstractInterface1D
     fb::B
 
     function Interface1D2F(w::AbstractArray, f::AbstractArray)
-        fw = zeros(typeof(w[1]), axes(w))
-        fh = zeros(typeof(f[1]), axes(f))
-        fb = zeros(typeof(f[1]), axes(f))
+        fw = zero(w)
+        fh = zero(f)
+        fb = zero(f)
 
         new{typeof(fw),typeof(fh)}(fw, fh, fb)
     end
 
 end
 
+function Base.show(io::IO, ctr::Interface1D2F{A,B}) where {A,B}
+    print(
+        io,
+        "Interface1D2F{$A,$B}\n",
+        "conservative fluxes: $(ctr.fw)\n",
+        "pdf fluxes: fh, fb\n",
+    )
+end
+
 
 """
 1D cell interface with 3 distribution functions
 
-    @vars: fw, fh0, fh1, fh2, femL, femR,
+@vars: fw, fh0, fh1, fh2, femL, femR,
 
+@new:
 - deterministic: `Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})`
 - stochastic: `Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})`
+- Rykov: `Interface1D3F(w::AbstractArray, f::AbstractArray)`
 
 """
 mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
@@ -115,14 +139,37 @@ mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
         new{typeof(fw),typeof(fh0),typeof(femL)}(fw, fh0, fh1, fh2, femL, femR)
     end
 
+    # Rykov
+    function Interface1D3F(w::AbstractArray, f::AbstractArray)
+        fw = zero(w)
+        fh0 = zero(f)
+        fh1 = zero(f)
+        fh2 = zero(f)
+        femL = nothing
+        femR = nothing
+
+        new{typeof(fw),typeof(fh0),typeof(femL)}(fw, fh0, fh1, fh2, femL, femR)
+    end
+
+end
+
+function Base.show(io::IO, ctr::Interface1D3F{A,B,C}) where {A,B,C}
+    print(
+        io,
+        "Interface1D3F{$A,$B,$C}\n",
+        "conservative fluxes: $(ctr.fw)\n",
+        "pdf fluxes: fh0, fh1, fh2\n",
+        "electromagnetic fluxes: femL, femR\n",
+    )
 end
 
 
 """
 1D cell interface with 4 distribution functions
 
-    @vars: fw, fh0, fh1, fh2, fh3, femL, femR,
+@vars: fw, fh0, fh1, fh2, fh3, femL, femR,
 
+@new:
 - deterministic: `Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})`
 - stochastic: `Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})`
 
@@ -163,6 +210,16 @@ mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
 
 end
 
+function Base.show(io::IO, ctr::Interface1D4F{A,B,C}) where {A,B,C}
+    print(
+        io,
+        "Interface1D4F{$A,$B,$C}\n",
+        "conservative fluxes: $(ctr.fw)\n",
+        "pdf fluxes: fh0, fh1, fh2, fh3\n",
+        "electromagnetic fluxes: femL, femR\n",
+    )
+end
+
 # ------------------------------------------------------------
 # 2D
 # ------------------------------------------------------------
@@ -170,9 +227,9 @@ end
 """
 2D cell interface with no distribution function
 
-    @vars: len, n, fw
+@vars: len, n, fw
 
-`Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)`
+@new: `Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)`
 
 """
 mutable struct Interface2D{A,B,C} <: AbstractInterface2D
@@ -185,27 +242,36 @@ mutable struct Interface2D{A,B,C} <: AbstractInterface2D
         len = L
         n = [C, S]
 
-        fw = zeros(eltype(w), axes(w))
+        fw = zero(w)
 
         new{typeof(len),typeof(n),typeof(fw)}(len, n, fw)
     end
 
 end
 
+function Base.show(io::IO, ctr::Interface2D{A,B,C}) where {A,B,C}
+    print(
+        io,
+        "Interface2D{$A,$B,$C}\n",
+        "length: $(ctr.len)\n",
+        "normal vector: ($(ctr.n[1]),$(ctr.n[2]))\n",
+        "conservative fluxes: $(ctr.fw)\n",
+    )
+end
+
 
 """
 2D cell interface with 1 distribution function
 
-    @vars: len, n, fw, ff
+@vars: len, n, fw, ff
 
-`Interface2D1F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)`
+@new: `Interface2D1F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)`
 
 """
 mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
 
     len::A
     n::B
-
     fw::C
     ff::D
 
@@ -213,28 +279,38 @@ mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
         len = L
         n = [C, S]
 
-        fw = zeros(eltype(w), axes(w))
-        ff = zeros(eltype(f), axes(f))
+        fw = zero(w)
+        ff = zero(f)
 
         new{typeof(len),typeof(n),typeof(fw),typeof(ff)}(len, n, fw, ff)
     end
 
 end
 
+function Base.show(io::IO, ctr::Interface2D1F{A,B,C,D}) where {A,B,C,D}
+    print(
+        io,
+        "Interface2D1F{$A,$B,$C}\n",
+        "length: $(ctr.len)\n",
+        "normal vector: ($(ctr.n[1]),$(ctr.n[2]))\n",
+        "conservative fluxes: $(ctr.fw)\n",
+        "pdf fluxes: ff",
+    )
+end
+
 
 """
 2D cell interface with 2 distribution functions
 
-    @vars: len, n, fw, fh, fb
+@vars: len, n, fw, fh, fb
 
-`Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)`
+@new: `Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)`
 
 """
 mutable struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
 
     len::A
     n::B
-
     fw::C
     fh::D
     fb::D
@@ -250,4 +326,162 @@ mutable struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
         new{typeof(len),typeof(n),typeof(fw),typeof(fh)}(len, n, fw, fh, fb)
     end
 
+end
+
+function Base.show(io::IO, ctr::Interface2D2F{A,B,C,D}) where {A,B,C,D}
+    print(
+        io,
+        "Interface2D2F{$A,$B,$C}\n",
+        "length: $(ctr.len)\n",
+        "normal vector: ($(ctr.n[1]),$(ctr.n[2]))\n",
+        "conservative fluxes: $(ctr.fw)\n",
+        "pdf fluxes: fh, fb",
+    )
+end
+
+
+"""
+2D cell interface with 3 distribution functions
+
+@vars: len, n, fw, fh, fb
+
+@new: `Interface2D3F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)`
+
+"""
+mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
+
+    len::A
+    n::B
+    fw::C
+    fh0::D
+    fh1::D
+    fh2::D
+    femL::E
+    femR::E
+    femLU::E
+    femLD::E
+    femRU::E
+    femRD::E
+
+    function Interface2D3F(
+        L::Real,
+        C::Real,
+        S::Real,
+        w::AbstractArray,
+        f::AbstractArray,
+        E::AbstractArray{<:Real,1},
+    )
+        len = L
+        n = [C, S]
+
+        fw = zero(w)
+        fh0 = zero(f)
+        fh1 = zero(f)
+        fh2 = zero(f)
+        femL = zeros(eltype(E), 8)
+        femR = zeros(eltype(E), 8)
+        femLU = zeros(eltype(E), 8)
+        femLD = zeros(eltype(E), 8)
+        femRU = zeros(eltype(E), 8)
+        femRD = zeros(eltype(E), 8)
+
+        new{typeof(len),typeof(n),typeof(fw),typeof(fh0),typeof(femL)}(
+            len,
+            n,
+            fw,
+            fh0,
+            fh1,
+            fh2,
+            femL,
+            femR,
+            femLU,
+            femLD,
+            femRU,
+            femRD,
+        )
+    end
+
+    function Interface2D3F(
+        L::Real,
+        C::Real,
+        S::Real,
+        w::AbstractArray,
+        f::AbstractArray,
+        E::AbstractArray{<:Real,2},
+    )
+        len = L
+        n = [C, S]
+
+        fw = zero(w)
+        fh0 = zero(f)
+        fh1 = zero(f)
+        fh2 = zero(f)
+        femL = zeros(eltype(E), 8, axes(E, 2))
+        femR = zeros(eltype(E), 8, axes(E, 2))
+        femLU = zeros(eltype(E), 8, axes(E, 2))
+        femLD = zeros(eltype(E), 8, axes(E, 2))
+        femRU = zeros(eltype(E), 8, axes(E, 2))
+        femRD = zeros(eltype(E), 8, axes(E, 2))
+
+        new{typeof(len),typeof(n),typeof(fw),typeof(fh0),typeof(femL)}(
+            len,
+            n,
+            fw,
+            fh0,
+            fh1,
+            fh2,
+            femL,
+            femR,
+            femLU,
+            femLD,
+            femRU,
+            femRD,
+        )
+    end
+
+    # Rykov
+    function Interface2D3F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+        len = L
+        n = [C, S]
+
+        fw = zero(w)
+        fh0 = zero(f)
+        fh1 = zero(f)
+        fh2 = zero(f)
+
+        femL = nothing
+        femR = nothing
+        femLU = nothing
+        femLD = nothing
+        femRU = nothing
+        femRD = nothing
+
+        new{typeof(len),typeof(n),typeof(fw),typeof(fh0),typeof(femL)}(
+            len,
+            n,
+            fw,
+            fh0,
+            fh1,
+            fh2,
+            femL,
+            femR,
+            femLU,
+            femLD,
+            femRU,
+            femRD,
+        )
+    end
+
+end
+
+function Base.show(io::IO, ctr::Interface2D3F{A,B,C,D,E}) where {A,B,C,D,E}
+    print(
+        io,
+        "Interface2D3F{$A,$B,$C}\n",
+        "length: $(ctr.len)\n",
+        "normal vector: ($(ctr.n[1]),$(ctr.n[2]))\n",
+        "conservative fluxes: $(ctr.fw)\n",
+        "pdf fluxes: fh0, fh1, fh2\n",
+        "electromagnetic fluxes: femL, femR, femLU, femLD, femRU, femRD\n",
+    )
 end
