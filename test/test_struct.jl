@@ -43,13 +43,15 @@ KitBase.Plasma2D(
     1.0,
 )
 
-prim = [1.0, 0.0, 1.0]
-w = KitBase.prim_conserve(prim, 1.4)
-u = Float64.(collect(umin:nu:umax)) # u should be float
-h = KitBase.maxwellian(u, prim)
-b = h .* inK ./ (2.0 * prim[end])
-x = Float64(x0) # x & dx should be of same type
-dx = x0 / nx
+begin
+    prim = [1.0, 0.0, 1.0]
+    w = KitBase.prim_conserve(prim, 1.4)
+    u = Float64.(collect(umin:nu:umax)) # u should be float
+    h = KitBase.maxwellian(u, prim)
+    b = h .* inK ./ (2.0 * prim[end])
+    x = Float64(x0) # x & dx should be of same type
+    dx = x0 / nx
+end
 
 KitBase.IB(w, prim, prim, w, prim, prim)
 KitBase.IB(
@@ -133,6 +135,8 @@ KitBase.ControlVolume1D3F(
     zeros(3, 7),
     zeros(3, 7, 2),
 )
+# Rykov
+KitBase.ControlVolume1D3F(x, dx, rand(4), rand(5), rand(nu), rand(nu), rand(nu))
 KitBase.ControlVolume1D4F(
     x,
     dx,
@@ -163,6 +167,18 @@ KitBase.ControlVolume2D(x, dx, x, dx, w, prim)
 KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h)
 KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b)
 KitBase.ControlVolume2D3F(x, dx, x, dx, w, prim, h, b, b, zeros(3), zeros(3), zeros(3, 2))
+# Rykov
+KitBase.ControlVolume2D3F(
+    x,
+    dx,
+    x,
+    dx,
+    rand(4),
+    rand(4),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+)
 
 #--- interface ---#
 KitBase.Interface1D(w)

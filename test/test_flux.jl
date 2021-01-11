@@ -1,24 +1,26 @@
-inK = 2.0
-γ = 5 / 3
-wL = [1.13, 0.13, 0.8]
-wR = [0.3, -0.2, 1.5]
-primL = KitBase.conserve_prim(wL, γ)
-primR = KitBase.conserve_prim(wR, γ)
+begin
+    inK = 2.0
+    γ = 5 / 3
+    wL = [1.13, 0.13, 0.8]
+    wR = [0.3, -0.2, 1.5]
+    primL = KitBase.conserve_prim(wL, γ)
+    primR = KitBase.conserve_prim(wR, γ)
 
-u = collect(-5.0:0.2:5.0)
-ω = ones(length(u)) / length(u)
+    u = collect(-5.0:0.2:5.0)
+    ω = ones(length(u)) / length(u)
 
-hL = KitBase.maxwellian(u, primL)
-bL = hL .* inK ./ (2.0 * primL[end])
-hR = KitBase.maxwellian(u, primR)
-bR = hR .* inK ./ (2.0 * primR[end])
+    hL = KitBase.maxwellian(u, primL)
+    bL = hL .* inK ./ (2.0 * primL[end])
+    hR = KitBase.maxwellian(u, primR)
+    bR = hR .* inK ./ (2.0 * primR[end])
 
-dt = 1e-3
-dx = 1e-2
+    dt = 1e-3
+    dx = 1e-2
 
-fw = similar(wL)
-fh = similar(hL)
-fb = similar(bL)
+    fw = similar(wL)
+    fh = similar(hL)
+    fb = similar(bL)
+end
 
 #--- fluid flux ---#
 KitBase.flux_lax!(fw, wL, wR, γ, dt, dx)
@@ -160,6 +162,7 @@ KitBase.flux_kfvs!(
     ones(16, 2),
     dt,
 )
+KitBase.flux_kfvs!(zeros(4), fh, fb, zero(fh), hL, bL, bL, hR, bR, bR, u, ω, dt) # Rykov
 KitBase.flux_kfvs!(
     zeros(5),
     zeros(16, 16, 16),
@@ -487,14 +490,7 @@ KitBase.flux_boundary_maxwell!(
     dx,
     1,
 )
-KitBase.flux_boundary_specular!(
-    zeros(3),
-    zeros(16),
-    rand(16),
-    randn(16),
-    ones(16),
-    dt,
-)
+KitBase.flux_boundary_specular!(zeros(3), zeros(16), rand(16), randn(16), ones(16), dt)
 KitBase.flux_boundary_specular!(
     zeros(3),
     zeros(16),

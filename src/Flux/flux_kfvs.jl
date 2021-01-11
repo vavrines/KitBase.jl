@@ -207,6 +207,64 @@ function flux_kfvs!(
 end
 
 # ------------------------------------------------------------
+# 3F1V flux (Rykov)
+# ------------------------------------------------------------
+function flux_kfvs!(
+    fw::X,
+    fh::Y,
+    fb::Y,
+    fr::Y,
+    hL::Z,
+    bL::Z,
+    rL::Z,
+    hR::Z,
+    bR::Z,
+    rR::Z,
+    u::A,
+    ω::A,
+    dt,
+    shL = zero(hL)::Z,
+    sbL = zero(bL)::Z,
+    srL = zero(rL)::Z,
+    shR = zero(hR)::Z,
+    sbR = zero(bR)::Z,
+    srR = zero(rR)::Z,
+) where {
+    X<:AbstractArray{<:AbstractFloat,1},
+    Y<:AbstractArray{<:AbstractFloat,1},
+    Z<:AbstractArray{<:AbstractFloat,1},
+    A<:AbstractArray{<:AbstractFloat,1},
+}
+
+    # upwind reconstruction
+    δ = heaviside.(u)
+
+    h = @. hL * δ + hR * (1.0 - δ)
+    b = @. bL * δ + bR * (1.0 - δ)
+    r = @. rL * δ + rR * (1.0 - δ)
+
+    sh = @. shL * δ + shR * (1.0 - δ)
+    sb = @. sbL * δ + sbR * (1.0 - δ)
+    sr = @. srL * δ + srR * (1.0 - δ)
+
+    # macro fluxes
+    fw[1] = dt * sum(ω .* u .* h) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* sh)
+    fw[2] = dt * sum(ω .* u .^ 2 .* h) - 0.5 * dt^2 * sum(ω .* u .^ 3 .* sh)
+    fw[3] =
+        dt * 0.5 * (sum(ω .* u .^ 3 .* h) + sum(ω .* u .* b)) -
+        0.5 * dt^2 * 0.5 * (sum(ω .* u .^ 4 .* sh) + sum(ω .* u .^ 2 .* sb))
+    fw[4] = dt * 0.5* sum(ω .* u .* r) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* sr)
+
+    # micro fluxes
+    @. fh = dt * u * h - 0.5 * dt^2 * u^2 * sh
+    @. fb = dt * u * b - 0.5 * dt^2 * u^2 * sb
+    @. fr = dt * u * r - 0.5 * dt^2 * u^2 * sr
+
+    return nothing
+
+end
+
+# ------------------------------------------------------------
 # 1F3V flux
 # ------------------------------------------------------------
 function flux_kfvs!(

@@ -442,6 +442,49 @@ discrete_moments(
 
 
 """
+Calculate pressure from particle distribution function
+
+"""
+pressure(
+    f::X,
+    prim::Y,
+    u::Z,
+    ω::Z,
+) where {
+    X<:AbstractArray{<:AbstractFloat,1},
+    Y<:AbstractArray{<:Real,1},
+    Z<:AbstractArray{<:AbstractFloat,1},
+} = sum(@. ω * (u - prim[2])^2 * f)
+
+pressure(
+    h::X,
+    b::X,
+    prim::Y,
+    u::Z,
+    ω::Z,
+    K,
+) where {
+    X<:AbstractArray{<:AbstractFloat,1},
+    Y<:AbstractArray{<:Real,1},
+    Z<:AbstractArray{<:AbstractFloat,1},
+} = (sum(@. ω * (u - prim[2])^2 * h) + sum(@. ω * b)) / (K + 1.0)
+
+pressure(
+    h::X,
+    b::X,
+    prim::Y,
+    u::Z,
+    v::Z,
+    ω::Z,
+    K,
+) where {
+    X<:AbstractArray{<:AbstractFloat,2},
+    Y<:AbstractArray{<:Real,1},
+    Z<:AbstractArray{<:AbstractFloat,2},
+} = (sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2) * h) + sum(@. ω * b)) / (K + 2.0)
+
+
+"""
 Calculate stress tensor from particle distribution function
 
 """
@@ -508,6 +551,29 @@ heat_flux(
     Z<:AbstractArray{<:AbstractFloat,1},
 } = 0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
 
+#--- 3F1V (Rykov) ---#
+function heat_flux(
+    h::X,
+    b::X,
+    r::X,
+    prim::Y,
+    u::Z,
+    ω::Z,
+) where {
+    X<:AbstractArray{<:AbstractFloat,1},
+    Y<:AbstractArray{<:Real,1},
+    Z<:AbstractArray{<:AbstractFloat,1},
+}
+
+    q = similar(h, 2)
+
+    q[1] = 0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
+    q[2] = 0.5 * (sum(@. ω * (u - prim[2]) * r))
+
+    return q
+
+end
+
 #--- 1F2V ---#
 function heat_flux(
     h::X,
@@ -555,6 +621,40 @@ function heat_flux(
             sum(@. ω * (v - prim[3]) * ((u - prim[2])^2 + (v - prim[3])^2) * h) +
             sum(@. ω * (v - prim[3]) * b)
         )
+
+    return q
+
+end
+
+#--- 3F2V (Rykov) ---#
+function heat_flux(
+    h::X,
+    b::X,
+    r::X,
+    prim::Y,
+    u::Z,
+    v::Z,
+    ω::Z,
+) where {
+    X<:AbstractArray{<:AbstractFloat,2},
+    Y<:AbstractArray{<:Real,1},
+    Z<:AbstractArray{<:AbstractFloat,2},
+}
+
+    q = similar(h, 4)
+
+    q[1] =
+        0.5 * (
+            sum(@. ω * (u - prim[2]) * ((u - prim[2])^2 + (v - prim[3])^2) * h) +
+            sum(@. ω * (u - prim[2]) * b)
+        )
+    q[2] =
+        0.5 * (
+            sum(@. ω * (v - prim[3]) * ((u - prim[2])^2 + (v - prim[3])^2) * h) +
+            sum(@. ω * (v - prim[3]) * b)
+        )
+    q[3] = 0.5 * sum(@. ω * (u - prim[2]) * r)
+    q[4] = 0.5 * sum(@. ω * (v - prim[3]) * r)
 
     return q
 

@@ -3,10 +3,12 @@
 # ============================================================
 
 """
+    heat_capacity_ratio(K, D::T) where {T<:Integer}
+
 Calculate heat capacity ratio
 
 """
-function heat_capacity_ratio(K::Real, D::Int)
+function heat_capacity_ratio(K, D::T) where {T<:Integer}
 
     if D == 1
         γ = (K + 3.0) / (K + 1.0)
@@ -20,6 +22,21 @@ function heat_capacity_ratio(K::Real, D::Int)
 
 end
 
+#--- diatomic ---#
+function heat_capacity_ratio(K, Nr, D::T) where {T<:Integer}
+
+    if D == 1
+        γ = (K + 3.0 + Nr) / (K + 1.0 + Nr)
+    elseif D == 2
+        γ = (K + 4.0 + Nr) / (K + 2.0 + Nr)
+    elseif D == 3
+        γ = (K + 5.0 + Nr) / (K + 3.0 + Nr)
+    end
+
+    return γ
+
+end
+
 
 """
 Calculate speed of sound
@@ -27,10 +44,10 @@ Calculate speed of sound
 """
 sound_speed(λ::Real, γ::Real) = (0.5 * γ / λ)^0.5
 
-sound_speed(prim::AbstractArray{<:Real,1}, γ::Real) = sound_speed(prim[end], γ)
+sound_speed(prim::T, γ) where {T<:AbstractArray{<:Real,1}} = sound_speed(prim[end], γ)
 
-
-function sound_speed(prim::AbstractArray{<:Real,2}, γ::Real)
+# mixture
+function sound_speed(prim::T, γ) where {T<:AbstractArray{<:Real,2}}
     c = similar(prim, axes(prim, 2))
     for j in eachindex(c)
         c[j] = sound_speed(prim[end, j], γ)

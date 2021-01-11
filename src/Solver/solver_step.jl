@@ -27,9 +27,7 @@ function step!(
     dx,
     RES,
     AVG,
-) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
-
-    #// 1D0F
+) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}} # 1D0F
 
     #--- store W^n and calculate H^n,\tau^n ---#
     w_old = deepcopy(w)
@@ -41,6 +39,8 @@ function step!(
     #--- record residuals ---#
     @. RES += (w - w_old)^2
     @. AVG += abs(w)
+
+    return nothing
 
 end
 
@@ -346,6 +346,123 @@ function step!(
     #--- record residuals ---#
     @. RES += (w_old - w)^2
     @. AVG += abs(w)
+
+end
+
+#--- 1D3F1V (Rykov) ---#
+function step!(
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
+    frL::T2,
+    w::T3,
+    prim::T3,
+    h::T4,
+    b::T4,
+    r::T4,
+    fwR::T1,
+    fhR::T2,
+    fbR::T2,
+    frR::T2,
+    u::T5,
+    weights::T5,
+    K,
+    Kr,
+    μᵣ,
+    ω,
+    Pr,
+    T₀,
+    Z₀,
+    σ,
+    ω0,
+    ω1,
+    dx,
+    dt,
+    RES,
+    AVG,
+    collision = :rykov::Symbol,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,1},
+    T3<:AbstractArray{<:Real,1},
+    T4<:AbstractArray{<:AbstractFloat,1},
+    T5<:AbstractArray{<:AbstractFloat,1},
+}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    if collision == :rykov
+        q = heat_flux(h, b, r, prim, u, weights)
+    else
+        q = zeros(2)
+    end
+
+    #--- update W^{n+1} ---#
+    @. w += (fwL - fwR) / dx
+
+    MHT = similar(h)
+    MBT = similar(b)
+    MRT = similar(r)
+    MHR = similar(h)
+    MBR = similar(b)
+    MRR = similar(r)
+    maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, u, prim, K, Kr)
+    τ_old = vhs_collision_time(prim[1:end-1], μᵣ, ω)
+    Zr = rykov_zr(1.0 / prim[4], T₀, Z₀)
+    Er0_old = 0.5 * sum(@. weights * ((1.0 / Zr) * MRR + (1.0 - 1.0 / Zr) * MRT))
+    
+    w[4] += dt * (Er0_old - w_old[4]) / τ_old
+    prim .= conserve_prim(w, K, Kr)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+    #--- calculate M^{n+1} and tau^{n+1} ---#
+    maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, u, prim, K, Kr)
+
+    SHT = similar(h)
+    SBT = similar(b)
+    SRT = similar(r)
+    SHR = similar(h)
+    SBR = similar(b)
+    SRR = similar(r)
+    rykov!(
+        SHT,
+        SBT,
+        SRT,
+        SHR,
+        SBR,
+        SRR,
+        u,
+        MHT,
+        MBT,
+        MRT,
+        MHR,
+        MBR,
+        MRR,
+        q,
+        prim,
+        Pr,
+        K,
+        σ,
+        ω0,
+        ω1,
+    )
+
+    MH = (1.0 - 1.0 / Zr) * (MHT + SHT) + 1.0 / Zr * (MHR + SHR)
+    MB = (1.0 - 1.0 / Zr) * (MBT + SBT) + 1.0 / Zr * (MBR + SBR)
+    MR = (1.0 - 1.0 / Zr) * (MRT + SRT) + 1.0 / Zr * (MRR + SRR)
+
+    τ = vhs_collision_time(prim[1:end-1], μᵣ, ω)
+
+    #--- update distribution function ---#
+    for i in eachindex(u)
+        h[i] = (h[i] + (fhL[i] - fhR[i]) / dx + dt / τ * MH[i]) / (1.0 + dt / τ)
+        b[i] = (b[i] + (fbL[i] - fbR[i]) / dx + dt / τ * MB[i]) / (1.0 + dt / τ)
+        r[i] = (r[i] + (frL[i] - frR[i]) / dx + dt / τ * MR[i]) / (1.0 + dt / τ)
+    end
 
 end
 

@@ -1,6 +1,6 @@
 # ============================================================
 # Structs of Control Volume
-# array of struct -> simulation
+# Solver stores data in arrays of struct (AoS)
 # ============================================================
 
 # ------------------------------------------------------------
@@ -16,25 +16,34 @@
 
 """
 mutable struct ControlVolume1D{F,A} <: AbstractControlVolume1D
-
     x::F
     dx::F
-
     w::A
     prim::A
     sw::A
+end
 
-    function ControlVolume1D(X::Real, DX::Real, W::AbstractArray, PRIM::AbstractArray)
-        x = deepcopy(X)
-        dx = deepcopy(DX)
+function ControlVolume1D(X::Real, DX::Real, W::AbstractArray, PRIM::AbstractArray)
+    x = deepcopy(X)
+    dx = deepcopy(DX)
 
-        w = deepcopy(W)
-        prim = deepcopy(PRIM)
-        sw = zeros(typeof(W[1]), axes(w))
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    sw = zero(W)
 
-        new{typeof(x),typeof(w)}(x, dx, w, prim, sw)
-    end
+    return ControlVolume1D{typeof(x),typeof(w)}(x, dx, w, prim, sw)
+end
 
+function Base.show(io::IO, ctr::ControlVolume1D{F,A}) where {F,A}
+    print(
+        io,
+        "ControlVolume1D{$F,$A}\n",
+        "center: $(ctr.x)\n",
+        "interval: $(ctr.dx)\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+    )
 end
 
 
@@ -78,6 +87,20 @@ mutable struct ControlVolume1D1F{F,A,B} <: AbstractControlVolume1D
         new{typeof(x),typeof(w),typeof(f)}(x, dx, w, prim, sw, f, sf)
     end
 
+end
+
+function Base.show(io::IO, ctr::ControlVolume1D1F{F,A,B}) where {F,A,B}
+    print(
+        io,
+        "ControlVolume1D1F{$F,$A,$B}\n",
+        "center: $(ctr.x)\n",
+        "interval: $(ctr.dx)\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: f\n",
+        "pdf slopes: sf\n",
+    )
 end
 
 
@@ -128,6 +151,20 @@ mutable struct ControlVolume1D2F{F,A,B} <: AbstractControlVolume1D
 
     end
 
+end
+
+function Base.show(io::IO, ctr::ControlVolume1D2F{F,A,B}) where {F,A,B}
+    print(
+        io,
+        "ControlVolume1D2F{$F,$A,$B}\n",
+        "center: $(ctr.x)\n",
+        "interval: $(ctr.dx)\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: h, b\n",
+        "pdf slopes: sh, sb\n",
+    )
 end
 
 
@@ -214,6 +251,56 @@ mutable struct ControlVolume1D3F{F,A,B,C,D,E} <: AbstractControlVolume1D
         )
     end
 
+    # Rykov
+    function ControlVolume1D3F(
+        X::Real,
+        DX::Real,
+        W::AbstractArray{<:Real,1},
+        PRIM::AbstractArray{<:Real,1},
+        H0::AbstractArray{<:AbstractFloat,1},
+        H1::AbstractArray{<:AbstractFloat,1},
+        H2::AbstractArray{<:AbstractFloat,1},
+    )
+        x = deepcopy(X)
+        dx = deepcopy(DX)
+
+        w = deepcopy(W)
+        prim = deepcopy(PRIM)
+        sw = zeros(eltype(H0), axes(W))
+
+        h0 = deepcopy(H0)
+        h1 = deepcopy(H1)
+        h2 = deepcopy(H2)
+        sh0 = zeros(eltype(H0), axes(H0))
+        sh1 = zeros(eltype(H1), axes(H1))
+        sh2 = zeros(eltype(H2), axes(H2))
+
+        E = nothing
+        B = nothing
+        ϕ = nothing
+        ψ = nothing
+        lorenz = nothing
+
+        new{typeof(x),typeof(w),typeof(h0),typeof(E),typeof(ϕ),typeof(lorenz)}(
+            x,
+            dx,
+            w,
+            prim,
+            sw,
+            h0,
+            h1,
+            h2,
+            sh0,
+            sh1,
+            sh2,
+            E,
+            B,
+            ϕ,
+            ψ,
+            lorenz,
+        )
+    end
+
     # stochastic
     function ControlVolume1D3F(
         X::Real,
@@ -267,6 +354,23 @@ mutable struct ControlVolume1D3F{F,A,B,C,D,E} <: AbstractControlVolume1D
         )
     end
 
+end
+
+function Base.show(io::IO, ctr::ControlVolume1D3F{F,A,B,C,D,E}) where {F,A,B,C,D,E}
+    print(
+        io,
+        "ControlVolume1D3F{$F,$A,$B,$C,$D,$E}\n",
+        "center: $(ctr.x)\n",
+        "interval: $(ctr.dx)\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: h0, h1, h2\n",
+        "pdf slopes: sh0, sh1, sh2\n",
+        "electric field: $(ctr.E)\n",
+        "magnetic field: $(ctr.B)\n",
+        "Lorenz force: $(ctr.lorenz)\n",
+    )
 end
 
 
@@ -424,6 +528,23 @@ mutable struct ControlVolume1D4F{F,A,B,C,D,E} <: AbstractControlVolume1D
 
 end
 
+function Base.show(io::IO, ctr::ControlVolume1D4F{F,A,B,C,D,E}) where {F,A,B,C,D,E}
+    print(
+        io,
+        "ControlVolume1D4F{$F,$A,$B,$C,$D,$E}\n",
+        "center: $(ctr.x)\n",
+        "interval: $(ctr.dx)\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: h0, h1, h2, h3\n",
+        "pdf slopes: sh0, sh1, sh2, sh3\n",
+        "electric field: $(ctr.E)\n",
+        "magnetic field: $(ctr.B)\n",
+        "Lorenz force: $(ctr.lorenz)\n",
+    )
+end
+
 # ------------------------------------------------------------
 # 2D
 # ------------------------------------------------------------
@@ -469,6 +590,18 @@ mutable struct ControlVolume2D{F,A,B} <: AbstractControlVolume2D
 
     end
 
+end
+
+function Base.show(io::IO, ctr::ControlVolume2D{F,A,B}) where {F,A,B}
+    print(
+        io,
+        "ControlVolume2D{$F,$A,$B}\n",
+        "center: ($(ctr.x),$(ctr.y))\n",
+        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+    )
 end
 
 
@@ -530,6 +663,20 @@ mutable struct ControlVolume2D1F{F,A,B,C,D} <: AbstractControlVolume2D
 
     end
 
+end
+
+function Base.show(io::IO, ctr::ControlVolume2D1F{F,A,B,C,D}) where {F,A,B,C,D}
+    print(
+        io,
+        "ControlVolume2D1F{$F,$A,$B,$C,$D}\n",
+        "center: ($(ctr.x),$(ctr.y))\n",
+        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: f\n",
+        "pdf slopes: sf\n",
+    )
 end
 
 
@@ -600,6 +747,20 @@ mutable struct ControlVolume2D2F{F,A,B,C,D} <: AbstractControlVolume2D
 
 end
 
+function Base.show(io::IO, ctr::ControlVolume2D2F{F,A,B,C,D}) where {F,A,B,C,D}
+    print(
+        io,
+        "ControlVolume2D2F{$F,$A,$B,$C,$D}\n",
+        "center: ($(ctr.x),$(ctr.y))\n",
+        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: h, b\n",
+        "pdf slopes: sh, sb\n",
+    )
+end
+
 
 """
 2D control volume with 3 distribution functions
@@ -609,29 +770,29 @@ end
 - @vars: x, y, dx, dy, w, prim, sw, h0, h1, h2, sh0, sh1, sh2, E, B, ϕ, ψ, lorenz
 
 """
-mutable struct ControlVolume2D3F{F,A,B,C,D,E,F,G} <: AbstractControlVolume2D
+mutable struct ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
 
-    x::F
-    y::F
-    dx::F
-    dy::F
+    x::T1
+    y::T1
+    dx::T1
+    dy::T1
 
-    w::A
-    prim::A
-    sw::B
+    w::T2
+    prim::T2
+    sw::T3
 
-    h0::C
-    h1::C
-    h2::C
-    sh0::D
-    sh1::D
-    sh2::D
+    h0::T4
+    h1::T4
+    h2::T4
+    sh0::T5
+    sh1::T5
+    sh2::T5
 
-    E::E
-    B::E
-    ϕ::F
-    ψ::F
-    lorenz::G
+    E::T6
+    B::T6
+    ϕ::T7
+    ψ::T7
+    lorenz::T8
 
     # deterministic & stochastic
     function ControlVolume2D3F(
@@ -701,4 +862,89 @@ mutable struct ControlVolume2D3F{F,A,B,C,D,E,F,G} <: AbstractControlVolume2D
         )
     end
 
+    # Rykov
+    function ControlVolume2D3F(
+        X::Real,
+        DX::Real,
+        Y::Real,
+        DY::Real,
+        W::AbstractArray{<:Real,1},
+        PRIM::AbstractArray{<:Real,1},
+        H0::AbstractArray{<:AbstractFloat,2},
+        H1::AbstractArray{<:AbstractFloat,2},
+        H2::AbstractArray{<:AbstractFloat,2},
+    )
+        x = deepcopy(X)
+        dx = deepcopy(DX)
+        y = deepcopy(Y)
+        dy = deepcopy(DY)
+
+        w = deepcopy(W)
+        prim = deepcopy(PRIM)
+        sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
+
+        h0 = deepcopy(H0)
+        h1 = deepcopy(H1)
+        h2 = deepcopy(H2)
+        sh0 = zeros(eltype(H0), (axes(H0)..., Base.OneTo(2)))
+        sh1 = zeros(eltype(H1), (axes(H1)..., Base.OneTo(2)))
+        sh2 = zeros(eltype(H2), (axes(H2)..., Base.OneTo(2)))
+
+        E = nothing
+        B = nothing
+        ϕ = nothing
+        ψ = nothing
+        lorenz = nothing
+
+        new{
+            typeof(x),
+            typeof(w),
+            typeof(sw),
+            typeof(h0),
+            typeof(sh2),
+            typeof(E),
+            typeof(ϕ),
+            typeof(lorenz),
+        }(
+            x,
+            dx,
+            y,
+            dy,
+            w,
+            prim,
+            sw,
+            h0,
+            h1,
+            h2,
+            sh0,
+            sh1,
+            sh2,
+            E,
+            B,
+            ϕ,
+            ψ,
+            lorenz,
+        )
+    end
+
+end
+
+function Base.show(
+    io::IO,
+    ctr::ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7,T8},
+) where {T1,T2,T3,T4,T5,T6,T7,T8}
+    print(
+        io,
+        "ControlVolume2D3F{$T1,$T2,$T3,$T4,$T5,$T6,$T7,$T8}\n",
+        "center: ($(ctr.x),$(ctr.y))\n",
+        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: h0, h1, h2\n",
+        "pdf slopes: sh0, sh1, sh2\n",
+        "electric field: $(ctr.E)\n",
+        "magnetic field: $(ctr.B)\n",
+        "Lorenz force: $(ctr.lorenz)\n",
+    )
 end

@@ -12,6 +12,12 @@ KitBase.conserve_prim(prim, 3.0)
 KitBase.conserve_prim(prim[1], prim[2], prim[3], 3.0)
 KitBase.mixture_conserve_prim(mprim, 3.0)
 
+# Rykov
+KitBase.prim_conserve([1.0, 0.0, 1.0, 1.0, 1.0], 5 / 3, 2)
+KitBase.prim_conserve([1.0, 0.0, 0.0, 1.0, 1.0, 1.0], 5 / 3, 2)
+KitBase.conserve_prim([1.0, 0.0, 1.0, 0.1], 5 / 3, 2)
+KitBase.conserve_prim([1.0, 0.0, 0.0, 1.0, 0.1], 5 / 3, 2)
+
 prim = [1.0, 0.2, 0.3, -0.1, 1.0]
 mprim = hcat(prim, prim)
 KitBase.em_coefficients(mprim, randn(3), randn(3), 100, 0.01, 0.01, 0.001)
@@ -20,6 +26,18 @@ KitBase.advection_flux(1.0, -0.1)
 KitBase.burgers_flux(1.0)
 KitBase.euler_flux(prim, 3.0)
 KitBase.euler_jacobi(prim, 3.0)
+
+#--- thermo ---#
+KitBase.heat_capacity_ratio(2.0, 1)
+KitBase.heat_capacity_ratio(2.0, 2)
+KitBase.heat_capacity_ratio(2.0, 3)
+KitBase.heat_capacity_ratio(2.0, 2, 1)
+KitBase.heat_capacity_ratio(2.0, 2, 2)
+KitBase.heat_capacity_ratio(2.0, 2, 3)
+
+KitBase.sound_speed(1.0, 5 / 3)
+KitBase.sound_speed([1.0, 0.0, 1.0], 5 / 3)
+KitBase.sound_speed(rand(3, 2), 5 / 3)
 
 #--- atom ---#
 KitBase.pdf_slope(1.0, 0.1)
@@ -126,6 +144,79 @@ KitBase.shakhov!(
     1.0,
 )
 
+# Rykov
+KitBase.maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    rand(5),
+    4,
+    2,
+)
+KitBase.maxwellian!(
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    randn(8, 8),
+    randn(8, 8),
+    rand(6),
+    4,
+    2,
+)
+
+KitBase.rykov!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(16),
+    rand(2),
+    rand(5),
+    0.72,
+    4,
+    1 / 1.55,
+    0.2354,
+    0.3049,
+)
+KitBase.rykov!(
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    zeros(8, 8),
+    randn(8, 8),
+    randn(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(8, 8),
+    rand(4),
+    rand(6),
+    0.72,
+    4,
+    1 / 1.55,
+    0.2354,
+    0.3049,
+)
+
 KitBase.reduce_distribution(randn(16, 51), ω, 1)
 KitBase.reduce_distribution(randn(16, 24, 24), ones(24, 24), 1)
 KitBase.reduce_distribution(
@@ -139,25 +230,19 @@ KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), 1.0, 
 KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), prim, 3.0)
 
 KitBase.ref_vhs_vis(1.0, 1.0, 0.5)
+KitBase.vhs_collision_time(prim[1], prim[end], 1e-3, 0.81)
 KitBase.vhs_collision_time(prim, 1e-3, 0.81)
+
+KitBase.rykov_zr(100, 91.5, 18.1)
+
 KitBase.hs_boltz_kn(1e-3, 1.0)
 phi, psi, phipsi =
     KitBase.kernel_mode(5, 5.0, 5.0, 5.0, 0.1, 0.1, 0.1, 16, 16, 16, 1.0, quad_num = 16)
 KitBase.boltzmann_fft(rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
 KitBase.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
 
-KitBase.boltzmann_ode!(
-    zeros(16, 16, 16),
-    rand(16, 16, 16),
-    (1.0, 5, phi, psi, phipsi),
-    0.0,
-)
-KitBase.bgk_ode!(
-    zeros(16, 16, 16),
-    rand(16, 16, 16),
-    (rand(16, 16, 16), 1e-2),
-    0.0,
-)
+KitBase.boltzmann_ode!(zeros(16, 16, 16), rand(16, 16, 16), (1.0, 5, phi, psi, phipsi), 0.0)
+KitBase.bgk_ode!(zeros(16, 16, 16), rand(16, 16, 16), (rand(16, 16, 16), 1e-2), 0.0)
 
 τ = KitBase.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)
