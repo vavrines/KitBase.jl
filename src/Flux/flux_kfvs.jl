@@ -247,7 +247,7 @@ function flux_kfvs!(
     sb = @. sbL * δ + sbR * (1.0 - δ)
     sr = @. srL * δ + srR * (1.0 - δ)
 
-    # calculate fluxes
+    # macro fluxes
     fw[1] = dt * sum(ω .* u .* h) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* sh)
     fw[2] = dt * sum(ω .* u .^ 2 .* h) - 0.5 * dt^2 * sum(ω .* u .^ 3 .* sh)
     fw[3] =
@@ -255,6 +255,7 @@ function flux_kfvs!(
         0.5 * dt^2 * 0.5 * (sum(ω .* u .^ 4 .* sh) + sum(ω .* u .^ 2 .* sb))
     fw[4] = dt * 0.5* sum(ω .* u .* r) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* sr)
 
+    # micro fluxes
     @. fh = dt * u * h - 0.5 * dt^2 * u^2 * sh
     @. fb = dt * u * b - 0.5 * dt^2 * u^2 * sb
     @. fr = dt * u * r - 0.5 * dt^2 * u^2 * sr

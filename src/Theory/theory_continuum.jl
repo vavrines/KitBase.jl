@@ -176,8 +176,8 @@ function conserve_prim(w::T, K, Kr) where {T<:AbstractArray{<:Real,1}}
     if length(w) == 4 # 1D
         prim[1] = w[1]
         prim[2] = w[2] / w[1]
-        prim[3] = 0.25 * w[1] * (K + Kr + 2.0) / (w[3] - 0.5 * w[2]^2 / w[1])
-        prim[4] = 0.25 * w[1] * (K + 2.0) / (w[3] - w[4] - 0.5 * w[2]^2 / w[1])
+        prim[3] = 0.25 * w[1] * (K + Kr + 1.0) / (w[3] - 0.5 * w[2]^2 / w[1])
+        prim[4] = 0.25 * w[1] * (K + 1.0) / (w[3] - w[4] - 0.5 * w[2]^2 / w[1])
         prim[5] = 0.25 * w[1] * Kr / w[4]
     elseif length(w) == 5 # 2D
         prim[1] = w[1]

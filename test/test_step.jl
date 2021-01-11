@@ -1,20 +1,24 @@
-fwL = zeros(3)
-fwR = zeros(3)
-γ = 5 / 3
-prim = [1.0, 0.0, 1.0]
-w = KitBase.prim_conserve(prim, γ)
-dx = 1e-2
-dt = 1e-3
-res = zeros(3)
-avg = zeros(3)
+begin
+    fwL = zeros(3)
+    fwR = zeros(3)
+    γ = 5 / 3
+    prim = [1.0, 0.0, 1.0]
+    w = KitBase.prim_conserve(prim, γ)
+    dx = 1e-2
+    dt = 1e-3
+    res = zeros(3)
+    avg = zeros(3)
+end
 
 KitBase.step!(fwL, w, prim, fwR, γ, dx, res, avg)
 
-ffL = zeros(16)
-ffR = zeros(16)
-f = rand(16)
-u = randn(16)
-ω = ones(16)
+begin
+    ffL = zeros(16)
+    ffR = zeros(16)
+    f = rand(16)
+    u = randn(16)
+    ω = ones(16)
+end
 
 KitBase.step!(fwL, ffL, w, prim, f, fwR, ffR, u, ω, γ, 1e-3, 0.72, 1.0, dx, dt, res, avg)
 
@@ -88,4 +92,38 @@ KitBase.step!(
     dt,
     hcat(res, res),
     hcat(avg, avg),
+)
+
+# Rykov
+KitBase.step!(
+    zeros(4),
+    ffL,
+    ffL,
+    ffL,
+    [1.0, 0.0, 1.0, 0.1],
+    KitBase.conserve_prim([1.0, 0.0, 1.0, 0.1], 2, 2),
+    f,
+    f,
+    f,
+    zeros(4),
+    ffR,
+    ffR,
+    ffR,
+    u,
+    ω,
+    2,
+    2,
+    1e-3,
+    0.81,
+    0.72,
+    91.5 / 273,
+    18.1,
+    1 / 1.55,
+    0.2354,
+    0.3049,
+    dx,
+    dt,
+    zeros(4),
+    zeros(4),
+    :rykov,
 )
