@@ -5,10 +5,10 @@
 """
 Initial & boundary condition with no distribution function
 
-    @consts: wL, primL, bcL, wR, primR, bcR, bcU, bcD
+@consts: wL, primL, bcL, wR, primR, bcR, bcU, bcD
 
 """
-struct IB{A,B} <: AbstractCondition
+mutable struct IB{A,B} <: AbstractCondition
 
     wL::A
     primL::A
@@ -74,10 +74,10 @@ end
 """
 Initial & boundary condition with 1 distribution function
 
-    @consts: wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD
+@consts: wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD
 
 """
-struct IB1F{A,B} <: AbstractCondition
+mutable struct IB1F{A,B} <: AbstractCondition
 
     wL::A
     primL::A
@@ -114,10 +114,10 @@ end
 """
 Initial & boundary condition with 2 distribution functions
 
-    @consts: wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR, bcU, bcD
+@consts: wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR, bcU, bcD
 
 """
-struct IB2F{A,B} <: AbstractCondition
+mutable struct IB2F{A,B} <: AbstractCondition
 
     # initial condition
     wL::A
@@ -158,10 +158,10 @@ end
 """
 Initial & boundary condition with 3 distribution functions
 
-    @consts: wL, primL, h0L, h1L, h2L, bcL, EL, BL, lorenzL, wR, primR, h0R, h1R, h2R, bcR, ER, BR, lorenzR, bcU, bcD
+@consts: wL, primL, h0L, h1L, h2L, bcL, EL, BL, lorenzL, wR, primR, h0R, h1R, h2R, bcR, ER, BR, lorenzR, bcU, bcD
 
 """
-struct IB3F{A,B,C,D} <: AbstractCondition
+mutable struct IB3F{A,B,C,D} <: AbstractCondition
 
     # initial/boundary condition
     wL::A
@@ -194,20 +194,20 @@ struct IB3F{A,B,C,D} <: AbstractCondition
         h1L::AbstractArray,
         h2L::AbstractArray,
         bcL::AbstractArray,
-        EL::AbstractArray,
-        BL::AbstractArray,
-        lorenzL::AbstractArray,
+        EL,
+        BL,
+        lorenzL,
         wR::AbstractArray,
         primR::AbstractArray,
         h0R::AbstractArray,
         h1R::AbstractArray,
         h2R::AbstractArray,
         bcR::AbstractArray,
-        ER::AbstractArray,
-        BR::AbstractArray,
-        lorenzR::AbstractArray,
-        bcU = deepcopy(bcR)::AbstractArray,
-        bcD = deepcopy(bcR)::AbstractArray,
+        ER,
+        BR,
+        lorenzR,
+        bcU = deepcopy(bcR),
+        bcD = deepcopy(bcR),
     )
         new{typeof(wL),typeof(h0L),typeof(EL),typeof(lorenzL)}(
             wL,
@@ -239,10 +239,10 @@ end
 """
 Initial & boundary condition with 4 distribution functions
 
-    @consts: wL, primL, h0L, h1L, h2L, h3L, bcL, EL, BL, lorenzL, wR, primR, h0R, h1R, h2R, h3R, bcR, ER, BR, lorenzR, bcU, bcD
+@consts: wL, primL, h0L, h1L, h2L, h3L, bcL, EL, BL, lorenzL, wR, primR, h0R, h1R, h2R, h3R, bcR, ER, BR, lorenzR, bcU, bcD
 
 """
-struct IB4F{A,B,C,D} <: AbstractCondition
+mutable struct IB4F{A,B,C,D} <: AbstractCondition
 
     # initial/boundary condition
     wL::A

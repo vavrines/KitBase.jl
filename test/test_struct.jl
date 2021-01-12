@@ -42,6 +42,23 @@ KitBase.Plasma2D(
     1.0,
     1.0,
 )
+KitBase.DiatomicGas(
+    knudsen,
+    mach,
+    prandtl,
+    inK,
+    inK,
+    1.4,
+    0.81,
+    1.0,
+    0.5,
+    1e-3,
+    89.1 / 273,
+    18.1,
+    1 / 1.55,
+    0.2354,
+    0.3049,
+)
 
 begin
     prim = [1.0, 0.0, 1.0]
