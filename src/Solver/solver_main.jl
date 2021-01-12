@@ -61,12 +61,11 @@ end # function
 
 
 """
-Timestep calculator
+    timestep(KS, ctr, simTime)
 
-* 1D solver: `timestep(KS::SolverSet, ctr::AbstractArray{<:AbstractControlVolume1D,1},
-    simTime::Real)`
+Calculate timestep
 
-* @return: Δt
+@return: Δt
 
 """
 function timestep(
@@ -97,6 +96,56 @@ function timestep(
                 tmax = max(tmax, vmax / ctr[i].dx, KS.gas.sol / ctr[i].dx)
             else
                 tmax = max(tmax, vmax / ctr[i].dx)
+            end
+        end
+
+    end
+
+    dt = KS.set.cfl / tmax
+    dt = ifelse(dt < (KS.set.maxTime - simTime), dt, KS.set.maxTime - simTime)
+
+    return dt
+
+end
+
+function timestep(
+    KS::X,
+    ctr::Y,
+    simTime,
+) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
+
+    tmax = 0.0
+
+    if KS.set.nSpecies == 1
+
+        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
+            for i = 1:KS.pSpace.nx
+                prim = ctr[i, j].prim
+                sos = sound_speed(prim, KS.gas.γ)
+                umax = max(KS.vSpace.u1, abs(prim[2])) + sos
+                vmax = max(KS.vSpace.v1, abs(prim[3])) + sos
+                tmax = max(tmax, umax / ctr[i, j].dx + vmax / ctr[i, j].dy)
+            end
+        end
+
+    elseif KS.set.nSpecies == 2
+
+        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
+            for i = 1:KS.pSpace.nx
+                prim = ctr[i, j].prim
+                sos = sound_speed(prim, KS.gas.γ)
+                umax = max(maximum(KS.vSpace.u1), maximum(abs.(prim[2, :]))) + sos
+                vmax = max(maximum(KS.vSpace.v1), maximum(abs.(prim[3, :]))) + sos
+
+                if KS.set.space[3:4] in ["3f", "4f"]
+                    tmax = max(
+                        tmax,
+                        umax / ctr[i, j].dx + vmax / ctr[i, j].dy,
+                        KS.gas.sol / ctr[i, j].dx + KS.gas.sol / ctr[i, j].dy
+                    )
+                else
+                    tmax = max(tmax, umax / ctr[i, j].dx + vmax / ctr[i, j].dy)
+                end
             end
         end
 

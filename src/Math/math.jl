@@ -310,7 +310,6 @@ Gauss Legendre integral for fast spectral method
 
 """
 function lgwt(N::Int, a::Real, b::Real)
-
     x = zeros(N)
     w = zeros(N)
 
@@ -349,7 +348,6 @@ function lgwt(N::Int, a::Real, b::Real)
     @. w = N2^2 * (b - a) / ((1.0 - y^2) * Lp^2) / N1^2
 
     return x, w
-
 end
 
 
