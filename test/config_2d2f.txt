@@ -1,38 +1,51 @@
 # ------------------------------------------------------------
-# Configuration of 1D shock structure
+# Configuration of 2D lid-driven cavity
 # ------------------------------------------------------------
 
 # setup
-case = shock
-space = 1d0f0v
+case = cavity
+space = 2d2f2v
 flux = kfvs
 collision = bgk
 nSpecies = 1
 interpOrder = 2
 limiter = vanleer
+boundary = maxwell
 cfl = 0.8
-maxTime = 50.0
+maxTime = 0.1
 
 # phase space
-x0 = -25.0
-x1 = 25.0
-nx = 50
+x0 = 0.0
+x1 = 1.0
+nx = 45
+y0 = 0.0
+y1 = 1.0
+ny = 45
 pMeshType = uniform
-nxg = 2
+nxg = 0
+nyg = 0
 
 # velocity space
 umin = -5.0
 umax = 5.0
-nu = 64
+nu = 28
+vmin = -5.0
+vmax = 5.0
+nv = 28
 vMeshType = rectangle
 nug = 0
+nvg = 0
 
 # gas
 knudsen = 1.0
-mach = 3.0
+mach = 2.0
 prandtl = 1.0
-inK = 2.0
-omega = 0.81
+inK = 1.0
+omega = 0.72
 alphaRef = 1.0
 omegaRef = 0.5
-mass = 0.001
+
+# boundary
+uLid = 0.15
+vLid = 0.0
+tLid = 1.0

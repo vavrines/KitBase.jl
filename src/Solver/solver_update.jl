@@ -298,6 +298,73 @@ function update!(
 
 end
 
+#--- 2d2f ---#
+function update!(
+    KS::X,
+    ctr::Y,
+    a1face::Z,
+    a2face::Z,
+    dt,
+    residual; # 1D / 2D
+    coll = :bgk::Symbol,
+    bc = :fix::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolume2D2F,2},
+    Z<:AbstractArray{Interface2D2F,2},
+}
+
+    sumRes = zero(KS.ib.wL)
+    sumAvg = zero(KS.ib.wL)
+
+    if ndims(sumRes) == 1
+
+        @inbounds Threads.@threads for j = 2:KS.pSpace.ny-1
+            for i = 2:KS.pSpace.nx-1
+                step!(
+                    ctr[i, j].w,
+                    ctr[i, j].prim,
+                    ctr[i, j].h,
+                    ctr[i, j].b,
+                    a1face[i, j].fw,
+                    a1face[i, j].fh,
+                    a1face[i, j].fb,
+                    a1face[i+1, j].fw,
+                    a1face[i+1, j].fh,
+                    a1face[i+1, j].fb,
+                    a2face[i, j].fw,
+                    a2face[i, j].fh,
+                    a2face[i, j].fb,
+                    a2face[i, j+1].fw,
+                    a2face[i, j+1].fh,
+                    a2face[i, j+1].fb,
+                    KS.vSpace.u,
+                    KS.vSpace.v,
+                    KS.vSpace.weights,
+                    KS.gas.K,
+                    KS.gas.γ,
+                    KS.gas.μᵣ,
+                    KS.gas.ω,
+                    KS.gas.Pr,
+                    ctr[i].dx * ctr[i].dy,
+                    dt,
+                    sumRes,
+                    sumAvg,
+                    coll,
+                )
+            end
+        end
+
+    end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx * KS.pSpace.ny) / (sumAvg[i] + 1.e-7)
+    end
+
+    update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+
+end
+
 
 function update_boundary!(
     KS::X,
@@ -672,6 +739,202 @@ function update_boundary!(
             throw("incorrect amount of distribution functions")
         end
     else
+    end
+
+end
+
+function update_boundary!(
+    KS::X,
+    ctr::Y,
+    a1face::Z,
+    a2face::Z,
+    dt,
+    residual;
+    coll::Symbol,
+    bc::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolume2D2F,2},
+    Z<:AbstractArray{Interface2D2F,2},
+}
+
+    resL = zero(KS.ib.wL)
+    avgL = zero(KS.ib.wL)
+    resR = zero(KS.ib.wL)
+    avgR = zero(KS.ib.wL)
+    resU = zero(KS.ib.wL)
+    avgU = zero(KS.ib.wL)
+    resD = zero(KS.ib.wL)
+    avgD = zero(KS.ib.wL)
+
+    if bc != :fix
+        for j = 1:KS.pSpace.ny
+            step!(
+                ctr[1, j].w,
+                ctr[1, j].prim,
+                ctr[1, j].h,
+                ctr[1, j].b,
+                a1face[1, j].fw,
+                a1face[1, j].fh,
+                a1face[1, j].fb,
+                a1face[2, j].fw,
+                a1face[2, j].fh,
+                a1face[2, j].fb,
+                a2face[1, j].fw,
+                a2face[1, j].fh,
+                a2face[1, j].fb,
+                a2face[1, j+1].fw,
+                a2face[1, j+1].fh,
+                a2face[1, j+1].fb,
+                KS.vSpace.u,
+                KS.vSpace.v,
+                KS.vSpace.weights,
+                KS.gas.K,
+                KS.gas.γ,
+                KS.gas.μᵣ,
+                KS.gas.ω,
+                KS.gas.Pr,
+                ctr[1, j].dx * ctr[1, j].dy,
+                dt,
+                resL,
+                avgL,
+                coll,
+            )
+
+            step!(
+                ctr[KS.pSpace.nx, j].w,
+                ctr[KS.pSpace.nx, j].prim,
+                ctr[KS.pSpace.nx, j].h,
+                ctr[KS.pSpace.nx, j].b,
+                a1face[KS.pSpace.nx, j].fw,
+                a1face[KS.pSpace.nx, j].fh,
+                a1face[KS.pSpace.nx, j].fb,
+                a1face[KS.pSpace.nx+1, j].fw,
+                a1face[KS.pSpace.nx+1, j].fh,
+                a1face[KS.pSpace.nx+1, j].fb,
+                a2face[KS.pSpace.nx, j].fw,
+                a2face[KS.pSpace.nx, j].fh,
+                a2face[KS.pSpace.nx, j].fb,
+                a2face[KS.pSpace.nx, j+1].fw,
+                a2face[KS.pSpace.nx, j+1].fh,
+                a2face[KS.pSpace.nx, j+1].fb,
+                KS.vSpace.u,
+                KS.vSpace.v,
+                KS.vSpace.weights,
+                KS.gas.K,
+                KS.gas.γ,
+                KS.gas.μᵣ,
+                KS.gas.ω,
+                KS.gas.Pr,
+                ctr[KS.pSpace.nx, j].dx * ctr[KS.pSpace.nx, j].dy,
+                dt,
+                resR,
+                avgR,
+                coll,
+            )
+        end
+
+        for i = 2:KS.pSpace.nx-1 # skip overlap
+            step!(
+                ctr[i, 1].w,
+                ctr[i, 1].prim,
+                ctr[i, 1].h,
+                ctr[i, 1].b,
+                a1face[i, 1].fw,
+                a1face[i, 1].fh,
+                a1face[i, 1].fb,
+                a1face[i+1, 1].fw,
+                a1face[i+1, 1].fh,
+                a1face[i+1, 1].fb,
+                a2face[i, 1].fw,
+                a2face[i, 1].fh,
+                a2face[i, 1].fb,
+                a2face[i, 2].fw,
+                a2face[i, 2].fh,
+                a2face[i, 2].fb,
+                KS.vSpace.u,
+                KS.vSpace.v,
+                KS.vSpace.weights,
+                KS.gas.K,
+                KS.gas.γ,
+                KS.gas.μᵣ,
+                KS.gas.ω,
+                KS.gas.Pr,
+                ctr[i, 1].dx * ctr[i, 1].dy,
+                dt,
+                resD,
+                avgD,
+                coll,
+            )
+
+            step!(
+                ctr[i, KS.pSpace.ny].w,
+                ctr[i, KS.pSpace.ny].prim,
+                ctr[i, KS.pSpace.ny].h,
+                ctr[i, KS.pSpace.ny].b,
+                a1face[i, KS.pSpace.ny].fw,
+                a1face[i, KS.pSpace.ny].fh,
+                a1face[i, KS.pSpace.ny].fb,
+                a1face[i+1, KS.pSpace.ny].fw,
+                a1face[i+1, KS.pSpace.ny].fh,
+                a1face[i+1, KS.pSpace.ny].fb,
+                a2face[i, KS.pSpace.ny].fw,
+                a2face[i, KS.pSpace.ny].fh,
+                a2face[i, KS.pSpace.ny].fb,
+                a2face[i, KS.pSpace.ny+1].fw,
+                a2face[i, KS.pSpace.ny+1].fh,
+                a2face[i, KS.pSpace.ny+1].fb,
+                KS.vSpace.u,
+                KS.vSpace.v,
+                KS.vSpace.weights,
+                KS.gas.K,
+                KS.gas.γ,
+                KS.gas.μᵣ,
+                KS.gas.ω,
+                KS.gas.Pr,
+                ctr[i, KS.pSpace.ny].dx * ctr[i, KS.pSpace.ny].dy,
+                dt,
+                resU,
+                avgU,
+                coll,
+            )
+        end
+    end
+
+    for i in eachindex(residual)
+        residual[i] += sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) / (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
+    end
+
+    ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    if bc == :extra
+        for i = 1:ngx, j = 1:KS.pSpace.ny
+            ctr[1-i, j].w .= ctr[1, j].w
+            ctr[1-i, j].prim .= ctr[1, j].prim
+            ctr[KS.pSpace.nx+i, j].w .= ctr[KS.pSpace.nx, j].w
+            ctr[KS.pSpace.nx+i, j].prim .= ctr[KS.pSpace.nx, j].prim
+
+            ctr[1-i, j].h .= ctr[1, j].h
+            ctr[1-i, j].b .= ctr[1, j].b
+            ctr[KS.pSpace.nx+i, j].h .= ctr[KS.pSpace.nx, j].h
+            ctr[KS.pSpace.nx+i, j].b .= ctr[KS.pSpace.nx, j].b            
+        end
+
+        for i = 1:KS.pSpace.nx, j = 1:ngy
+            ctr[i, 1-j].w .= ctr[i, 1].w
+            ctr[i, 1-j].prim .= ctr[i, 1].prim
+            ctr[i, KS.pSpace.ny+j].w .= ctr[i, KS.pSpace.ny].w
+            ctr[i, KS.pSpace.ny+j].prim .= ctr[i, KS.pSpace.ny].prim
+
+            ctr[i, 1-j].h .= ctr[i, 1].h
+            ctr[i, 1-j].b .= ctr[i, 1].b
+            ctr[i, KS.pSpace.ny+j].h .= ctr[i, KS.pSpace.ny].h
+            ctr[i, KS.pSpace.ny+j].b .= ctr[i, KS.pSpace.ny].b            
+        end
+    elseif bc == :period
+
+    elseif bc == :balance
+        
     end
 
 end

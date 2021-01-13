@@ -83,16 +83,16 @@ end
 
 
 """
-Write data into JLD2
-
     write_jld(KS, ctr, t)
+
+Write data into JLD2
 
 """
 function write_jld(
     KS::X,
     ctr::Y,
     t = 0,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
+) where {X<:AbstractSolverSet,Y}
 
     strIter = string(t)
     fileOut = KS.outputFolder * "data/t=" * strIter * ".jld2"

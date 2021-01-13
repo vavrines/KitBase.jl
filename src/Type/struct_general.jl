@@ -5,11 +5,10 @@
 """
 Computational setup
 
-    @consts: case, space, flux, collision, nSpecies, interpOrder, limiter, cfl, maxTime
+@consts: case, space, flux, collision, nSpecies, interpOrder, limiter, cfl, maxTime
 
 """
 struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
-
     case::S
     space::S
     flux::S
@@ -20,42 +19,15 @@ struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
     boundary::S
     cfl::E
     maxTime::F
-
-    Setup() = Setup("sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", "fix", 0.5, 2.0)
-
-    function Setup(
-        case::AbstractString,
-        space::AbstractString,
-        flux::AbstractString,
-        collision::AbstractString,
-        nSpecies::Int,
-        interpOrder::Int,
-        limiter::AbstractString,
-        boundary::AbstractString,
-        cfl::Real,
-        maxTime::Real,
-    )
-        new{typeof(case),typeof(nSpecies),typeof(cfl),typeof(maxTime)}(
-            case,
-            space,
-            flux,
-            collision,
-            nSpecies,
-            interpOrder,
-            limiter,
-            boundary,
-            cfl,
-            maxTime,
-        )
-    end
-
 end
+
+Setup() = Setup{String,Int,Float64,Float64}("sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", "fix", 0.5, 2.0)
 
 
 """
 Particle property
 
-    @vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np
+@vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np
 
 """
 mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
@@ -121,6 +93,88 @@ mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
             μᵣ,
             m,
             np,
+        )
+    end
+
+end
+
+
+"""
+Diatomic gas property
+
+@vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np
+
+"""
+struct DiatomicGas{TA,TI,TF} <: AbstractProperty
+
+    Kn::TA
+    Ma::TA
+    Pr::TA
+    K::TI
+    Kr::TI
+    γ::TF
+    ω::TF
+    αᵣ::TF
+    ωᵣ::TF
+    μᵣ::TF
+    T₀::TF
+    Z₀::TF
+    σ::TF
+    ω₁::TF
+    ω₂::TF
+
+    function DiatomicGas(
+        Kn::Real,
+        Ma::Real,
+        Pr::Real,
+        K::Real,
+        Kr::Real,
+        γ::Real,
+        ω::Real,
+        αᵣ::Real,
+        ωᵣ::Real,
+        μᵣ::Real,
+        T₀::Real,
+        Z₀ = 18.1::Real,
+        σ = 1 / 1.55::Real,
+        ω₁ = 0.2354::Real,
+        ω₂ = 0.3049::Real,
+    )
+        _Ma = typeof(Kn)(Ma)
+        _Pr = typeof(Kn)(Pr)
+        _Kr = typeof(K)(Kr)
+        
+        T = typeof(γ)
+        _ω = T(ω)
+        _αᵣ = T(αᵣ)
+        _ωᵣ = T(ωᵣ)
+        _μᵣ = T(μᵣ)
+        _T₀ = T(T₀)
+        _Z₀ = T(Z₀)
+        _σ = T(σ)
+        _ω₁ = T(ω₁)
+        _ω₂ = T(ω₂)
+
+        new{
+            typeof(Kn),
+            typeof(K),
+            T,
+        }(
+            Kn,
+            _Ma,
+            _Pr,
+            K,
+            _Kr,
+            γ,
+            _ω,
+            _αᵣ,
+            _ωᵣ,
+            _μᵣ,
+            _T₀,
+            _Z₀,
+            _σ,
+            _ω₁,
+            _ω₂,
         )
     end
 

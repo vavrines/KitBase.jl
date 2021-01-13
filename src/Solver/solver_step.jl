@@ -940,3 +940,73 @@ function step!(
     @. AVG += abs(cell.w)
 
 end
+
+#--- 2D2F2V ---#
+function step!(
+    w::T1,
+    prim::T1,
+    h::T2,
+    b::T2,
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
+    fwR::T1,
+    fhR::T2,
+    fbR::T2,
+    fwU::T1,
+    fhU::T2,
+    fbU::T2,
+    fwD::T1,
+    fhD::T2,
+    fbD::T2,
+    u::T2,
+    v::T2,
+    weights::T2,
+    K,
+    γ,
+    μᵣ,
+    ω,
+    Pr,
+    Δs,
+    dt,
+    RES,
+    AVG,
+    collision = :bgk,
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,2}}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    if collision == :shakhov
+        q = heat_flux(h, b, prim, u, v, weights)
+
+        MH_old = maxwellian(u, v, prim)
+        MB_old = MH_old .* K ./ (2.0 * prim[end])
+        SH, SB = shakhov(u, v, MH_old, MB_old, q, prim, Pr, K)
+    else
+        SH = zero(h)
+        SB = zero(b)
+    end
+
+    #--- update W^{n+1} ---#
+    @. w += (fwL - fwR + fwD - fwU) / Δs
+    prim .= conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+    #--- calculate M^{n+1} and tau^{n+1} ---#
+    MH = maxwellian(u, v, prim)
+    MB = MH .* K ./ (2.0 * prim[end])
+    MH .+= SH
+    MB .+= SB
+    τ = vhs_collision_time(prim, μᵣ, ω)
+
+    #--- update distribution function ---#
+    for j in axes(v, 2), i in axes(u, 1)
+        h[i, j] = (h[i, j] + (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs + dt / τ * MH[i, j]) / (1.0 + dt / τ)
+        b[i, j] = (b[i, j] + (fbL[i, j] - fbR[i, j] + fbD[i, j] - fbU[i, j]) / Δs + dt / τ * MB[i, j]) / (1.0 + dt / τ)
+    end
+
+end

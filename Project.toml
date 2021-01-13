@@ -18,6 +18,7 @@ Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 ProgressMeter = "92933f4c-e287-5a05-a399-4b506db050ca"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
+SphericalHarmonicExpansions = "504afa71-bae7-47b4-8ec9-3851161806ac"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
@@ -33,4 +34,5 @@ Plots = "^1"
 ProgressMeter = "^1"
 PyCall = "^1"
 SpecialFunctions = "0.7, 0.8, 0.9, 0.10, 1.0"
+SphericalHarmonicExpansions = "0.1"
 julia = "^1"
