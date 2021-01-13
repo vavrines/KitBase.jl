@@ -44,3 +44,8 @@ inK = 1.0
 omega = 0.72
 alphaRef = 1.0
 omegaRef = 0.5
+
+# boundary
+uLid = 0.15
+vLid = 0.0
+tLid = 1.0
