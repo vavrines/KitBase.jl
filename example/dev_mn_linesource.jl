@@ -1,5 +1,24 @@
-using KitBase, ProgressMeter, LinearAlgebra, Optim
+using ProgressMeter, LinearAlgebra, Optim#, SphericalHarmonicExpansions
+import KitBase
 
+# one-cell test
+begin
+    quadratureorder = 5
+    points, triangulation = KitBase.octa_quadrature(quadratureorder)
+    weights = KitBase.quadrature_weights(points, triangulation)
+    nq = size(points, 1)
+    L = 1
+    ne = (L + 1)^2
+
+    α = zeros(ne)
+    u = [2., 0., 0., 0.]
+    m = KitBase.eval_spherharmonic(points, L)
+
+    res = KitBase.optimize_closure(α, m, weights, u, KitBase.maxwell_boltzmann_dual)
+    u1 = KitBase.realizable_reconstruct(res.minimizer, m, weights, KitBase.maxwell_boltzmann_dual_prime)
+end
+
+# let's start multi-cell case
 begin
     # space
     x0 = -1.5
@@ -19,15 +38,14 @@ begin
    
     # quadrature
     quadratureorder = 5
-    points, triangulation = octa_quadrature(quadratureorder) # dim nq,3 (just first two are used)
-    weights = quadrature_weights(points, triangulation) # dim: nq
+    points, triangulation = octa_quadrature(quadratureorder)
+    weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
 
     # particle
     SigmaS = 1 * ones(ny + 4, nx + 4)
     SigmaA = 0 * ones(ny + 4, nx + 4)
     SigmaT = SigmaS + SigmaA
-
 end
 
 # initial distribution
@@ -48,65 +66,4 @@ for j = 1:nx
     end
 end
 
-# Lagrange multiplier
-α = zeros(ne, nx, ny)
-# moment basis
-m = zeros(ne, nq)
-# work together with solution phi & quadrature weights
-
-# toy example ↓
-###
-nquad = 16
-nentry = 4
-m = randn(nentry, nquad)
-α = randn(nentry)
-ω = ones(nquad) ./ nquad
-u = rand(nentry)
-
-function η_dual(f)
-    return exp(f)
-end
-
-function η_dual_prime(f)
-    return exp(f)
-end
-
-"""
-Optimizer for the entropy closure problem
-    
-argmin(<η(α*m)> - α*u)
-
-"""
-
-function optimize_closure(_α, _m, _ω, _u, _η_dual::Function)
-    loss(x) = sum(_η_dual.(x' * _m) .* _ω) - dot(x, _u)
-    res = Optim.optimize(loss, _α, Newton()) # Optim.jl
-    return res
-end
-
-function realizability_reconstruction(_α, _m, _ω, _η_dual_prime::Function)
-  
-    # u = sum(_η_dual_prime.(_α'*_m).*_ω.*_m)   #m = (nentries,nquad)
-    u = zeros(axes(_α,1))
-    for i in axes(_m,2)
-    u +=  _η_dual_prime(_α'*_m[:,i]).*_ω[i].*_m[:,i]
-    end
-
-    return u
-end
-
-res = optimize_closure(α, m, ω, u, η_dual)
-alpa_new = res.minimizer # optimized parameters
-
-println("test results\n alpha: \n")
-println(alpa_new)
-println("u: \n")
-println(u)
-
-u_new = realizability_reconstruction(alpa_new, m, ω,η_dual_prime )
-
-println("\n")
-println(u_new)
-###
-
-
+### to be done

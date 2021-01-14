@@ -21,6 +21,9 @@ using FileIO
 using JLD2
 using ProgressMeter
 using Distributions
+using Optim
+using MultivariatePolynomials
+using TypedPolynomials
 using PyCall
 using CUDA
 
@@ -42,7 +45,6 @@ function __init__()
         @info "Kinetic will run serially"
     elseif threads > 1
         @info "Kinetic will run with $threads threads"
-
         # https://github.com/CliMA/Oceananigans.jl/issues/1113
         FFTW.set_num_threads(4 * threads)
     end
