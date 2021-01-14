@@ -34,3 +34,21 @@ KitBase.lgwt(12, -1, 1)
 
 KitBase.extract_last(randn(2, 3), 2; mode = :view)
 KitBase.extract_last(randn(2, 3), 2; mode = :copy)
+
+#--- entropy closure ---#
+KitBase.maxwell_boltzmann_dual(rand())
+KitBase.maxwell_boltzmann_dual_prime(rand())
+
+quadratureorder = 2
+points, triangulation = KitBase.octa_quadrature(quadratureorder)
+weights = KitBase.quadrature_weights(points, triangulation)
+nq = size(points, 1)
+L = 1
+ne = (L + 1)^2
+
+α = zeros(ne)
+u = [2., 0., 0., 0.]
+m = KitBase.eval_spherharmonic(points, L)
+
+res = KitBase.optimize_closure(α, m, weights, u, KitBase.maxwell_boltzmann_dual)
+u1 = KitBase.realizable_reconstruct(res.minimizer, m, weights, KitBase.maxwell_boltzmann_dual_prime)

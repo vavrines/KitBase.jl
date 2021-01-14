@@ -1,5 +1,24 @@
-using KitBase, ProgressMeter, LinearAlgebra, Optim
+using ProgressMeter, LinearAlgebra, Optim#, SphericalHarmonicExpansions
+import KitBase
 
+# one-cell test
+begin
+    quadratureorder = 5
+    points, triangulation = KitBase.octa_quadrature(quadratureorder)
+    weights = KitBase.quadrature_weights(points, triangulation)
+    nq = size(points, 1)
+    L = 1
+    ne = (L + 1)^2
+
+    α = zeros(ne)
+    u = [2., 0., 0., 0.]
+    m = KitBase.eval_spherharmonic(points, L)
+
+    res = KitBase.optimize_closure(α, m, weights, u, KitBase.maxwell_boltzmann_dual)
+    u1 = KitBase.realizable_reconstruct(res.minimizer, m, weights, KitBase.maxwell_boltzmann_dual_prime)
+end
+
+# let's start multi-cell case
 begin
     # space
     x0 = -1.5
@@ -16,11 +35,11 @@ begin
     # time
     tEnd = 1.0
     cfl = 0.95
-
+   
     # quadrature
     quadratureorder = 5
     points, triangulation = octa_quadrature(quadratureorder)
-    weights = quadrature_weights(points, triangulation)
+    weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
 
     # particle
@@ -35,7 +54,9 @@ ne = 4 # number of entries
 phi = zeros(ne, nx, ny)
 s2 = 0.03^2
 flr = 1e-4
+
 init_field(x, y) = max(flr, 1.0 / (4.0 * pi * s2) * exp(-(x^2 + y^2) / 4.0 / s2))
+
 for j = 1:nx
     for i = 1:ny
         y = y0 + dy / 2 + (i - 3) * dy
@@ -45,37 +66,4 @@ for j = 1:nx
     end
 end
 
-# Lagrange multiplier
-α = zeros(ne, nx, ny)
-# moment basis
-m = zeros(ne, nq)
-# work together with solution phi & quadrature weights
-
-# toy example ↓
-###
-nquad = 16
-nentry = 4
-m = randn(nentry, nquad)
-α = randn(nentry)
-ω = ones(nquad) ./ nquad
-u = rand(nentry)
-
-function η(f)
-    exp(-f)
-end
-
-"""
-Optimizer for the entropy closure problem
-    
-argmin(<η(α*m)> - α*u)
-
-"""
-function optimize_closure(_α, _m, _ω, _u, _η::Function)
-    loss(x) = sum(_η.(x' * _m) .* _ω) - dot(x, _u)
-    res = Optim.optimize(loss, _α, Newton()) # Optim.jl
-    return res
-end
-
-res = optimize_closure(α, m, ω, u, η)
-res.minimizer # optimized parameters
-###
+### to be done
