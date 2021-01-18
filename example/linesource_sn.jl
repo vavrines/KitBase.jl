@@ -6,8 +6,8 @@ begin
     x1 = 1.5
     y0 = -1.5
     y1 = 1.5
-    nx = 100
-    ny = 100
+    nx = 50#100
+    ny = 50#100
     dx = (x1 - x0) / nx
     dy = (y1 - y0) / ny
 
@@ -20,7 +20,7 @@ begin
     # quadrature
     quadratureorder = 6
     points, triangulation = octa_quadrature(quadratureorder)
-    weights = KitBase.quadrature_weights(points, triangulation)
+    weights = quadrature_weights(points, triangulation)
     nq = size(points, 1)
 
     # particle
@@ -36,8 +36,8 @@ flr = 1e-4
 init_field(x, y) = max(flr, 1.0 / (4.0 * pi * s2) * exp(-(x^2 + y^2) / 4.0 / s2))
 for j = 1:nx
     for i = 1:ny
-        y = y0 + dy / 2 + (i - 3) * dy
-        x = x0 + dx / 2 + (j - 3) * dx
+        y = y0 + (i - 0.5) * dy
+        x = x0 + (j - 0.5) * dx
         for q = 1:nq
             phi[q, i, j] = init_field(x, y) / 4.0 / π
         end
@@ -50,7 +50,7 @@ global t = 0.0
 flux1 = zeros(nq, nx + 1, ny)
 flux2 = zeros(nq, nx, ny + 1)
 
-@showprogress for iter = 1:10
+@showprogress for iter = 1:20
     for i = 2:nx, j = 1:ny
         tmp = @view flux1[:, i, j]
         flux_kfvs!(tmp, phi[:, i-1, j], phi[:, i, j], points[:, 1], dt)
@@ -68,8 +68,8 @@ flux2 = zeros(nq, nx, ny + 1)
             phi[q, i, j] =
                 phi[q, i, j] +
                 (flux1[q, i, j] - flux1[q, i+1, j]) / dx +
-                (flux2[q, i, j] - flux2[q, i, j+1]) / dy +
-                (integral - phi[q, i, j]) * dt
+                (flux2[q, i, j] - flux2[q, i, j+1]) / dy #+
+                #(integral - phi[q, i, j]) * dt
         end
     end
 

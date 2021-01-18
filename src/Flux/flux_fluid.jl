@@ -1,12 +1,29 @@
 # ============================================================
 # Hydrodynamic Fluxes
-# http://www.cfdbooks.com/
+# Reference: http://www.cfdbooks.com/
 # ============================================================
 
 """
-Lax-Friedrichs flux
+    flux_upwind(uL, uR, Ω::T, n::T, dt) where {T<:AbstractVector}
 
+Upwind flux
+
+"""
+function flux_upwind(uL, uR, Ω::T, n::T, dt) where {T<:AbstractVector}
+    ip = dot(Ω, n) # inner product
+    
+    if ip > 0
+        return dt * ip * uL
+    else
+        return dt * ip * uR
+    end
+end
+
+
+"""
     flux_lax!(fw::AbstractArray{<:Real,1}, wL::AbstractArray{<:Real,1}, wR::AbstractArray{<:Real,1}, γ::Real, dt::Real, dx::Real)
+
+Lax-Friedrichs flux
 
 _P. D. Lax, Weak Solutions of Nonlinear Hyperbolic Equations and Their Numerical Computation,
 Commun. Pure and Applied Mathematics, 7, 159-193, 1954._
@@ -26,12 +43,12 @@ end
 
 
 """
-HLL flux for the Euler equations
-
     flux_hll!(fw::AbstractArray{<:Real,1}, wL::AbstractArray{<:Real,1}, wR::AbstractArray{<:Real,1}, γ::Real, dt::Real)
 
-* @args: variables at left & right sides of interface
-* @args: specific heat ratio
+HLL flux for the Euler equations
+
+- @args: variables at left & right sides of interface
+- @args: specific heat ratio
 
 """
 function flux_hll!(
@@ -72,10 +89,10 @@ end
 
 
 """
-Roe's flux with entropy fix
-
     flux_roe!(fw::AbstractArray{<:Real,1}, wL::AbstractArray{<:Real,1}, wR::AbstractArray{<:Real,1},
     γ::Real, dt::Real, n = [1.0, 0.0]::AbstractArray{<:Real,1})
+
+Roe's flux with entropy fix    
 
 _P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Schemes, Journal of Computational Physics, 43, pp. 357-372._
 (_cf. http://cfdbooks.com/cfdcodes.html_)

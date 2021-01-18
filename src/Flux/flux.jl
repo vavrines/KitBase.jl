@@ -9,7 +9,7 @@ export flux_ugks!
 export flux_equilibrium!
 export flux_boundary_maxwell!, flux_boundary_specular!
 
-export flux_lax!, flux_hll!, flux_roe!
+export flux_upwind, flux_lax!, flux_hll!, flux_roe!
 export flux_em!, flux_emx!, flux_emy!
 
 include("flux_kfvs.jl")

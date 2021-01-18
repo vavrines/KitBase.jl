@@ -23,6 +23,7 @@ begin
 end
 
 #--- fluid flux ---#
+KitBase.flux_upwind(rand(), rand(), rand(2), rand(2), dt)
 KitBase.flux_lax!(fw, wL, wR, γ, dt, dx)
 KitBase.flux_hll!(fw, wL, wR, γ, dt)
 KitBase.flux_roe!(fw, wL, wR, γ, dt)
