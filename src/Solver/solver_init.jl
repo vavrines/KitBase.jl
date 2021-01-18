@@ -17,16 +17,12 @@ function initialize(configfilename::T) where {T<:AbstractString}
     println("")
     
     if configfilename[end-3:end] == "jld2"
-
         _1, _2, _3 = @load configfilename KS ctr t
         ks, ctr, simTime = eval(_1), eval(_2), eval(_3)
-
         face = init_fvm(ks)[2]
 
         return ks, ctr, face, simTime
-    
     else
-
         ks = SolverSet(configfilename)
 
         if ks.set.space[1:2] == "1d"
@@ -36,7 +32,6 @@ function initialize(configfilename::T) where {T<:AbstractString}
             ctr, a1face, a2face = init_fvm(ks)
             return ks, ctr, a1face, a2face, 0.0
         end
-
     end
 
 end
@@ -232,15 +227,15 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
 
             for j = 1:KS.pSpace.ny
                 for i = 1:KS.pSpace.nx
-                    a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                    a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
                 end
-                a1face[i, KS.pSpace.nx+1] = Interface2D1F(KS.pSpace.dy[i, KS.pSpace.nx], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                a1face[i, KS.pSpace.nx+1] = Interface2D1F(KS.pSpace.dy[i, KS.pSpace.nx], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
             end
             for i = 1:KS.pSpace.nx
                 for j = 1:KS.pSpace.ny
-                    a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                    a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
                 end
-                a2face[i, KS.pSpace.ny+1] = Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                a2face[i, KS.pSpace.ny+1] = Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
             end
 
         elseif KS.set.space[3:4] == "2f"
@@ -281,15 +276,15 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
 
             for j = 1:KS.pSpace.ny
                 for i = 1:KS.pSpace.nx
-                    a1face[i, j] = Interface2D2F(KS.pSpace.dy[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                    a1face[i, j] = Interface2D2F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
                 end
-                a1face[KS.pSpace.nx+1, j] = Interface2D2F(KS.pSpace.dy[KS.pSpace.nx, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                a1face[KS.pSpace.nx+1, j] = Interface2D2F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
             end
             for i = 1:KS.pSpace.nx
                 for j = 1:KS.pSpace.ny
-                    a2face[i, j] = Interface2D2F(KS.pSpace.dx[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                    a2face[i, j] = Interface2D2F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
                 end
-                a2face[i, KS.pSpace.ny+1] = Interface2D2F(KS.pSpace.dx[i, KS.pSpace.ny], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                a2face[i, KS.pSpace.ny+1] = Interface2D2F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
             end
 
         end

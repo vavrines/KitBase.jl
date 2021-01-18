@@ -625,7 +625,7 @@ function evolve!(
             )
         end
 
-        @inbounds Threads.@threads for i = 1:KS.pSpace.ny
+        @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
             vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
             bcD = local_frame(KS.ib.bcD, a2face[i, 1].n[1], a2face[i, 1].n[2])

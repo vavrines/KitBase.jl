@@ -1,6 +1,78 @@
-
 """
-Update flow variables
+    update!(
+        KS::X,
+        ctr::Y,
+        face::Z,
+        dt,
+        residual; # 1D / 2D
+        coll = :bgk::Symbol,
+        bc = :fix::Symbol,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{ControlVolume1D1F,1},
+        Z<:AbstractArray{Interface1D1F,1},
+    }
+
+    update!(
+        KS::X,
+        ctr::Y,
+        face::Z,
+        dt,
+        residual; # 1D / 2D
+        coll = :bgk::Symbol,
+        bc = :extra::Symbol,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{ControlVolume1D2F,1},
+        Z<:AbstractArray{Interface1D2F,1},
+    }
+
+    update!(
+        KS::X,
+        ctr::Y,
+        face::Z,
+        dt,
+        residual; # 1D / 2D
+        coll = :bgk::Symbol,
+        bc = :extra::Symbol,
+        isMHD = true::Bool,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{ControlVolume1D3F,1},
+        Z<:AbstractArray{Interface1D3F,1},
+    }
+
+    update!(
+        KS::X,
+        ctr::Y,
+        face::Z,
+        dt,
+        residual; # 1D / 2D
+        coll = :bgk::Symbol,
+        bc = :extra::Symbol,
+        isMHD = true::Bool,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{ControlVolume1D4F,1},
+        Z<:AbstractArray{Interface1D4F,1},
+    }
+
+    update!(
+        KS::X,
+        ctr::Y,
+        a1face::Z,
+        a2face::Z,
+        dt,
+        residual; # 1D / 2D
+        coll = :bgk::Symbol,
+        bc = :fix::Symbol,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{ControlVolume2D2F,2},
+        Z<:AbstractArray{Interface2D2F,2},
+    }
+
+Update flow variables over control volumes
 
 """
 function update!(
@@ -319,7 +391,7 @@ function update!(
 
     if ndims(sumRes) == 1
 
-        @inbounds Threads.@threads for j = 2:KS.pSpace.ny-1
+        @inbounds for j = 2:KS.pSpace.ny-1
             for i = 2:KS.pSpace.nx-1
                 step!(
                     ctr[i, j].w,
@@ -346,7 +418,7 @@ function update!(
                     KS.gas.μᵣ,
                     KS.gas.ω,
                     KS.gas.Pr,
-                    ctr[i].dx * ctr[i].dy,
+                    ctr[i, j].dx * ctr[i, j].dy,
                     dt,
                     sumRes,
                     sumAvg,
@@ -768,7 +840,7 @@ function update_boundary!(
     avgD = zero(KS.ib.wL)
 
     if bc != :fix
-        for j = 1:KS.pSpace.ny
+        @inbounds for j = 1:KS.pSpace.ny
             step!(
                 ctr[1, j].w,
                 ctr[1, j].prim,
@@ -834,7 +906,7 @@ function update_boundary!(
             )
         end
 
-        for i = 2:KS.pSpace.nx-1 # skip overlap
+        @inbounds for i = 2:KS.pSpace.nx-1 # skip overlap
             step!(
                 ctr[i, 1].w,
                 ctr[i, 1].prim,

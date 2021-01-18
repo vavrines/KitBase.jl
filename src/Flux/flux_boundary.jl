@@ -1,9 +1,51 @@
 """
+    flux_boundary_maxwell!(
+        fw::T1,
+        fh::T2,
+        fb::T2,
+        bc::T3,
+        h::T4,
+        b::T4,
+        u::T5,
+        ω::T5,
+        inK,
+        dt,
+        rot = 1,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,1},
+        T2<:AbstractArray{<:AbstractFloat,1},
+        T3<:Array{<:Real,1},
+        T4<:AbstractArray{<:AbstractFloat,1},
+        T5<:AbstractArray{<:AbstractFloat,1},
+    }
+
+    flux_boundary_maxwell!(
+        fw::T1,
+        fh::T2,
+        fb::T2,
+        bc::T3,
+        h::T4,
+        b::T4,
+        u::T5,
+        v::T5,
+        ω::T5,
+        inK,
+        dt,
+        len,
+        rot = 1,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,1},
+        T2<:AbstractArray{<:AbstractFloat,2},
+        T3<:Array{<:Real,1},
+        T4<:AbstractArray{<:AbstractFloat,2},
+        T5<:AbstractArray{<:AbstractFloat,2},
+    }
+
 Maxwell's diffusive boundary flux
 
-* @args: particle distribution functions and their slopes at left/right sides of interface
-* @args: particle velocity quadrature points and weights
-* @args: time step
+@args: particle distribution functions and their slopes at left/right sides of interface
+@args: particle velocity quadrature points and weights
+@args: time step
 
 """
 function flux_boundary_maxwell!(
@@ -80,6 +122,7 @@ function flux_boundary_maxwell!(
     @assert length(bc) == 4
 
     δ = heaviside.(u .* rot)
+
     SF = sum(ω .* u .* h .* (1.0 .- δ))
     SG =
         (bc[end] / π) *
@@ -112,11 +155,41 @@ end
 
 
 """
+    flux_boundary_specular!(
+        fw::T1,
+        ff::T2,
+        f::T3,
+        u::T4,
+        ω::T4,
+        dt,
+    ) where {
+        T1<:AbstractArray{<:Real,1},
+        T2<:AbstractArray{<:AbstractFloat,1},
+        T3<:AbstractArray{<:AbstractFloat,1},
+        T4<:AbstractArray{<:AbstractFloat,1},
+    }
+
+    flux_boundary_specular!(
+        fw::T1,
+        fh::T2,
+        fb::T2,
+        h::T3,
+        b::T3,
+        u::T4,
+        ω::T4,
+        dt,
+    ) where {
+        T1<:AbstractArray{<:Real,1},
+        T2<:AbstractArray{<:AbstractFloat,1},
+        T3<:AbstractArray{<:AbstractFloat,1},
+        T4<:AbstractArray{<:AbstractFloat,1},
+    }
+
 Specular reflection boundary flux
 
-* @args: particle distribution functions and their slopes at left/right sides of interface
-* @args: particle velocity quadrature points and weights
-* @args: time step
+@args: particle distribution functions and their slopes at left/right sides of interface
+@args: particle velocity quadrature points and weights
+@args: time step
 
 """
 function flux_boundary_specular!(
