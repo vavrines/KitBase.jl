@@ -296,9 +296,9 @@ end
 
 
 """
-Initialize Brio-Wu MHD shock
-
     ib_briowu(gam, uspace::T, mi, me) where {T<:AbstractArray{<:AbstractFloat,2}}
+
+Initialize Brio-Wu MHD shock
 
 """
 function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFloat,2}}

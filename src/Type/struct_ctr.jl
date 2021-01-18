@@ -8,11 +8,11 @@
 # ------------------------------------------------------------
 
 """
+    ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T2) where {T1<:Real,T2<:AbstractArray}
+
 1D control volume with no distribution function
 
 @vars: x, dx, w, prim, sw
-
-@new: ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T2) where {T1<:Real,T2<:AbstractArray}
 
 """
 mutable struct ControlVolume1D{F,A} <: AbstractControlVolume1D
@@ -49,17 +49,17 @@ end
 
 
 """
+    ControlVolume1D1F(
+        X,
+        DX,
+        W::T1,
+        PRIM::T1,
+        F::T2,
+    ) where {T1<:AbstractArray,T2<:AbstractArray}
+
 1D control volume with 1 distribution function
 
 @vars: x, dx, w, prim, sw, f, sf
-
-@new: ControlVolume1D1F(
-    X,
-    DX,
-    W::T1,
-    PRIM::T1,
-    F::T2,
-) where {T1<:AbstractArray,T2<:AbstractArray}
 
 """
 mutable struct ControlVolume1D1F{F,A,B} <: AbstractControlVolume1D
@@ -110,18 +110,18 @@ end
 
 
 """
+    ControlVolume1D2F(
+        X,
+        DX,
+        W::T1,
+        PRIM::T1,
+        H::T2,
+        B::T2,
+    ) where {T1<:AbstractArray,T2<:AbstractArray}
+
 1D control volume with 2 distribution functions
 
 @vars: x, dx, w, prim, sw, h, b, sh, sb
-
-@new: ControlVolume1D2F(
-    X,
-    DX,
-    W::T1,
-    PRIM::T1,
-    H::T2,
-    B::T2,
-) where {T1<:AbstractArray,T2<:AbstractArray}
 
 """
 mutable struct ControlVolume1D2F{F,A,B} <: AbstractControlVolume1D
@@ -189,47 +189,45 @@ end
 
 
 """
+    ControlVolume1D3F(
+        X::Real,
+        DX::Real,
+        W::AbstractArray{<:Real,2},
+        PRIM::AbstractArray{<:Real,2},
+        H0::AbstractArray{<:AbstractFloat,3},
+        H1::AbstractArray{<:AbstractFloat,3},
+        H2::AbstractArray{<:AbstractFloat,3},
+        E0::AbstractArray{<:AbstractFloat,1},
+        B0::AbstractArray{<:AbstractFloat,1},
+        L::AbstractArray{<:AbstractFloat,2},
+    )
+
+    ControlVolume1D3F(
+        X::Real,
+        DX::Real,
+        W::AbstractArray{<:Real,1},
+        PRIM::AbstractArray{<:Real,1},
+        H0::AbstractArray{<:AbstractFloat,1},
+        H1::AbstractArray{<:AbstractFloat,1},
+        H2::AbstractArray{<:AbstractFloat,1},
+    )
+
+    ControlVolume1D3F(
+        X::Real,
+        DX::Real,
+        W::AbstractArray{<:Real,3},
+        PRIM::AbstractArray{<:Real,3},
+        H0::AbstractArray{<:AbstractFloat,4},
+        H1::AbstractArray{<:AbstractFloat,4},
+        H2::AbstractArray{<:AbstractFloat,4},
+        E0::AbstractArray{<:AbstractFloat,2},
+        B0::AbstractArray{<:AbstractFloat,2},
+        L::AbstractArray{<:AbstractFloat,3},
+    )
+
 1D control volume with 3 distribution functions
 
 @vars: x, dx, w, prim, sw, h0, h1, h2, sh0, sh1, sh2, E, B, ϕ, ψ, lorenz
-
-@new: 
-
-ControlVolume1D3F(
-    X::Real,
-    DX::Real,
-    W::AbstractArray{<:Real,2},
-    PRIM::AbstractArray{<:Real,2},
-    H0::AbstractArray{<:AbstractFloat,3},
-    H1::AbstractArray{<:AbstractFloat,3},
-    H2::AbstractArray{<:AbstractFloat,3},
-    E0::AbstractArray{<:AbstractFloat,1},
-    B0::AbstractArray{<:AbstractFloat,1},
-    L::AbstractArray{<:AbstractFloat,2},
-)
-
-ControlVolume1D3F(
-    X::Real,
-    DX::Real,
-    W::AbstractArray{<:Real,1},
-    PRIM::AbstractArray{<:Real,1},
-    H0::AbstractArray{<:AbstractFloat,1},
-    H1::AbstractArray{<:AbstractFloat,1},
-    H2::AbstractArray{<:AbstractFloat,1},
-)
-
-ControlVolume1D3F(
-    X::Real,
-    DX::Real,
-    W::AbstractArray{<:Real,3},
-    PRIM::AbstractArray{<:Real,3},
-    H0::AbstractArray{<:AbstractFloat,4},
-    H1::AbstractArray{<:AbstractFloat,4},
-    H2::AbstractArray{<:AbstractFloat,4},
-    E0::AbstractArray{<:AbstractFloat,2},
-    B0::AbstractArray{<:AbstractFloat,2},
-    L::AbstractArray{<:AbstractFloat,3},
-)
 
 """
 mutable struct ControlVolume1D3F{F,A,B,C,D,E} <: AbstractControlVolume1D
@@ -450,11 +448,37 @@ end
 
 
 """
+    ControlVolume1D4F(
+        X::Real,
+        DX::Real,
+        W::AbstractArray{<:Real,2},
+        PRIM::AbstractArray{<:Real,2},
+        H0::AbstractArray{<:AbstractFloat,2},
+        H1::AbstractArray{Float64,2},
+        H2::AbstractArray{Float64,2},
+        H3::AbstractArray{Float64,2},
+        E0::AbstractArray{Float64,1},
+        B0::AbstractArray{Float64,1},
+        L::AbstractArray{Float64,2},
+    )
+
+    ControlVolume1D4F(
+        X::Real,
+        DX::Real,
+        W::AbstractArray{<:Real,3},
+        PRIM::AbstractArray{<:Real,3},
+        H0::AbstractArray{<:AbstractFloat,3},
+        H1::AbstractArray{Float64,3},
+        H2::AbstractArray{Float64,3},
+        H3::AbstractArray{Float64,3},
+        E0::AbstractArray{Float64,2},
+        B0::AbstractArray{Float64,2},
+        L::AbstractArray{Float64,3},
+    )
+
 1D control volume with 4 distribution functions
 
 @vars: x, dx, w, prim, sw, h0, h1, h2, h3, sh0, sh1, sh2, sh3, E, B, ϕ, ψ, lorenz
-
-@new: ControlVolume1D4F(X, DX, W, PRIM, H0, H1, H2, H3, E0, B0, L)
 
 """
 mutable struct ControlVolume1D4F{F,A,B,C,D,E} <: AbstractControlVolume1D
@@ -637,18 +661,18 @@ end
 # ------------------------------------------------------------
 
 """
+    ControlVolume2D(
+        X::Real,
+        DX::Real,
+        Y::Real,
+        DY::Real,
+        W::AbstractArray,
+        PRIM::AbstractArray,
+    )
+
 2D control volume with no distribution function
 
 @vars: x, y, dx, dy, w, prim, sw
-
-@new: ControlVolume2D(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
-    W::AbstractArray,
-    PRIM::AbstractArray,
-)
 
 """
 mutable struct ControlVolume2D{F,A,B} <: AbstractControlVolume2D
@@ -696,19 +720,19 @@ end
 
 
 """
+    ControlVolume2D1F(
+        X::Real,
+        DX::Real,
+        Y::Real,
+        DY::Real,
+        W::AbstractArray,
+        PRIM::AbstractArray,
+        F::AbstractArray,
+    )
+
 2D control volume with 1 distribution function
 
 @vars: x, y, dx, dy, w, prim, sw, f, sf
-
-@new: ControlVolume2D1F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
-    W::AbstractArray,
-    PRIM::AbstractArray,
-    F::AbstractArray,
-)
 
 """
 mutable struct ControlVolume2D1F{F,A,B,C,D} <: AbstractControlVolume2D
@@ -777,20 +801,20 @@ end
 
 
 """
+    ControlVolume2D2F(
+        X::Real,
+        DX::Real,
+        Y::Real,
+        DY::Real,
+        W::AbstractArray,
+        PRIM::AbstractArray,
+        H::AbstractArray,
+        B::AbstractArray,
+    )
+
 2D control volume with 2 distribution functions
 
 @vars: x, y, dx, dy, w, prim, sw, h, b, sh, sb
-
-@new: ControlVolume2D2F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
-    W::AbstractArray,
-    PRIM::AbstractArray,
-    H::AbstractArray,
-    B::AbstractArray,
-)
 
 """
 mutable struct ControlVolume2D2F{F,A,B,C,D} <: AbstractControlVolume2D
@@ -866,38 +890,36 @@ end
 
 
 """
+    ControlVolume2D3F(
+        X::Real,
+        DX::Real,
+        Y::Real,
+        DY::Real,
+        W::AbstractArray,
+        PRIM::AbstractArray,
+        H0::AbstractArray,
+        H1::AbstractArray,
+        H2::AbstractArray,
+        E0::AbstractArray,
+        B0::AbstractArray,
+        L::AbstractArray,
+    )
+
+    ControlVolume2D3F(
+        X::Real,
+        DX::Real,
+        Y::Real,
+        DY::Real,
+        W::AbstractArray{<:Real,1},
+        PRIM::AbstractArray{<:Real,1},
+        H0::AbstractArray{<:AbstractFloat,2},
+        H1::AbstractArray{<:AbstractFloat,2},
+        H2::AbstractArray{<:AbstractFloat,2},
+    )
+
 2D control volume with 3 distribution functions
 
 @vars: x, y, dx, dy, w, prim, sw, h0, h1, h2, sh0, sh1, sh2, E, B, ϕ, ψ, lorenz
-
-@new: 
-
-ControlVolume2D3F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
-    W::AbstractArray,
-    PRIM::AbstractArray,
-    H0::AbstractArray,
-    H1::AbstractArray,
-    H2::AbstractArray,
-    E0::AbstractArray,
-    B0::AbstractArray,
-    L::AbstractArray,
-)
-
-ControlVolume2D3F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
-    W::AbstractArray{<:Real,1},
-    PRIM::AbstractArray{<:Real,1},
-    H0::AbstractArray{<:AbstractFloat,2},
-    H1::AbstractArray{<:AbstractFloat,2},
-    H2::AbstractArray{<:AbstractFloat,2},
-)
 
 """
 mutable struct ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D

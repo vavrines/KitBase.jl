@@ -184,7 +184,7 @@ end
 """
 Multi-component gas property
 
-    @consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne
+@consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne
 
 """
 struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractProperty
@@ -241,7 +241,7 @@ end
 """
 1D plasma property
 
-    @consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne, lD, rL, sol, χ, ν, Ap, An, D
+@consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne, lD, rL, sol, χ, ν, Ap, An, D
 
 """
 struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
@@ -370,7 +370,7 @@ end
 """
 2D plasma property
 
-    @consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne, lD, rL, sol, χ, ν, A1p, A1n, A2p, A2n, D1, D2
+@consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne, lD, rL, sol, χ, ν, A1p, A1n, A2p, A2n, D1, D2
 
 """
 struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty

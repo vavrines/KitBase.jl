@@ -6,7 +6,8 @@
     Particle(M, X, V, E, IDX, FLAG = zeros(eltype(IDX), axes(IDX, 1)), T = zero(M))
 
 Struct of arrays for particle simulation
-- @vars: m, x, v, e, idx, flag, tc
+
+@vars: m, x, v, e, idx, flag, tc
 
 """
 mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
@@ -58,7 +59,8 @@ end
     Particle1D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
 
 1D particle
-- @vars: m, x, v, e, idx, tc
+
+@vars: m, x, v, e, idx, tc
 
 """
 mutable struct Particle1D{T1,T2,T3} <: AbstractParticle1D
@@ -90,7 +92,8 @@ end
     Particle2D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
 
 2D particle
-- @vars: m, x, v, idx, tb
+
+@vars: m, x, v, idx, tb
 
 """
 mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
@@ -136,7 +139,8 @@ end
     ControlVolume1D(X::Real, DX::Real, W::AbstractArray, PRIM::AbstractArray)
 
 1D control volume in correspondence with particle simulation
-- @vars: x, dx, w, prim, sw, wg, τ, np, vrmax, remainder
+
+@vars: x, dx, w, prim, sw, wg, τ, np, vrmax, remainder
 
 """
 mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1D
@@ -207,7 +211,8 @@ end
     ControlVolume2D(X::Real, DX::Real, Y::Real, DY::Real, W::AbstractArray, PRIM::AbstractArray)
 
 2D control volume in correspondence with particle simulation
-- @vars: x, y, dx, dy, w, prim, sw, wg, τ, np, vrmax, remainder
+
+@vars: x, y, dx, dy, w, prim, sw, wg, τ, np, vrmax, remainder
 
 """
 mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
