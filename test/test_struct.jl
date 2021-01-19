@@ -6,10 +6,10 @@ for key in keys(D)
 end
 
 #--- settings ---#
-KitBase.Setup()
-KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01)
-KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000)
-KitBase.Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5)
+KitBase.Setup() |> show
+KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01) |> show
+KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000) |> show
+KitBase.Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5) |> show
 KitBase.Plasma1D(
     [0.1, 0.5],
     mach,
@@ -25,7 +25,7 @@ KitBase.Plasma1D(
     100.0,
     1.0,
     1.0,
-)
+) |> show
 KitBase.Plasma2D(
     [0.1, 0.5],
     mach,
@@ -41,7 +41,7 @@ KitBase.Plasma2D(
     100.0,
     1.0,
     1.0,
-)
+) |> show
 KitBase.DiatomicGas(
     knudsen,
     mach,
@@ -58,7 +58,7 @@ KitBase.DiatomicGas(
     1 / 1.55,
     0.2354,
     0.3049,
-)
+) |> show
 
 begin
     prim = [1.0, 0.0, 1.0]
@@ -70,7 +70,7 @@ begin
     dx = x0 / nx
 end
 
-KitBase.IB(w, prim, prim, w, prim, prim)
+KitBase.IB(w, prim, prim, w, prim, prim) |> show
 KitBase.IB(
     hcat(w, w),
     hcat(prim, prim),
@@ -78,9 +78,9 @@ KitBase.IB(
     hcat(w, w),
     hcat(prim, prim),
     hcat(prim, prim),
-)
-KitBase.IB1F(w, prim, h, prim, w, prim, h, prim)
-KitBase.IB2F(w, prim, h, h, prim, w, prim, h, h, prim)
+) |> show
+KitBase.IB1F(w, prim, h, prim, w, prim, h, prim) |> show
+KitBase.IB2F(w, prim, h, h, prim, w, prim, h, h, prim) |> show
 KitBase.IB3F(
     w,
     prim,
@@ -100,7 +100,7 @@ KitBase.IB3F(
     zeros(3),
     zeros(3),
     zeros(3, 2),
-)
+) |> show
 KitBase.IB4F(
     w,
     prim,
@@ -122,12 +122,12 @@ KitBase.IB4F(
     zeros(3),
     zeros(3),
     zeros(3, 2),
-)
+) |> show
 
 #--- control volume ---#
-KitBase.ControlVolume1D(x, dx, w, prim)
-KitBase.ControlVolume1D1F(x, dx, w, prim, h)
-KitBase.ControlVolume1D2F(x, dx, w, prim, h, b)
+KitBase.ControlVolume1D(x, dx, w, prim) |> show
+KitBase.ControlVolume1D1F(x, dx, w, prim, h) |> show
+KitBase.ControlVolume1D2F(x, dx, w, prim, h, b) |> show
 KitBase.ControlVolume1D3F(
     x,
     dx,
@@ -139,7 +139,7 @@ KitBase.ControlVolume1D3F(
     zeros(3),
     zeros(3),
     zeros(3, 2),
-)
+) |> show
 KitBase.ControlVolume1D3F(
     x,
     dx,
@@ -151,9 +151,9 @@ KitBase.ControlVolume1D3F(
     zeros(3, 7),
     zeros(3, 7),
     zeros(3, 7, 2),
-)
+) |> show
 # Rykov
-KitBase.ControlVolume1D3F(x, dx, rand(4), rand(5), rand(nu), rand(nu), rand(nu))
+KitBase.ControlVolume1D3F(x, dx, rand(4), rand(5), rand(nu), rand(nu), rand(nu)) |> show
 KitBase.ControlVolume1D4F(
     x,
     dx,
@@ -166,7 +166,7 @@ KitBase.ControlVolume1D4F(
     zeros(3),
     zeros(3),
     zeros(3, 2),
-)
+) |> show
 KitBase.ControlVolume1D4F(
     x,
     dx,
@@ -179,11 +179,11 @@ KitBase.ControlVolume1D4F(
     zeros(3, 7),
     zeros(3, 7),
     zeros(3, 7, 2),
-)
-KitBase.ControlVolume2D(x, dx, x, dx, w, prim)
-KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h)
-KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b)
-KitBase.ControlVolume2D3F(x, dx, x, dx, w, prim, h, b, b, zeros(3), zeros(3), zeros(3, 2))
+) |> show
+KitBase.ControlVolume2D(x, dx, x, dx, w, prim) |> show
+KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h) |> show
+KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b) |> show
+KitBase.ControlVolume2D3F(x, dx, x, dx, w, prim, h, b, b, zeros(3), zeros(3), zeros(3, 2)) |> show
 # Rykov
 KitBase.ControlVolume2D3F(
     x,
@@ -195,25 +195,25 @@ KitBase.ControlVolume2D3F(
     rand(8, 8),
     rand(8, 8),
     rand(8, 8),
-)
+) |> show
 
 #--- interface ---#
-KitBase.Interface1D(w)
-KitBase.Interface1D1F(w, h)
-KitBase.Interface1D2F(w, h)
-KitBase.Interface1D3F(w, h, zeros(3))
-KitBase.Interface1D3F(zeros(5, 7, 2), zeros(21, 21, 7, 2), zeros(3, 7))
-KitBase.Interface1D3F(w, h) # Rykov
-KitBase.Interface1D4F(w, h, zeros(3))
-KitBase.Interface1D4F(zeros(5, 7, 2), zeros(21, 7, 2), zeros(3, 7))
+KitBase.Interface1D(w) |> show
+KitBase.Interface1D1F(w, h) |> show
+KitBase.Interface1D2F(w, h) |> show
+KitBase.Interface1D3F(w, h, zeros(3)) |> show
+KitBase.Interface1D3F(zeros(5, 7, 2), zeros(21, 21, 7, 2), zeros(3, 7)) |> show
+KitBase.Interface1D3F(w, h) |> show # Rykov
+KitBase.Interface1D4F(w, h, zeros(3)) |> show
+KitBase.Interface1D4F(zeros(5, 7, 2), zeros(21, 7, 2), zeros(3, 7)) |> show
 cosa = 1 / √2
 sina = 1 / √2
-KitBase.Interface2D(dx, cosa, sina, w)
-KitBase.Interface2D1F(dx, cosa, sina, w, h)
-KitBase.Interface2D2F(dx, cosa, sina, w, h)
-KitBase.Interface2D3F(dx, cosa, sina, w, h, zeros(3))
-KitBase.Interface2D3F(dx, cosa, sina, w, h, zeros(3, 7))
-KitBase.Interface2D3F(dx, cosa, sina, w, h)
+KitBase.Interface2D(dx, cosa, sina, w) |> show
+KitBase.Interface2D1F(dx, cosa, sina, w, h) |> show
+KitBase.Interface2D2F(dx, cosa, sina, w, h) |> show
+KitBase.Interface2D3F(dx, cosa, sina, w, h, zeros(3)) |> show
+KitBase.Interface2D3F(dx, cosa, sina, w, h, zeros(3, 7)) |> show
+KitBase.Interface2D3F(dx, cosa, sina, w, h) |> show
 
 #--- solution ---#
 sol_w = [w for i = 1:2]

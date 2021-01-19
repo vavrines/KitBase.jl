@@ -17,8 +17,8 @@ KitBase.boundary_time(1.0, [1.0, 0.0, 0.0], 0.5, 1.5)
 KitBase.boundary_time(1.0, [-1.0, 0.0, 0.0], 0.5, 1.5)
 KitBase.boundary_time(1.0, [0.0, 0.0, 0.0], 0.5, 1.5)
 
-ptc1 = KitBase.Particle1D(1e-3, 0.0, randn(3), 0.1, 1)
-ptc2 = KitBase.Particle2D(1e-3, 0.0, 0.0, randn(3), 0.1, 1, 1)
+ptc1 = KitBase.Particle1D(1e-3, 0.0, randn(3), 0.1, 1) |> show
+ptc2 = KitBase.Particle2D(1e-3, 0.0, 0.0, randn(3), 0.1, 1, 1) |> show
 
 KitBase.sample_particle!(ptc1, 1e-4, rand(), randn(3), rand(), 2, 0, 0.1)
 KitBase.sample_particle!(ptc1, 1e-4, rand(), rand(), [1.0, 0.0, 1.0], 2, 1e-3, 0.72, 0)
