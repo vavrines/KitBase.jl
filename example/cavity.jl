@@ -1,24 +1,23 @@
-using ProgressMeter, Plots
 import KitBase
 
 cd(@__DIR__)
 ks, ctr, a1face, a2face, simTime = KitBase.initialize("cavity.txt")
+simTime = KitBase.solve!(ks, ctr, a1face, a2face, simTime)
 
+# equivalent low-level procedures
+using ProgressMeter
 res = zeros(4)
 dt = KitBase.timestep(ks, ctr, simTime)
 nt = floor(ks.set.maxTime / dt) |> Int
-#=
-@showprogress for iter = 1:20
-    #KitBase.reconstruct!(ks, ctr)
+@showprogress for iter = 1:nt
+    KitBase.reconstruct!(ks, ctr)
     KitBase.evolve!(ks, ctr, a1face, a2face, dt; mode = :kfvs, bc = :maxwell)
     KitBase.update!(ks, ctr, a1face, a2face, dt, res; coll = :bgk, bc = :maxwell)
 end
-=#
 
-@showprogress for iter = 1:100
-    
-    KitBase.evolve!(ks, ctr, a1face, a2face, dt; mode = :kfvs, bc = :maxwell)
-    #=
+# lower-level backend 
+@showprogress for iter = 1:nt
+    # horizontal flux
     @inbounds Threads.@threads for j = 1:ks.pSpace.ny
         for i = 2:ks.pSpace.nx
             KitBase.flux_kfvs!(
@@ -38,6 +37,7 @@ end
         end
     end
     
+    # vertical flux
     vn = ks.vSpace.v
     vt = -ks.vSpace.u
     @inbounds Threads.@threads for j = 2:ks.pSpace.ny
@@ -60,7 +60,7 @@ end
         end
     end
     
-    
+    # boundary flux
     @inbounds Threads.@threads for j = 1:ks.pSpace.ny
         KitBase.flux_boundary_maxwell!(
             a1face[1, j].fw,
@@ -94,7 +94,6 @@ end
             -1.,
         )
     end
-    
     
     @inbounds Threads.@threads for i = 1:ks.pSpace.nx
         KitBase.flux_boundary_maxwell!(
@@ -135,11 +134,8 @@ end
             1.,
         )
     end
-    =#
 
-    # @FIXME
-    #KitBase.update!(ks, ctr, a1face, a2face, dt, res; coll = :bgk, bc = :maxwell)
-
+    # update
     @inbounds for j = 1:ks.pSpace.ny
         for i = 1:ks.pSpace.nx
             KitBase.step!(
@@ -175,29 +171,14 @@ end
             )
         end
     end
-
-
-
-    #=
-    for j in 1:ks.pSpace.ny, i in 1:ks.pSpace.nx
-        @. ctr[i,j].w += (a1face[i,j].fw - a1face[i+1].fw + a2face[i,j].fw - a2face[i,j+1].fw) / ctr[i,j].dx / ctr[i,j].dy
-        ctr[i,j].prim .= KitBase.conserve_prim(ctr[i,j].w, ks.gas.γ)
-
-        MH = KitBase.maxwellian(ks.vSpace.u, ks.vSpace.v, ctr[i,j].prim)
-        MB = MH .* ks.gas.K ./ (2.0 * ctr[i,j].prim[end])
-        τ = KitBase.vhs_collision_time(ctr[i,j].prim, ks.gas.μᵣ, ks.gas.ω)
-
-        for q in axes(ks.vSpace.v, 2), p in axes(ks.vSpace.u, 1)
-            ctr[i,j].h[p, q] = (ctr[i,j].h[p, q] + (a1face[i,j].fh[p, q] - a1face[i+1,j].fh[p, q] + 
-                a2face[i,j].fh[p, q] - a2face[i,j+1].fh[p, q]) / ctr[i,j].dx / ctr[i,j].dy + dt / τ * MH[p, q]) / (1.0 + dt / τ)
-            ctr[i,j].b[p, q] = (ctr[i,j].b[p, q] + (a1face[i,j].fb[p, q] - a1face[i+1,j].fb[p, q] + 
-                a2face[i,j].fb[p, q] - a2face[i,j+1].fb[p, q]) / ctr[i,j].dx / ctr[i,j].dy + dt / τ * MB[p, q]) / (1.0 + dt / τ)
-        end
-    end
-    =#
 end
 
+# visulization
+KitBase.plot_contour(ks, ctr)
+
+# low-level backend
 begin
+    using Plots
     sol = zeros(4, ks.pSpace.nx, ks.pSpace.ny)
     for i in axes(ρ, 1)
         for j in axes(ρ, 2)

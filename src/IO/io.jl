@@ -2,16 +2,19 @@
 # I/O Methods
 # ============================================================
 
-export read_dict, write_jld, plot_line
+export read_dict,
+       write_jld,
+       plot_line,
+       plot_contour
 
 """
-Read text into dictionary
-
     read_dict(filename::String, allowed)
     read_dict(filename::String)
 
+Read text into dictionary
+
 * @args filename: configuration text file
-* @args allowed: keywords
+* @args allowed: keywords in range
 * @return vars: dictionary with values of variables
 
 """
@@ -103,10 +106,9 @@ end
 
 
 """
-Plot 1D profile
-
     plot_line(KS, ctr; backend)
 
+Plot solution profiles
 """
 function plot_line(
     KS::X,
@@ -149,5 +151,36 @@ function plot_line(
     else
         throw("undefined plotting backend")
     end
+
+end
+
+
+"""
+    plot_contour(KS, ctr; backend)
+
+Plot solution contour
+"""
+function plot_contour(
+    KS::X,
+    ctr::Y;
+    backend = :plots::Symbol,
+) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
+
+    sol = zeros(size(ctr[1].w, 1), KS.pSpace.nx, KS.pSpace.ny)
+    for i in axes(sol, 2)
+        for j in axes(sol, 3)
+            for k = 1:size(sol, 1)-1
+                sol[k, i, j] = ctr[i, j].prim[k]
+            end
+            sol[end, i, j] = 1.0 / ctr[i, j].prim[end]
+        end
+    end
+
+    p1 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[1, :, :]')
+    p2 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[2, :, :]')
+    p3 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[3, :, :]')
+    p4 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[4, :, :]')
+
+    plot(p1, p2, p3, p4, layout = (2, 2))
 
 end

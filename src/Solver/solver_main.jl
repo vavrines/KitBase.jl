@@ -57,7 +57,51 @@ function solve!(
     write_jld(KS, ctr, simTime)
     return t
 
-end # function
+end
+
+function solve!(
+    KS::X,
+    ctr::Y,
+    a1face::Z,
+    a2face::Z,
+    simTime,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{<:AbstractControlVolume,2},
+    Z<:AbstractArray{<:AbstractInterface2D,2},
+}
+
+    #--- initial checkpoint ---#
+    write_jld(KS, ctr, simTime)
+
+    #--- setup ---#
+    iter = 0
+    t = deepcopy(simTime)
+    dt = timestep(KS, ctr, simTime)
+    nt = Int(floor(KS.set.maxTime / dt)) + 1
+    res = zeros(axes(KS.ib.wL))
+
+    #--- main loop ---#
+    @showprogress for iter = 1:nt
+        reconstruct!(KS, ctr)
+        evolve!(KS, ctr, a1face, a2face, dt; mode = Symbol(KS.set.flux), bc = Symbol(KS.set.boundary))
+        update!(KS, ctr, a1face, a2face, dt, res; coll = Symbol(KS.set.collision), bc = Symbol(KS.set.boundary))
+
+        t += dt
+
+        if iter % 100 == 0
+            println("iter: $(iter), time: $(simTime), dt: $(dt), res: $(res[1:end])")
+        end
+
+        if t > KS.set.maxTime || maximum(res) < 5.e-7
+            break
+        end
+    end
+
+    write_jld(KS, ctr, simTime)
+    return t
+
+end
 
 
 """
