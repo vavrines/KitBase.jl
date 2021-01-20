@@ -25,6 +25,7 @@ using Optim
 using MultivariatePolynomials
 using TypedPolynomials
 using PyCall
+using Distributed
 using CUDA
 
 include("Data/data.jl")
@@ -40,21 +41,15 @@ include("Config/config.jl")
 include("Solver/solver.jl")
 
 function __init__()
-    threads = Threads.nthreads()
-    if threads == 1
-        @info "Kinetic will run serially"
-    elseif threads > 1
-        @info "Kinetic will run with $threads threads"
-        # https://github.com/CliMA/Oceananigans.jl/issues/1113
-        FFTW.set_num_threads(4 * threads)
+    if Threads.nthreads() > 1 || nworkers() > 1
+        @info "Kinetic will run with $np processors and $nt threads"
     end
 
     if has_cuda()
-        @info "Kinetic will enable CUDA devices"
+        @info "Kinetic will run with CUDA"
         for (i, dev) in enumerate(CUDA.devices())
             @info "$i: $(CUDA.name(dev))"
         end
-
         @info "Scalar operation is disabled in CUDA"
         CUDA.allowscalar(false)
     end

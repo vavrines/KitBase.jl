@@ -26,18 +26,8 @@ KitBase.find_idx(randn(20), 0.13, mode = :nonuniform)
 
 #--- unstructure mesh ---#
 cd(@__DIR__)
-#=
-using PyCall
-try
-    meshio = pyimport("meshio")
-catch
-    using Conda
-    Conda.add_channel("conda-forge")
-    Conda.add("meshio")
-    meshio = pyimport("meshio")
-end
-nodes, cells = read_mesh("t1.msh")
-=#
+nodes, cells = KitBase.read_mesh("t1.msh")
+
 using JLD2
 @load "t1.jld2" nodes cells
 
