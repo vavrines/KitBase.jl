@@ -41,8 +41,12 @@ include("Config/config.jl")
 include("Solver/solver.jl")
 
 function __init__()
-    if Threads.nthreads() > 1 || nworkers() > 1
+    np = nworkers()
+    nt = Threads.nthreads()
+    if nt > 1 || np > 1
         @info "Kinetic will run with $np processors and $nt threads"
+    else
+        @info "Kinetic will run serially"
     end
 
     if has_cuda()

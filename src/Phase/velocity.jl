@@ -3,18 +3,33 @@
 # ============================================================
 
 """
+    struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <: AbstractVelocitySpace
+        u0::TR
+        u1::TR
+        nu::TI
+        u::TA
+        du::TA
+        weights::TB
+    end
+
+    VSpace1D(
+        U0::TR,
+        U1::TR,
+        NU::TI,
+        TYPE = "rectangle",
+        NG = zero(NU)::TI,
+    ) where {TR,TI<:Integer}
+
 1D velocity space
 
-- @consts: u0, u1, nu, u, du, weights
-
 """
-struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,1}} <: AbstractVelocitySpace
+struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <: AbstractVelocitySpace
     u0::TR
     u1::TR
     nu::TI
     u::TA
     du::TA
-    weights::TA
+    weights::TB
 end
 
 function VSpace1D(
@@ -42,13 +57,11 @@ function VSpace1D(
             du[i] = δ
             weights[i] = newton_cotes(i + NG, NU + NG * 2) * δ
         end
-    elseif TYPE == "gauss" # gaussian
-        throw("Gaussian quadrature is WIP")
     else
         throw("No velocity quadrature available")
     end
 
-    return VSpace1D{TR,TI,typeof(u)}(U0, U1, NU, u, du, weights)
+    return VSpace1D{TR,TI,typeof(u),typeof(weights)}(U0, U1, NU, u, du, weights)
 
 end
 
@@ -497,8 +510,8 @@ Extended Base.show()
 
 """
 
-function Base.show(io::IO, vs::VSpace1D{TR,TI,TA}) where {TR,TI,TA}
-    print(io, "VelocitySpace1D{$TR,$TI,$TA}\n",
+function Base.show(io::IO, vs::VSpace1D{TR,TI,TA,TB}) where {TR,TI,TA,TB}
+    print(io, "VelocitySpace1D{$TR,$TI,$TA,$TB}\n",
               "domain: ($(vs.u0),$(vs.u1))\n",
               "resolution: $(vs.nu)\n",
               "ghost: $(1-firstindex(vs.u))\n")

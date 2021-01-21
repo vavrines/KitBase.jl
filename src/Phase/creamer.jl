@@ -2,11 +2,10 @@
 # Coffee Creamer of Quadrature
 # ============================================================
 
-
 """
-Spherical linear interpolation
-
     slerp(pt1::T, pt2::T, n::I) where {T<:AbstractArray{<:Real,1},I<:Int}
+
+Spherical linear interpolation
 
 """
 function slerp(pt1::T, pt2::T, n::I) where {T<:AbstractArray{<:Real,1},I<:Int}
@@ -23,12 +22,12 @@ end
 
 
 """
-Cleaner for all duplicate (non unique) entries of quadrature points and triangles
-
     unique(Points::X, Triangles::Y) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Int,2}}
 
-* @arg Points : quadrature points
-* @arg Triangles : triangulation
+Cleaner for all duplicate (non unique) entries of quadrature points and triangles
+
+* @args Points : quadrature points
+* @args Triangles : triangulation
 * @return xyz & triangulation : new quadrature points and triangulation
 
 """
