@@ -61,9 +61,9 @@ function solve!(
     @showprogress for iter = 1:nt
 
         #dt = timestep(KS, ctr, simTime)
-        reconstruct!(KS, ctr)
-        evolve!(KS, ctr, face, dt)
-        update!(KS, ctr, face, dt, res)
+        reconstruct!(KS, ctr; bc = Symbol(KS.set.boundary))
+        evolve!(KS, ctr, face, dt; mode = Symbol(KS.set.flux), bc = Symbol(KS.set.boundary))
+        update!(KS, ctr, face, dt, res; coll = Symbol(KS.set.collision), bc = Symbol(KS.set.boundary))
 
         #iter += 1
         t += dt
@@ -149,15 +149,14 @@ function timestep(
     tmax = 0.0
 
     if ctr[1].w isa Number
+        
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             prim = ctr[i].prim
-            sos = sound_speed(prim, KS.gas.γ)
-            vmax = max(KS.vSpace.u1, abs(prim[2])) + sos
+            vmax = abs(ctr[i].prim[2])
             tmax = max(tmax, vmax / ctr[i].dx)
         end
-    end
 
-    if KS.set.nSpecies == 1
+    elseif KS.set.nSpecies == 1
 
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             prim = ctr[i].prim

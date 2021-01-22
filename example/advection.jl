@@ -20,7 +20,7 @@ set = KitBase.Setup(
 
 pSpace = KitBase.PSpace1D(0.0, 1.0, 100, 1)
 vSpace = nothing
-property = KitBase.Scalar(1.0, 1e-3)
+property = KitBase.Scalar(1.0, 1e-6)
 
 w0 = 1.0
 prim0 = KitBase.conserve_prim(w0, property.a)
@@ -45,10 +45,12 @@ for i = 1:ks.pSpace.nx+1
 end
 
 t = 0.0
-dt = ks.set.cfl * minimum(ks.pSpace.dx) / ks.ib.wL
+dt = KitBase.timestep(ks, ctr, t)
 nt = ks.set.maxTime / dt |> Int
 
-for iter = 1:nt÷2
+anim = @animate for iter = 1:nt
+    KitBase.reconstruct!(ks, ctr; bc = Symbol(ks.set.boundary))
+    
     for i in eachindex(face)
         face[i].fw = KitBase.flux_gks(
             ctr[i-1].w,
@@ -69,11 +71,12 @@ for iter = 1:nt÷2
     end
     ctr[0].w = ctr[ks.pSpace.nx].w
     ctr[ks.pSpace.nx+1].w = ctr[1].w
+
+    sol = zeros(ks.pSpace.nx)
+    for i in 1:ks.pSpace.nx
+        sol[i] = ctr[i].w
+    end
+    plot(ks.pSpace.x[1:ks.pSpace.nx], sol, xlabel="x", label="u", ylims=[-1,1])
 end
 
-sol = zeros(ks.pSpace.nx)
-for i in 1:ks.pSpace.nx
-    sol[i] = ctr[i].w
-end
-using Plots
-Plots.plot(ks.pSpace.x[1:ks.pSpace.nx], sol)
+gif(anim, "advection.gif", fps = 45)

@@ -5,24 +5,46 @@ Reconstructor
 * 2D solver: `reconstruct!(KS::SolverSet, ctr::AbstractArray{ControlVolume2D2F,2})`
 
 """
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D,1}}
+function reconstruct!(KS::SolverSet, ctr::T; bc = :fix) where {T<:AbstractArray{ControlVolume1D,1}}
 
     if KS.set.interpOrder == 1
         return
     end
 
-    # macroscopic variables
-    @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
-        reconstruct3!(
-            ctr[i].sw,
-            ctr[i-1].w,
-            ctr[i].w,
-            ctr[i+1].w,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
-            Symbol(KS.set.limiter),
-        )
+    if first(eachindex(KS.pSpace.x)) < 1
+        idx0 = 1
+        idx1 = KS.pSpace.nx
+    else
+        idx0 = 2
+        idx1 = KS.pSpace.nx - 1
     end
+    
+    if ctr[1].w isa Number
+        @inbounds Threads.@threads for i = idx0:idx1
+            ctr[i].sw = reconstruct3(
+                    ctr[i-1].w,
+                    ctr[i].w,
+                    ctr[i+1].w,
+                    0.5 * (ctr[i-1].dx + ctr[i].dx),
+                    0.5 * (ctr[i].dx + ctr[i+1].dx),
+                    Symbol(KS.set.limiter),
+                )
+        end
+    else
+        @inbounds Threads.@threads for i = idx0:idx1
+            reconstruct3!(
+                ctr[i].sw,
+                ctr[i-1].w,
+                ctr[i].w,
+                ctr[i+1].w,
+                0.5 * (ctr[i-1].dx + ctr[i].dx),
+                0.5 * (ctr[i].dx + ctr[i+1].dx),
+                Symbol(KS.set.limiter),
+            )
+        end
+    end
+
+    return nothing
 
 end
 
