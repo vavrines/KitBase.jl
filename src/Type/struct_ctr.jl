@@ -8,23 +8,32 @@
 # ------------------------------------------------------------
 
 """
-    ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T2) where {T1<:Real,T2<:AbstractArray}
+    mutable struct ControlVolume1D{F,A,B} <: AbstractControlVolume1D
+        x::F
+        dx::F
+
+        w::A
+        prim::B
+        sw::A
+    end
+
+    ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T3) where {T1<:Real,T2,T3<:AbstractArray}
 
 1D control volume with no distribution function
 
 @vars: x, dx, w, prim, sw
 
 """
-mutable struct ControlVolume1D{F,A} <: AbstractControlVolume1D
+mutable struct ControlVolume1D{F,A,B} <: AbstractControlVolume1D
     x::F
     dx::F
 
     w::A
-    prim::A
+    prim::B
     sw::A
 end
 
-function ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T2) where {T1<:Real,T2<:AbstractArray}
+function ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T3) where {T1<:Real,T2,T3<:AbstractArray}
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -32,13 +41,13 @@ function ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T2) where {T1<:Real,T2<:Abs
     prim = deepcopy(PRIM)
     sw = zero(W)
 
-    return ControlVolume1D{typeof(x),typeof(w)}(x, dx, w, prim, sw)
+    return ControlVolume1D{typeof(x),typeof(w),typeof(prim)}(x, dx, w, prim, sw)
 end
 
-function Base.show(io::IO, ctr::ControlVolume1D{F,A}) where {F,A}
+function Base.show(io::IO, ctr::ControlVolume1D{F,A,B}) where {F,A,B}
     print(
         io,
-        "ControlVolume1D{$F,$A}\n",
+        "ControlVolume1D{$F,$A,$B}\n",
         "center: $(ctr.x)\n",
         "interval: $(ctr.dx)\n",
         "conservative vars: $(ctr.w)\n",

@@ -25,6 +25,20 @@ Setup() = Setup{String,Int,Float64,Float64}("sod", "1d1f1v", "kfvs", "bgk", 1, 1
 
 
 """
+Fluid property for scalar conservation laws
+
+@vars: a, μᵣ
+
+"""
+mutable struct Scalar{TA,TB} <: AbstractProperty
+
+    
+    a::TA
+    μᵣ::TB
+end
+
+
+"""
 Particle property
 
 @vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np

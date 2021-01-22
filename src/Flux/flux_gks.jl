@@ -1,17 +1,15 @@
 """
-Gas kinetic flux
-
     flux_gks(u::Real, μ::Real, dt::Real, su = 0.0::Real, a = 0::Real)
     flux_gks(uL::Real, uR::Real, μ::Real, dt::Real, dxL::Real,
         dxR::Real, suL = 0.0::Real, suR = 0.0::Real, a = 0::Real)
 
+Gas kinetic flux
 * @args: conservative scalars and their slopes
 * @args: viscosity
 * @args: time step and cell size
 * @return: scalar flux
-
 """
-function flux_gks(u, μ, dt, su = 0.0, a = 0::T) where {T<:Real}
+function flux_gks(u, μ, dt, a = 0::T, su = 0.0) where {T<:Real}
 
     prim = ifelse(a == 0, conserve_prim(u), conserve_prim(u, a))
 
@@ -27,7 +25,6 @@ function flux_gks(u, μ, dt, su = 0.0, a = 0::T) where {T<:Real}
     Mt = zeros(5)
     Mt[4] = dt
     Mt[5] = -tau * dt * exp(-dt / tau) + tau * Mt[4]
-
 
     # flux related to upwind distribution
     Muv = moments_conserve(Mu, 1)
@@ -49,9 +46,9 @@ function flux_gks(
     dt,
     dxL,
     dxR,
+    a = 0,
     suL = 0.0,
     suR = 0.0,
-    a = 0,
 ) where {T<:Real}
 
     primL = ifelse(a == 0, conserve_prim(uL), conserve_prim(uL, a))

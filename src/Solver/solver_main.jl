@@ -1,10 +1,38 @@
 """
+    solve!(
+        KS::X,
+        ctr::Y,
+        face::Z,
+        simTime,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{<:AbstractControlVolume,1},
+        Z<:AbstractArray{<:AbstractInterface1D,1},
+    }
+
+    solve!(
+        KS::X,
+        ctr::Y,
+        a1face::Z,
+        a2face::Z,
+        simTime,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{<:AbstractControlVolume,2},
+        Z<:AbstractArray{<:AbstractInterface2D,2},
+    }
+
 Solution algorithm
+- pre-process
+- timestep calculation
+- reconstruction
+- evolution
+- update
 
-* 1D solver: `solve!(KS::SolverSet, ctr::AbstractArray{<:AbstractControlVolume1D,1},
-    face::Array{<:AbstractInterface1D,1}, simTime::Float64)`
-
-* @return: ending time
+@args: solver setup
+@args: array of control volumes
+@args: array of interfaces
+@args & return: time instant
 
 """
 function solve!(
@@ -26,7 +54,7 @@ function solve!(
     t = deepcopy(simTime)
     dt = timestep(KS, ctr, simTime)
     nt = Int(floor(KS.set.maxTime / dt)) + 1
-    res = zeros(axes(KS.ib.wL))
+    res = zero(KS.ib.wL)
 
     #--- main loop ---#
     #while true
@@ -41,7 +69,7 @@ function solve!(
         t += dt
 
         if iter % 100 == 0
-            println("iter: $(iter), time: $(simTime), dt: $(dt), res: $(res[1:end])")
+            println("iter: $(iter), time: $(simTime), dt: $(dt), res: $(res)")
 
             #if iter%1000 == 0
             #    write_jld(KS, ctr, iter)
@@ -119,6 +147,15 @@ function timestep(
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
 
     tmax = 0.0
+
+    if ctr[1].w isa Number
+        @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+            prim = ctr[i].prim
+            sos = sound_speed(prim, KS.gas.γ)
+            vmax = max(KS.vSpace.u1, abs(prim[2])) + sos
+            tmax = max(tmax, vmax / ctr[i].dx)
+        end
+    end
 
     if KS.set.nSpecies == 1
 

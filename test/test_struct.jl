@@ -7,6 +7,7 @@ end
 
 #--- settings ---#
 KitBase.Setup() |> show
+KitBase.Scalar(1.0, 1e-3)
 KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01) |> show
 KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000) |> show
 KitBase.Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5) |> show

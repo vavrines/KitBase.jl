@@ -19,7 +19,7 @@ mutable struct Interface1D{A} <: AbstractInterface1D
 
     fw::A
 
-    function Interface1D(w::AbstractArray)
+    function Interface1D(w::Union{Real,AbstractArray})
         fw = zero(w)
         new{typeof(fw)}(fw)
     end

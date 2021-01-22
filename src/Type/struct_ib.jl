@@ -8,28 +8,28 @@ Initial & boundary condition with no distribution function
 @vars: wL, primL, bcL, wR, primR, bcR, bcU, bcD
 
 """
-mutable struct IB{A,B} <: AbstractCondition
+mutable struct IB{A,B,C} <: AbstractCondition
 
     wL::A
-    primL::A
-    bcL::A
+    primL::B
+    bcL::B
 
     wR::A
-    primR::A
-    bcR::A
+    primR::B
+    bcR::B
 
-    bcU::A
-    bcD::A
+    bcU::B
+    bcD::B
 
-    vL::B
-    vR::B
+    vL::C
+    vR::C
 
     # works for both 1V/3V and single-/multi-component gases
     function IB(
-        wL::AbstractArray,
+        wL,
         primL::AbstractArray,
         bcL::AbstractArray,
-        wR::AbstractArray,
+        wR,
         primR::AbstractArray,
         bcR::AbstractArray,
         bcU = deepcopy(bcR)::AbstractArray,
@@ -65,7 +65,7 @@ mutable struct IB{A,B} <: AbstractCondition
             end
         end
 
-        new{typeof(wL),typeof(vL)}(wL, primL, bcL, wR, primR, bcR, bcU, bcD, vL, vR)
+        new{typeof(wL),typeof(primL),typeof(vL)}(wL, primL, bcL, wR, primR, bcR, bcU, bcD, vL, vR)
     end
 
 end

@@ -5,7 +5,7 @@ Structure of solver setup
 struct SolverSet{
     TS<:AbstractSetup,
     TP<:AbstractPhysicalSpace,
-    TV<:AbstractVelocitySpace,
+    TV<:Union{AbstractVelocitySpace,Nothing},
     TG<:AbstractProperty,
     TI<:AbstractCondition,
     TO<:AbstractString,
