@@ -5,7 +5,7 @@ Reconstructor
 * 2D solver: `reconstruct!(KS::SolverSet, ctr::AbstractArray{ControlVolume2D2F,2})`
 
 """
-function reconstruct!(KS::SolverSet, ctr::T; bc = :fix) where {T<:AbstractArray{ControlVolume1D,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D,1}}
 
     if KS.set.interpOrder == 1
         return

@@ -61,7 +61,7 @@ function solve!(
     @showprogress for iter = 1:nt
 
         #dt = timestep(KS, ctr, simTime)
-        reconstruct!(KS, ctr; bc = Symbol(KS.set.boundary))
+        reconstruct!(KS, ctr)
         evolve!(KS, ctr, face, dt; mode = Symbol(KS.set.flux), bc = Symbol(KS.set.boundary))
         update!(KS, ctr, face, dt, res; coll = Symbol(KS.set.collision), bc = Symbol(KS.set.boundary))
 
