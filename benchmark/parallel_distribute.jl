@@ -1,6 +1,8 @@
-using Distributed, SharedArrays, Plots
+using Distributed, SharedArrays, BenchmarkTools
 addprocs(1)
 @everywhere using KitBase
+
+#import KitBase
 
 begin
     vars = Dict{String,Any}()
@@ -28,33 +30,99 @@ begin
     vars["omegaRef"] = 0.5
 end
 
-for key in keys(vars)
-    s = Symbol(key)
-    @eval $s = $(vars[key])
-end
-
-set = Setup(
-        case,
-        space,
-        flux,
-        collision,
-        nSpecies,
-        interpOrder,
-        limiter,
-        boundary,
-        cfl,
-        maxTime,
-    )
-
-
+set = KitBase.set_setup(vars)
 pSpace = KitBase.set_geometry(vars)
 vSpace = KitBase.set_velocity(vars)
 gas = KitBase.set_property(vars)
 ib = KitBase.set_ib(vars, set, vSpace, gas)
 folder = @__DIR__
-
 ks = KitBase.SolverSet(set, pSpace, vSpace, gas, ib, folder)
 
+dt = ks.pSpace.dx[1] / (1.0 + KitBase.sound_speed(ks.ib.primL, ks.gas.γ))
+nt = floor(ks.set.maxTime / dt) |> Int
 
+#--- serial ---#
+w = zeros(ks.pSpace.nx, 3)
+for i in 1:ks.pSpace.nx
+    if i <= ks.pSpace.nx ÷ 2
+        w[i,:] .= ks.ib.wL
+    else
+        w[i,:] .= ks.ib.wR
+    end
+end     
+fw = zeros(ks.pSpace.nx+1, 3)
+
+i = 2
+flux = @view fw[i,:]
+KitBase.flux_gks!(
+    flux,
+    w[i-1,:],
+    w[i,:],
+    ks.gas.γ,
+    ks.gas.K,
+    ks.gas.μᵣ,
+    ks.gas.ω,
+    dt,
+    0.5 * ks.pSpace.dx[i-1],
+    0.5 * ks.pSpace.dx[i],
+)
+
+
+@time for iter = 1:nt
+    for i in 2:ks.pSpace.nx
+        flux = @view fw[i,:]
+        flux_gks!(
+            flux,
+            w[i-1,:],
+            w[i,:],
+            ks.gas.γ,
+            ks.gas.K,
+            ks.gas.μᵣ,
+            ks.gas.ω,
+            dt,
+            0.5 * ks.pSpace.dx[i-1],
+            0.5 * ks.pSpace.dx[i],
+        )
+    end
+    
+    for i in 2:ks.pSpace.nx-1
+        for j in 1:3
+            w[i,j] += (fw[i,j] - fw[i+1,j]) / ks.pSpace.dx[i]
+        end
+    end
+end
+
+#--- parallel ---#
 wp = SharedArray{Float64}((ks.pSpace.nx, 3), init=A->(A=zeros(ks.pSpace.nx, 3)))
+for i in 1:ks.pSpace.nx
+    if i <= ks.pSpace.nx ÷ 2
+        wp[i,:] .= ks.ib.wL
+    else
+        wp[i,:] .= ks.ib.wR
+    end
+end     
+fwp = SharedArray{Float64}((ks.pSpace.nx+1, 3), init=A->(A=zeros(ks.pSpace.nx+1, 3)))
 
+@time for iter = 1:nt
+    @sync @distributed for i in 2:ks.pSpace.nx
+        flux = @view fwp[i,:]
+        flux_gks!(
+            flux,
+            wp[i-1,:],
+            wp[i,:],
+            ks.gas.γ,
+            ks.gas.K,
+            ks.gas.μᵣ,
+            ks.gas.ω,
+            dt,
+            0.5 * ks.pSpace.dx[i-1],
+            0.5 * ks.pSpace.dx[i],
+        )
+    end
+    
+    @sync @distributed for i in 2:ks.pSpace.nx-1
+        for j in 1:3
+            wp[i,j] += (fwp[i,j] - fwp[i+1,j]) / ks.pSpace.dx[i]
+        end
+    end
+end
