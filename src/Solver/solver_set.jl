@@ -32,19 +32,8 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
         @eval $s = $(dict[key])
     end
 
-    # set
-    set = Setup(
-        case,
-        space,
-        flux,
-        collision,
-        nSpecies,
-        interpOrder,
-        limiter,
-        boundary,
-        cfl,
-        maxTime,
-    )
+    # setup
+    set = set_setup(dict)
 
     # physical space
     pSpace = set_geometry(dict)
@@ -55,11 +44,8 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     # gas property
     gas = set_property(dict)
 
-    if @isdefined uLid
-        ib = set_ib(set, vSpace, gas, uLid, vLid, tLid)
-    else
-        ib = set_ib(set, vSpace, gas)
-    end
+    # initial & boundary condition
+    ib = set_ib(dict, set, vSpace, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -85,6 +71,33 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
         ib,
         outputFolder,
     )
+end
+
+
+"""
+Generate AbstractPhysicalSpace
+
+"""
+function set_setup(dict::T) where {T<:AbstractDict}
+    for key in keys(dict)
+        s = Symbol(key)
+        @eval $s = $(dict[key])
+    end
+
+    set = Setup(
+        case,
+        space,
+        flux,
+        collision,
+        nSpecies,
+        interpOrder,
+        limiter,
+        boundary,
+        cfl,
+        maxTime,
+    )
+
+    return set
 end
 
 
@@ -122,7 +135,9 @@ function set_velocity(dict::T) where {T<:AbstractDict}
     end
 
     Dv = parse(Int, space[5])
-    if Dv == 1
+    if Dv == 0
+        vSpace = nothing
+    elseif Dv == 1
         if nSpecies == 1
             vSpace = VSpace1D(umin, umax, nu, vMeshType, nug)
         elseif nSpecies == 2
@@ -224,7 +239,9 @@ function set_property(dict::T) where {T<:AbstractDict}
 
     Dx = parse(Int, space[1])
     γD = map(parse(Int, space[3]), parse(Int, space[5])) do x, y # (x)f(y)v
-        if x == 1 # 1f
+        if x == 0
+            return Dx
+        elseif x == 1 # 1f
             if y >= 3 # 3v
                 return 3
             else # 1v
@@ -298,6 +315,21 @@ end
 Generate AbstractIB
 
 """
+function set_ib(dict::T, set, vSpace, gas) where {T<:AbstractDict}
+    for key in keys(dict)
+        s = Symbol(key)
+        @eval $s = $(dict[key])
+    end
+
+    if @isdefined uLid
+        ib = set_ib(set, vSpace, gas, uLid, vLid, tLid)
+    else
+        ib = set_ib(set, vSpace, gas)
+    end
+
+    return ib
+end
+
 function set_ib(
     set::T,
     vSpace,
@@ -324,7 +356,10 @@ function set_ib(
 
     elseif set.case == "sod"
 
-        if set.space[3:end] == "1f1v"
+        if set.space[3:end] == "0f0v"
+            wL, primL, bcL, wR, primR, bcR = ib_sod(gas.γ)
+            ib = IB(wL, primL, bcL, wR, primR, bcR)
+        elseif set.space[3:end] == "1f1v"
             wL, primL, fL, bcL, wR, primR, fR, bcR = ib_sod(gas.γ, vSpace.u)
             ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
         elseif set.space[3:end] == "1f3v"

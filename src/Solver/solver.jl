@@ -2,7 +2,8 @@
 # Solver
 # ============================================================
 
-export SolverSet, 
+export SolverSet,
+       set_setup,
        set_geometry, 
        set_velocity,
        set_property,

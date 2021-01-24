@@ -169,6 +169,21 @@ Initialize Sod shock tube
 - 1d2f1v: `ib_sod(γ, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}`
 
 """
+function ib_sod(γ) # 1D0F0V
+
+    primL = [1.0, 0.0, 0.5]
+    primR = [0.125, 0.0, 0.625]
+
+    wL = prim_conserve(primL, γ)
+    wR = prim_conserve(primR, γ)
+
+    bcL = deepcopy(primL)
+    bcR = deepcopy(primR)
+
+    return wL, primL, bcL, wR, primR, bcR
+
+end
+
 function ib_sod(γ, u::T) where {T<:AbstractArray{<:AbstractFloat,1}} # 1D1F1V
 
     primL = [1.0, 0.0, 0.5]
