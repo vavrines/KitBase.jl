@@ -23,16 +23,11 @@
     }
 
 Solution algorithm
-- pre-process
-- timestep calculation
-- reconstruction
-- evolution
-- update
 
-@args: solver setup
-@args: array of control volumes
-@args: array of interfaces
-@args & return: time instant
+- @args: solver setup
+- @args: array of control volumes
+- @args: array of interfaces
+- @args & return: time instant
 
 """
 function solve!(

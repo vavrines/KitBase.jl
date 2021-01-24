@@ -8,11 +8,16 @@
 # ------------------------------------------------------------
 
 """
-    Interface1D(w::AbstractArray)
+    mutable struct Interface1D{A} <: AbstractInterface1D
+        fw::A
+
+        function Interface1D(w::Union{Real,AbstractArray})
+            fw = zero(w)
+            new{typeof(fw)}(fw)
+        end
+    end
 
 1D cell interface with no distribution function
-
-@vars: fw
 
 """
 mutable struct Interface1D{A} <: AbstractInterface1D
@@ -32,11 +37,19 @@ end
 
 
 """
-    Interface1D1F(w::AbstractArray, f::AbstractArray)
+    mutable struct Interface1D1F{A,B} <: AbstractInterface1D
+        fw::A
+        ff::B
+
+        function Interface1D1F(w::AbstractArray, f::AbstractArray)
+            fw = zero(w)
+            ff = zero(f)
+
+            new{typeof(fw),typeof(ff)}(fw, ff)
+        end
+    end
 
 1D cell interface with 1 distribution function
-
-@vars: fw, ff
 
 """
 mutable struct Interface1D1F{A,B} <: AbstractInterface1D
@@ -64,11 +77,21 @@ end
 
 
 """
-    Interface1D2F(w::AbstractArray, f::AbstractArray)
+    mutable struct Interface1D2F{A,B} <: AbstractInterface1D
+        fw::A
+        fh::B
+        fb::B
+
+        function Interface1D2F(w::AbstractArray, f::AbstractArray)
+            fw = zero(w)
+            fh = zero(f)
+            fb = zero(f)
+
+            new{typeof(fw),typeof(fh)}(fw, fh, fb)
+        end
+    end
 
 1D cell interface with 2 distribution functions
-
-@vars: fw, fh, fb
 
 """
 mutable struct Interface1D2F{A,B} <: AbstractInterface1D
@@ -98,13 +121,16 @@ end
 
 
 """
-    Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
-    Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
-    Interface1D3F(w::AbstractArray, f::AbstractArray)
+    mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
+        fw::A
+        fh0::B
+        fh1::B
+        fh2::B
+        femL::C
+        femR::C
+    end
 
 1D cell interface with 3 distribution functions
-
-@vars: fw, fh0, fh1, fh2, femL, femR,
 
 """
 mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
@@ -166,12 +192,17 @@ end
 
 
 """
-    Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
-    Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
+    mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
+        fw::A
+        fh0::B
+        fh1::B
+        fh2::B
+        fh3::B
+        femL::C
+        femR::C
+    end
 
 1D cell interface with 4 distribution functions
-
-@vars: fw, fh0, fh1, fh2, fh3, femL, femR
 
 """
 mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
@@ -227,11 +258,22 @@ end
 # ------------------------------------------------------------
 
 """
-    Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)
+    mutable struct Interface2D{A,B,C} <: AbstractInterface2D
+        len::A
+        n::B
+        fw::C
+
+        function Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)
+            len = L
+            n = [C, S]
+
+            fw = zero(w)
+
+            new{typeof(len),typeof(n),typeof(fw)}(len, n, fw)
+        end
+    end
 
 2D cell interface with no distribution function
-
-@vars: len, n, fw
 
 """
 mutable struct Interface2D{A,B,C} <: AbstractInterface2D
@@ -263,11 +305,24 @@ end
 
 
 """
-    Interface2D1F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+    mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
+        len::A
+        n::B
+        fw::C
+        ff::D
+
+        function Interface2D1F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+            len = L
+            n = [C, S]
+
+            fw = zero(w)
+            ff = zero(f)
+
+            new{typeof(len),typeof(n),typeof(fw),typeof(ff)}(len, n, fw, ff)
+        end
+    end
 
 2D cell interface with 1 distribution function
-
-@vars: len, n, fw, ff
 
 """
 mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
@@ -302,11 +357,26 @@ end
 
 
 """
-    Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+    mutable struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
+        len::A
+        n::B
+        fw::C
+        fh::D
+        fb::D
+
+        function Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+            len = L
+            n = [C, S]
+
+            fw = zeros(eltype(w), axes(w))
+            fh = zeros(eltype(f), axes(f))
+            fb = zeros(eltype(f), axes(f))
+
+            new{typeof(len),typeof(n),typeof(fw),typeof(fh)}(len, n, fw, fh, fb)
+        end
+    end
 
 2D cell interface with 2 distribution functions
-
-@vars: len, n, fw, fh, fb
 
 """
 mutable struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
@@ -343,27 +413,22 @@ end
 
 
 """
-    Interface2D3F(
-        L::Real,
-        C::Real,
-        S::Real,
-        w::AbstractArray,
-        f::AbstractArray,
-        E::AbstractArray{<:Real,1},
-    )
-    Interface2D3F(
-        L::Real,
-        C::Real,
-        S::Real,
-        w::AbstractArray,
-        f::AbstractArray,
-        E::AbstractArray{<:Real,2},
-    )
-    Interface2D3F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+    mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
+        len::A
+        n::B
+        fw::C
+        fh0::D
+        fh1::D
+        fh2::D
+        femL::E
+        femR::E
+        femLU::E
+        femLD::E
+        femRU::E
+        femRD::E
+    end
 
 2D cell interface with 3 distribution functions
-
-@vars: len, n, fw, fh, fb
 
 """
 mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D

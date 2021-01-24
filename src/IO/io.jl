@@ -1,5 +1,5 @@
 # ============================================================
-# I/O Methods
+# I / O Methods
 # ============================================================
 
 export read_dict,
@@ -106,7 +106,7 @@ end
 
 
 """
-    plot_line(KS, ctr; backend)
+    plot_line(KS, ctr; backend = :plots)
 
 Plot solution profiles
 """
@@ -156,7 +156,7 @@ end
 
 
 """
-    plot_contour(KS, ctr; backend)
+    plot_contour(KS, ctr; backend = :plots)
 
 Plot solution contour
 """

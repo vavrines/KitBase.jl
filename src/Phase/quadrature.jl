@@ -4,7 +4,7 @@
 
 
 """
-    legendre_quadrature(n::T) where {T<:Int}
+    legendre_quadrature(n::T) where {T<:Integer}
 
 Gauss-Legendre quadrature
 
@@ -13,7 +13,7 @@ Gauss-Legendre quadrature
 * @return weights : quadrature weights
 
 """
-function legendre_quadrature(n::T) where {T<:Int}
+function legendre_quadrature(n::T) where {T<:Integer}
 
     pointsxyz = zeros(n * n, 3)
     weights = zeros(n * n)
@@ -42,7 +42,7 @@ end
 
 
 """
-    octa_quadrature(n::T, slerpflag = true::Bool) where {T<:Int}
+    octa_quadrature(n::T, slerpflag = true::Bool) where {T<:Integer}
 
 Octaeder quadrature
 
@@ -52,7 +52,7 @@ Octaeder quadrature
 * @return triangulation
 
 """
-function octa_quadrature(n::T, slerpflag = true::Bool) where {T<:Int}
+function octa_quadrature(n::T, slerpflag = true::Bool) where {T<:Integer}
 
     # integral range
     pt0 = [0.0, 0.0, 1.0]
@@ -168,7 +168,7 @@ end
     quadrature_weights(
         xyz::X,
         triangles::Y,
-    ) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{Int,2}}
+    ) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Integer,2}}
 
 Create quadrature weights from points and triangulation
 
@@ -180,7 +180,7 @@ Create quadrature weights from points and triangulation
 function quadrature_weights(
     xyz::X,
     triangles::Y,
-) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{Int,2}}
+) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Integer,2}}
 
     weights = zeros(axes(xyz, 1))
     nTriangles = size(triangles, 1)

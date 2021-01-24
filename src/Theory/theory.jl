@@ -46,8 +46,11 @@ export gauss_moments,
        boltzmann_fft!,
        boltzmann_ode!,
        bgk_ode!
-export heat_capacity_ratio, sound_speed
-export sample_maxwell, next_collision_time, boundary_time
+export heat_capacity_ratio,
+       sound_speed
+export sample_maxwell,
+       next_collision_time,
+       boundary_time
 
 include("theory_continuum.jl")
 include("theory_atom.jl")

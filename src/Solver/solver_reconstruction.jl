@@ -1,9 +1,7 @@
 """
+    reconstruct!(KS::SolverSet, ctr::AbstractArray)
+
 Reconstructor
-
-* 1D solver: `reconstruct!(KS::SolverSet, ctr::AbstractArray{<:AbstractControlVolume1D,1})`
-* 2D solver: `reconstruct!(KS::SolverSet, ctr::AbstractArray{ControlVolume2D2F,2})`
-
 """
 function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D,1}}
 

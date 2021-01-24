@@ -1,8 +1,7 @@
 # ============================================================
 # Structs of Solution
-# -> array of arrays in numerical simulation
+# Solver stores data in structs of arrays (SoA)
 # ============================================================
-
 
 mutable struct Solution1D{A} <: AbstractSolution1D
 

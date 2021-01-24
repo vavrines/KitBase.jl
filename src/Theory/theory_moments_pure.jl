@@ -135,18 +135,18 @@ end
 
 
 """
+    moments_conserve(Mu::OffsetArray{<:AbstractFloat,1}, alpha::Integer)
+
+    moments_conserve(Mu::OffsetArray{<:Real,1}, Mxi::OffsetArray{<:Real,1},
+        alpha::Integer, delta::Integer)
+
+    moments_conserve(Mu::OffsetArray{<:Real,1}, Mv::OffsetArray{<:Real,1},
+        Mw::OffsetArray{<:Real,1}, alpha::Integer, beta::Integer, delta::Integer)
+
 Calculate conservative moments of particle distribution
 
-`moments_conserve(Mu::OffsetArray{<:AbstractFloat,1}, alpha::Int)`
-
-`moments_conserve(Mu::OffsetArray{<:Real,1}, Mxi::OffsetArray{<:Real,1},
-    alpha::Int, delta::Int)`
-
-`moments_conserve(Mu::OffsetArray{<:Real,1}, Mv::OffsetArray{<:Real,1},
-    Mw::OffsetArray{<:Real,1}, alpha::Int, beta::Int, delta::Int)`
-
 """
-moments_conserve(Mu::T, alpha::I) where {T<:OffsetArray{<:AbstractFloat,1},I<:Int} =
+moments_conserve(Mu::T, alpha::I) where {T<:OffsetArray{<:AbstractFloat,1},I<:Integer} =
     Mu[alpha]
 
 function moments_conserve(
@@ -154,7 +154,7 @@ function moments_conserve(
     Mxi::T,
     alpha::I,
     delta::I,
-) where {T<:OffsetArray{<:AbstractFloat,1},I<:Int}
+) where {T<:OffsetArray{<:AbstractFloat,1},I<:Integer}
 
     uv = similar(Mu, 3)
     uv[1] = Mu[alpha] * Mxi[delta÷2]
@@ -172,7 +172,7 @@ function moments_conserve(
     alpha::I,
     beta::I,
     delta::I,
-) where {T<:OffsetArray{<:AbstractFloat,1},I<:Int}
+) where {T<:OffsetArray{<:AbstractFloat,1},I<:Integer}
 
     if length(Mw) == 3 # internal motion
         uv = similar(Mu, 4)

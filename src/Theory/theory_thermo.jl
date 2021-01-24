@@ -39,6 +39,10 @@ end
 
 
 """
+    sound_speed(λ::Real, γ::Real)
+    sound_speed(prim::T, γ) where {T<:AbstractArray{<:Real,1}}
+    sound_speed(prim::T, γ) where {T<:AbstractArray{<:Real,2}}
+
 Calculate speed of sound
 
 """

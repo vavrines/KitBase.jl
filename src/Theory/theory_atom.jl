@@ -1,10 +1,9 @@
 """
-Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
-
     pdf_slope(u, Δ)
 
     pdf_slope(prim::A, sw::B, inK) where {A<:AbstractArray{<:Real,1},B<:AbstractArray{<:Real,1}}
 
+Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 """
 pdf_slope(u, Δ::T) where {T<:Real} = Δ / u
 
@@ -64,9 +63,9 @@ end
 
 
 """
-Calculate slope of multi-component particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
-
     mixture_pdf_slope(prim::X, sw::Y, inK) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,2}}
+
+Calculate slope of multi-component particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
 """
 function mixture_pdf_slope(
@@ -87,6 +86,30 @@ end
 
 
 """
+    maxwellian(u::T, ρ, U, λ) where {T<:AbstractArray{<:AbstractFloat,1}}
+
+    maxwellian(
+        u::X,
+        prim::Y,
+    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
+
+    maxwellian(u::T, v::T, ρ, U, V, λ) where {T<:AbstractArray{<:AbstractFloat,2}}
+
+    maxwellian(
+        u::X,
+        v::X,
+        prim::Y,
+    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,1}}
+
+    maxwellian(u::T, v::T, w::T, ρ, U, V, W, λ) where {T<:AbstractArray{<:AbstractFloat,3}}
+
+    maxwellian(
+        u::X,
+        v::X,
+        w::X,
+        prim::Y,
+    ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,1}}
+
 Maxwellian in discrete form
 
 * @args: particle velocity quadrature points
@@ -128,6 +151,106 @@ maxwellian(
 
 
 """
+    maxwellian!(
+        M::T1,
+        u::T2,
+        ρ,
+        U,
+        λ,
+    ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
+
+    maxwellian!(
+        M::T1,
+        u::T2,
+        prim::T3,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,1},
+        T2<:AbstractArray{<:AbstractFloat,1},
+        T3<:AbstractArray{<:Real,1},
+    }
+
+    # Rykov
+    maxwellian!(
+        Ht::T1,
+        Bt::T1,
+        Rt::T1,
+        Hr::T1,
+        Br::T1,
+        Rr::T1,
+        u::T2,
+        prim::T3,
+        K,
+        Kr,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,1},
+        T2<:AbstractArray{<:AbstractFloat,1},
+        T3<:AbstractArray{<:Real,1},
+    }
+
+    maxwellian!(
+        M::T1,
+        u::T2,
+        v::T2,
+        ρ,
+        U,
+        V,
+        λ,
+    ) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2}}
+
+    maxwellian!(
+        M::T1,
+        u::T2,
+        v::T2,
+        prim::T3,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,2},
+        T2<:AbstractArray{<:AbstractFloat,2},
+        T3<:AbstractArray{<:Real,1},
+    }
+
+    # Rykov
+    maxwellian!(
+        Ht::T1,
+        Bt::T1,
+        Rt::T1,
+        Hr::T1,
+        Br::T1,
+        Rr::T1,
+        u::T2,
+        v::T2,
+        prim::T3,
+        K,
+        Kr,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,2},
+        T2<:AbstractArray{<:AbstractFloat,2},
+        T3<:AbstractArray{<:Real,1},
+    }
+
+    maxwellian!(
+        M::T1,
+        u::T2,
+        v::T2,
+        w::T2,
+        ρ,
+        U,
+        V,
+        W,
+        λ,
+    ) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3}}
+
+    maxwellian!(
+        M::T1,
+        u::T2,
+        v::T2,
+        w::T2,
+        prim::T3,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,3},
+        T2<:AbstractArray{<:AbstractFloat,3},
+        T3<:AbstractArray{<:Real,1},
+    }
+
 In-place Maxwellian
 
 * @args: particle velocity quadrature points
@@ -268,8 +391,6 @@ maxwellian!(
 
 
 """
-Multi-component Maxwellian in discrete form
-
     mixture_maxwellian(u::X, prim::Y) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
 
     mixture_maxwellian(
@@ -285,6 +406,7 @@ Multi-component Maxwellian in discrete form
         prim::Y,
     ) where {X<:AbstractArray{<:AbstractFloat,4},Y<:AbstractArray{<:Real,2}}
 
+Multi-component Maxwellian in discrete form
 """
 function mixture_maxwellian(
     u::X,
@@ -334,6 +456,39 @@ end
 
 
 """
+    mixture_maxwellian!(
+        M::T1,
+        u::T2,
+        prim::T3,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,2},
+        T2<:AbstractArray{<:AbstractFloat,2},
+        T3<:AbstractArray{<:Real,2},
+    }
+
+    mixture_maxwellian!(
+        M::T1,
+        u::T2,
+        v::T2,
+        prim::T3,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,3},
+        T2<:AbstractArray{<:AbstractFloat,3},
+        T3<:AbstractArray{<:Real,2},
+    }
+
+    mixture_maxwellian!(
+        M::T1,
+        u::T2,
+        v::T2,
+        w::T2,
+        prim::T3,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,4},
+        T2<:AbstractArray{<:AbstractFloat,4},
+        T3<:AbstractArray{<:Real,2},
+    }
+
 In-place multi-component Maxwellian
 
 """
@@ -399,6 +554,77 @@ end
 
 
 """
+    shakhov(
+        u::X,
+        M::Y,
+        q,
+        prim::Z,
+        Pr,
+    ) where {
+        X<:AbstractArray{<:AbstractFloat,1},
+        Y<:AbstractArray{<:AbstractFloat,1},
+        Z<:AbstractArray{<:Real,1},
+    }
+
+    shakhov(
+        u::T,
+        H::X,
+        B::X,
+        q,
+        prim::Y,
+        Pr,
+        K,
+    ) where {
+        T<:AbstractArray{<:AbstractFloat,1},
+        X<:AbstractArray{<:AbstractFloat,1},
+        Y<:AbstractArray{<:Real,1},
+    }
+
+    shakhov(
+        u::T,
+        v::T,
+        M::X,
+        q::Y,
+        prim::Z,
+        Pr,
+    ) where {
+        T<:AbstractArray{<:AbstractFloat,2},
+        X<:AbstractArray{<:AbstractFloat,2},
+        Y<:AbstractArray{<:AbstractFloat,1},
+        Z<:AbstractArray{<:Real,1},
+    }
+
+    shakhov(
+        u::T,
+        v::T,
+        H::X,
+        B::X,
+        q::Y,
+        prim::Z,
+        Pr,
+        K,
+    ) where {
+        T<:AbstractArray{<:AbstractFloat,2},
+        X<:AbstractArray{<:AbstractFloat,2},
+        Y<:AbstractArray{<:Real,1},
+        Z<:AbstractArray{<:Real,1},
+    }
+
+    shakhov(
+        u::T,
+        v::T,
+        w::T,
+        M::X,
+        q::Y,
+        prim::Z,
+        Pr,
+    ) where {
+        T<:AbstractArray{<:AbstractFloat,3},
+        X<:AbstractArray{<:AbstractFloat,3},
+        Y<:AbstractArray{<:Real,1},
+        Z<:AbstractArray{<:Real,1},
+    }
+
 Shakhov non-equilibrium part
 
 * @arg: particle velocity quadrature points
@@ -539,6 +765,73 @@ end
 
 
 """
+shakhov!(
+    S::T1,
+    u::T2,
+    M::T1,
+    q,
+    prim,
+    Pr,
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
+
+shakhov!(
+    SH::T1,
+    SB::T1,
+    u::T2,
+    H::T1,
+    B::T1,
+    q,
+    prim,
+    Pr,
+    K,
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
+
+shakhov!(
+    S::T1,
+    u::T2,
+    v::T2,
+    M::T1,
+    q::T3,
+    prim,
+    Pr,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat,2},
+    T3<:AbstractArray{<:Real,1},
+}
+
+shakhov!(
+    SH::T1,
+    SB::T1,
+    u::T2,
+    v::T2,
+    H::T1,
+    B::T1,
+    q::T3,
+    prim,
+    Pr,
+    K,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat,2},
+    T3<:AbstractArray{<:Real,1},
+}
+
+shakhov!(
+    S::T1,
+    u::T2,
+    v::T2,
+    w::T2,
+    M::T1,
+    q::T3,
+    prim,
+    Pr,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,3},
+    T2<:AbstractArray{<:AbstractFloat,3},
+    T3<:AbstractArray{<:Real,1},
+}
+
 In-place Shakhov non-equilibrium part
 
 * @arg: particle velocity quadrature points
@@ -681,7 +974,6 @@ end
 
 
 """
-
     rykov!(
         Ht_plus::T1,
         Bt_plus::T1,
@@ -905,6 +1197,18 @@ end
 
 
 """
+    reduce_distribution(
+        f::X,
+        weights::Y,
+        dim = 1,
+    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:AbstractFloat,1}}
+
+    reduce_distribution(
+        f::X,
+        weights::Y,
+        dim = 1,
+    ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:AbstractFloat,2}}
+
 Reduced distribution function
 
 * @arg : particle distribution function with full velocity space
@@ -1005,6 +1309,37 @@ end
 
 
 """
+    full_distribution(
+        h::X,
+        b::X,
+        u::Y,
+        weights::Y,
+        v::Z,
+        w::Z,
+        ρ,
+        γ = 5 / 3,
+    ) where {
+        X<:AbstractArray{<:AbstractFloat,1},
+        Y<:AbstractArray{<:AbstractFloat,1},
+        Z<:AbstractArray{<:AbstractFloat,3},
+    }
+
+    full_distribution(
+        h::X,
+        b::X,
+        u::Y,
+        weights::Y,
+        v::Z,
+        w::Z,
+        prim::A,
+        γ = 5 / 3,
+    ) where {
+        X<:AbstractArray{<:AbstractFloat,1},
+        Y<:AbstractArray{<:AbstractFloat,1},
+        Z<:AbstractArray{<:AbstractFloat,3},
+        A<:AbstractArray{<:Real,1},
+    }
+
 Recover full distribution function from reduced ones
 
 * @arg h & b : reduced particle distribution function with 1D velocity space
@@ -1096,6 +1431,8 @@ rykov_zr(Tₜ, T₀, Z₀) = Z₀ / (1.0 + π^1.5 / 2.0 * sqrt(T₀ / Tₜ) + (�
 
 
 """
+    hs_boltz_kn(mu_ref, alpha)
+
 Calculate effective Knudsen number for fast spectral method with hard sphere (HS) model
     
 """
@@ -1104,6 +1441,21 @@ hs_boltz_kn(mu_ref, alpha) =
 
 
 """
+    kernel_mode(
+        M::I,
+        umax::R,
+        vmax::R,
+        wmax::R,
+        du::R,
+        dv::R,
+        dw::R,
+        unum::I,
+        vnum::I,
+        wnum::I,
+        alpha::R;
+        quad_num = 64::I,
+    ) where {I<:Integer,R<:Real}
+
 Calculate collision kernel for fast spectral method
 
 """
@@ -1176,6 +1528,20 @@ end
 
 
 """
+    boltzmann_fft(
+        f::X,
+        Kn,
+        M::I,
+        ϕ::Y,
+        ψ::Y,
+        phipsi::Z,
+    ) where {
+        X<:AbstractArray{<:AbstractFloat,3},
+        Y<:AbstractArray{<:AbstractFloat,4},
+        Z<:AbstractArray{<:AbstractFloat,3},
+        I<:Integer,
+    }
+
 Calculate collision operator with FFT-based fast spectral method
 
 """
@@ -1190,7 +1556,7 @@ function boltzmann_fft(
     X<:AbstractArray{<:AbstractFloat,3},
     Y<:AbstractArray{<:AbstractFloat,4},
     Z<:AbstractArray{<:AbstractFloat,3},
-    I<:Int,
+    I<:Integer,
 }
 
     f_spec = f .+ 0im
@@ -1223,6 +1589,21 @@ end
 
 
 """
+    boltzmann_fft!(
+        Q::X,
+        f::X,
+        Kn,
+        M::I,
+        ϕ::Y,
+        ψ::Y,
+        phipsi::Z,
+    ) where {
+        X<:AbstractArray{<:AbstractFloat,3},
+        Y<:AbstractArray{<:AbstractFloat,4},
+        Z<:AbstractArray{<:AbstractFloat,3},
+        I<:Integer,
+    }
+
 Calculate collision operator with FFT-based fast spectral method
 
 """
@@ -1238,7 +1619,7 @@ function boltzmann_fft!(
     X<:AbstractArray{<:AbstractFloat,3},
     Y<:AbstractArray{<:AbstractFloat,4},
     Z<:AbstractArray{<:AbstractFloat,3},
-    I<:Int,
+    I<:Integer,
 }
 
     f_spec = f .+ 0im
@@ -1269,17 +1650,16 @@ end
 
 
 """
+    aap_hs_collision_time(
+        prim::AbstractArray{<:Real,2},
+        mi::Real,
+        ni::Real,
+        me::Real,
+        ne::Real,
+        kn::Real,
+    )
+
 Calculate mixture collision time from AAP model
-
-`aap_hs_collision_time(
-    prim::AbstractArray{<:Real,2},
-    mi::Real,
-    ni::Real,
-    me::Real,
-    ne::Real,
-    kn::Real,
-)`
-
 """
 function aap_hs_collision_time(
     prim::T,
@@ -1309,20 +1689,17 @@ end
 
 
 """
+    aap_hs_prim(
+        prim::AbstractArray{<:Real,2},
+        tau::AbstractArray{<:Real,1},
+        mi::Real,
+        ni::Real,
+        me::Real,
+        ne::Real,
+        kn::Real,
+    )
+
 Calculate mixture primitive variables from AAP model
-
-*tested √*
-
-`aap_hs_prim(
-    prim::AbstractArray{<:Real,2},
-    tau::AbstractArray{<:Real,1},
-    mi::Real,
-    ni::Real,
-    me::Real,
-    ne::Real,
-    kn::Real,
-)`
-
 """
 function aap_hs_prim(
     prim::X,
@@ -1546,10 +1923,9 @@ end
 
 
 """
+    aap_hs_diffeq!(du, u, p, t)
+
 Source term of AAP model in DifferentialEquations.jl
-
-`aap_hs_diffeq!(du, u, p, t)`
-
 """
 function aap_hs_diffeq!(du, u, p, t)
 
@@ -1623,8 +1999,6 @@ end
 
 
 """
-Shift distribution function by external force
-
     shift_pdf!(
         f::T,
         a,
@@ -1639,6 +2013,7 @@ Shift distribution function by external force
         dt,
     ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:AbstractFloat,1}}
 
+Shift distribution function by external force
 """
 function shift_pdf!(f::T, a, du, dt) where {T<:AbstractArray{<:AbstractFloat,1}}
 

@@ -11,10 +11,9 @@ export weno5
 # ------------------------------------------------------------
 
 """
-van Leer limiter
-
     vanleer(sL::Real, sR::Real)
 
+van Leer limiter
 """
 vanleer(sL::T, sR::T) where {T} =
     (fortsign(1.0, sL) + fortsign(1.0, sR)) * abs(sL) * abs(sR) /
@@ -22,20 +21,18 @@ vanleer(sL::T, sR::T) where {T} =
 
 
 """
-minmod limiter
-
     minmod(sL::Real, sR::Real)
 
+MinMod limiter
 """
 minmod(sL::T, sR::T) where {T} =
     0.5 * (fortsign(1.0, sL) + fortsign(1.0, sR)) * min(abs(sR), abs(sL))
 
 
 """
-superbee limiter
-
     superbee(sL::Real, sR::Real)
 
+SuperBee limiter
 """
 function superbee(sL::T, sR::T) where {T}
 
@@ -51,10 +48,9 @@ end
 
 
 """
-van Albaba limiter
-
     vanalbaba(sL::Real, sR::Real)
 
+van Albaba limiter
 """
 vanalbaba(sL::T, sR::T) where {T} = (sL^2 * sR + sL * sR^2) / (sL^2 + sR^2 + 1.e-7)
 
@@ -63,6 +59,11 @@ vanalbaba(sL::T, sR::T) where {T} = (sL^2 * sR + sL * sR^2) / (sL^2 + sR^2 + 1.e
 # ------------------------------------------------------------
 
 """
+    reconstruct2(wL, wR, Δx)
+    reconstruct2(wL::T, wR::T, Δx) where {T<:AbstractArray{<:Real,1}}
+    reconstruct2(wL::T, wR::T, Δx) where {T<:AbstractArray{<:Real,2}}
+    reconstruct2(wL::T, wR::T, Δx) where {T<:AbstractArray{<:Real,3}}
+
 Two-cell reconstruction
 
 """
@@ -94,6 +95,27 @@ end
 
 
 """
+    reconstruct2!(
+        sw::X,
+        wL::Y,
+        wR::Y,
+        Δx,
+    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
+
+    reconstruct2!(
+        sw::X,
+        wL::Y,
+        wR::Y,
+        Δx,
+    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+
+    reconstruct2!(
+        sw::X,
+        wL::Y,
+        wR::Y,
+        Δx,
+    ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,3}}
+
 Two-cell reconstruction
 
 """
@@ -136,6 +158,42 @@ end
 
 
 """
+    reconstruct3(
+        wL::T,
+        wN::T,
+        wR::T,
+        ΔxL::T,
+        ΔxR::T,
+        limiter = :vanleer::Symbol,
+    ) where {T}
+
+    reconstruct3(
+        wL::T,
+        wN::T,
+        wR::T,
+        ΔxL,
+        ΔxR,
+        limiter = :vanleer::Symbol,
+    ) where {T<:AbstractArray{<:Real,1}}
+
+    reconstruct3(
+        wL::T,
+        wN::T,
+        wR::T,
+        ΔxL,
+        ΔxR,
+        limiter = :vanleer::Symbol,
+    ) where {T<:AbstractArray{<:Real,2}}
+
+    function reconstruct3(
+        wL::T,
+        wN::T,
+        wR::T,
+        ΔxL,
+        ΔxR,
+        limiter = :vanleer::Symbol,
+    ) where {T<:AbstractArray{<:Real,3}}
+
 Three-cell reconstruction
 
 """
@@ -223,6 +281,46 @@ end
 
 
 """
+    reconstruct3!(
+        sw::X,
+        wL::Y,
+        wN::Y,
+        wR::Y,
+        ΔxL,
+        ΔxR,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
+
+    reconstruct3!(
+        sw::X,
+        wL::Y,
+        wN::Y,
+        wR::Y,
+        ΔxL,
+        ΔxR,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+
+    reconstruct3!(
+        sw::X,
+        wL::Y,
+        wN::Y,
+        wR::Y,
+        ΔxL,
+        ΔxR,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,3}}
+
+    reconstruct3!(
+        sw::X,
+        wL::Y,
+        wN::Y,
+        wR::Y,
+        ΔxL,
+        ΔxR,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,4},Y<:AbstractArray{<:Real,4}}
+
 Three-cell reconstruction
 
 """
@@ -311,10 +409,9 @@ end
 
 
 """
-5th-order WENO-JS interpolation
-
     weno5(wL2::T, wL1::T, wN::T, wR1::T, wR2::T) where {T}
 
+5th-order WENO-JS interpolation
 """
 function weno5(wL2::T, wL1::T, wN::T, wR1::T, wR2::T) where {T}
 

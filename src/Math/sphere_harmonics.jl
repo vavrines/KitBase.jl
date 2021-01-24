@@ -26,7 +26,7 @@ function ylmSinSinPolynomial(m::Integer, x::Variable, y::Variable)
 end
 
 """
-    ylm(l::Int64, m::Int64, x::Variable, y::Variable, z::Variable)
+    ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
 
 Calculation of the spherical harmonic for a given order (l,m) in Cartesian coordinates
 

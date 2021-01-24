@@ -1,16 +1,18 @@
 # ============================================================
-# Initial and Boundary Conditions of Specific Problems
+# Initial & Boundary Conditions of Specific Problems
 # ============================================================
 
-export ib_rh, ib_sod, ib_briowu, ib_cavity
+export ib_rh,
+       ib_sod,
+       ib_briowu,
+       ib_cavity
 
 """
+    1d1f1v: ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
+    1d2f1v: ib_rh(MaL, gam, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}
+    1d1f3v: ib_rh(MaL, gam, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
+
 Initialize Rankine-Hugoniot relation
-
-- 1d1f1v: `ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}`
-- 1d2f1v: `ib_rh(MaL, gam, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}`
-- 1d1f3v: `ib_rh(MaL, gam, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}`
-
 """
 function ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}} # 1D1F1V
 
@@ -162,12 +164,12 @@ end
 
 
 """
+    1d0f0v: ib_sod(γ)
+    1d1f1v: ib_sod(γ, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
+    1d1f3v: ib_sod(γ, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
+    1d2f1v: ib_sod(γ, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}
+
 Initialize Sod shock tube
-
-- 1d1f1v: `ib_sod(γ, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}`
-- 1d1f3v: `ib_sod(γ, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}`
-- 1d2f1v: `ib_sod(γ, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}`
-
 """
 function ib_sod(γ) # 1D0F0V
 
@@ -184,7 +186,10 @@ function ib_sod(γ) # 1D0F0V
 
 end
 
-function ib_sod(γ, u::T) where {T<:AbstractArray{<:AbstractFloat,1}} # 1D1F1V
+# ------------------------------------------------------------
+# 1D1F1V
+# ------------------------------------------------------------
+function ib_sod(γ, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
 
     primL = [1.0, 0.0, 0.5]
     primR = [0.125, 0.0, 0.625]
@@ -249,11 +254,10 @@ end
 
 
 """
+    2d1f2v: ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}}
+    2d2f2v: ib_cavity(gam, Um, Vm, Tm, u::T, v::T, K) where {T<:AbstractArray{<:AbstractFloat,2}}
+
 Initialize lid-driven cavity
-
-- 2d1f2v: `ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}}`
-- 2d2f2v: `ib_cavity(gam, Um, Vm, Tm, u::T, v::T, K) where {T<:AbstractArray{<:AbstractFloat,2}}`
-
 """
 function ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}} # 2D1F2V
 
@@ -313,7 +317,7 @@ end
 """
     ib_briowu(gam, uspace::T, mi, me) where {T<:AbstractArray{<:AbstractFloat,2}}
 
-Initialize Brio-Wu MHD shock
+Initialize Brio-Wu MHD shock tube
 
 """
 function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFloat,2}}

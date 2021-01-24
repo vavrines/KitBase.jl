@@ -43,9 +43,9 @@
 
 Maxwell's diffusive boundary flux
 
-@args: particle distribution functions and their slopes at left/right sides of interface
-@args: particle velocity quadrature points and weights
-@args: time step
+- @args: particle distribution functions and their slopes at left/right sides of interface
+- @args: particle velocity quadrature points and weights
+- @args: time step
 
 """
 function flux_boundary_maxwell!(
@@ -66,7 +66,7 @@ function flux_boundary_maxwell!(
     T3<:Array{<:Real,1},
     T4<:AbstractArray{<:AbstractFloat,1},
     T5<:AbstractArray{<:AbstractFloat,1},
-}
+} # 1D2F1V
 
     @assert length(bc) == 3
 
@@ -96,7 +96,9 @@ function flux_boundary_maxwell!(
 
 end
 
-
+# ------------------------------------------------------------
+# 2D2F2V
+# ------------------------------------------------------------
 function flux_boundary_maxwell!(
     fw::T1,
     fh::T2,
@@ -187,9 +189,9 @@ end
 
 Specular reflection boundary flux
 
-@args: particle distribution functions and their slopes at left/right sides of interface
-@args: particle velocity quadrature points and weights
-@args: time step
+- @args: particle distribution functions and their slopes at left/right sides of interface
+- @args: particle velocity quadrature points and weights
+- @args: time step
 
 """
 function flux_boundary_specular!(
@@ -204,7 +206,7 @@ function flux_boundary_specular!(
     T2<:AbstractArray{<:AbstractFloat,1},
     T3<:AbstractArray{<:AbstractFloat,1},
     T4<:AbstractArray{<:AbstractFloat,1},
-}
+} # 1D1F1V
 
     fWall = similar(f)
     for i in eachindex(f)
@@ -221,6 +223,9 @@ function flux_boundary_specular!(
 
 end
 
+# ------------------------------------------------------------
+# 1D2F1V
+# ------------------------------------------------------------
 function flux_boundary_specular!(
     fw::T1,
     fh::T2,

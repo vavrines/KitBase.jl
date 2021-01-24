@@ -1,7 +1,15 @@
 """
+    struct PSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,1}} <: AbstractPhysicalSpace
+        x0::TR
+        x1::TR
+        nx::TI
+        x::TA
+        dx::TA
+    end
+
 1D physical space with structured mesh
 
-    @consts: x0, x1, nx, x, dx
+- @consts: x0, x1, nx, x, dx
 """
 struct PSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,1}} <: AbstractPhysicalSpace
     x0::TR
@@ -30,9 +38,22 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 
 
 """
+    struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractPhysicalSpace
+        x0::TR
+        x1::TR
+        nx::TI
+        y0::TR
+        y1::TR
+        ny::TI
+        x::TA
+        y::TA
+        dx::TA
+        dy::TA
+    end
+
 2D Physical space with structured mesh
 
-    @consts: x0, x1, nx, y0, y1, ny, x, y, dx, dy
+- @consts: x0, x1, nx, y0, y1, ny, x, y, dx, dy
 """
 struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractPhysicalSpace
     x0::TR
@@ -98,11 +119,10 @@ end
 
 
 """
+    2D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1})
+    3D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1}, z::AbstractArray{<:Real,1})
+
 Equivalent structured mesh generator as matlab
-
-* 2D: `meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1})`
-* 3D: `meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1}, z::AbstractArray{<:Real,1})`
-
 """
 function meshgrid(x::T, y::T) where {T<:AbstractArray{<:Real,1}}
     X = [i for j in y, i in x]
@@ -125,9 +145,9 @@ end
 
 Find the location index of a point in mesh
 
-    @args x: center locations of 1D mesh
-    @args p: point location
-    @args mode: choose uniform / nonuniform formulations
+- @args x: center locations of 1D mesh
+- @args p: point location
+- @args mode: choose uniform / nonuniform formulations
 
 """
 function find_idx(
@@ -146,11 +166,9 @@ function find_idx(
 end
 
 
-"""
-Extended Base.show()
-
-"""
-
+# ------------------------------------------------------------
+# Extended Base.show()
+# ------------------------------------------------------------
 function Base.show(io::IO, ps::PSpace1D{TR,TI,TA}) where {TR,TI,TA}
     print(io, "PhysicalSpace1D{$TR,$TI,$TA}\n",
               "domain: ($(ps.x0),$(ps.x1))\n",

@@ -1,12 +1,12 @@
 """
-Kinetic central-upwind (KCU) method
-
     1D1F1V: flux_kcu!(fw, ff, wL, fL, wR, fR, u, ω, inK, γ, visRef, visIdx, Pr, dt)
     1D2F1V: flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, ω, inK, γ, visRef, visIdx, Pr, dt)
     1D4F1V: flux_kcu!(fw, fh0, fh1, fh2, fh3, wL, h0L, h1L, h2L, h3L, wR, h0R, h1R, h2R, h3R, u, ω, inK, γ, visRef, visIdx, Pr, dt)
     2D1F2V: flux_kcu!(fw, ff, wL, fL, wR, fR, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
     2D2F2V: flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
     2D3F2V: flux_kcu!(fw, fh0, fh1, fh2, wL, h0L, h1L, h2L, wR, h0R, h1R, h2R, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
+
+Kinetic central-upwind (KCU) method
 
 - @args: particle distribution functions and their slopes at left/right sides of interface
 - @args: particle velocity quadrature points and weights

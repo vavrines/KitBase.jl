@@ -1,25 +1,22 @@
 """
-Physical space with unstructured mesh
+    struct UnstructMesh{A,B} <: AbstractPhysicalSpace
+        nodes::A # locations of vertex points
+        cells::B # node indices of elements
+    end
 
-    @consts: nodes, cells
+Physical space with unstructured mesh
 
 """
 struct UnstructMesh{A,B} <: AbstractPhysicalSpace
-
     nodes::A # locations of vertex points
     cells::B # node indices of elements
-
-    function UnstructMesh(nodes::AbstractArray, cells::AbstractArray)
-        new{typeof(nodes),typeof(cells)}(nodes, cells)
-    end
-
-end # struct
+end
 
 
 """
-Read mesh file
+    read_mesh(file::T) where {T<:AbstractString}
 
-`read_mesh(file)`
+Read mesh file
 
 * @return nodes : are saved with 3D coordinates (z=0 for 2D case)
 * @return cells : node ids inside cells
@@ -36,12 +33,11 @@ end
 
 
 """
+    mesh_connectivity_2D(cells::AbstractArray{<:Integer,2})
+
 Compute connectivity of 2D unstructured mesh
-
-`mesh_connectivity_2D(cells::AbstractArray{<:Int,2})`
-
 """
-function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Int,2}}
+function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Integer,2}}
 
     nNodesPerCell = size(cells, 2)
     nCells = size(cells, 1)
@@ -93,15 +89,14 @@ end
 
 
 """
+    mesh_area_2D(nodes::AbstractArray{<:AbstractFloat,2}, cells::AbstractArray{<:Int,2})
+
 Compute areas of 2D elements
-
-`mesh_area_2D(nodes::AbstractArray{<:AbstractFloat,2}, cells::AbstractArray{<:Int,2})`
-
 """
 function mesh_area_2D(
     nodes::X,
     cells::Y,
-) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Int,2}}
+) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Integer,2}}
 
     ΔS = zeros(size(cells, 1))
 
@@ -158,15 +153,14 @@ end
 
 
 """
+    mesh_center_2D(nodes::AbstractArray{<:AbstractFloat,2}, cells::AbstractArray{<:Integer,2})
+
 Compute central points of 2D elements
-
-`mesh_center_2D(nodes::AbstractArray{<:AbstractFloat,2}, cells::AbstractArray{<:Int,2})`
-
 """
 function mesh_center_2D(
     nodes::X,
     cells::Y,
-) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Int,2}}
+) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Integer,2}}
 
     cellMidPoints = zeros(size(cells, 1), 2)
     for i in axes(cellMidPoints, 1) # nCells

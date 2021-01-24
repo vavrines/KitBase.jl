@@ -1,7 +1,16 @@
 """
-    flux_gks(u::Real, μ::Real, dt::Real, su = 0.0::Real, a = 0::Real)
-    flux_gks(uL::Real, uR::Real, μ::Real, dt::Real, dxL::Real,
-        dxR::Real, suL = 0.0::Real, suR = 0.0::Real, a = 0::Real)
+    flux_gks(u, μ, dt, a = 0::T, su = 0.0) where {T<:Real}
+    flux_gks(
+        uL::T,
+        uR::T,
+        μ,
+        dt,
+        dxL,
+        dxR,
+        a = 0,
+        suL = 0.0,
+        suR = 0.0,
+    ) where {T<:Real}
 
 Gas kinetic flux
 * @args: conservative scalars and their slopes
@@ -121,10 +130,80 @@ end
 
 
 """
-Gas kinetic Navier-Stokes flux
+    flux_gks!(
+        fw::X,
+        wL::Y,
+        wR::Y,
+        γ::Real,
+        inK::Real,
+        μᵣ::Real,
+        ω::Real,
+        dt::Real,
+        dxL::Real,
+        dxR::Real,
+        swL = zero(wL)::Y,
+        swR = zero(wR)::Y,
+    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
-    1D: flux_gks!(fw, wL, wR, γ, K, μᵣ, ω, dt, dx, swL, swR)
-    2D: flux_gks!(fw, wL, wR, γ, K, μᵣ, ω, dt, dx, dy, swL, swR)
+    flux_gks!(
+        fw::X,
+        wL::Y,
+        wR::Y,
+        γ::Real,
+        inK::Real,
+        μᵣ::Real,
+        ω::Real,
+        dt::Real,
+        dxL::Real,
+        dxR::Real,
+        dy::Real,
+        swL = zeros(eltype(fw), axes(wL))::Y,
+        swR = zeros(eltype(fw), axes(wR))::Y,
+    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
+
+    flux_gks!(
+        fw::T1,
+        fh::T2,
+        fb::T2,
+        wL::T3,
+        wR::T3,
+        u::T4,
+        inK,
+        γ,
+        visRef,
+        visIdx,
+        dt,
+        dxL,
+        dxR,
+        swL = zeros(eltype(fw), axes(wL))::T3,
+        swR = zeros(eltype(fw), axes(wR))::T3,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,1},
+        T2<:AbstractArray{<:AbstractFloat,1},
+        T3<:AbstractArray{<:Real,1},
+        T4<:AbstractArray{<:AbstractFloat,1},
+    }
+
+    flux_gks!(
+        fw::X,
+        wL::Y,
+        wR::Y,
+        inK,
+        γ,
+        mi,
+        ni,
+        me,
+        ne,
+        Kn,
+        dt,
+        dxL,
+        dxR,
+        len,
+        swL = zeros(eltype(fw), axes(wL))::Y,
+        swR = zeros(eltype(fw), axes(wR))::Y,
+    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+
+Gas kinetic Navier-Stokes flux
 
 * @args: conservative variables and their left/right slopes
 * @args: molecular and thermodynamic parameters

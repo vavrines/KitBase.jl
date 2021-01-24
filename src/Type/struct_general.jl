@@ -3,9 +3,20 @@
 # ============================================================
 
 """
-Computational setup
+    struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
+        case::S
+        space::S
+        flux::S
+        collision::S
+        nSpecies::I
+        interpOrder::I
+        limiter::S
+        boundary::S
+        cfl::E
+        maxTime::F
+    end
 
-@consts: case, space, flux, collision, nSpecies, interpOrder, limiter, cfl, maxTime
+Computational setup
 
 """
 struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
@@ -25,23 +36,36 @@ Setup() = Setup{String,Int,Float64,Float64}("sod", "1d1f1v", "kfvs", "bgk", 1, 1
 
 
 """
-Fluid property for scalar conservation laws
+    mutable struct Scalar{TA,TB} <: AbstractProperty
+        a::TA
+        μᵣ::TB
+    end
 
-@vars: a, μᵣ
+Fluid property for scalar conservation laws
 
 """
 mutable struct Scalar{TA,TB} <: AbstractProperty
-
-    
     a::TA
     μᵣ::TB
 end
 
 
 """
-Particle property
+    mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
+        Kn::A
+        Ma::B
+        Pr::C
+        K::D
+        γ::E
+        ω::F
+        αᵣ::G
+        ωᵣ::H
+        μᵣ::I
+        m::J
+        np::K
+    end
 
-@vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np
+Gas property
 
 """
 mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
@@ -114,9 +138,25 @@ end
 
 
 """
-Diatomic gas property
+    struct DiatomicGas{TA,TI,TF} <: AbstractProperty
+        Kn::TA
+        Ma::TA
+        Pr::TA
+        K::TI
+        Kr::TI
+        γ::TF
+        ω::TF
+        αᵣ::TF
+        ωᵣ::TF
+        μᵣ::TF
+        T₀::TF
+        Z₀::TF
+        σ::TF
+        ω₁::TF
+        ω₂::TF
+    end
 
-@vars: Kn, Ma, Pr, K, γ, ω, αᵣ, ωᵣ, μᵣ, m, np
+Diatomic gas property
 
 """
 struct DiatomicGas{TA,TI,TF} <: AbstractProperty
@@ -196,9 +236,19 @@ end
 
 
 """
-Multi-component gas property
+    struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractProperty
+        Kn::A
+        Ma::B
+        Pr::C
+        K::D
+        γ::E
+        mi::F
+        ni::G
+        me::H
+        ne::I
+    end
 
-@consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne
+Multi-component gas property
 
 """
 struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractProperty
@@ -253,9 +303,30 @@ end
 
 
 """
-1D plasma property
+    struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
 
-@consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne, lD, rL, sol, χ, ν, Ap, An, D
+        Kn::A
+        Ma::B
+        Pr::C
+        K::D
+        γ::E
+
+        mi::F
+        ni::G
+        me::H
+        ne::I
+        lD::J
+        rL::K
+
+        sol::L
+        χ::M
+        ν::N
+        Ap::O
+        An::O
+        D::P
+    end
+
+1D plasma property
 
 """
 struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
@@ -382,9 +453,32 @@ end
 
 
 """
-2D plasma property
+    struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
+        Kn::A
+        Ma::B
+        Pr::C
+        K::D
+        γ::E
 
-@consts: Kn, Ma, Pr, K, γ, mi, ni, me, ne, lD, rL, sol, χ, ν, A1p, A1n, A2p, A2n, D1, D2
+        mi::F
+        ni::G
+        me::H
+        ne::I
+        lD::J
+        rL::K
+
+        sol::L
+        χ::M
+        ν::N
+        A1p::O
+        A1n::O
+        A2p::O
+        A2n::O
+        D1::P
+        D2::P
+    end
+
+2D plasma property
 
 """
 struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty

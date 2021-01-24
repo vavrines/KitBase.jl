@@ -1,8 +1,7 @@
 """
-Calculate moments of Gaussian distribution in multi-component gas
-
     mixture_gauss_moments(prim::T, inK) where {T<:AbstractArray{<:Real,2}}
 
+Calculate moments of Gaussian distribution in multi-component gas
 """
 function mixture_gauss_moments(prim::T, inK) where {T<:AbstractArray{<:Real,2}}
 
@@ -68,8 +67,6 @@ end
 
 
 """
-Calculate conservative moments of particle distribution in multi-component gas
-
     mixture_moments_conserve(
         Mu::T,
         Mxi::T,
@@ -86,6 +83,7 @@ Calculate conservative moments of particle distribution in multi-component gas
         delta::I,
     ) where {T<:OffsetArray{<:AbstractFloat,2},I<:Int}
 
+Calculate conservative moments of particle distribution in multi-component gas
 """
 function mixture_moments_conserve(
     Mu::T,
@@ -265,7 +263,33 @@ end
 
 
 """
-Calculate slope-related conservative moments
+mixture_moments_conserve_slope(
+    a::X,
+    Mu::Y,
+    Mxi::Y,
+    alpha::I,
+) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+
+mixture_moments_conserve_slope(
+    a::X,
+    Mu::Y,
+    Mv::Y,
+    Mxi::Y,
+    alpha::I,
+    beta::I,
+) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+
+mixture_moments_conserve_slope(
+    a::X,
+    Mu::Y,
+    Mv::Y,
+    Mw::Y,
+    alpha::I,
+    beta::I,
+    delta::I,
+) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+
+Calculate slope-related conservative moments under the assumption
 `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
 """
@@ -274,7 +298,7 @@ function mixture_moments_conserve_slope(
     Mu::Y,
     Mxi::Y,
     alpha::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Int}
+) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
     au = similar(a, 3, axes(a, 2))
     for j in axes(au, 2)
@@ -292,7 +316,7 @@ function mixture_moments_conserve_slope(
     Mxi::Y,
     alpha::I,
     beta::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Int}
+) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
     au = similar(a, 4, axes(a, 2))
     for j in axes(au, 2)
@@ -312,7 +336,7 @@ function mixture_moments_conserve_slope(
     alpha::I,
     beta::I,
     delta::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Int}
+) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
     au = similar(a, 5, axes(a, 2))
     for j in axes(au, 2)

@@ -1,4 +1,26 @@
 """
+    struct SolverSet{
+        TS<:AbstractSetup,
+        TP<:AbstractPhysicalSpace,
+        TV<:Union{AbstractVelocitySpace,Nothing},
+        TG<:AbstractProperty,
+        TI<:AbstractCondition,
+        TO<:AbstractString,
+    } <: AbstractSolverSet
+        # setup
+        set::TS
+        # physical space
+        pSpace::TP
+        # velocity space
+        vSpace::TV
+        # gas property
+        gas::TG
+        # initial and boundary condition
+        ib::TI
+        # file system
+        outputFolder::TO
+    end
+
 Structure of solver setup
 
 """
@@ -75,6 +97,8 @@ end
 
 
 """
+    set_setup(dict::T) where {T<:AbstractDict}
+
 Generate AbstractPhysicalSpace
 
 """
@@ -102,6 +126,8 @@ end
 
 
 """
+    set_geometry(dict::T) where {T<:AbstractDict}
+
 Generate AbstractPhysicalSpace
 
 """
@@ -125,6 +151,8 @@ end
 
 
 """
+    set_velocity(dict::T) where {T<:AbstractDict}
+
 Generate AbstractVelocitySpace
 
 """
@@ -228,6 +256,8 @@ end
 
 
 """
+    set_property(dict::T) where {T<:AbstractDict}
+
 Generate AbstractProperty
 
 """
@@ -312,6 +342,17 @@ end
 
 
 """
+    set_ib(dict::T, set, vSpace, gas) where {T<:AbstractDict}
+
+    set_ib(
+        set::T,
+        vSpace,
+        gas,
+        uLid = 0.15,
+        vLid = 0.0,
+        tLid = 1.0,
+    ) where {T<:AbstractSetup}
+
 Generate AbstractIB
 
 """

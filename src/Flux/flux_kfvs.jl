@@ -1,6 +1,4 @@
 """
-Kinetic flux vector splitting (KFVS) flux
-
     DOM: `flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)`
     1D1F1V: `flux_kfvs!(fw, ff, fL, fR, u, ω, dt, sfL, sfR)`
     1D1F3V: `flux_kfvs!(fw, ff, fL, fR, u, v, w, ω, dt, sfL, sfR)`
@@ -8,6 +6,8 @@ Kinetic flux vector splitting (KFVS) flux
     1D4F1V: `flux_kfvs!(fw, fh0, fh1, fh2, fh3, h0L, h1L, h2L, h3L, h0R, h1R, h2R, h3R, u, ω, dt, sh0L, sh1L, sh2L, sh3L, sh0R, sh1R, sh2R, sh3R)`
     2D1F2V: `flux_kfvs!(fw, ff, fL, fR, u, v, ω, dt, len, sfL, sfR)`
     2D2F2V: `flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, v, ω, dt, len, shL, sbL, shR, sbR)`
+
+Kinetic flux vector splitting (KFVS) flux
 
 - @args: particle distribution functions and their left/right slopes
 - @args: particle velocity quadrature points and weights

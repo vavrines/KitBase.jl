@@ -1,9 +1,8 @@
 """
+    2D: global_frame(w::AbstractArray{<:Real,1}, cosa, sina)
+    3D: global_frame(w::AbstractArray{<:Real,1}, dirccos::AbstractArray{<:Real,2})
+
 Transform local flow variables to global frame
-
-- 2D: `global_frame(w::AbstractArray{<:Real,1}, cosa, sina)`
-- 3D: `global_frame(w::AbstractArray{<:Real,1}, dirccos::AbstractArray{<:Real,2})`
-
 """
 function global_frame(w::T, cosa, sina) where {T<:AbstractArray{<:Real,1}}
 
@@ -60,11 +59,10 @@ end
 
 
 """
+    2D: local_frame(w::AbstractArray{<:Real,1}, cosa, sina)
+    3D: local_frame(w::AbstractArray{<:Real,1}, dirccos::AbstractArray{<:Real,2})
+
 Transform global flow variables to local frame
-
-- 2D: `local_frame(w::AbstractArray{<:Real,1}, cosa, sina)`
-- 3D: `local_frame(w::AbstractArray{<:Real,1}, dirccos::AbstractArray{<:Real,2})`
-
 """
 function local_frame(w::T, cosa, sina) where {T<:AbstractArray{<:Real,1}}
 

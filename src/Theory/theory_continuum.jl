@@ -3,8 +3,6 @@
 # ============================================================
 
 """
-Transform primitive -> conservative variables
-
     prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,1}}
 
     prim_conserve(ρ, U, λ, γ)
@@ -13,6 +11,7 @@ Transform primitive -> conservative variables
 
     prim_conserve(ρ, U, V, W, λ, γ)
 
+Transform primitive -> conservative variables
 """
 function prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,1}}
 
@@ -83,10 +82,9 @@ end
 
 
 """
-Transform multi-component primitive -> conservative variables
-
     mixture_prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,2}}
 
+Transform multi-component primitive -> conservative variables
 """
 function mixture_prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,2}}
 
@@ -106,8 +104,6 @@ end
 
 
 """
-Transform conservative -> primitive variables
-
 * scalar: pseudo primitive vector for scalar conservation laws
 
     conserve_prim(u)
@@ -122,6 +118,7 @@ Transform conservative -> primitive variables
 
     conserve_prim(ρ, MX, MY, E, γ)
 
+Transform conservative -> primitive variables
 """
 conserve_prim(u) = [u, 0.5 * u, 1.0]
 
@@ -196,10 +193,9 @@ end
 
 
 """
-Transform multi-component conservative -> primitive variables
-
     mixture_conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,2}}
 
+Transform multi-component conservative -> primitive variables
 """
 function mixture_conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,2}}
 
@@ -219,8 +215,6 @@ end
 
 
 """
-Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
-
     em_coefficients(
         prim::X,
         E::Y,
@@ -231,6 +225,7 @@ Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
         dt,
     ) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:Real,1}}
 
+Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
 """
 function em_coefficients(
     prim::X,
@@ -323,27 +318,25 @@ end
 
 
 """
-Theoretical flux of linear advection equation
-
     advection_flux(u, a)
 
+Theoretical flux of linear advection equation
 """
 advection_flux(u, a) = a * u
 
 
 """
-Theoretical flux of Burgers' equation
-
     burgers_flux(u)
 
+Theoretical flux of Burgers' equation
 """
 burgers_flux(u) = 0.5 * u^2
 
 
 """
-Theoretical fluxes of Euler Equations
-
     euler_flux(w::A, γ; frame = :cartesian::Symbol) where {A<:AbstractArray{<:Real,1}}
+
+Theoretical fluxes of Euler Equations
 
 * @return: flux tuple
 
@@ -407,9 +400,9 @@ end
 
 
 """
-Flux Jacobian of Euler Equations
-
     euler_jacobi(w::T, γ) where {T<:AbstractArray{<:Real,1}}
+
+Flux Jacobian of Euler Equations
 
 * @return: Jacobian matrix A
 

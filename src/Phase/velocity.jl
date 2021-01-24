@@ -12,14 +12,6 @@
         weights::TB
     end
 
-    VSpace1D(
-        U0::TR,
-        U1::TR,
-        NU::TI,
-        TYPE = "rectangle",
-        NG = zero(NU)::TI,
-    ) where {TR,TI<:Integer}
-
 1D velocity space
 
 """
@@ -70,9 +62,21 @@ VSpace1D(U0::T, U1::T) where {T<:Real} = VSpace1D(U0, U1, 50)
 
 
 """
-2D velocity space
+    struct VSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace
+        u0::TR
+        u1::TR
+        nu::TI
+        v0::TR
+        v1::TR
+        nv::TI
+        u::TA
+        v::TA
+        du::TA
+        dv::TA
+        weights::TA
+    end
 
-- @consts: u0, u1, nu, v0, v1, nv, u, v, du, dv, weights
+2D velocity space
 
 """
 struct VSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace
@@ -148,9 +152,26 @@ VSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = VSpace2D(U0, U1, 28, V0, 
 
 
 """
-3D velocity space
+    struct VSpace3D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,3}} <: AbstractVelocitySpace
+        u0::TR
+        u1::TR
+        nu::TI
+        v0::TR
+        v1::TR
+        nv::TI
+        w0::TR
+        w1::TR
+        nw::TI
+        u::TA
+        v::TA
+        w::TA
+        du::TA
+        dv::TA
+        dw::TA
+        weights::TA
+    end
 
-- @consts: u0, u1, nu, v0, v1, nv, w0, w1, nw, u, v, w, du, dv, dw, weights
+3D velocity space
 
 """
 struct VSpace3D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,3}} <: AbstractVelocitySpace
@@ -241,9 +262,16 @@ VSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 
 
 """
-1D multi-component velocity space
+    struct MVSpace1D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace
+        u0::TR
+        u1::TR
+        nu::TI
+        u::TA
+        du::TA
+        weights::TA
+    end
 
-- @consts: u0, u1, nu, u, du, weights
+1D multi-component velocity space
 
 """
 struct MVSpace1D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace
@@ -299,9 +327,21 @@ MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1
 
 
 """
-2D multi-component velocity space
+    struct MVSpace2D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{Float64,3}} <: AbstractVelocitySpace
+        u0::TR
+        u1::TR
+        nu::TI
+        v0::TR
+        v1::TR
+        nv::TI
+        u::TA
+        v::TA
+        du::TA
+        dv::TA
+        weights::TA
+    end
 
-- @consts: u0, u1, nu, v0, v1, nv, u, v, du, dv, weights
+2D multi-component velocity space
 
 """
 struct MVSpace2D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{Float64,3}} <: AbstractVelocitySpace
@@ -382,9 +422,26 @@ MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
 
 
 """
-3D multi-component velocity space
+    struct MVSpace3D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,4}} <: AbstractVelocitySpace
+        u0::TR
+        u1::TR
+        nu::TI
+        v0::TR
+        v1::TR
+        nv::TI
+        w0::TR
+        w1::TR
+        nw::TI
+        u::TA
+        v::TA
+        w::TA
+        du::TA
+        dv::TA
+        dw::TA
+        weights::TA
+    end
 
-- @consts: u0, u1, nu, v0, v1, nv, w0, w1, nw, u, v, w, du, dv, dw, weights
+3D multi-component velocity space
 
 """
 struct MVSpace3D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,4}} <: AbstractVelocitySpace

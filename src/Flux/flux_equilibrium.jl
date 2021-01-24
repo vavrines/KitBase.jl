@@ -1,7 +1,38 @@
 """
-Equilibrium part of gas kinetic flux
+    flux_equilibrium!(
+        fw::T1,
+        wL::T2,
+        wR::T2,
+        inK::Real,
+        γ::Real,
+        μᵣ::Real,
+        ω::Real,
+        Pr::Real,
+        dt::Real,
+        dxL::Real,
+        dxR::Real,
+        swL = zeros(eltype(fw), axes(wL))::T1,
+        swR = zeros(eltype(fw), axes(wR))::T1,
+    ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}}
 
-works with fluid-kinetic simulations
+    flux_equilibrium!(
+        fw::T1,
+        wL::T2,
+        wR::T2,
+        inK::Real,
+        γ::Real,
+        μᵣ::Real,
+        ω::Real,
+        Pr::Real,
+        dt::Real,
+        dxL::Real,
+        dxR::Real,
+        dy::Real,
+        swL = zeros(eltype(fw), axes(wL))::T1,
+        swR = zeros(eltype(fw), axes(wR))::T1,
+    ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}}
+
+Equilibrium part of gas kinetic flux which works with fluid-particle simulations
 
 """
 function flux_equilibrium!(
@@ -103,7 +134,9 @@ function flux_equilibrium!(
 
 end
 
-#--- 2D ---#
+# ------------------------------------------------------------
+# 2D
+# ------------------------------------------------------------
 function flux_equilibrium!(
     fw::T1,
     wL::T2,

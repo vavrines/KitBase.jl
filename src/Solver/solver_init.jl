@@ -3,6 +3,8 @@
 # ============================================================
 
 """
+    initialize(configfilename::T) where {T<:AbstractString}
+
 Initialize solver from input file
 
 """
@@ -38,6 +40,8 @@ end
 
 
 """
+    init_fvm(KS::T) where {T<:AbstractSolverSet}
+
 Initialize finite volume method
 
 """
@@ -297,6 +301,13 @@ end
 
 
 """
+    init_ptc!(
+        KS::SolverSet,
+        ctr::T;
+        mode = :soa::Symbol,
+        factor = 1::Real,
+    ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+
 Initialize particles
 
 """
@@ -315,6 +326,12 @@ end
 
 
 """
+    init_ptc_aos!(
+        KS::SolverSet,
+        ctr::T,
+        factor = 1,
+    ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+
 Array of structs
 
 """
@@ -359,6 +376,12 @@ end
 
 
 """
+    init_ptc_soa!(
+        KS::SolverSet,
+        ctr::T,
+        factor = 1,
+    ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+
 Struct of arrays
 
 """
