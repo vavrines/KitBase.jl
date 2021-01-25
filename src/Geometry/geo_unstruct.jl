@@ -115,20 +115,20 @@ function mesh_area_2D(
     elseif size(cells, 2) == 4 # quadrilateral mesh
         for i in eachindex(ΔS)
             d1 = [
-                nodes[cells[i][1]][1] - nodes[cells[i][2]][1],
-                nodes[cells[i][1]][2] - nodes[cells[i][2]][2],
+                nodes[cells[i, 1], 1] - nodes[cells[i, 2], 1],
+                nodes[cells[i, 1], 2] - nodes[cells[i, 2], 2],
             ]
             d2 = [
-                nodes[cells[i][2]][1] - nodes[cells[i][3]][1],
-                nodes[cells[i][2]][2] - nodes[cells[i][3]][2],
+                nodes[cells[i, 2], 1] - nodes[cells[i, 3], 1],
+                nodes[cells[i, 2], 2] - nodes[cells[i, 3], 2],
             ]
             d3 = [
-                nodes[cells[i][3]][1] - nodes[cells[i][4]][1],
-                nodes[cells[i][3]][2] - nodes[cells[i][4]][2],
+                nodes[cells[i, 3], 1] - nodes[cells[i, 4], 1],
+                nodes[cells[i, 3], 2] - nodes[cells[i, 4], 2],
             ]
             d4 = [
-                nodes[cells[i][4]][1] - nodes[cells[i][1]][1],
-                nodes[cells[i][4]][2] - nodes[cells[i][1]][2],
+                nodes[cells[i, 4], 1] - nodes[cells[i, 1], 1],
+                nodes[cells[i, 4], 2] - nodes[cells[i, 1], 2],
             ]
 
             a = sqrt(d1[1]^2 + d1[2]^2)
