@@ -1,4 +1,4 @@
-using ProgressMeter, LinearAlgebra, Optim#, SphericalHarmonicExpansions
+using ProgressMeter, LinearAlgebra, Optim
 import KitBase
 
 # one-cell simplification
@@ -44,8 +44,8 @@ begin
     vspace = KitBase.VSpace1D{Float64,Int64,typeof(points),typeof(weights)}(-1.0, 1.0, nq, points, zero(points), weights)
 
     # particle
-    SigmaS = 1 * ones(ny + 4, nx + 4)
-    SigmaA = 0 * ones(ny + 4, nx + 4)
+    SigmaS = 1.0 * ones(ny, nx)
+    SigmaA = 0.0 * ones(ny, nx)
     SigmaT = SigmaS + SigmaA
 
     # moments
@@ -112,12 +112,20 @@ flux2 = zeros(ne, nx, ny + 1)
     # update
     for j = 2:ny-1
         for i = 2:nx-1
-            for q = 1:ne
+            for q = 1:1
                 phi[q, i, j] =
                     phi[q, i, j] +
                     (flux1[q, i, j] - flux1[q, i+1, j]) / dx +
-                    (flux2[q, i, j] - flux2[q, i, j+1]) / dy #+
-                    #(integral - phi[q, i, j]) * dt
+                    (flux2[q, i, j] - flux2[q, i, j+1]) / dy +
+                    (SigmaS[i, j] * phi[q, i, j] - SigmaT[i, j] * phi[q, i, j]) * dt
+            end
+
+            for q = 2:ne
+                phi[q, i, j] =
+                    phi[q, i, j] +
+                    (flux1[q, i, j] - flux1[q, i+1, j]) / dx +
+                    (flux2[q, i, j] - flux2[q, i, j+1]) / dy +
+                    (- SigmaT[i, j] * phi[q, i, j]) * dt
             end
         end
     end
