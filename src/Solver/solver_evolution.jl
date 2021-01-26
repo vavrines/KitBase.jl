@@ -96,8 +96,8 @@ function evolve!(
                 dt,
                 0.5 * ctr[i-1].dx,
                 0.5 * ctr[i].dx,
-                ctr[i-1].sf,
-                ctr[i].sf,
+                ctr[i-1].sw,
+                ctr[i].sw,
             )
         end
 

@@ -151,6 +151,15 @@ function timestep(
             tmax = max(tmax, vmax / ctr[i].dx)
         end
 
+    elseif ctr[1] isa ControlVolume1D
+
+        @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+            prim = ctr[i].prim
+            sos = sound_speed(prim, KS.gas.γ)
+            vmax = abs(prim[2]) + sos
+            tmax = max(tmax, vmax / ctr[i].dx)
+        end
+
     elseif KS.set.nSpecies == 1
 
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx

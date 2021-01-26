@@ -25,25 +25,14 @@ KitBase.find_idx(randn(20), 0.13, mode = :uniform)
 KitBase.find_idx(randn(20), 0.13, mode = :nonuniform)
 
 #--- unstructure mesh ---#
-#=
-using Conda
-Conda.add_channel("conda-forge")
-Conda.add("meshio")
 cd(@__DIR__)
 nodes, cells = KitBase.read_mesh("t1.msh")
-=#
-using JLD2
-cd(@__DIR__)
-@load "t1.jld2" nodes cells
-
 KitBase.UnstructMesh(nodes, cells)
 KitBase.mesh_connectivity_2D(cells)
 KitBase.mesh_area_2D(nodes, cells)
 KitBase.mesh_center_2D(nodes, cells)
 
 nodes, cells = KitBase.read_mesh("square.msh")
-@load "square.jld2" nodes cells
-
 KitBase.UnstructMesh(nodes, cells)
 KitBase.mesh_connectivity_2D(cells)
 KitBase.mesh_area_2D(nodes, cells)

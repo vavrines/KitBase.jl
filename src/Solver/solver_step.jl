@@ -43,6 +43,63 @@ function step!(
 
 end
 
+#--- mixture ---#
+function step!(
+    fwL::T1,
+    w::T2,
+    prim::T2,
+    fwR::T1,
+    γ,
+    mi,
+    ni,
+    me,
+    ne,
+    Kn,
+    dx,
+    dt,
+    RES,
+    AVG,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat,2},
+}
+
+    #--- update conservative flow variables ---#
+    # w^n
+    w_old = deepcopy(w)
+    prim_old = deepcopy(prim)
+
+    # flux -> w^{n+1}
+    @. w += (fwL - fwR) / dx
+    prim .= mixture_conserve_prim(w, γ)
+
+    # temperature protection
+    if prim[end, 1] < 0
+        @warn "negative temperature update of component 1"
+        w .= w_old
+        prim .= prim_old
+    elseif prim[end, 2] < 0
+        @warn "negative temperature update of component 2"
+        w .= w_old
+        prim .= prim_old
+    end
+
+    # source -> w^{n+1}
+    # explicit
+    tau = aap_hs_collision_time(prim, mi, ni, me, ne, Kn)
+    mprim = aap_hs_prim(prim, tau, mi, ni, me, ne, Kn)
+    mw = mixture_prim_conserve(mprim, γ)
+    for k in axes(w, 2)
+        @. w[:, k] += (mw[:, k] - w_old[:, k]) * dt / tau[k]
+    end
+    prim .= mixture_conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w_old - w)^2
+    @. AVG += abs(w)
+
+end
+
 # ------------------------------------------------------------
 # 1D1F1V
 # ------------------------------------------------------------

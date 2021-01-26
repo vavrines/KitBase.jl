@@ -3,9 +3,9 @@
 # ------------------------------------------------------------
 
 # setup
-case = shock
-space = 1d2f1v
-flux = kfvs
+case = sod
+space = 1d0f0v
+flux = gks
 collision = bgk
 nSpecies = 1
 interpOrder = 2

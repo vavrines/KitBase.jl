@@ -49,7 +49,34 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
 
     if KS.set.space[1:2] == "1d"
 
-        if KS.set.space[3:4] == "1f"
+        if KS.set.space[3:4] == "0f"
+
+            ctr = OffsetArray{ControlVolume1D}(undef, eachindex(KS.pSpace.x))
+            face = Array{Interface1D}(undef, KS.pSpace.nx + 1)
+
+            for i in eachindex(ctr)
+                if i <= KS.pSpace.nx ÷ 2
+                    ctr[i] = ControlVolume1D(
+                        KS.pSpace.x[i],
+                        KS.pSpace.dx[i],
+                        KS.ib.wL,
+                        KS.ib.primL,
+                    )
+                else
+                    ctr[i] = ControlVolume1D(
+                        KS.pSpace.x[i],
+                        KS.pSpace.dx[i],
+                        KS.ib.wR,
+                        KS.ib.primR,
+                    )
+                end
+            end
+
+            for i = 1:KS.pSpace.nx+1
+                face[i] = Interface1D(KS.ib.wL)
+            end
+
+        elseif KS.set.space[3:4] == "1f"
 
             ctr = OffsetArray{ControlVolume1D1F}(undef, eachindex(KS.pSpace.x))
             face = Array{Interface1D1F}(undef, KS.pSpace.nx + 1)
