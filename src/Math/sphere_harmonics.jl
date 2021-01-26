@@ -76,8 +76,9 @@ end
 
 
 """
-    spherharmonic_basis(points, L)
+    eval_spherharmonic(points::T, L) where {T<:AbstractArray{<:Real,2}}
 
+Evaluate spherical harmonics basis at given quadrature points
 """
 function eval_spherharmonic(points::T, L) where {T<:AbstractArray{<:Real,2}}
     ne = (L + 1)^2
