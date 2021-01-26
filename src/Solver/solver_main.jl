@@ -37,7 +37,7 @@ function solve!(
     simTime,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{<:AbstractControlVolume,1},
+    Y<:AbstractArray{<:Union{ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},1},
     Z<:AbstractArray{<:AbstractInterface1D,1},
 }
 
@@ -75,7 +75,7 @@ function solve!(
             break
         end
 
-    end # loop
+    end
 
     write_jld(KS, ctr, simTime)
     return t

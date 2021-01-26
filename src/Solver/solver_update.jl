@@ -132,6 +132,8 @@ function update!(
 
     update_boundary!(KS, ctr, face, dt, residual; bc = bc)
 
+    return nothing
+
 end
 
 function update!(
@@ -207,6 +209,8 @@ function update!(
     end
 
     update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = false)
+
+    return nothing
 
 end
 
@@ -291,6 +295,8 @@ function update!(
     end
 
     update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = false)
+
+    return nothing
 
 end
 
@@ -397,6 +403,8 @@ function update!(
     else
     end
     =#
+    return nothing
+
 end
 
 function update!(
@@ -426,6 +434,8 @@ function update!(
     end
 
     update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
+
+    return nothing
 
 end
 
@@ -494,4 +504,6 @@ function update!(
 
     update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
 
+    return nothing
+    
 end

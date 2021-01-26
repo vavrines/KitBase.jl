@@ -70,8 +70,6 @@ function evolve!(
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
     bc = :fix::Symbol,
-    isPlasma = false::Bool,
-    isMHD = false::Bool,
 ) where {T1<:AbstractArray{ControlVolume1D,1},T2<:AbstractArray{Interface1D,1}}
 
     if firstindex(KS.pSpace.x) < 1
