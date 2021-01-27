@@ -254,26 +254,52 @@ function evolve!(
 
     elseif mode == :kcu
 
-        @inbounds Threads.@threads for i = idx0:idx1
-            flux_kcu!(
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
-                ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
-                ctr[i-1].h .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sh,
-                ctr[i-1].b .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sb,
-                ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
-                ctr[i].h .- 0.5 .* ctr[i].dx .* ctr[i].sh,
-                ctr[i].b .- 0.5 .* ctr[i].dx .* ctr[i].sb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dt,
-            )
+        if KS.set.nSpecies == 1
+            @inbounds Threads.@threads for i = idx0:idx1
+                flux_kcu!(
+                    face[i].fw,
+                    face[i].fh,
+                    face[i].fb,
+                    ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
+                    ctr[i-1].h .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sh,
+                    ctr[i-1].b .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sb,
+                    ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
+                    ctr[i].h .- 0.5 .* ctr[i].dx .* ctr[i].sh,
+                    ctr[i].b .- 0.5 .* ctr[i].dx .* ctr[i].sb,
+                    KS.vSpace.u,
+                    KS.vSpace.weights,
+                    KS.gas.K,
+                    KS.gas.γ,
+                    KS.gas.μᵣ,
+                    KS.gas.ω,
+                    KS.gas.Pr,
+                    dt,
+                )
+            end
+        elseif KS.set.nSpecies == 2
+            @inbounds Threads.@threads for i = idx0:idx1
+                flux_kcu!(
+                    face[i].fw,
+                    face[i].fh,
+                    face[i].fb,
+                    ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
+                    ctr[i-1].h .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sh,
+                    ctr[i-1].b .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sb,
+                    ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
+                    ctr[i].h .- 0.5 .* ctr[i].dx .* ctr[i].sh,
+                    ctr[i].b .- 0.5 .* ctr[i].dx .* ctr[i].sb,
+                    KS.vSpace.u,
+                    KS.vSpace.weights,
+                    KS.gas.K,
+                    KS.gas.γ,
+                    KS.gas.mi,
+                    KS.gas.ni,
+                    KS.gas.me,
+                    KS.gas.ne,
+                    KS.gas.Kn[1],
+                    dt,
+                )
+            end
         end
 
     end

@@ -51,6 +51,17 @@ KitBase.init_ptc!(ks1, ctr, mode = :soa)
 KitBase.init_ptc!(ks1, ctr, mode = :aos)
 
 ks, ctr, face, simTime = KitBase.initialize("config_1d2f2s.txt")
+KitBase.reconstruct!(ks, ctr)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :extra)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :period)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :balance)
+KitBase.evolve!(ks, ctr, face, dt; mode = :kfvs)
+KitBase.evolve!(ks, ctr, face, dt; mode = :kcu)
 
 ks, ctr, face, simTime = KitBase.initialize("config_1d4f2s.txt")
-
+KitBase.reconstruct!(ks, ctr)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :extra)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :period)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :balance)
+KitBase.evolve!(ks, ctr, face, dt; mode = :kfvs)
+KitBase.evolve!(ks, ctr, face, dt; mode = :kcu)
