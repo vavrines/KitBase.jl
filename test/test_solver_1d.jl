@@ -33,9 +33,6 @@ KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :balance)
 KitBase.evolve!(ks, ctr, face, dt; mode = :kfvs)
 KitBase.evolve!(ks, ctr, face, dt; mode = :kcu)
 
-ks, ctr, face, simTime = KitBase.initialize("config_1d4f2s.txt")
-
-
 gas = KitBase.Gas(
     ks.gas.Kn,
     ks.gas.Ma,
@@ -53,3 +50,4 @@ ks1 = KitBase.SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolde
 KitBase.init_ptc!(ks1, ctr, mode = :soa)
 KitBase.init_ptc!(ks1, ctr, mode = :aos)
 
+ks, ctr, face, simTime = KitBase.initialize("config_1d4f2s.txt")
