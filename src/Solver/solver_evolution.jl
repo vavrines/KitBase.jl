@@ -188,6 +188,26 @@ function evolve!(
                 )
             end
         elseif mode == :kcu
+            @inbounds Threads.@threads for i = idx0:idx1
+                flux_kcu!(
+                    face[i].fw,
+                    face[i].ff,
+                    ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
+                    ctr[i-1].f .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sf,
+                    ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
+                    ctr[i].f .- 0.5 .* ctr[i].dx .* ctr[i].sf,
+                    KS.vSpace.u,
+                    KS.vSpace.v,
+                    KS.vSpace.w,
+                    KS.vSpace.weights,
+                    KS.gas.K,
+                    KS.gas.γ,
+                    KS.gas.μᵣ,
+                    KS.gas.ω,
+                    KS.gas.Pr,
+                    dt,
+                )
+            end
         end
 
     end

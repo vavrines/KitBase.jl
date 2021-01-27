@@ -49,7 +49,7 @@ function flux_kcu!(
     Mu2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
     Muv2 = moments_conserve(MuR2, Mxi2, 0, 0)
 
-    w = similar(wL, 3)
+    w = similar(wL)
     @. w = primL[1] * Muv1 + primR[1] * Muv2
 
     prim = conserve_prim(w, γ)
@@ -160,6 +160,84 @@ function flux_kcu!(
 
         @. ff[:, j] = Mt[1, j] * u[:, j] * M[:, j] + Mt[2, j] * u[:, j] * f[:, j]
     end
+
+    return nothing
+
+end
+
+# ------------------------------------------------------------
+# 1D1F3V
+# ------------------------------------------------------------
+function flux_kcu!(
+    fw::X,
+    ff::Y,
+    wL::Z,
+    fL::A,
+    wR::Z,
+    fR::A,
+    uVelo::B,
+    vVelo::B,
+    wVelo::B,
+    ω::B,
+    inK,
+    γ,
+    visRef,
+    visIdx,
+    Pr,
+    dt,
+) where {
+    X<:AbstractArray{<:AbstractFloat,1},
+    Y<:AbstractArray{<:AbstractFloat,3},
+    Z<:AbstractArray{<:Real,1},
+    A<:AbstractArray{<:AbstractFloat,3},
+    B<:AbstractArray{<:AbstractFloat,3},
+} # 1D1F1V
+
+    # upwind reconstruction
+    δ = heaviside.(uVelo)
+    f = @. fL * δ + fR * (1.0 - δ)
+
+    primL = conserve_prim(wL, γ)
+    primR = conserve_prim(wR, γ)
+
+    # construct interface distribution
+    Mu1, Mv1, Mw1, MuL1, MuR1 = gauss_moments(primL, inK)
+    Muv1 = moments_conserve(MuL1, Mv1, Mw1, 0, 0, 0)
+    Mu2, Mv2, Mw2, MuL2, MuR2 = gauss_moments(primR, inK)
+    Muv2 = moments_conserve(MuR2, Mv2, Mw2, 0, 0, 0)
+
+    w = similar(wL)
+    @. w = primL[1] * Muv1 + primR[1] * Muv2
+
+    prim = conserve_prim(w, γ)
+    tau = vhs_collision_time(prim, visRef, visIdx)
+    tau +=
+        abs(primL[1] / primL[end] - primR[1] / primR[end]) /
+        (primL[1] / primL[end] + primR[1] / primR[end]) *
+        dt *
+        2.0
+
+    Mt = zeros(2)
+    Mt[2] = tau * (1.0 - exp(-dt / tau)) # f0
+    Mt[1] = dt - Mt[2] # M0
+
+    # calculate fluxes
+    Mu, Mv, Mw, MuL, MuR = gauss_moments(prim, inK)
+
+    ## flux from M0
+    Muv = moments_conserve(Mu, Mv, Mw, 1, 0, 0)
+    @. fw = Mt[1] * prim[1] * Muv
+
+    ## flux from f0
+    g = maxwellian(uVelo, vVelo, wVelo, prim)
+
+    fw[1] += Mt[2] * sum(ω .* uVelo .* f)
+    fw[2] += Mt[2] * sum(ω .* uVelo .^ 2 .* f)
+    fw[3] += Mt[2] * sum(ω .* uVelo .* vVelo .* f)
+    fw[4] += Mt[2] * sum(ω .* uVelo .* wVelo .* f)
+    fw[5] += Mt[2] * 0.5 * sum(ω .* uVelo .* (uVelo .^ 2 .+ vVelo .^ 2 .+ wVelo .^ 2) .* f)
+
+    @. ff = Mt[1] * uVelo * g + Mt[2] * uVelo * f
 
     return nothing
 
