@@ -19,7 +19,7 @@ x0 = -35.0
 x1 = 35.0
 nx = 50
 pMeshType = uniform
-nxg = 1
+nxg = 2
 
 # velocity space
 umin = -12.0

@@ -4,12 +4,16 @@ dt = KitBase.timestep(ks, ctr, 0.0)
 KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :extra)
 KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :period)
 KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :balance)
-
 t = KitBase.solve!(ks, ctr, face, 0.0)
 KitBase.evolve!(ks, ctr, face, dt; mode = :roe)
 
 ks, ctr, face, simTime = KitBase.initialize("config_1d1f.txt")
+dt = KitBase.timestep(ks, ctr, 0.0)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :extra)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :period)
+KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :balance)
 t = KitBase.solve!(ks, ctr, face, 0.0)
+KitBase.evolve!(ks, ctr, face, dt; mode = :kcu)
 
 ks, ctr, face, simTime = KitBase.initialize("config_1d2f.txt")
 t = KitBase.solve!(ks, ctr, face, 0.0)

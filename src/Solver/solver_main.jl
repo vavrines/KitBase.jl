@@ -63,7 +63,7 @@ function solve!(
         #iter += 1
         t += dt
 
-        if iter % 100 == 0
+        if iter % 500 == 0
             println("iter: $(iter), time: $(simTime), dt: $(dt), res: $(res)")
 
             #if iter%1000 == 0
@@ -112,7 +112,7 @@ function solve!(
 
         t += dt
 
-        if iter % 100 == 0
+        if iter % 500 == 0
             println("iter: $(iter), time: $(simTime), dt: $(dt), res: $(res[1:end])")
         end
 

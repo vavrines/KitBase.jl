@@ -89,8 +89,8 @@ function update!(
     Z<:AbstractArray{Interface1D,1},
 }
 
-    sumRes = zeros(axes(KS.ib.wL))
-    sumAvg = zeros(axes(KS.ib.wL))
+    sumRes = zero(KS.ib.wL)
+    sumAvg = zero(KS.ib.wL)
 
     if ndims(sumRes) == 1
         @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
