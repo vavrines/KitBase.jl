@@ -12,15 +12,15 @@ interpOrder = 2
 limiter = vanleer
 boundary = maxwell
 cfl = 0.8
-maxTime = 0.01
+maxTime = 0.0001
 
 # phase space
 x0 = 0.0
 x1 = 1.0
-nx = 45
+nx = 21
 y0 = 0.0
 y1 = 1.0
-ny = 45
+ny = 21
 pMeshType = uniform
 nxg = 0
 nyg = 0
@@ -28,10 +28,10 @@ nyg = 0
 # velocity space
 umin = -5.0
 umax = 5.0
-nu = 28
+nu = 16
 vmin = -5.0
 vmax = 5.0
-nv = 28
+nv = 16
 vMeshType = rectangle
 nug = 0
 nvg = 0

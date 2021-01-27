@@ -244,7 +244,7 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
                         KS.ib.fL,
                     )
                 else
-                    ctr[i] = ControlVolume2D1F(
+                    ctr[i, j] = ControlVolume2D1F(
                         KS.pSpace.x[i, j],
                         KS.pSpace.y[i, j],
                         KS.pSpace.dx[i, j],
@@ -258,15 +258,15 @@ function init_fvm(KS::T) where {T<:AbstractSolverSet}
 
             for j = 1:KS.pSpace.ny
                 for i = 1:KS.pSpace.nx
-                    a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                    a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
                 end
-                a1face[i, KS.pSpace.nx+1] = Interface2D1F(KS.pSpace.dy[i, KS.pSpace.nx], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                a1face[KS.pSpace.nx+1, j] = Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
             end
             for i = 1:KS.pSpace.nx
                 for j = 1:KS.pSpace.ny
-                    a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                    a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
                 end
-                a2face[i, KS.pSpace.ny+1] = Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                a2face[i, KS.pSpace.ny+1] = Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
             end
 
         elseif KS.set.space[3:4] == "2f"

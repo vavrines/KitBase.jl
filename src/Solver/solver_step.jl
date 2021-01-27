@@ -997,6 +997,67 @@ function step!(
 
 end
 
+# ------------------------------------------------------------
+# 2D1F2V
+# ------------------------------------------------------------
+function step!(
+    w::T1,
+    prim::T1,
+    h::T2,
+    fwL::T1,
+    fhL::T2,
+    fwR::T1,
+    fhR::T2,
+    fwD::T1,
+    fhD::T2,
+    fwU::T1,
+    fhU::T2,
+    u::T2,
+    v::T2,
+    weights::T2,
+    γ,
+    μᵣ,
+    ω,
+    Pr,
+    Δs,
+    dt,
+    RES,
+    AVG,
+    collision = :bgk,
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,2}}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    if collision == :shakhov
+        q = heat_flux(h, b, prim, u, v, weights)
+
+        MH_old = maxwellian(u, v, prim)
+        SH = shakhov(u, v, MH_old, q, prim, Pr)
+    else
+        SH = zero(h)
+    end
+
+    #--- update W^{n+1} ---#
+    @. w += (fwL - fwR + fwD - fwU) / Δs
+    prim .= conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+    #--- calculate M^{n+1} and tau^{n+1} ---#
+    MH = maxwellian(u, v, prim)
+    MH .+= SH
+    τ = vhs_collision_time(prim, μᵣ, ω)
+
+    #--- update distribution function ---#
+    for j in axes(v, 2), i in axes(u, 1)
+        h[i, j] = (h[i, j] + (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs + dt / τ * MH[i, j]) / (1.0 + dt / τ)
+    end
+
+end
+
 #--- 2D2F2V ---#
 function step!(
     w::T1,

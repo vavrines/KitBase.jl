@@ -439,6 +439,7 @@ function update!(
 
 end
 
+
 #--- 2d2f ---#
 function update!(
     KS::X,
@@ -446,7 +447,70 @@ function update!(
     a1face::Z,
     a2face::Z,
     dt,
-    residual; # 1D / 2D
+    residual;
+    coll = :bgk::Symbol,
+    bc = :fix::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolume2D1F,2},
+    Z<:AbstractArray{Interface2D1F,2},
+}
+
+    sumRes = zero(KS.ib.wL)
+    sumAvg = zero(KS.ib.wL)
+
+    if ndims(sumRes) == 1
+
+        @inbounds for j = 2:KS.pSpace.ny-1
+            for i = 2:KS.pSpace.nx-1
+                step!(
+                    ctr[i, j].w,
+                    ctr[i, j].prim,
+                    ctr[i, j].f,
+                    a1face[i, j].fw,
+                    a1face[i, j].ff,
+                    a1face[i+1, j].fw,
+                    a1face[i+1, j].ff,
+                    a2face[i, j].fw,
+                    a2face[i, j].ff,
+                    a2face[i, j+1].fw,
+                    a2face[i, j+1].ff,
+                    KS.vSpace.u,
+                    KS.vSpace.v,
+                    KS.vSpace.weights,
+                    KS.gas.γ,
+                    KS.gas.μᵣ,
+                    KS.gas.ω,
+                    KS.gas.Pr,
+                    ctr[i, j].dx * ctr[i, j].dy,
+                    dt,
+                    sumRes,
+                    sumAvg,
+                    coll,
+                )
+            end
+        end
+
+    end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx * KS.pSpace.ny) / (sumAvg[i] + 1.e-7)
+    end
+
+    update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+
+    return nothing
+    
+end
+
+#--- 2d2f ---#
+function update!(
+    KS::X,
+    ctr::Y,
+    a1face::Z,
+    a2face::Z,
+    dt,
+    residual;
     coll = :bgk::Symbol,
     bc = :fix::Symbol,
 ) where {
