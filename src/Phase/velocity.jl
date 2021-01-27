@@ -25,15 +25,16 @@ struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,
 end
 
 function VSpace1D(
-    U0::TR,
-    U1::TR,
+    U0,
+    U1,
     NU::TI,
     TYPE = "rectangle",
     NG = zero(NU)::TI,
-) where {TR,TI<:Integer}
+    PRECISION = Float64,
+) where {TI<:Integer}
 
     δ = (U1 - U0) / NU
-    u = OffsetArray{Float64}(undef, 1-NG:NU+NG)
+    u = OffsetArray{PRECISION}(undef, 1-NG:NU+NG)
     du = similar(u)
     weights = similar(u)
 
@@ -53,7 +54,7 @@ function VSpace1D(
         throw("No velocity quadrature available")
     end
 
-    return VSpace1D{TR,TI,typeof(u),typeof(weights)}(U0, U1, NU, u, du, weights)
+    return VSpace1D{PRECISION,TI,typeof(u),typeof(weights)}(U0, U1, NU, u, du, weights)
 
 end
 
@@ -94,20 +95,21 @@ struct VSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVel
 end
 
 function VSpace2D(
-    U0::TR,
-    U1::TR,
+    U0,
+    U1,
     NU::TI,
-    V0::TR,
-    V1::TR,
+    V0,
+    V1,
     NV::TI,
     TYPE = "rectangle",
     NGU = zero(NU)::TI,
     NGV = zero(NV)::TI,
-) where {TR,TI<:Integer}
+    PRECISION = Float64,
+) where {TI<:Integer}
 
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
-    u = OffsetArray{Float64}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV)
+    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV)
     v = similar(u)
     du = similar(u)
     dv = similar(u)
@@ -137,13 +139,11 @@ function VSpace2D(
                     δv
             end
         end
-    elseif TYPE == "gauss" # gaussian
-        throw("Gaussian quadrature is WIP")
     else
         throw("No velocity quadrature available")
     end
 
-    return VSpace2D{TR,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, u, v, du, dv, weights)
+    return VSpace2D{PRECISION,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, u, v, du, dv, weights)
 
 end
 
@@ -194,25 +194,26 @@ struct VSpace3D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,3}} <: AbstractVel
 end
 
 function VSpace3D(
-    U0::TR,
-    U1::TR,
+    U0,
+    U1,
     NU::TI,
-    V0::TR,
-    V1::TR,
+    V0,
+    V1,
     NV::TI,
-    W0::TR,
-    W1::TR,
+    W0,
+    W1,
     NW::TI,
     TYPE = "rectangle",
     NGU = zero(NU)::TI,
     NGV = zero(NV)::TI,
     NGW = zero(NW)::TI,
-) where {TR,TI<:Integer}
+    PRECISION = Float64,
+) where {TI<:Integer}
 
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     δw = (W1 - W0) / NW
-    u = OffsetArray{Float64}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW)
+    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW)
     v = similar(u)
     w = similar(u)
     du = similar(u)
@@ -246,13 +247,11 @@ function VSpace3D(
                 newton_cotes(k + NGW, NW + NGW * 2) *
                 δw
         end
-    elseif TYPE == "gauss" # gaussian
-        throw("Gaussian integration coming soon")
     else
         throw("No velocity quadrature available")
     end
 
-    return VSpace3D{TR,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, W0, W1, NW, u, v, w, du, dv, dw, weights)
+    return VSpace3D{PRECISION,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, W0, W1, NW, u, v, w, du, dv, dw, weights)
 
 end
 
@@ -284,19 +283,20 @@ struct MVSpace1D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Rea
 end
 
 function MVSpace1D(
-    Ui0::TR,
-    Ui1::TR,
-    Ue0::TR,
-    Ue1::TR,
+    Ui0,
+    Ui1,
+    Ue0,
+    Ue1,
     NU::TI,
     TYPE = "rectangle",
     NG = zero(NU)::TI,
-) where {TR,TI<:Integer}
+    PRECISION = Float64,
+) where {TI<:Integer}
 
-    u0 = [Ui0, Ue0]
-    u1 = [Ui1, Ue1]
+    u0 = PRECISION.([Ui0, Ue0])
+    u1 = PRECISION.([Ui1, Ue1])
     δ = (u1 .- u0) ./ NU
-    u = OffsetArray{Float64}(undef, 1-NG:NU+NG, 1:2)
+    u = OffsetArray{PRECISION}(undef, 1-NG:NU+NG, 1:2)
     du = similar(u)
     weights = similar(u)
 
@@ -312,8 +312,6 @@ function MVSpace1D(
             du[i, j] = δ[j]
             weights[i, j] = newton_cotes(i + NG, NU + NG * 2) * δ[j]
         end
-    elseif TYPE == "gauss" # gaussian
-        throw("Gaussian quadrature is WIP")
     else
         throw("No velocity quadrature available")
     end
@@ -359,28 +357,29 @@ struct MVSpace2D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{Float
 end
 
 function MVSpace2D(
-    Ui0::TR,
-    Ui1::TR,
-    Ue0::TR,
-    Ue1::TR,
+    Ui0,
+    Ui1,
+    Ue0,
+    Ue1,
     NU::TI,
-    Vi0::TR,
-    Vi1::TR,
-    Ve0::TR,
-    Ve1::TR,
+    Vi0,
+    Vi1,
+    Ve0,
+    Ve1,
     NV::TI,
     TYPE = "rectangle",
     NGU = zero(NU)::TI,
     NGV = zero(NV)::TI,
-) where {TR,TI<:Integer}
+    PRECISION = Float64,
+) where {TI<:Integer}
 
-    u0 = [Ui0, Ue0]
-    u1 = [Ui1, Ue1]
+    u0 = PRECISION.([Ui0, Ue0])
+    u1 = PRECISION.([Ui1, Ue1])
     δu = (u1 .- u0) ./ NU
-    v0 = [Vi0, Ve0]
-    v1 = [Vi1, Ve1]
+    v0 = PRECISION.([Vi0, Ve0])
+    v1 = PRECISION.([Vi1, Ve1])
     δv = (v1 .- v0) ./ NV
-    u = OffsetArray{Float64}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1:2)
+    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1:2)
     v = similar(u)
     du = similar(u)
     dv = similar(u)
@@ -406,8 +405,6 @@ function MVSpace2D(
                 newton_cotes(j + NGV, NV + NGV * 2) *
                 δv[k]
         end
-    elseif TYPE == "gauss" # gaussian
-        throw("Gaussian quadrature is WIP")
     else
         throw("No velocity quadrature available")
     end
@@ -464,38 +461,39 @@ struct MVSpace3D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Rea
 end
 
 function MVSpace3D(
-    Ui0::TR,
-    Ui1::TR,
-    Ue0::TR,
-    Ue1::TR,
+    Ui0,
+    Ui1,
+    Ue0,
+    Ue1,
     NU::TI,
-    Vi0::TR,
-    Vi1::TR,
-    Ve0::TR,
-    Ve1::TR,
+    Vi0,
+    Vi1,
+    Ve0,
+    Ve1,
     NV::TI,
-    Wi0::TR,
-    Wi1::TR,
-    We0::TR,
-    We1::TR,
+    Wi0,
+    Wi1,
+    We0,
+    We1,
     NW::TI,
     TYPE = "rectangle",
     NGU = zero(NU)::TI,
     NGV = zero(NV)::TI,
     NGW = zero(NW)::TI,
-) where {TR,TI<:Integer}
+    PRECISION = Float64,
+) where {TI<:Integer}
 
-    u0 = [Ui0, Ue0]
-    u1 = [Ui1, Ue1]
+    u0 = PRECISION.([Ui0, Ue0])
+    u1 = PRECISION.([Ui1, Ue1])
     δu = (u1 .- u0) ./ NU
-    v0 = [Vi0, Ve0]
-    v1 = [Vi1, Ve1]
+    v0 = PRECISION.([Vi0, Ve0])
+    v1 = PRECISION.([Vi1, Ve1])
     δv = (v1 .- v0) ./ NV
-    w0 = [Wi0, We0]
-    w1 = [Wi1, We1]
+    w0 = PRECISION.([Wi0, We0])
+    w1 = PRECISION.([Wi1, We1])
     δw = (w1 .- w0) ./ NW
 
-    u = OffsetArray{Float64}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW, 1:2)
+    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW, 1:2)
     v = similar(u)
     w = similar(u)
     du = similar(u)
@@ -561,12 +559,9 @@ function newton_cotes(idx::T, num::T) where {T<:Integer}
     return nc_coeff
 end
 
-
-"""
-Extended Base.show()
-
-"""
-
+# ------------------------------------------------------------
+# Extended Base.show()
+# ------------------------------------------------------------
 function Base.show(io::IO, vs::VSpace1D{TR,TI,TA,TB}) where {TR,TI,TA,TB}
     print(io, "VelocitySpace1D{$TR,$TI,$TA,$TB}\n",
               "domain: ($(vs.u0),$(vs.u1))\n",

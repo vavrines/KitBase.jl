@@ -100,7 +100,7 @@ function write_jld(
     strIter = string(t)
     fileOut = KS.outputFolder * "data/t=" * strIter * ".jld2"
 
-    @save fileOut KS ctr t
+    save(fileOut, Dict("set" => KS, "ctr" => ctr, "t" => t))
 
 end
 

@@ -19,11 +19,14 @@ function initialize(configfilename::T) where {T<:AbstractString}
     println("")
     
     if configfilename[end-3:end] == "jld2"
-        _1, _2, _3 = @load configfilename KS ctr t
-        ks, ctr, simTime = eval(_1), eval(_2), eval(_3)
+        D = load(configfilename)
+        ks = D["set"]
+        ctr = D["ctr"]
+        t = D["t"]
+
         face = init_fvm(ks)[2]
 
-        return ks, ctr, face, simTime
+        return ks, ctr, face, t
     else
         ks = SolverSet(configfilename)
 

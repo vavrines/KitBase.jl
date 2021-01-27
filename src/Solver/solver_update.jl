@@ -439,8 +439,6 @@ function update!(
 
 end
 
-
-#--- 2d2f ---#
 function update!(
     KS::X,
     ctr::Y,
