@@ -109,6 +109,7 @@ function set_setup(dict::T) where {T<:AbstractDict}
     end
 
     set = Setup(
+        matter,
         case,
         space,
         flux,
@@ -287,54 +288,59 @@ function set_property(dict::T) where {T<:AbstractDict}
     end
     γ = heat_capacity_ratio(inK, γD)
 
-    if nSpecies == 1
-        μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
-        gas = Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ)
-    elseif nSpecies == 2
-        kne = knudsen * (me / mi)
-        if !(@isdefined rL) && !(@isdefined echi) # undefined plasma args
+    if matter == "gas"
+
+        if nSpecies == 1
+            μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
+            gas = Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ)
+        elseif nSpecies == 2
+            kne = knudsen * (me / mi)
             gas = Mixture([knudsen, kne], mach, prandtl, inK, γ, mi, ni, me, ne)
         else
-            if Dx == 1
-                gas = Plasma1D(
-                    [knudsen, kne],
-                    mach,
-                    prandtl,
-                    inK,
-                    γ,
-                    mi,
-                    ni,
-                    me,
-                    ne,
-                    lD,
-                    rL,
-                    sol,
-                    echi,
-                    bnu,
-                )
-            elseif Dx == 2
-                gas = Plasma2D(
-                    [knudsen, kne],
-                    mach,
-                    prandtl,
-                    inK,
-                    γ,
-                    mi,
-                    ni,
-                    me,
-                    ne,
-                    lD,
-                    rL,
-                    sol,
-                    echi,
-                    bnu,
-                )
-            else
-                throw("The plasma property only supports up to 2D case.")
-            end
+            throw("The gas property only supports up to two species.")
         end
-    else
-        throw("The gas property only supports up to two species.")
+    
+    elseif matter == "plasma"
+
+        kne = knudsen * (me / mi)
+        if Dx == 1
+            gas = Plasma1D(
+                [knudsen, kne],
+                mach,
+                prandtl,
+                inK,
+                γ,
+                mi,
+                ni,
+                me,
+                ne,
+                lD,
+                rL,
+                sol,
+                echi,
+                bnu,
+            )
+        elseif Dx == 2
+            gas = Plasma2D(
+                [knudsen, kne],
+                mach,
+                prandtl,
+                inK,
+                γ,
+                mi,
+                ni,
+                me,
+                ne,
+                lD,
+                rL,
+                sol,
+                echi,
+                bnu,
+            )
+        else
+            throw("The plasma property only supports up to 2D case.")
+        end
+    
     end
 
     return gas
@@ -382,17 +388,25 @@ function set_ib(
 
     if set.case == "shock"
 
-        if set.space[3:end] == "1f1v"
-            wL, primL, fL, bcL, wR, primR, fR, bcR = ib_rh(gas.Ma, gas.γ, vSpace.u)
-            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-        elseif set.space[3:end] == "1f3v"
-            wL, primL, fL, bcL, wR, primR, fR, bcR =
-                ib_rh(gas.Ma, gas.γ, vSpace.u, vSpace.v, vSpace.w)
-            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-        elseif set.space[3:end] == "2f1v"
-            wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                ib_rh(gas.Ma, gas.γ, gas.K, vSpace.u)
-            ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
+        if set.nSpecies == 1
+            if set.space[3:end] == "1f1v"
+                wL, primL, fL, bcL, wR, primR, fR, bcR = ib_rh(gas.Ma, gas.γ, vSpace.u)
+                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
+            elseif set.space[3:end] == "1f3v"
+                wL, primL, fL, bcL, wR, primR, fR, bcR =
+                    ib_rh(gas.Ma, gas.γ, vSpace.u, vSpace.v, vSpace.w)
+                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
+            elseif set.space[3:end] == "2f1v"
+                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
+                    ib_rh(gas.Ma, gas.γ, gas.K, vSpace.u)
+                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
+            end
+        elseif set.nSpecies == 2
+            if set.space[3:end] == "2f1v"
+                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
+                    ib_rh(gas.Ma, gas.γ, gas.K, gas.mi, gas.me, gas.ni, gas.ne, vSpace.u)
+                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
+            end
         end
 
     elseif set.case == "sod"

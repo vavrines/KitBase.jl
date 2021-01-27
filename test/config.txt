@@ -3,6 +3,7 @@
 # ------------------------------------------------------------
 
 # setup
+matter = gas
 case = shock
 space = 1d2f1v
 flux = kfvs
@@ -24,7 +25,7 @@ nxg = 1
 # velocity space
 umin = -12.0
 umax = 12.0
-nu = 24
+nu = 16
 vMeshType = rectangle
 nug = 0
 

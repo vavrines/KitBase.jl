@@ -77,6 +77,7 @@ begin
 
     γ = KitBase.heat_capacity_ratio(inK, 1)
     set = KitBase.Setup(
+        matter,
         case,
         space,
         flux,

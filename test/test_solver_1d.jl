@@ -50,4 +50,7 @@ ks1 = KitBase.SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolde
 KitBase.init_ptc!(ks1, ctr, mode = :soa)
 KitBase.init_ptc!(ks1, ctr, mode = :aos)
 
+ks, ctr, face, simTime = KitBase.initialize("config_1d2f2s.txt")
+
 ks, ctr, face, simTime = KitBase.initialize("config_1d4f2s.txt")
+

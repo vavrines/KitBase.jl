@@ -20,6 +20,7 @@ Computational setup
 
 """
 struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
+    matter::S
     case::S
     space::S
     flux::S
@@ -32,7 +33,7 @@ struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
     maxTime::F
 end
 
-Setup() = Setup{String,Int,Float64,Float64}("sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", "fix", 0.5, 2.0)
+Setup() = Setup{String,Int,Float64,Float64}("gas", "sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", "fix", 0.5, 2.0)
 
 
 """

@@ -3,6 +3,7 @@
 # ------------------------------------------------------------
 
 # setup
+matter = gas
 case = cavity
 space = 2d1f2v
 flux = kfvs

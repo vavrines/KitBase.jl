@@ -15,8 +15,6 @@ export ib_rh,
 Initialize Rankine-Hugoniot relation
 """
 function ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}} # 1D1F1V
-
-    #--- calculate Rankine-Hugoniot relation ---#
     primL = [1.0, MaL * sqrt(gam / 2.0), 1.0]
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
@@ -40,15 +38,12 @@ function ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}} # 1D1
     bcR = deepcopy(primR)
 
     return wL, primL, hL, bcL, wR, primR, hR, bcR
-
 end
 
 # ------------------------------------------------------------
 # 1D2F1V
 # ------------------------------------------------------------
 function ib_rh(MaL, gam, K, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
-
-    #--- calculate Rankine-Hugoniot relation ---#
     primL = [1.0, MaL * sqrt(gam / 2.0), 1.0]
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
@@ -75,15 +70,12 @@ function ib_rh(MaL, gam, K, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
     bcR = deepcopy(primR)
 
     return wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR
-
 end
 
 # ------------------------------------------------------------
 # 1D1F3V
 # ------------------------------------------------------------
 function ib_rh(MaL, gam, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
-
-    #--- calculate Rankine-Hugoniot relation ---#
     primL = [1.0, MaL * sqrt(gam / 2.0), 0.0, 0.0, 1.0]
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
@@ -109,7 +101,6 @@ function ib_rh(MaL, gam, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFlo
     bcR = deepcopy(primR)
 
     return wL, primL, fL, bcL, wR, primR, fR, bcR
-
 end
 
 # ------------------------------------------------------------
@@ -125,7 +116,6 @@ function ib_rh(
     ne,
     u::T,
 ) where {T<:AbstractArray{<:AbstractFloat,2}}
-
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
     ratioT =
         (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
@@ -159,7 +149,6 @@ function ib_rh(
     bcR = deepcopy(primR)
 
     return wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR
-
 end
 
 
