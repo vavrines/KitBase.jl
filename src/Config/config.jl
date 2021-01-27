@@ -400,3 +400,87 @@ function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFlo
     lorenzR
 
 end
+
+function ib_briowu(gam, mi, me, uspace::T, vspace::T) where {T<:AbstractArray{<:AbstractFloat,3}}
+
+    # upstream
+    primL = zeros(5, 2)
+    primL[1, 1] = 1.0 * mi
+    primL[2, 1] = 0.0
+    primL[3, 1] = 0.0
+    primL[4, 1] = 0.0
+    primL[5, 1] = mi / 1.0
+    primL[1, 2] = 1.0 * me
+    primL[2, 2] = 0.0
+    primL[3, 2] = 0.0
+    primL[4, 2] = 0.0
+    primL[5, 2] = me / 1.0
+
+    wL = mixture_prim_conserve(primL, gam)
+    h0L = mixture_maxwellian(uspace, vspace, primL)
+
+    h1L = similar(h0L)
+    h2L = similar(h0L)
+    for j in axes(h0L, 3)
+        h1L[:, :, j] .= primL[4, j] .* h0L[:, :, j]
+        h2L[:, :, j] .= (primL[4, j]^2 + 1.0 / (2.0 * primL[end, j])) .* h0L[:, :, j]
+    end
+
+    EL = zeros(3)
+    BL = zeros(3)
+    BL[1] = 0.75
+    BL[2] = 1.0
+
+    # downstream
+    primR = zeros(5, 2)
+    primR[1, 1] = 0.125 * mi
+    primR[2, 1] = 0.0
+    primR[3, 1] = 0.0
+    primR[4, 1] = 0.0
+    primR[5, 1] = mi * 1.25
+    primR[1, 2] = 0.125 * me
+    primR[2, 2] = 0.0
+    primR[3, 2] = 0.0
+    primR[4, 2] = 0.0
+    primR[5, 2] = me * 1.25
+
+    wR = mixture_prim_conserve(primR, gam)
+    h0R = mixture_maxwellian(uspace, vspace, primR)
+
+    h1R = similar(h0R)
+    h2R = similar(h0R)
+    for j in axes(h0R, 3)
+        h1R[:, :, j] .= primR[4, j] .* h0R[:, :, j]
+        h2R[:, :, j] .= (primR[4, j]^2 + 1.0 / (2.0 * primR[end, j])) .* h0R[:, :, j]
+    end
+
+    ER = zeros(3)
+    BR = zeros(3)
+    BR[1] = 0.75
+    BR[2] = -1.0
+
+    lorenzL = zeros(3, 2)
+    lorenzR = zeros(3, 2)
+    bcL = deepcopy(primL)
+    bcR = deepcopy(primR)
+
+    return wL,
+    primL,
+    h0L,
+    h1L,
+    h2L,
+    bcL,
+    EL,
+    BL,
+    lorenzL,
+    wR,
+    primR,
+    h0R,
+    h1R,
+    h2R,
+    bcR,
+    ER,
+    BR,
+    lorenzR
+
+end

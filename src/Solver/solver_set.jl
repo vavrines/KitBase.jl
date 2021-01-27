@@ -428,30 +428,7 @@ function set_ib(
 
     elseif set.case == "brio-wu"
 
-        @assert set.space[3:end] == "4f1v"
-
-        wL,
-        primL,
-        h0L,
-        h1L,
-        h2L,
-        h3L,
-        bcL,
-        EL,
-        BL,
-        lorenzL,
-        wR,
-        primR,
-        h0R,
-        h1R,
-        h2R,
-        h3R,
-        bcR,
-        ER,
-        BR,
-        lorenzR = ib_briowu(gas.γ, gas.mi, gas.me, vSpace.u)
-
-        ib = IB4F(
+        if set.space[3:end] == "4f1v"
             wL,
             primL,
             h0L,
@@ -471,8 +448,71 @@ function set_ib(
             bcR,
             ER,
             BR,
-            lorenzR,
-        )
+            lorenzR = ib_briowu(gas.γ, gas.mi, gas.me, vSpace.u)
+
+            ib = IB4F(
+                wL,
+                primL,
+                h0L,
+                h1L,
+                h2L,
+                h3L,
+                bcL,
+                EL,
+                BL,
+                lorenzL,
+                wR,
+                primR,
+                h0R,
+                h1R,
+                h2R,
+                h3R,
+                bcR,
+                ER,
+                BR,
+                lorenzR,
+            )
+        elseif set.space[3:end] == "3f2v"
+            wL,
+            primL,
+            h0L,
+            h1L,
+            h2L,
+            bcL,
+            EL,
+            BL,
+            lorenzL,
+            wR,
+            primR,
+            h0R,
+            h1R,
+            h2R,
+            bcR,
+            ER,
+            BR,
+            lorenzR = ib_briowu(gas.γ, gas.mi, gas.me, vSpace.u, vSpace.v)
+
+            ib = IB3F(
+                wL,
+                primL,
+                h0L,
+                h1L,
+                h2L,
+                bcL,
+                EL,
+                BL,
+                lorenzL,
+                wR,
+                primR,
+                h0R,
+                h1R,
+                h2R,
+                bcR,
+                ER,
+                BR,
+                lorenzR,
+            )
+        end
 
     elseif set.case == "cavity"
 
