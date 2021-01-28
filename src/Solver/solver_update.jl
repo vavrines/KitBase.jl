@@ -208,7 +208,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = false)
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
 
     return nothing
 
@@ -294,7 +294,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = false)
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
 
     return nothing
 
