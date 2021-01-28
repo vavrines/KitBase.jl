@@ -96,10 +96,10 @@ function SolverSet(dict::T) where {T<:AbstractDict}
     set = set_setup(;dict...)
 
     # physical space
-    pSpace = set_geometry(dict)
+    pSpace = set_geometry(;dict...)
 
     # velocity space
-    vSpace = set_velocity(dict)
+    vSpace = set_velocity(;dict...)
 
     # gas property
     gas = set_property(dict)
