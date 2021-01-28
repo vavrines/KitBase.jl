@@ -1,7 +1,7 @@
 cd(@__DIR__)
 D = KitBase.read_dict("config.txt")
 for key in keys(D)
-    s = Symbol(key)
+    s = key
     @eval $s = $(D[key])
 end
 

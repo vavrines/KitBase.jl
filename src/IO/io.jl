@@ -59,16 +59,16 @@ function read_dict(filename::T) where {T<:AbstractString}
     @info "Reading config from $filename"
     println("--------------------------------------------------------------")
     f = open(filename)
-    vars = Dict{String,Any}()
+    vars = Dict{Symbol,Any}()
 
     for line in eachline(f)
-        # skip comments
         if length(line) == 0 || line[1] == '#'
             continue
         end
 
         var, val = split(line, "=")
         stripped = strip(var)
+        stripped = Symbol(stripped)
         println(line)
 
         tmp = tryparse(Float64, val)

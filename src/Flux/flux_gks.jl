@@ -141,9 +141,30 @@ end
         dt::Real,
         dxL::Real,
         dxR::Real,
-        swL = zero(wL)::Y,
-        swR = zero(wR)::Y,
+        swL::Y,
+        swR::Y,
     ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
+
+    flux_gks!(
+        fw::X,
+        wL::Y,
+        wR::Y,
+        inK,
+        γ,
+        mi,
+        ni,
+        me,
+        ne,
+        Kn,
+        dt,
+        dxL::Real,
+        dxR::Real,
+        swL::Y,
+        swR::Y,
+    ) where {
+        X<:AbstractArray{<:AbstractFloat,2},
+        Y<:AbstractArray{<:Real,2},
+    }
 
     flux_gks!(
         fw::X,
@@ -157,8 +178,8 @@ end
         dxL::Real,
         dxR::Real,
         dy::Real,
-        swL = zeros(eltype(fw), axes(wL))::Y,
-        swR = zeros(eltype(fw), axes(wR))::Y,
+        swL::Y,
+        swR::Y,
     ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     flux_gks!(
@@ -175,8 +196,8 @@ end
         dt,
         dxL,
         dxR,
-        swL = zeros(eltype(fw), axes(wL))::T3,
-        swR = zeros(eltype(fw), axes(wR))::T3,
+        swL::T3,
+        swR::T3,
     ) where {
         T1<:AbstractArray{<:AbstractFloat,1},
         T2<:AbstractArray{<:AbstractFloat,1},
@@ -199,8 +220,8 @@ end
         dxL,
         dxR,
         len,
-        swL = zeros(eltype(fw), axes(wL))::Y,
-        swR = zeros(eltype(fw), axes(wR))::Y,
+        swL::Y,
+        swR::Y,
     ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
 
 Gas kinetic Navier-Stokes flux
@@ -784,6 +805,113 @@ end
 
 
 """
+    flux_ugks!(
+        fw::T1,
+        fh::T2,
+        fb::T2,
+        wL::T3,
+        hL::T4,
+        bL::T4,
+        wR::T3,
+        hR::T4,
+        bR::T4,
+        u::T5,
+        ω::T5,
+        inK,
+        γ,
+        visRef,
+        visIdx,
+        pr,
+        dt,
+        dxL,
+        dxR,
+        shL = zeros(eltype(hL), axes(hL))::T4,
+        sbL = zeros(eltype(bL), axes(bL))::T4,
+        shR = zeros(eltype(hR), axes(hR))::T4,
+        sbR = zeros(eltype(bR), axes(bR))::T4,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,1},
+        T2<:AbstractArray{<:AbstractFloat,1},
+        T3<:AbstractArray{<:Real,1},
+        T4<:AbstractArray{<:AbstractFloat,1},
+        T5<:AbstractArray{<:AbstractFloat,1},
+    }
+
+    flux_ugks!(
+        fw::T1,
+        fh::T2,
+        fb::T2,
+        wL::T3,
+        hL::T4,
+        bL::T4,
+        wR::T3,
+        hR::T4,
+        bR::T4,
+        u::T5,
+        v::T5,
+        ω::T5,
+        inK,
+        γ,
+        visRef,
+        visIdx,
+        pr,
+        dt,
+        dxL,
+        dxR,
+        len,
+        shL = zeros(eltype(hL), axes(hL))::T4,
+        sbL = zeros(eltype(bL), axes(bL))::T4,
+        shR = zeros(eltype(hR), axes(hR))::T4,
+        sbR = zeros(eltype(bR), axes(bR))::T4,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,1},
+        T2<:AbstractArray{<:AbstractFloat,2},
+        T3<:AbstractArray{<:Real,1},
+        T4<:AbstractArray{<:AbstractFloat,2},
+        T5<:AbstractArray{<:AbstractFloat,2},
+    }
+
+    flux_ugks!(
+        fw::T1,
+        fh0::T2,
+        fh1::T2,
+        fh2::T2,
+        wL::T3,
+        h0L::T4,
+        h1L::T4,
+        h2L::T4,
+        wR::T3,
+        h0R::T4,
+        h1R::T4,
+        h2R::T4,
+        u::T5,
+        v::T5,
+        ω::T5,
+        inK,
+        γ,
+        mi,
+        ni,
+        me,
+        ne,
+        Kn,
+        dt,
+        dxL,
+        dxR,
+        len,
+        sh0L = zeros(eltype(h0L), axes(h0L))::T4,
+        sh1L = zeros(eltype(h1L), axes(h1L))::T4,
+        sh2L = zeros(eltype(h2L), axes(h2L))::T4,
+        sh0R = zeros(eltype(h0R), axes(h0R))::T4,
+        sh1R = zeros(eltype(h1R), axes(h1R))::T4,
+        sh2R = zeros(eltype(h2R), axes(h2R))::T4,
+    ) where {
+        T1<:AbstractArray{<:AbstractFloat,2},
+        T2<:AbstractArray{<:AbstractFloat,3},
+        T3<:AbstractArray{<:Real,2},
+        T4<:AbstractArray{<:AbstractFloat,3},
+        T5<:AbstractArray{<:AbstractFloat,3},
+    }
+
 Unified gas kinetic scheme (UGKS)
 
 * @args: particle distribution functions and their slopes at left/right sides of interface

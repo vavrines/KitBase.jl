@@ -9,7 +9,6 @@ Initialize solver from input file
 
 """
 function initialize(configfilename::T) where {T<:AbstractString}
-
     println("==============================================================")
     println("Kinetic.jl")
     println("A Lightweight Toolbox for Kinetic Modeling and Simulation")
@@ -38,7 +37,26 @@ function initialize(configfilename::T) where {T<:AbstractString}
             return ks, ctr, a1face, a2face, 0.0
         end
     end
+end
 
+function initialize(config::T) where {T<:AbstractDict}
+    println("==============================================================")
+    println("Kinetic.jl")
+    println("A Lightweight Toolbox for Kinetic Modeling and Simulation")
+    println("==============================================================")
+    println("")
+    @info "initializing solver"
+    println("")
+    
+    ks = SolverSet(config)
+
+    if ks.set.space[1:2] == "1d"
+        ctr, face = init_fvm(ks)
+        return ks, ctr, face, 0.0
+    elseif ks.set.space[1:2] == "2d"
+        ctr, a1face, a2face = init_fvm(ks)
+        return ks, ctr, a1face, a2face, 0.0
+    end
 end
 
 

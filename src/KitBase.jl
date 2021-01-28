@@ -19,6 +19,7 @@ using FFTW
 using Plots
 using FileIO
 using JLD2
+using CSV
 using ProgressMeter
 using Distributions
 using Optim

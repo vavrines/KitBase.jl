@@ -49,10 +49,6 @@ end
 function SolverSet(configfilename::T) where {T<:AbstractString}
     # generate variables from configuration file
     dict = read_dict(configfilename)
-    for key in keys(dict)
-        s = Symbol(key)
-        @eval $s = $(dict[key])
-    end
 
     # setup
     set = set_setup(dict)
@@ -95,6 +91,47 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     )
 end
 
+function SolverSet(dict::T) where {T<:AbstractDict}
+    # setup
+    set = set_setup(;dict...)
+
+    # physical space
+    pSpace = set_geometry(dict)
+
+    # velocity space
+    vSpace = set_velocity(dict)
+
+    # gas property
+    gas = set_property(dict)
+
+    # initial & boundary condition
+    ib = set_ib(dict, set, vSpace, gas)
+
+    # create working directory
+    identifier = string(Dates.now(), "/")
+    outputFolder = replace(identifier, ":" => ".")
+    mkdir(outputFolder)
+    mkdir(string(outputFolder, "data/"))
+    CSV.write(string(outputFolder, "config.csv"), dict)
+
+    # create new struct
+    return SolverSet{
+        typeof(set),
+        typeof(pSpace),
+        typeof(vSpace),
+        typeof(gas),
+        typeof(ib),
+        typeof(outputFolder),
+    }(
+        set,
+        pSpace,
+        vSpace,
+        gas,
+        ib,
+        outputFolder,
+    )
+end
+
 
 """
     set_setup(dict::T) where {T<:AbstractDict}
@@ -104,10 +141,41 @@ Generate AbstractPhysicalSpace
 """
 function set_setup(dict::T) where {T<:AbstractDict}
     for key in keys(dict)
-        s = Symbol(key)
+        s = key
         @eval $s = $(dict[key])
     end
 
+    set = Setup(
+        matter,
+        case,
+        space,
+        flux,
+        collision,
+        nSpecies,
+        interpOrder,
+        limiter,
+        boundary,
+        cfl,
+        maxTime,
+    )
+
+    return set
+end
+
+function set_setup(;
+    matter,
+    case,
+    space,
+    flux,
+    collision,
+    nSpecies,
+    interpOrder,
+    limiter,
+    boundary,
+    cfl,
+    maxTime,
+    kwargs...,
+)
     set = Setup(
         matter,
         case,
@@ -134,9 +202,34 @@ Generate AbstractPhysicalSpace
 """
 function set_geometry(dict::T) where {T<:AbstractDict}
     for key in keys(dict)
-        s = Symbol(key)
+        s = key
         @eval $s = $(dict[key])
     end
+
+    Dx = parse(Int, space[1])
+    if Dx == 1
+        pSpace = PSpace1D(x0, x1, nx, nxg)
+    elseif Dx == 2
+        pSpace = PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
+    else
+        throw("No preset available for 3D simulation, please set it up manually.")
+    end
+
+    return pSpace
+end
+
+function set_geometry(;
+    space,
+    x0,
+    x1,
+    nx,
+    nxg,
+    y0 = nothing,
+    y1 = nothing,
+    ny = nothing,
+    nyg = nothing,
+    kwargs...,
+)
 
     Dx = parse(Int, space[1])
     if Dx == 1
@@ -159,10 +252,122 @@ Generate AbstractVelocitySpace
 """
 function set_velocity(dict::T) where {T<:AbstractDict}
     for key in keys(dict)
-        s = Symbol(key)
+        s = key
         @eval $s = $(dict[key])
     end
 
+    Dv = parse(Int, space[5])
+    if Dv == 0
+        vSpace = nothing
+    elseif Dv == 1
+        if nSpecies == 1
+            vSpace = VSpace1D(umin, umax, nu, vMeshType, nug)
+        elseif nSpecies == 2
+            ue0 = umin * sqrt(mi / me)
+            ue1 = umax * sqrt(mi / me)
+            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu, vMeshType, nug)
+        else
+            throw("The velocity space only supports up to two species.")
+        end
+    elseif Dv == 2
+        if nSpecies == 1
+            vSpace = VSpace2D(umin, umax, nu, vmin, vmax, nv, vMeshType, nug, nvg)
+        elseif nSpecies == 2
+            ue0 = umin * sqrt(mi / me)
+            ue1 = umax * sqrt(mi / me)
+            ve0 = vmin * sqrt(mi / me)
+            ve1 = vmax * sqrt(mi / me)
+            vSpace = MVSpace2D(
+                umin,
+                umax,
+                ue0,
+                ue1,
+                nu,
+                vmin,
+                vmax,
+                ve0,
+                ve1,
+                nv,
+                vMeshType,
+                nug,
+                nvg,
+            )
+        else
+            throw("The velocity space only supports up to two species.")
+        end
+    elseif Dv == 3
+        if nSpecies == 1
+            vSpace = VSpace3D(
+                umin,
+                umax,
+                nu,
+                vmin,
+                vmax,
+                nv,
+                wmin,
+                wmax,
+                nw,
+                vMeshType,
+                nug,
+                nvg,
+                nwg,
+            )
+        elseif nSpecies == 2
+            ue0 = umin * sqrt(mi / me)
+            ue1 = umax * sqrt(mi / me)
+            ve0 = vmin * sqrt(mi / me)
+            ve1 = vmax * sqrt(mi / me)
+            we0 = wmin * sqrt(mi / me)
+            we1 = wmax * sqrt(mi / me)
+            vSpace = MVSpace3D(
+                umin,
+                umax,
+                ue0,
+                ue1,
+                nu,
+                vmin,
+                vmax,
+                ve0,
+                ve1,
+                nv,
+                wmin,
+                wmax,
+                we0,
+                we1,
+                nw,
+                vMeshType,
+                nug,
+                nvg,
+                nwg,
+            )
+        else
+            throw("The velocity space only supports up to two species.")
+        end
+    end
+
+    return vSpace
+end
+
+function set_velocity(;
+    space,
+    nSpecies,
+    umin,
+    umax,
+    nu,
+    vMeshType,
+    nug,
+    mi = nothing,
+    me = nothing,
+    vmin = nothing,
+    vmax = nothing,
+    nv = nothing,
+    nvg = nothing,
+    wmin = nothing,
+    wmax = nothing,
+    nw = nothing,
+    nwg = nothing,
+    kwargs...,
+)
     Dv = parse(Int, space[5])
     if Dv == 0
         vSpace = nothing
@@ -264,7 +469,7 @@ Generate AbstractProperty
 """
 function set_property(dict::T) where {T<:AbstractDict}
     for key in keys(dict)
-        s = Symbol(key)
+        s = key
         @eval $s = $(dict[key])
     end
 
@@ -364,7 +569,7 @@ Generate AbstractIB
 """
 function set_ib(dict::T, set, vSpace, gas) where {T<:AbstractDict}
     for key in keys(dict)
-        s = Symbol(key)
+        s = key
         @eval $s = $(dict[key])
     end
 
