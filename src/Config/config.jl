@@ -175,6 +175,25 @@ function ib_sod(γ) # 1D0F0V
 
 end
 
+#--- mixture ---#
+function ib_sod(γ::Real, mi::Real, me::Real)
+    primL = zeros(3, 2)
+    primL[:, 1] .= [mi, 0.0, mi / 2]
+    primL[:, 2] .= [me, 0.0, me / 2]
+
+    primR = zeros(3, 2)
+    primR[:, 1] .= [mi * 0.125, 0.0, mi / 1.6]
+    primR[:, 2] .= [me * 0.125, 0.0, me / 1.6]
+
+    wL = mixture_prim_conserve(primL, γ)
+    wR = mixture_prim_conserve(primR, γ)
+
+    bcL = deepcopy(primL)
+    bcR = deepcopy(primR)
+
+    return wL, primL, bcL, wR, primR, bcR
+end
+
 # ------------------------------------------------------------
 # 1D1F1V
 # ------------------------------------------------------------

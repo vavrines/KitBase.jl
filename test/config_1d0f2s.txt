@@ -1,0 +1,30 @@
+# setup
+matter = gas
+case = sod
+space = 1d0f0v
+flux = gks
+collision = bgk
+nSpecies = 2
+interpOrder = 2
+limiter = minmod
+boundary = extra
+cfl = 0.8
+maxTime = 0.0001
+
+# physical space
+x0 = -25
+x1 = 25
+nx = 50
+pMeshType = uniform
+nxg = 2
+
+# gas
+knudsen = 1.0
+mach = 2.0
+prandtl = 1
+inK = 1
+
+mi = 1
+ni = 0.5
+me = 0.5
+ne = 0.5

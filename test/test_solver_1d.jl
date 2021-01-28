@@ -9,6 +9,13 @@ KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :balance)
 t = KitBase.solve!(ks, ctr, face, 0.0)
 KitBase.evolve!(ks, ctr, face, dt; mode = :roe)
 
+ks, ctr, face, simTime = KitBase.initialize("config_1d0f2s.txt")
+dt = KitBase.timestep(ks, ctr, 0.0)
+KitBase.update!(ks, ctr, face, dt, zeros(3, 2); bc = :extra)
+KitBase.update!(ks, ctr, face, dt, zeros(3, 2); bc = :period)
+KitBase.update!(ks, ctr, face, dt, zeros(3, 2); bc = :balance)
+KitBase.evolve!(ks, ctr, face, dt; mode = :gks)
+
 ks, ctr, face, simTime = KitBase.initialize("config_1d1f1v.txt")
 KitBase.reconstruct!(ks, ctr)
 KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :extra)

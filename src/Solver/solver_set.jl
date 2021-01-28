@@ -411,19 +411,26 @@ function set_ib(
 
     elseif set.case == "sod"
 
-        if set.space[3:end] == "0f0v"
-            wL, primL, bcL, wR, primR, bcR = ib_sod(gas.γ)
-            ib = IB(wL, primL, bcL, wR, primR, bcR)
-        elseif set.space[3:end] == "1f1v"
-            wL, primL, fL, bcL, wR, primR, fR, bcR = ib_sod(gas.γ, vSpace.u)
-            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-        elseif set.space[3:end] == "1f3v"
-            wL, primL, fL, bcL, wR, primR, fR, bcR =
-                ib_sod(gas.γ, vSpace.u, vSpace.v, vSpace.w)
-            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-        elseif set.space[3:end] == "2f1v"
-            wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR = ib_sod(gas.γ, gas.K, vSpace.u)
-            ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
+        if set.nSpecies == 1
+            if set.space[3:end] == "0f0v"
+                wL, primL, bcL, wR, primR, bcR = ib_sod(gas.γ)
+                ib = IB(wL, primL, bcL, wR, primR, bcR)
+            elseif set.space[3:end] == "1f1v"
+                wL, primL, fL, bcL, wR, primR, fR, bcR = ib_sod(gas.γ, vSpace.u)
+                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
+            elseif set.space[3:end] == "1f3v"
+                wL, primL, fL, bcL, wR, primR, fR, bcR =
+                    ib_sod(gas.γ, vSpace.u, vSpace.v, vSpace.w)
+                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
+            elseif set.space[3:end] == "2f1v"
+                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR = ib_sod(gas.γ, gas.K, vSpace.u)
+                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
+            end
+        elseif set.nSpecies == 2
+            if set.space[3:end] == "0f0v"
+                wL, primL, bcL, wR, primR, bcR = ib_sod(gas.γ, gas.mi, gas.me)
+                ib = IB(wL, primL, bcL, wR, primR, bcR)
+            end
         end
 
     elseif set.case == "brio-wu"

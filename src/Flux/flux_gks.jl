@@ -301,6 +301,111 @@ function flux_gks!(
 
 end
 
+#--- mixture ---#
+function flux_gks!(
+    fw::X,
+    wL::Y,
+    wR::Y,
+    inK,
+    γ,
+    mi,
+    ni,
+    me,
+    ne,
+    Kn,
+    dt,
+    dxL::Real,
+    dxR::Real,
+    swL = zero(wL)::Y,
+    swR = zero(wR)::Y,
+) where {
+    X<:AbstractArray{<:AbstractFloat,2},
+    Y<:AbstractArray{<:Real,2},
+}
+
+    primL = mixture_conserve_prim(wL, γ)
+    primR = mixture_conserve_prim(wR, γ)
+
+    Mu1, Mxi1, MuL1, MuR1 = mixture_gauss_moments(primL, inK)
+    Mu2, Mxi2, MuL2, MuR2 = mixture_gauss_moments(primR, inK)
+    Muv1 = mixture_moments_conserve(MuL1, Mxi1, 0, 0)
+    Muv2 = mixture_moments_conserve(MuR2, Mxi2, 0, 0)
+
+    faL = mixture_pdf_slope(primL, swL, inK)
+    mm = mixture_moments_conserve_slope(faL, Mu1, Mxi1, 1)
+    sw = similar(swL)
+    for j in axes(sw, 2)
+        @. sw[:, j] = -primL[1, j] * mm[:, j]
+    end
+    faTL = mixture_pdf_slope(primL, sw, inK)
+
+    faR = mixture_pdf_slope(primR, swR, inK)
+    mm = mixture_moments_conserve_slope(faR, Mu2, Mxi2, 1)
+    for j in axes(sw, 2)
+        @. sw[:, j] = -primR[1, j] * mm[:, j]
+    end
+    faTR = mixture_pdf_slope(primR, sw, inK)
+
+    w = similar(wL)
+    for j in axes(w, 2)
+        @. w[:, j] = primL[1, j] * Muv1[:, j] + primR[1, j] * Muv2[:, j]
+    end
+    prim = mixture_conserve_prim(w, γ)
+    tau = aap_hs_collision_time(prim, mi, ni, me, ne, Kn)
+    prim = aap_hs_prim(prim, tau, mi, ni, me, ne, Kn)
+
+    Mu, Mxi, MuL, MuR = mixture_gauss_moments(prim, inK)
+    sw0L = (w .- wL) ./ dxL
+    sw0R = (wR .- w) ./ dxR
+    gaL = mixture_pdf_slope(prim, sw0L, inK)
+    gaR = mixture_pdf_slope(prim, sw0R, inK)
+    mmL = mixture_moments_conserve_slope(gaL, MuL, Mxi, 1)
+    mmR = mixture_moments_conserve_slope(gaR, MuR, Mxi, 1)
+    for j in axes(sw, 2)
+        @. sw[:, j] = -prim[1, j] * (mmL[:, j] + mmR[:, j])
+    end
+    gaT = mixture_pdf_slope(prim, sw, inK)
+    
+    Mt = zeros(5, 2)
+    for j in axes(Mt, 2)
+        Mt[4, j] = tau[j] * (1.0 - exp(-dt / tau[j]))
+        Mt[5, j] = -tau[j] * dt * exp(-dt / tau[j]) + tau[j] * Mt[4]
+        Mt[1, j] = dt - Mt[4, j]
+        Mt[2, j] = -tau[j] * Mt[1, j] + Mt[5, j]
+        Mt[3, j] = 0.5 * dt^2 - tau[j] * Mt[1, j]
+    end
+
+    # flux related to central distribution
+    Muv = mixture_moments_conserve(Mu, Mxi, 1, 0)
+    MauL = mixture_moments_conserve_slope(gaL, MuL, Mxi, 2)
+    MauR = mixture_moments_conserve_slope(gaR, MuR, Mxi, 2)
+    MauT = mixture_moments_conserve_slope(gaT, Mu, Mxi, 1)
+    for j in axes(fw, 2)
+        @. fw[:, j] =
+            Mt[1, j] * prim[1, j] * Muv[:, j] + Mt[2, j] * prim[1, j] * (MauL[:, j] + MauR[:, j]) +
+            Mt[3, j] * prim[1, j] * MauT[:, j]
+    end
+
+    # flux related to upwind distribution
+    MuvL = mixture_moments_conserve(MuL1, Mxi1, 1, 0)
+    MauL = mixture_moments_conserve_slope(faL, MuL1, Mxi1, 2)
+    MauLT = mixture_moments_conserve_slope(faTL, MuL1, Mxi1, 1)
+
+    MuvR = mixture_moments_conserve(MuR2, Mxi2, 1, 0)
+    MauR = mixture_moments_conserve_slope(faR, MuR2, Mxi2, 2)
+    MauRT = mixture_moments_conserve_slope(faTR, MuR2, Mxi2, 1)
+
+    for j in axes(fw, 2)
+        @. fw[:, j] +=
+            Mt[4, j] * primL[1, j] * MuvL[:, j] - (Mt[5, j] + tau[j] * Mt[4, j]) * primL[1, j] * MauL[:, j] -
+            tau[j] * Mt[4, j] * primL[1, j] * MauLT[:, j] + Mt[4, j] * primR[1, j] * MuvR[:, j] -
+            (Mt[5, j] + tau[j] * Mt[4, j]) * primR[1, j] * MauR[:, j] - tau[j] * Mt[4, j] * primR[1, j] * MauRT[:, j]
+    end
+
+    return nothing
+
+end
+
 function flux_gks!(
     fw::X,
     wL::Y,
