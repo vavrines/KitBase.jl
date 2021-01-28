@@ -221,8 +221,8 @@ function flux_gks!(
     dt::Real,
     dxL::Real,
     dxR::Real,
-    swL = zero(wL)::Y,
-    swR = zero(wR)::Y,
+    swL::Y,
+    swR::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     primL = conserve_prim(wL, γ)
@@ -316,8 +316,8 @@ function flux_gks!(
     dt,
     dxL::Real,
     dxR::Real,
-    swL = zero(wL)::Y,
-    swR = zero(wR)::Y,
+    swL::Y,
+    swR::Y,
 ) where {
     X<:AbstractArray{<:AbstractFloat,2},
     Y<:AbstractArray{<:Real,2},
@@ -418,8 +418,8 @@ function flux_gks!(
     dxL::Real,
     dxR::Real,
     dy::Real,
-    swL = zeros(eltype(fw), axes(wL))::Y,
-    swR = zeros(eltype(fw), axes(wR))::Y,
+    swL::Y,
+    swR::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     primL = conserve_prim(wL, γ)
@@ -515,8 +515,8 @@ function flux_gks!(
     dt,
     dxL,
     dxR,
-    swL = zeros(eltype(fw), axes(wL))::T3,
-    swR = zeros(eltype(fw), axes(wR))::T3,
+    swL::T3,
+    swR::T3,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,1},
     T2<:AbstractArray{<:AbstractFloat,1},
@@ -686,8 +686,8 @@ function flux_gks!(
     dxL,
     dxR,
     len,
-    swL = zeros(eltype(fw), axes(wL))::Y,
-    swR = zeros(eltype(fw), axes(wR))::Y,
+    swL::Y,
+    swR::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
 
     primL = mixture_conserve_prim(wL, γ)
