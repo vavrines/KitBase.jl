@@ -6,6 +6,7 @@ using ProgressMeter, OffsetArrays
 import KitBase
 
 set = KitBase.Setup(
+    "scalar", # matter
     "advection", # case
     "1d0f0v", # space
     "gks", # flux

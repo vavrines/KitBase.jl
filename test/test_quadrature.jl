@@ -2,11 +2,76 @@
 KitBase.legendre_quadrature(6)
 KitBase.octa_quadrature(8)
 
-KitBase.VSpace1D()
-KitBase.VSpace2D()
-KitBase.VSpace3D()
-KitBase.MVSpace1D()
-KitBase.MVSpace2D()
-KitBase.MVSpace3D()
+KitBase.VSpace1D() |> show
+KitBase.VSpace2D() |> show
+KitBase.VSpace3D() |> show
+KitBase.MVSpace1D() |> show
+KitBase.MVSpace2D() |> show
+KitBase.MVSpace3D() |> show
 
-KitBase.newton_cotes(33, 64)
+KitBase.VSpace1D(
+    -5,
+    5,
+    16,
+    "newton",
+)
+KitBase.VSpace2D(
+    -5,
+    5,
+    16,
+    -5,
+    5,
+    16,
+    "newton",
+)
+KitBase.VSpace3D(
+    -5,
+    5,
+    16,
+    -5,
+    5,
+    16,
+    -5,
+    5,
+    16,
+    "newton",
+)
+KitBase.MVSpace1D(
+    -5,
+    5,
+    -5,
+    5,
+    16,
+    "newton",
+)
+KitBase.MVSpace2D(
+    -5,
+    5,
+    -5,
+    5,
+    16,
+    -5,
+    5,
+    -5,
+    5,
+    16,
+    "newton",
+)
+KitBase.MVSpace3D(
+    -5,
+    5,
+    -5,
+    5,
+    8,
+    -5,
+    5,
+    -5,
+    5,
+    8,
+    -5,
+    5,
+    -5,
+    5,
+    8,
+    "newton",
+)

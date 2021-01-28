@@ -64,7 +64,7 @@ function solve!(
         t += dt
 
         if iter % 500 == 0
-            println("iter: $(iter), time: $(simTime), dt: $(dt), res: $(res)")
+            println("iter: $(iter), time: $(t), dt: $(dt), res: $(res)")
 
             #if iter%1000 == 0
             #    write_jld(KS, ctr, iter)
@@ -113,7 +113,7 @@ function solve!(
         t += dt
 
         if iter % 500 == 0
-            println("iter: $(iter), time: $(simTime), dt: $(dt), res: $(res[1:end])")
+            println("iter: $(iter), time: $(t), dt: $(dt), res: $(res[1:end])")
         end
 
         if t > KS.set.maxTime || maximum(res) < 5.e-7

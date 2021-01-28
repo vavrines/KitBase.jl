@@ -3,6 +3,7 @@
 # ------------------------------------------------------------
 
 # setup
+matter = gas
 case = cavity
 space = 2d2f2v
 flux = kfvs
@@ -12,7 +13,7 @@ interpOrder = 2
 limiter = vanleer
 boundary = maxwell
 cfl = 0.8
-maxTime = 2.0
+maxTime = 5.0
 
 # phase space
 x0 = 0.0

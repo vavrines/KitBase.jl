@@ -3,6 +3,7 @@
 # ------------------------------------------------------------
 
 # setup
+matter = gas
 case = sod
 space = 1d0f0v
 flux = kfvs

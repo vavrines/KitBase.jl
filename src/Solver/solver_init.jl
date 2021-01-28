@@ -13,7 +13,7 @@ This can also be done from a Julia script directly.
 function initialize(configfilename::T) where {T<:AbstractString}
     println("==============================================================")
     println("Kinetic.jl")
-    println("A Lightweight Toolbox for Kinetic Modeling and Simulation")
+    println("Portable Kinetic Simulation and Scientific Machine Learning")
     println("==============================================================")
     println("")
     @info "initializing solver"

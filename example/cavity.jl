@@ -175,7 +175,8 @@ end
 
 # visulization
 KitBase.plot_contour(ks, ctr)
-
+using Plots
+savefig("cavity.png")
 # low-level backend
 begin
     using Plots

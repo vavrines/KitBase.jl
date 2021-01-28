@@ -50,5 +50,9 @@ ne = (L + 1)^2
 u = [2., 0., 0., 0.]
 m = KitBase.eval_spherharmonic(points, L)
 
+using KitBase.TypedPolynomials
+@polyvar _x _y _z
+KitBase.rlylm(2, 2, _x, _y, _z)
+
 res = KitBase.optimize_closure(α, m, weights, u, KitBase.maxwell_boltzmann_dual)
 u1 = KitBase.realizable_reconstruct(res.minimizer, m, weights, KitBase.maxwell_boltzmann_dual_prime)

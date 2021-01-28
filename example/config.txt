@@ -3,6 +3,7 @@
 # ------------------------------------------------------------
 
 # setup
+matter = gas
 case = shock
 space = 1d0f0v
 flux = kfvs
