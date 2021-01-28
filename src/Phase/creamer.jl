@@ -6,7 +6,6 @@
     slerp(pt1::T, pt2::T, n::I) where {T<:AbstractArray{<:Real,1},I<:Int}
 
 Spherical linear interpolation
-
 """
 function slerp(pt1::T, pt2::T, n::I) where {T<:AbstractArray{<:Real,1},I<:Int}
     if norm(pt1 - pt2) < 1e-10 # same points

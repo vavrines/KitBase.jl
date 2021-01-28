@@ -58,8 +58,9 @@ function ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
 end
 
 """
-r^l * Ylm(x,y,z)
+    rlylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
 
+Calculate r^l * Ylm(x,y,z)
 """
 function rlylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
 	p = ylm(l, m, x, y, z)

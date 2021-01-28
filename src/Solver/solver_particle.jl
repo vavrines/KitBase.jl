@@ -7,7 +7,9 @@
     sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
     sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
     sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx)
-
+    sample_particle!(ptc::Particle, ip, p)
+    sample_particle!(ptc::Particle, ip, KS::SolverSet, ctr, idx)
+    
 Sample particles from local flow conditions
 
 """
@@ -61,7 +63,6 @@ function sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx)
 
     return nothing
 end
-
 
 function sample_particle!(ptc::Particle, ip, p)
     m, x, v, e, idx, flag, tc = p

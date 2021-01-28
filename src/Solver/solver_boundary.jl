@@ -1,6 +1,34 @@
 """
-Update solver for boundary cells
+    update_boundary!(
+        KS::X,
+        ctr::Y,
+        face::Z,
+        dt,
+        residual;
+        coll::Symbol,
+        bc::Symbol,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{<:AbstractControlVolume1D,1},
+        Z<:AbstractArray{<:AbstractInterface1D,1},
+    }
 
+    update_boundary!(
+        KS::X,
+        ctr::Y,
+        a1face::Z,
+        a2face::Z,
+        dt,
+        residual;
+        coll::Symbol,
+        bc::Symbol,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AbstractArray{<:AbstractControlVolume2D,2},
+        Z<:AbstractArray{<:AbstractInterface2D,2},
+    }
+
+Update solver for boundary cells
 """
 function update_boundary!(
     KS::X,
@@ -115,7 +143,6 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc::Symbol,
-    isMHD = false::Bool,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D1F,1},
@@ -264,7 +291,6 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc::Symbol,
-    isMHD = false::Bool,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D2F,1},

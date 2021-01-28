@@ -7,7 +7,7 @@ Copyright (c) 2021 Tianbai Xiao <tianbaixiao@gmail.com>
 module KitBase
 
 if VERSION < v"1.3"
-    @warn "Kinetic.jl matches perfectly with Julia 1.3 or newer versions."
+    @warn "Kinetic matches perfectly with Julia 1.3 or newer versions."
 end
 
 using Dates

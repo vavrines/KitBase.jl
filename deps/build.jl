@@ -1,7 +1,9 @@
 using PyCall
 
 # try importing meshio
-# if not existed, install it
+# catch the installation
+# 1) Julia built-in miniconda
+# 2) global pip installer
 try
     using Conda
     Conda.add_channel("conda-forge")

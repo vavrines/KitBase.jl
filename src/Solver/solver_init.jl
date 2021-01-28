@@ -4,8 +4,10 @@
 
 """
     initialize(configfilename::T) where {T<:AbstractString}
+    initialize(config::T) where {T<:AbstractDict}
 
-Initialize solver from input file
+Initialize solver from input file or dictionary.
+This can also be done from a Julia script directly.
 
 """
 function initialize(configfilename::T) where {T<:AbstractString}
@@ -356,7 +358,7 @@ end
         factor = 1::Real,
     ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
-Initialize particles
+Initialize particles based on flow conditions
 
 """
 function init_ptc!(
@@ -380,7 +382,7 @@ end
         factor = 1,
     ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
-Array of structs
+Initialize particles with array of structs
 
 """
 function init_ptc_aos!(
@@ -430,7 +432,7 @@ end
         factor = 1,
     ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
 
-Struct of arrays
+Initialize particles with struct of arrays
 
 """
 function init_ptc_soa!(

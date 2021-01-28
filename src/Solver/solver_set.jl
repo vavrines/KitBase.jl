@@ -135,6 +135,20 @@ end
 
 """
     set_setup(dict::T) where {T<:AbstractDict}
+    set_setup(;
+        matter,
+        case,
+        space,
+        flux,
+        collision,
+        nSpecies,
+        interpOrder,
+        limiter,
+        boundary,
+        cfl,
+        maxTime,
+        kwargs...,
+    )
 
 Generate AbstractPhysicalSpace
 
@@ -196,6 +210,18 @@ end
 
 """
     set_geometry(dict::T) where {T<:AbstractDict}
+    set_geometry(;
+        space,
+        x0,
+        x1,
+        nx,
+        nxg,
+        y0 = nothing,
+        y1 = nothing,
+        ny = nothing,
+        nyg = nothing,
+        kwargs...,
+    )
 
 Generate AbstractPhysicalSpace
 
@@ -246,6 +272,26 @@ end
 
 """
     set_velocity(dict::T) where {T<:AbstractDict}
+    set_velocity(;
+        space,
+        nSpecies,
+        umin,
+        umax,
+        nu,
+        vMeshType,
+        nug,
+        mi = nothing,
+        me = nothing,
+        vmin = nothing,
+        vmax = nothing,
+        nv = nothing,
+        nvg = nothing,
+        wmin = nothing,
+        wmax = nothing,
+        nw = nothing,
+        nwg = nothing,
+        kwargs...,
+    )
 
 Generate AbstractVelocitySpace
 

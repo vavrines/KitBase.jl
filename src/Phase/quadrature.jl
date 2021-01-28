@@ -2,7 +2,6 @@
 # Quadrature Methods
 # ============================================================
 
-
 """
     legendre_quadrature(n::T) where {T<:Integer}
 

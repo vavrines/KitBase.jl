@@ -9,11 +9,14 @@ export SolverSet,
        set_property,
        set_ib,
        initialize,
+       init_fvm,
+       init_ptc!,
        solve!,
        timestep,
        reconstruct!,
        evolve!,
-       update!
+       update!,
+       update_boundary!
 
 include("solver_set.jl")
 include("solver_reconstruction.jl")

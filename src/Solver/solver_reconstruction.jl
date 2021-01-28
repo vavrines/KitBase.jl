@@ -1,7 +1,7 @@
 """
     reconstruct!(KS::SolverSet, ctr::AbstractArray)
 
-Reconstructor
+Reconstruct solutions in cells
 """
 function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D,1}}
 

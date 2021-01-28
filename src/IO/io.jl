@@ -8,8 +8,8 @@ export read_dict,
        plot_contour
 
 """
-    read_dict(filename::String, allowed)
-    read_dict(filename::String)
+    read_dict(filename::T, allowed) where {T<:AbstractString}
+    read_dict(filename::T) where {T<:AbstractString}
 
 Read text into dictionary
 
@@ -89,7 +89,6 @@ end
     write_jld(KS, ctr, t)
 
 Write data into JLD2
-
 """
 function write_jld(
     KS::X,
@@ -158,7 +157,7 @@ end
 """
     plot_contour(KS, ctr; backend = :plots)
 
-Plot solution contour
+Plot solution contours
 """
 function plot_contour(
     KS::X,
