@@ -1,14 +1,21 @@
 w = [1.0, 0.1, 0.3, 1.0]
 cosa = cos(0.5)
 sina = sin(0.5)
+KitBase.global_frame(randn(2), cosa, sina)
+KitBase.local_frame(randn(2), cosa, sina)
 KitBase.global_frame(w, cosa, sina)
 KitBase.local_frame(w, cosa, sina)
+
+KitBase.global_frame(rand(3), rand(3, 3))
+KitBase.local_frame(rand(3), rand(3, 3))
 KitBase.global_frame(rand(5), rand(3, 3))
 KitBase.local_frame(rand(5), rand(3, 3))
 
 #--- structure mesh ---#
 KitBase.PSpace1D()
+KitBase.PSpace1D(0.0, 1.0) |> show
 KitBase.PSpace2D()
+KitBase.PSpace2D(0.0, 1.0, 0.0, 1.0) |> show
 
 x0 = 0.0
 nx = 15
