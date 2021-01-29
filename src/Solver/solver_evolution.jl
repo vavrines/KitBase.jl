@@ -10,6 +10,7 @@
         T1<:AbstractArray{<:AbstractControlVolume1D,1},
         T2<:AbstractArray{<:AbstractInterface1D,1},
     }
+    
     evolve!(
         KS::SolverSet,
         ctr::T1,
@@ -19,8 +20,8 @@
         mode = Symbol(KS.set.flux)::Symbol,
         bc = :fix::Symbol,
     ) where {
-        T1<:AbstractArray{ControlVolume2D2F,2},
-        T2<:AbstractArray{Interface2D2F,2},
+        T1<:AbstractArray{<:AbstractControlVolume2D,2},
+        T2<:AbstractArray{<:AbstractInterface2D,2},
     }
 
 Evolution of boundary fluxes
