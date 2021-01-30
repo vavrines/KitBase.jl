@@ -1,5 +1,5 @@
 """
-    struct PSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,1}} <: AbstractPhysicalSpace
+    struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace
         x0::TR
         x1::TR
         nx::TI
@@ -10,7 +10,7 @@
 1D physical space with structured mesh
 
 """
-struct PSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,1}} <: AbstractPhysicalSpace
+struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace
     x0::TR
     x1::TR
     nx::TI
