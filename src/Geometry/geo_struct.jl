@@ -117,19 +117,61 @@ end
 
 
 """
+    ndgrid(v::AbstractVector)
+    ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where T
+    ndgrid(vs::AbstractVector{T}...) where T
+
+Equivalent N-dimensional mesh generator as matlab
+"""
+ndgrid(v::AbstractVector) = copy(v)
+
+function ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where T
+    m, n = length(v1), length(v2)
+    v1 = reshape(v1, m, 1)
+    v2 = reshape(v2, 1, n)
+
+    return (repeat(v1, 1, n), repeat(v2, m, 1))
+end
+
+function ndgrid(vs::AbstractVector{T}...) where T
+    ndgrid_fill(a, v, s, snext) = begin
+        for j = 1:length(a)
+            a[j] = v[div(rem(j-1, snext), s)+1]
+        end
+    end
+
+    n = length(vs)
+    sz = map(length, vs)
+    out = ntuple(i->Array{T}(undef, sz), n)
+    s = 1
+    for i=1:n
+        a = out[i]::Array
+        v = vs[i]
+        snext = s*size(a,i)
+        ndgrid_fill(a, v, s, snext)
+        s = snext
+    end
+
+    return out
+end
+
+
+"""
     2D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1})
     3D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1}, z::AbstractArray{<:Real,1})
 
 Equivalent structured mesh generator as matlab
 """
-function meshgrid(x::T, y::T) where {T<:AbstractArray{<:Real,1}}
+meshgrid(v::AbstractVector{T}) where {T} = meshgrid(v, v)
+
+function meshgrid(x::T, y::T) where {T<:AbstractVector{<:Real}}
     X = [i for j in y, i in x]
     Y = [j for j in y, i in x]
 
     return X, Y
 end
 
-function meshgrid(x::T, y::T, z::T) where {T<:AbstractArray{<:Real,1}}
+function meshgrid(x::T, y::T, z::T) where {T<:AbstractVector{<:Real}}
     X = [i for k in z, j in y, i in x]
     Y = [j for k in z, j in y, i in x]
     Z = [k for k in z, j in y, i in x]

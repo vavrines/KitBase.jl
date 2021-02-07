@@ -4,7 +4,7 @@
 
 export global_frame, local_frame
 export PSpace1D, PSpace2D
-export uniform_mesh, meshgrid, find_idx
+export uniform_mesh, ndgrid, meshgrid, find_idx
 export UnstructMesh
 export read_mesh, mesh_connectivity_2D, mesh_center_2D, mesh_area_2D
 
