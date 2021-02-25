@@ -36,6 +36,8 @@ KitBase.extract_last(randn(2, 3), 2; mode = :view)
 KitBase.extract_last(randn(2, 3), 2; mode = :copy)
 
 #--- entropy closure ---#
+KitBase.maxwell_boltzmann(rand())
+KitBase.maxwell_boltzmann_prime(rand())
 KitBase.maxwell_boltzmann_dual(rand())
 KitBase.maxwell_boltzmann_dual_prime(rand())
 
