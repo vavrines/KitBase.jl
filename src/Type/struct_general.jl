@@ -78,7 +78,7 @@ mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
         m = deepcopy(_m)
         np = deepcopy(_np)
 
-        new{typeof(Kn),typeof(m),typeof(np)}(Kn, m, np)
+        new{typeof(Kn),typeof(σs),typeof(m),typeof(np)}(Kn, σs, σa, m, np)
     end
 end
 
