@@ -43,11 +43,43 @@ Setup() = Setup{String,Int,Float64,Float64}("gas", "sod", "1d1f1v", "kfvs", "bgk
     end
 
 Fluid property for scalar conservation laws
-
 """
 mutable struct Scalar{TA,TB} <: AbstractProperty
     a::TA
     μᵣ::TB
+end
+
+
+"""
+    mutable struct Radiation{T1,T2} <: AbstractProperty
+        Kn::T1
+    end
+
+Radiation property for linear Boltzmann equation
+
+"""
+mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
+    Kn::T1
+    σs::T2
+    σa::T2
+    m::T3
+    np::T4
+
+    function Radiation(
+        _Kn::Union{Real,AbstractVector},
+        _ss::Union{Real,AbstractVector},
+        _sa::Union{Real,AbstractVector},
+        _m = 1e-3::Union{Real,AbstractVector},
+        _np = 1000::Union{Integer,AbstractVector},
+    )
+        Kn = deepcopy(_Kn)
+        σs = deepcopy(_ss)
+        σa = deepcopy(_sa)
+        m = deepcopy(_m)
+        np = deepcopy(_np)
+
+        new{typeof(Kn),typeof(m),typeof(np)}(Kn, m, np)
+    end
 end
 
 
