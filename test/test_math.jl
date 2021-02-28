@@ -11,6 +11,7 @@ KitBase.mat_split(randn(3, 3))
 
 x = randn(16)
 y = randn(16)
+KitBase.@nametuple x y # NamedTuple constructor
 KitBase.central_diff(y, x)
 KitBase.central_diff(y, x0)
 
