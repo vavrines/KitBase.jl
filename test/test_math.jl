@@ -14,10 +14,14 @@ y = randn(16)
 KitBase.@nametuple x y # NamedTuple constructor
 KitBase.central_diff(y, x)
 KitBase.central_diff(y, x0)
+KitBase.central_diff2(y, x)
+KitBase.central_diff2(y, x0)
 
 res = similar(x)
 KitBase.central_diff!(res, y, x)
 KitBase.central_diff!(res, y, x0)
+KitBase.central_diff2!(res, y, x)
+KitBase.central_diff2!(res, y, x0)
 
 KitBase.upwind_diff(y, x; stream = :right)
 KitBase.upwind_diff(y, x; stream = :left)

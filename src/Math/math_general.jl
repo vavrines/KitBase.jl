@@ -52,7 +52,7 @@ end
 
 Central difference
 """
-function central_diff(y::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1})
+function central_diff(y::T, x::T) where {T<:AbstractVector}
 
     dy = zeros(eltype(y), axes(y))
 
@@ -70,9 +70,35 @@ function central_diff(y::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1})
 
 end
 
-function central_diff(y::AbstractArray{<:Any,1}, dx::Any)
+function central_diff(y::T, dx) where {T<:AbstractVector}
     x = ones(eltype(y), axes(y)) .* dx
     dy = central_diff(y, x)
+
+    return dy
+end
+
+
+"""
+    central_diff2(y::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1})
+
+Central difference for second-order derivatives
+"""
+function central_diff2(y::T, x::T) where {T<:AbstractVector}
+    dy = zeros(eltype(y), axes(y))
+
+    i0 = eachindex(y) |> first
+    i1 = eachindex(y) |> last
+
+    for i = i0+1:i1-1
+        dy[i] = (y[i+1] - 2.0 * y[i] + y[i-1]) / (x[i+1] - x[i-1])^2
+    end
+
+    return dy
+end
+
+function central_diff2(y::T, dx) where {T<:AbstractVector}
+    x = ones(eltype(y), axes(y)) .* dx
+    dy = central_diff2(y, x)
 
     return dy
 end
@@ -84,11 +110,7 @@ end
 
 Central difference
 """
-function central_diff!(
-    dy::AbstractArray{<:Any,1},
-    y::AbstractArray{<:Any,1},
-    x::AbstractArray{<:Any,1},
-)
+function central_diff!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:AbstractVector}
 
     @assert axes(dy) == axes(y) == axes(x)
 
@@ -104,9 +126,36 @@ function central_diff!(
 
 end
 
-function central_diff!(dy::AbstractArray{<:Any,1}, y::AbstractArray{<:Any,1}, dx::Any)
+function central_diff!(dy::T1, y::T2, dx) where {T1<:AbstractVector,T2<:AbstractVector}
     x = ones(eltype(y), axes(y)) .* dx
     central_diff!(dy, y, x)
+end
+
+
+"""
+    central_diff2!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:AbstractVector}
+    central_diff2!(dy::T1, y::T2, dx) where {T1<:AbstractVector,T2<:AbstractVector}
+    
+Central difference
+"""
+function central_diff2!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:AbstractVector}
+
+    @assert axes(dy) == axes(y) == axes(x)
+
+    i0 = eachindex(y) |> first
+    i1 = eachindex(y) |> last
+
+    dy[i0] = 0.0
+    dy[i1] = 0.0
+    for i = i0+1:i1-1
+        dy[i] = (y[i+1] - 2.0 * y[i] + y[i-1]) / (x[i+1] - x[i-1])^2
+    end
+
+end
+
+function central_diff2!(dy::T1, y::T2, dx) where {T1<:AbstractVector,T2<:AbstractVector}
+    x = ones(eltype(y), axes(y)) .* dx
+    central_diff2!(dy, y, x)
 end
 
 
