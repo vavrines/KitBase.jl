@@ -5,7 +5,7 @@
 
 Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 """
-pdf_slope(u, Δ::T) where {T<:Real} = Δ / u
+pdf_slope(u, Δ::T) where {T<:Real} = Δ / (u + 1e-7)
 
 function pdf_slope(
     prim::X,
@@ -1442,6 +1442,17 @@ hs_boltz_kn(mu_ref, alpha) =
 
 """
     kernel_mode(
+        M::TI,
+        umax::TR,
+        vmax::TR,
+        du::TR,
+        dv::TR,
+        unum::TI,
+        vnum::TI;
+        quad_num = 64::TI,
+    ) where {TI<:Integer,TR<:Real}
+
+    kernel_mode(
         M::I,
         umax::R,
         vmax::R,
@@ -1526,6 +1537,46 @@ function kernel_mode(
 
 end
 
+function kernel_mode(
+    M::TI,
+    umax::TR,
+    vmax::TR,
+    du::TR,
+    dv::TR,
+    unum::TI,
+    vnum::TI;
+    quad_num = 64::TI,
+) where {TI<:Integer,TR<:Real}
+
+    supp = sqrt(2.0) * 2.0 * max(umax, vmax) / (3.0 + sqrt(2.0))
+
+    fre_vx = range(-π / du, (unum ÷ 2 - 1) * 2.0 * π / unum / du, length = unum)
+    fre_vy = range(-π / dv, (vnum ÷ 2 - 1) * 2.0 * π / vnum / dv, length = vnum)
+    Fre_vx, Fre_vy = ndgrid(fre_vx, fre_vy)
+
+    αp = zeros(unum, vnum, M)
+    αq = zeros(unum, vnum, M)
+    for lp = 1:M
+        θ = lp * π / M
+
+        s = Fre_vx * cos(θ + π / 2) + Fre_vy * sin(θ + π / 2)
+        αq[:, :, lp] .= 2.0 * supp .* sin.(supp .* s) ./ (supp .* s) * (π / M)
+        
+        s = Fre_vx * cos(θ) + Fre_vy * sin(θ)
+        αp[:, :, lp] .= 2.0 * supp .* sin.(supp .* s) ./ (supp .* s)
+    end
+    αp ./= π
+
+    pq = αp .* αq
+    α0 = zeros(unum, vnum)
+    for j in axes(α0, 2), i in axes(α0, 1)
+        α0[i, j] = sum(pq[i, j, :])
+    end
+
+    return αp, αq, α0
+
+end
+
 
 """
     boltzmann_fft(
@@ -1564,7 +1615,7 @@ function boltzmann_fft(
     f_spec ./= size(f, 1) * size(f, 2) * size(f, 3)
     f_spec .= fftshift(f_spec)
 
-    # --- gain term ---#
+    #--- gain term ---#
     f_temp = zeros(axes(f_spec)) .+ 0im
     for i = 1:M*(M-1)
         fg1 = f_spec .* ϕ[:, :, :, i]
@@ -1574,7 +1625,7 @@ function boltzmann_fft(
         f_temp .+= fg11 .* fg22
     end
 
-    # --- loss term ---#
+    #--- loss term ---#
     fl1 = f_spec .* phipsi
     fl2 = f_spec
     fl11 = fft(fl1)
@@ -1590,36 +1641,40 @@ end
 
 """
     boltzmann_fft!(
-        Q::X,
-        f::X,
-        Kn,
-        M::I,
-        ϕ::Y,
-        ψ::Y,
-        phipsi::Z,
+        Q::T1,
+        f::T2,
+        Kn::TR,
+        M::TI,
+        ϕ::TY,
+        ψ::TY,
+        phipsi::TZ,
     ) where {
-        X<:AbstractArray{<:AbstractFloat,3},
-        Y<:AbstractArray{<:AbstractFloat,4},
-        Z<:AbstractArray{<:AbstractFloat,3},
-        I<:Integer,
+        T1<:AbstractArray{<:AbstractFloat,3},
+        T2<:AbstractArray{<:AbstractFloat,3},
+        TR<:Real,
+        TI<:Integer,
+        TY<:AbstractArray{<:AbstractFloat,4},
+        TZ<:AbstractArray{<:AbstractFloat,3},
     }
 
 Calculate collision operator with FFT-based fast spectral method
 
 """
 function boltzmann_fft!(
-    Q::X,
-    f::X,
-    Kn,
-    M::I,
-    ϕ::Y,
-    ψ::Y,
-    phipsi::Z,
+    Q::T1,
+    f::T2,
+    Kn::TR,
+    M::TI,
+    ϕ::TY,
+    ψ::TY,
+    phipsi::TZ,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,3},
-    Y<:AbstractArray{<:AbstractFloat,4},
-    Z<:AbstractArray{<:AbstractFloat,3},
-    I<:Integer,
+    T1<:AbstractArray{<:AbstractFloat,3},
+    T2<:AbstractArray{<:AbstractFloat,3},
+    TR<:Real,
+    TI<:Integer,
+    TY<:AbstractArray{<:AbstractFloat,4},
+    TZ<:AbstractArray{<:AbstractFloat,3},
 }
 
     f_spec = f .+ 0im

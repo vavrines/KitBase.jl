@@ -30,6 +30,7 @@ using Distributed
 using CUDA
 
 include("Data/data.jl")
+include("Macro/macro.jl")
 include("Type/type.jl")
 include("IO/io.jl")
 include("Math/math.jl")

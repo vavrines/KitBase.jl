@@ -11,12 +11,17 @@ KitBase.mat_split(randn(3, 3))
 
 x = randn(16)
 y = randn(16)
+KitBase.@nametuple x y # NamedTuple constructor
 KitBase.central_diff(y, x)
 KitBase.central_diff(y, x0)
+KitBase.central_diff2(y, x)
+KitBase.central_diff2(y, x0)
 
 res = similar(x)
 KitBase.central_diff!(res, y, x)
 KitBase.central_diff!(res, y, x0)
+KitBase.central_diff2!(res, y, x)
+KitBase.central_diff2!(res, y, x0)
 
 KitBase.upwind_diff(y, x; stream = :right)
 KitBase.upwind_diff(y, x; stream = :left)
@@ -36,6 +41,8 @@ KitBase.extract_last(randn(2, 3), 2; mode = :view)
 KitBase.extract_last(randn(2, 3), 2; mode = :copy)
 
 #--- entropy closure ---#
+KitBase.maxwell_boltzmann(rand())
+KitBase.maxwell_boltzmann_prime(rand())
 KitBase.maxwell_boltzmann_dual(rand())
 KitBase.maxwell_boltzmann_dual_prime(rand())
 
@@ -49,6 +56,11 @@ ne = (L + 1)^2
 α = zeros(ne)
 u = [2., 0., 0., 0.]
 m = KitBase.eval_spherharmonic(points, L)
+
+KitBase.eval_sphermonomial(rand(6), L)
+KitBase.eval_sphermonomial(points, L)
+
+KitBase.kinetic_entropy(α, m, weights)
 
 using KitBase.TypedPolynomials
 @polyvar _x _y _z
