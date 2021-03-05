@@ -5,7 +5,7 @@
 
 Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 """
-pdf_slope(u, Δ::T) where {T<:Real} = Δ / u
+pdf_slope(u, Δ::T) where {T<:Real} = Δ / (u + 1e-7)
 
 function pdf_slope(
     prim::X,
