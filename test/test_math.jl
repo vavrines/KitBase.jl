@@ -53,6 +53,11 @@ ne = (L + 1)^2
 u = [2., 0., 0., 0.]
 m = KitBase.eval_spherharmonic(points, L)
 
+KitBase.eval_sphermonomial(rand(6), L)
+KitBase.eval_sphermonomial(points, L)
+
+KitBase.kinetic_entropy(α, m, weights)
+
 using KitBase.TypedPolynomials
 @polyvar _x _y _z
 KitBase.rlylm(2, 2, _x, _y, _z)
