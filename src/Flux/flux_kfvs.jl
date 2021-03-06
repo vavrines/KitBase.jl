@@ -1,11 +1,11 @@
 """
-    DOM: `flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)`
-    1D1F1V: `flux_kfvs!(fw, ff, fL, fR, u, ω, dt, sfL, sfR)`
-    1D1F3V: `flux_kfvs!(fw, ff, fL, fR, u, v, w, ω, dt, sfL, sfR)`
-    1D2F1V: `flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, ω, dt, shL, sbL, shR, sbR)`
-    1D4F1V: `flux_kfvs!(fw, fh0, fh1, fh2, fh3, h0L, h1L, h2L, h3L, h0R, h1R, h2R, h3R, u, ω, dt, sh0L, sh1L, sh2L, sh3L, sh0R, sh1R, sh2R, sh3R)`
-    2D1F2V: `flux_kfvs!(fw, ff, fL, fR, u, v, ω, dt, len, sfL, sfR)`
-    2D2F2V: `flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, v, ω, dt, len, shL, sbL, shR, sbR)`
+    DOM: flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)
+    1D1F1V: flux_kfvs!(fw, ff, fL, fR, u, ω, dt, sfL, sfR)
+    1D1F3V: flux_kfvs!(fw, ff, fL, fR, u, v, w, ω, dt, sfL, sfR)
+    1D2F1V: flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, ω, dt, shL, sbL, shR, sbR)
+    1D4F1V: flux_kfvs!(fw, fh0, fh1, fh2, fh3, h0L, h1L, h2L, h3L, h0R, h1R, h2R, h3R, u, ω, dt, sh0L, sh1L, sh2L, sh3L, sh0R, sh1R, sh2R, sh3R)
+    2D1F2V: flux_kfvs!(fw, ff, fL, fR, u, v, ω, dt, len, sfL, sfR)
+    2D2F2V: flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, v, ω, dt, len, shL, sbL, shR, sbR)
 
 Kinetic flux vector splitting (KFVS) flux
 
@@ -20,8 +20,8 @@ function flux_kfvs!(
     fR::Y,
     u::Z,
     dt,
-    sfL = zeros(eltype(fL), axes(fL))::Y,
-    sfR = zeros(eltype(fR), axes(fR))::Y,
+    sfL = zero(fL)::Y,
+    sfR = zero(fR)::Y,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,1},
@@ -52,8 +52,8 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sfL = zeros(eltype(fL), axes(fL))::Z,
-    sfR = zeros(eltype(fR), axes(fR))::Z,
+    sfL = zero(fL)::Z,
+    sfR = zero(fR)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,1},
@@ -87,8 +87,8 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sfL = zeros(eltype(fL), axes(fL))::Z,
-    sfR = zeros(eltype(fR), axes(fR))::Z,
+    sfL = zero(fL)::Z,
+    sfR = zero(fR)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,2},
     Y<:AbstractArray{<:AbstractFloat,2},
@@ -127,10 +127,10 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    shL = zeros(eltype(hL), axes(hL))::Z,
-    sbL = zeros(eltype(bL), axes(bL))::Z,
-    shR = zeros(eltype(hR), axes(hR))::Z,
-    sbR = zeros(eltype(bR), axes(bR))::Z,
+    shL = zero(hL)::Z,
+    sbL = zero(bL)::Z,
+    shR = zero(hR)::Z,
+    sbR = zero(bR)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,1},
@@ -173,10 +173,10 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    shL = zeros(eltype(hL), axes(hL))::Z,
-    sbL = zeros(eltype(bL), axes(bL))::Z,
-    shR = zeros(eltype(hR), axes(hR))::Z,
-    sbR = zeros(eltype(bR), axes(bR))::Z,
+    shL = zero(hL)::Z,
+    sbL = zero(bL)::Z,
+    shR = zero(hR)::Z,
+    sbR = zero(bR)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,2},
     Y<:AbstractArray{<:AbstractFloat,2},
@@ -277,8 +277,8 @@ function flux_kfvs!(
     w::A,
     ω::A,
     dt,
-    sfL = zeros(eltype(fL), axes(fL))::Z,
-    sfR = zeros(eltype(fR), axes(fR))::Z,
+    sfL = zero(fL)::Z,
+    sfR = zero(fR)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,3},
@@ -327,14 +327,14 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sh0L = zeros(eltype(h0L), axes(h0L))::Z,
-    sh1L = zeros(eltype(h1L), axes(h1L))::Z,
-    sh2L = zeros(eltype(h2L), axes(h2L))::Z,
-    sh3L = zeros(eltype(h3L), axes(h3L))::Z,
-    sh0R = zeros(eltype(h0R), axes(h0R))::Z,
-    sh1R = zeros(eltype(h1R), axes(h1R))::Z,
-    sh2R = zeros(eltype(h2R), axes(h2R))::Z,
-    sh3R = zeros(eltype(h3R), axes(h3R))::Z,
+    sh0L = zero(h0L)::Z,
+    sh1L = zero(h1L)::Z,
+    sh2L = zero(h2L)::Z,
+    sh3L = zero(h3L)::Z,
+    sh0R = zero(h0R)::Z,
+    sh1R = zero(h1R)::Z,
+    sh2R = zero(h2R)::Z,
+    sh3R = zero(h3R)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,1},
@@ -391,14 +391,14 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sh0L = zeros(eltype(h0L), axes(h0L))::Z,
-    sh1L = zeros(eltype(h1L), axes(h1L))::Z,
-    sh2L = zeros(eltype(h2L), axes(h2L))::Z,
-    sh3L = zeros(eltype(h3L), axes(h3L))::Z,
-    sh0R = zeros(eltype(h0R), axes(h0R))::Z,
-    sh1R = zeros(eltype(h1R), axes(h1R))::Z,
-    sh2R = zeros(eltype(h2R), axes(h2R))::Z,
-    sh3R = zeros(eltype(h3R), axes(h3R))::Z,
+    sh0L = zero(h0L)::Z,
+    sh1L = zero(h1L)::Z,
+    sh2L = zero(h2L)::Z,
+    sh3L = zero(h3L)::Z,
+    sh0R = zero(h0R)::Z,
+    sh1R = zero(h1R)::Z,
+    sh2R = zero(h2R)::Z,
+    sh3R = zero(h3R)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,2},
     Y<:AbstractArray{<:AbstractFloat,2},
@@ -458,8 +458,8 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    sfL = zeros(eltype(fL), axes(fL))::Z,
-    sfR = zeros(eltype(fR), axes(fR))::Z,
+    sfL = zero(fL)::Z,
+    sfR = zero(fR)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,2},
@@ -504,10 +504,10 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    shL = zeros(eltype(hL), axes(hL))::Z,
-    sbL = zeros(eltype(bL), axes(bL))::Z,
-    shR = zeros(eltype(hR), axes(hR))::Z,
-    sbR = zeros(eltype(bR), axes(bR))::Z,
+    shL = zero(hL)::Z,
+    sbL = zero(bL)::Z,
+    shR = zero(hR)::Z,
+    sbR = zero(bR)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,2},
@@ -561,12 +561,12 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    sh0L = zeros(eltype(h0L), axes(h0L))::Z,
-    sh1L = zeros(eltype(h1L), axes(h1L))::Z,
-    sh2L = zeros(eltype(h2L), axes(h2L))::Z,
-    sh0R = zeros(eltype(h0R), axes(h0R))::Z,
-    sh1R = zeros(eltype(h1R), axes(h1R))::Z,
-    sh2R = zeros(eltype(h2R), axes(h2R))::Z,
+    sh0L = zero(h0L)::Z,
+    sh1L = zero(h1L)::Z,
+    sh2L = zero(h2L)::Z,
+    sh0R = zero(h0R)::Z,
+    sh1R = zero(h1R)::Z,
+    sh2R = zero(h2R)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,1},
     Y<:AbstractArray{<:AbstractFloat,2},
@@ -622,12 +622,12 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    sh0L = zeros(eltype(h0L), axes(h0L))::Z,
-    sh1L = zeros(eltype(h1L), axes(h1L))::Z,
-    sh2L = zeros(eltype(h2L), axes(h2L))::Z,
-    sh0R = zeros(eltype(h0R), axes(h0R))::Z,
-    sh1R = zeros(eltype(h1R), axes(h1R))::Z,
-    sh2R = zeros(eltype(h2R), axes(h2R))::Z,
+    sh0L = zero(h0L)::Z,
+    sh1L = zero(h1L)::Z,
+    sh2L = zero(h2L)::Z,
+    sh0R = zero(h0R)::Z,
+    sh1R = zero(h1R)::Z,
+    sh2R = zero(h2R)::Z,
 ) where {
     X<:AbstractArray{<:AbstractFloat,2},
     Y<:AbstractArray{<:AbstractFloat,3},
