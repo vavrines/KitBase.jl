@@ -7,9 +7,14 @@
 Physical space with unstructured mesh
 
 """
-struct UnstructMesh{A,B} <: AbstractPhysicalSpace
+struct UnstructMesh{A,B,C,D,E,F,G} <: AbstractPhysicalSpace
     nodes::A # locations of vertex points
     cells::B # node indices of elements
+    edgeNodes::C
+    edgeCells::D
+    cellNeighbors::E
+    cellArea::F
+    cellCenter::G
 end
 
 
