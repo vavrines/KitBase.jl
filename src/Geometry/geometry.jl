@@ -2,7 +2,7 @@
 # Geometrical Methods
 # ============================================================
 
-export global_frame, local_frame
+export global_frame, local_frame, unit_normal
 export PSpace1D, PSpace2D
 export uniform_mesh, ndgrid, meshgrid, find_idx
 export UnstructMesh

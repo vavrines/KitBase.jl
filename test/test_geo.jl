@@ -11,6 +11,9 @@ KitBase.local_frame(rand(3), rand(3, 3))
 KitBase.global_frame(rand(5), rand(3, 3))
 KitBase.local_frame(rand(5), rand(3, 3))
 
+KitBase.unit_normal(rand(2), rand(2))
+KitBase.unit_normal(rand(3), rand(3), rand(3))
+
 #--- structure mesh ---#
 KitBase.PSpace1D()
 KitBase.PSpace1D(0.0, 1.0) |> show
