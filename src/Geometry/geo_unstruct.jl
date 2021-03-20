@@ -7,9 +7,15 @@
 Physical space with unstructured mesh
 
 """
-struct UnstructMesh{A,B} <: AbstractPhysicalSpace
+struct UnstructMesh{A,B,C,D,E,F,G,H} <: AbstractPhysicalSpace
     nodes::A # locations of vertex points
     cells::B # node indices of elements
+    cellNeighbors::C
+    cellArea::D
+    cellCenter::E
+    edgeNodes::F
+    edgeCells::G
+    edgeCenter::H
 end
 
 
@@ -171,5 +177,27 @@ function mesh_center_2D(
     cellMidPoints ./= size(cells, 2)
 
     return cellMidPoints
+
+end
+
+
+"""
+    mesh_edge_center(nodes::AbstractArray{<:AbstractFloat,2}, edgeNodes::AbstractArray{<:Integer,2})
+
+Compute central points of cell edges
+"""
+function mesh_edge_center(
+    nodes::X,
+    edgeNodes::Y,
+) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Integer,2}}
+    
+    edgeCenter = zeros(size(edgeNodes, 1), size(nodes, 2))
+    for i in axes(edgeCenter, 1)
+        id1 = edgeNodes[i, 1]
+        id2 = edgeNodes[i, 2]
+        @. edgeCenter[i, :] = 0.5 * (nodes[id1, :] + nodes[id2, :])
+    end
+
+    return edgeCenter
 
 end

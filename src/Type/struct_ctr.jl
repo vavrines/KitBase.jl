@@ -1086,3 +1086,157 @@ function Base.show(
         "Lorenz force: $(ctr.lorenz)\n",
     )
 end
+
+
+# ------------------------------------------------------------
+# Unstructured cell
+# ------------------------------------------------------------
+
+"""
+    mutable struct ControlVolumeUS{F,A,B,C} <: AbstractControlVolume
+        x::F
+        dx::F
+
+        w::A
+        prim::B
+        sw::C
+    end
+
+Unstructured control volume with no distribution function
+
+"""
+mutable struct ControlVolumeUS{F,A,B,C} <: AbstractControlVolume
+    x::F
+    dx::F
+
+    w::A
+    prim::B
+    sw::C
+end
+
+function ControlVolumeUS(X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractVector}}
+    x = deepcopy(X)
+    dx = deepcopy(DX)
+
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    sw = zeros(eltype(W), axes(W)..., axes(X)...)
+
+    return ControlVolumeUS{typeof(x),typeof(w),typeof(prim),typeof(sw)}(x, dx, w, prim, sw)
+end
+
+
+"""
+    mutable struct ControlVolumeUS1F{F,A,B,C,D} <: AbstractControlVolume
+        x::F
+        dx::F
+
+        w::A
+        prim::A
+        sw::B
+
+        f::C
+        sf::D
+    end
+
+Unstructured control volume with 1 distribution function
+
+"""
+mutable struct ControlVolumeUS1F{F,A,B,C,D} <: AbstractControlVolume
+    x::F
+    dx::F
+
+    w::A
+    prim::A
+    sw::B
+
+    f::C
+    sf::D
+end
+
+function ControlVolumeUS1F(
+    X,
+    DX,
+    W::T1,
+    PRIM::T1,
+    F::T2,
+) where {T1<:AbstractArray,T2<:AbstractArray}
+    x = deepcopy(X)
+    dx = deepcopy(DX)
+
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    sw = zeros(eltype(W), axes(W)..., axes(X)...)
+
+    f = deepcopy(F)
+    sf = zeros(eltype(F), axes(F)..., axes(X)...)
+
+    return ControlVolumeUS1F{typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(x, dx, w, prim, sw, f, sf)
+end
+
+
+
+"""
+    mutable struct ControlVolumeUS2F{F,A,B,C,D} <: AbstractControlVolume
+        x::F
+        dx::F
+
+        w::A
+        prim::A
+        sw::B
+
+        h::C
+        b::C
+        sh::D
+        sb::D
+    end
+
+Unstructured control volume with 2 distribution functions
+
+"""
+mutable struct ControlVolumeUS2F{F,A,B,C,D} <: AbstractControlVolume
+    x::F
+    dx::F
+
+    w::A
+    prim::A
+    sw::B
+
+    h::C
+    b::C
+    sh::D
+    sb::D
+end
+
+function ControlVolumeUS2F(
+    X,
+    DX,
+    W::T1,
+    PRIM::T1,
+    H::T2,
+    B::T2,
+) where {T1<:AbstractArray,T2<:AbstractArray}
+    x = deepcopy(X)
+    dx = deepcopy(DX)
+
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    sw = zeros(eltype(W), axes(W)..., axes(X)...)
+
+    h = deepcopy(H)
+    b = deepcopy(B)
+    sh = zeros(eltype(H), axes(H)..., axes(X)...)
+    sb = zeros(eltype(B), axes(B)..., axes(X)...)
+
+    return ControlVolumeUS2F{typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
+        x,
+        dx,
+        w,
+        prim,
+        sw,
+        h,
+        b,
+        sh,
+        sb,
+    )
+end
