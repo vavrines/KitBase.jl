@@ -1,13 +1,13 @@
 """
     struct UnstructMesh{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
         cells::A # all information: cell, line, vertex
-        nodes::B # locations of vertex points
+        points::B # locations of vertex points
         cellid::C # node indices of elements
         cellType::D # inner/boundary cell
         cellNeighbors::E # neighboring cell id
         cellArea::F # cell size
         cellCenter::G # cell center location
-        edgeNodes::H # ids of two nodes at edge
+        edgePoints::H # ids of two points at edge
         edgeCells::I # ids of two cells around edge
         edgeCenter::J # edge center location
     end
@@ -15,15 +15,15 @@
 Physical space with unstructured mesh
 
 """
-struct UnstructMesh{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
+struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
     cells::A # all information: cell, line, vertex
-    nodes::B # locations of vertex points
+    points::B # locations of vertex points
     cellid::C # node indices of elements
     cellType::D # inner/boundary cell
     cellNeighbors::E # neighboring cell id
     cellArea::F # cell size
     cellCenter::G # cell center location
-    edgeNodes::H # ids of two nodes at edge
+    edgePoints::H # ids of two points at edge
     edgeCells::I # ids of two cells around edge
     edgeCenter::J # edge center location
 end
@@ -34,23 +34,21 @@ end
 
 Read mesh file
 
-* @return nodes : are saved with 3D coordinates (z=0 for 2D case)
-* @return cells : node ids inside cells
+* @return cells: node ids inside cells
+* @return points: are saved with 3D coordinates (z=0 for 2D case)
 
 """
 function read_mesh(file::T) where {T<:AbstractString}
     meshio = pyimport("meshio")
     m0 = meshio.read(file)
-    nodes = m0.points
-    cells = m0.cells
 
-    return nodes, cells
+    return m0.cells, m0.points
 end
 
-function extract_cell(cellobj)
-    for i in eachindex(cellobj)
-        if !(cellobj[i][1] in ["line", "vertex"])
-            return cellobj[i][2] .+ 1 # python data is zero-indexed
+function extract_cell(cells::T) where {T<:AbstractVector}
+    for i in eachindex(cells)
+        if !(cells[i][1] in ["line", "vertex"])
+            return cells[i][2] .+ 1 # python data is zero-indexed
         end
     end
 end

@@ -1,4 +1,4 @@
-using LinearAlgebra
+using LinearAlgebra, WriteVTK
 import KitBase
 
 begin
@@ -14,59 +14,30 @@ begin
     weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
 
+    vs = KitBase.UnstructVSpace(-1.0, 1.0, nq, points, ones(nq) .* 2 / nq)
+
     # IC
     s2 = 0.03^2
     init_field(x, y) = max(1e-4, 1.0 / (4.0 * π * s2) * exp(-(x^2 + y^2) / 4.0 / s2))
 
     # geometry
-    nodes, cells = KitBase.read_mesh("../assets/mesh/linesource.su2")
-    edgeNodes, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cells)
-    cellid = KitBase.mesh_cell_type(cellNeighbors)
-    cellArea = KitBase.mesh_area_2D(nodes, cells)
-    cellCenter = KitBase.mesh_center_2D(nodes, cells)
-    edgeCenter = KitBase.mesh_edge_center(nodes, edgeNodes)
+    cells, points = KitBase.read_mesh("../assets/mesh/linesource.su2")
+    cellid = KitBase.extract_cell(cells)
+    edgePoints, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cellid)
+    cellType = KitBase.mesh_cell_type(cellNeighbors)
+    cellArea = KitBase.mesh_area_2D(points, cellid)
+    cellCenter = KitBase.mesh_center_2D(points, cellid)
+    edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
 
-    ps = KitBase.UnstructMesh(nodes, cells, cellid, cellNeighbors, cellArea, cellCenter, edgeNodes, edgeCells, edgeCenter)
+    ps = KitBase.UnstructPSpace(cells, points, cellid, cellType, cellNeighbors, cellArea, cellCenter, edgePoints, edgeCells, edgeCenter)
 
     # particle
-    SigmaS = ones(size(cells, 1))
-    SigmaA = zeros(size(cells, 1))
+    SigmaS = ones(size(cellid, 1))
+    SigmaA = zeros(size(cellid, 1))
     SigmaT = SigmaS + SigmaA
 end
 
-using WriteVTK
-
-vtkfile = vtk_grid("my_vtk_file", points, cells)
-
-
-MeshCell(VTKCellTypes.VTK_TRIANGLE, cells)
-
-
-cd(@__DIR__)
-mesh = meshio.read("../assets/mesh/linesource.su2")
-mesh.write("foo.vtk")
-
-
-
-
-using PyCall
-meshio = pyimport("meshio")
-[("triangle", cells)]
-
-
-meshio.Mesh(
-    points,
-    [("triangle", cells)]
-    # Optionally provide extra data on points, cells, etc.
-    # point_data=point_data,
-    # cell_data=cell_data,
-    # field_data=field_data
-).write(
-    "foo.vtk",  # str, os.PathLike, or buffer/open file
-    # file_format="vtk",  # optional if first argument is a path; inferred from extension
-)
-
-
+KitBase.write_vtk(ps.points, ps.cellid, randn(8442, 3))
 
 ctr = Array{KitBase.ControlVolumeUS1F}(undef, size(ps.cells, 1))
 for i in eachindex(ctr)

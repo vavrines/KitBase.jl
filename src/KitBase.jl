@@ -28,6 +28,7 @@ using TypedPolynomials
 using PyCall
 using Distributed
 using CUDA
+using WriteVTK
 
 include("Data/data.jl")
 include("Macro/macro.jl")
