@@ -19,7 +19,8 @@ export UnstructPSpace,
        mesh_cell_type,
        mesh_center_2D,
        mesh_area_2D,
-       mesh_edge_center
+       mesh_edge_center,
+       mesh_cell_edge
 
 include("geo_general.jl")
 include("geo_struct.jl")

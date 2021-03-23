@@ -1,31 +1,33 @@
 """
-    struct UnstructMesh{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
+    struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K} <: AbstractPhysicalSpace
         cells::A # all information: cell, line, vertex
         points::B # locations of vertex points
         cellid::C # node indices of elements
         cellType::D # inner/boundary cell
-        cellNeighbors::E # neighboring cell id
-        cellArea::F # cell size
+        cellNeighbors::E # neighboring cells id
+        cellEdges::F # cell edges id
         cellCenter::G # cell center location
-        edgePoints::H # ids of two points at edge
-        edgeCells::I # ids of two cells around edge
-        edgeCenter::J # edge center location
+        cellArea::H # cell size
+        edgePoints::I # ids of two points at edge
+        edgeCells::J # ids of two cells around edge
+        edgeCenter::K # edge center location
     end
 
 Physical space with unstructured mesh
 
 """
-struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
+struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K} <: AbstractPhysicalSpace
     cells::A # all information: cell, line, vertex
     points::B # locations of vertex points
     cellid::C # node indices of elements
     cellType::D # inner/boundary cell
-    cellNeighbors::E # neighboring cell id
-    cellArea::F # cell size
+    cellNeighbors::E # neighboring cells id
+    cellEdges::F # cell edges id
     cellCenter::G # cell center location
-    edgePoints::H # ids of two points at edge
-    edgeCells::I # ids of two cells around edge
-    edgeCenter::J # edge center location
+    cellArea::H # cell size
+    edgePoints::I # ids of two points at edge
+    edgeCells::J # ids of two cells around edge
+    edgeCenter::K # edge center location
 end
 
 
@@ -233,4 +235,30 @@ function mesh_edge_center(
 
     return edgeCenter
 
+end
+
+
+"""
+    mesh_edge_center(nodes::AbstractArray{<:AbstractFloat,2}, edgeNodes::AbstractArray{<:Integer,2})
+
+Compute central points of cell edges
+"""
+function mesh_cell_edge(cells::X, edgeCells::Y) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,2}}
+    ncell = size(cells, 1)
+    vv = [Int[] for i in 1:ncell]
+    for i in axes(edgeCells, 1)
+        if edgeCells[i, 1] != -1
+            push!(vv[edgeCells[i, 1]], i)
+        end
+        if edgeCells[i, 2] != -1
+            push!(vv[edgeCells[i, 2]], i)
+        end
+    end
+
+    cellEdges = zero(cells)
+    for i in axes(cellEdges, 1)
+        cellEdges[i, :] .= vv[i]
+    end
+
+    return cellEdges
 end
