@@ -332,7 +332,7 @@ mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
     fw::C
     ff::D
 
-    function Interface2D1F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+    function Interface2D1F(L::Real, C::Real, S::Real, w, f::AbstractArray)
         len = L
         n = [C, S]
 

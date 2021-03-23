@@ -126,7 +126,7 @@ Calculate unit normal vector
 """
 function unit_normal(p1::T, p2::T) where {T<:AbstractVector}
     Δ = p2 .- p1
-    l = norm(Δ)
+    l = norm(Δ) + 1e-6
 
     return [-Δ[2], Δ[1]] ./ l
 end
@@ -136,7 +136,21 @@ function unit_normal(p1::T, p2::T, p3::T) where {T<:AbstractVector}
     v2 = p3 .- p1
 
     n = cross(v1, v2)
-    l = norm(n)
+    l = norm(n) + 1e-6
 
     return n ./ l
+end
+
+
+"""
+    point_distance(p::T, p1::T, p2::T) where {T<:AbstractVector}
+
+Calculate point-point/line/surface distance
+"""
+function point_distance(p::T, p1::T, p2::T) where {T<:AbstractVector}
+    x0, y0 = p
+    x1, y1 = p1
+    x2, y2 = p2
+
+    return abs((x2 - x1) * (y1 - y0) - (x1 - x0) * (y2 - y1)) / sqrt((x2 - x1)^2 + (y2 - y1)^2 + 1e-6)
 end

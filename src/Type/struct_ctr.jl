@@ -1157,10 +1157,10 @@ end
 function ControlVolumeUS1F(
     X,
     DX,
-    W::T1,
-    PRIM::T1,
-    F::T2,
-) where {T1<:AbstractArray,T2<:AbstractArray}
+    W,
+    PRIM,
+    F::T,
+) where {T<:AbstractArray}
     x = deepcopy(X)
     dx = deepcopy(DX)
 

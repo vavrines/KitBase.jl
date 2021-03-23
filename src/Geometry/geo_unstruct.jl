@@ -7,15 +7,16 @@
 Physical space with unstructured mesh
 
 """
-struct UnstructMesh{A,B,C,D,E,F,G,H} <: AbstractPhysicalSpace
+struct UnstructMesh{A,B,C,D,E,F,G,H,I} <: AbstractPhysicalSpace
     nodes::A # locations of vertex points
     cells::B # node indices of elements
-    cellNeighbors::C
-    cellArea::D
-    cellCenter::E
-    edgeNodes::F
-    edgeCells::G
-    edgeCenter::H
+    cellid::C
+    cellNeighbors::D
+    cellArea::E
+    cellCenter::F
+    edgeNodes::G
+    edgeCells::H
+    edgeCenter::I
 end
 
 
@@ -32,9 +33,19 @@ function read_mesh(file::T) where {T<:AbstractString}
     meshio = pyimport("meshio")
     m0 = meshio.read(file)
     nodes = m0.points
-    cells = m0.cells[end][2] .+ 1 # python data is zero-indexed
+    cellobj = m0.cells
+    cells = meshio_filter(cellobj)
 
     return nodes, cells
+end
+
+
+function meshio_filter(cellobj)
+    for i in eachindex(cellobj)
+        if !(cellobj[i][1] in ["line", "vertex"])
+            return cellobj[i][2] .+ 1 # python data is zero-indexed
+        end
+    end
 end
 
 
@@ -91,6 +102,25 @@ function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Integer,2}}
 
     return edgeNodes, edgeCells, cellNeighbors
 
+end
+
+
+"""
+    mesh_cell_type(cellNeighbors::T) where {T<:AbstractArray{<:Integer,2}}
+
+Compute types of elements
+- 0: inner
+- 1: boundary
+"""
+function mesh_cell_type(cellNeighbors::T) where {T<:AbstractArray{<:Integer,2}}
+    cellid = zeros(eltype(cellNeighbors), size(cellNeighbors, 1))
+    for i in axes(cellNeighbors, 1)
+        if -1 in cellNeighbors[i, :]
+            cellid[i] = 1
+        end
+    end
+
+    return cellid
 end
 
 
