@@ -34,6 +34,40 @@ begin
     SigmaT = SigmaS + SigmaA
 end
 
+using WriteVTK
+
+vtkfile = vtk_grid("my_vtk_file", points, cells)
+
+
+MeshCell(VTKCellTypes.VTK_TRIANGLE, cells)
+
+
+cd(@__DIR__)
+mesh = meshio.read("../assets/mesh/linesource.su2")
+mesh.write("foo.vtk")
+
+
+
+
+using PyCall
+meshio = pyimport("meshio")
+[("triangle", cells)]
+
+
+meshio.Mesh(
+    points,
+    [("triangle", cells)]
+    # Optionally provide extra data on points, cells, etc.
+    # point_data=point_data,
+    # cell_data=cell_data,
+    # field_data=field_data
+).write(
+    "foo.vtk",  # str, os.PathLike, or buffer/open file
+    # file_format="vtk",  # optional if first argument is a path; inferred from extension
+)
+
+
+
 ctr = Array{KitBase.ControlVolumeUS1F}(undef, size(ps.cells, 1))
 for i in eachindex(ctr)
     phi = zeros(nq)

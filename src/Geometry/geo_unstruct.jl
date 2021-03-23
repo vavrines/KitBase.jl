@@ -1,22 +1,31 @@
 """
-    struct UnstructMesh{A,B} <: AbstractPhysicalSpace
-        nodes::A # locations of vertex points
-        cells::B # node indices of elements
+    struct UnstructMesh{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
+        cells::A # all information: cell, line, vertex
+        nodes::B # locations of vertex points
+        cellid::C # node indices of elements
+        cellType::D # inner/boundary cell
+        cellNeighbors::E # neighboring cell id
+        cellArea::F # cell size
+        cellCenter::G # cell center location
+        edgeNodes::H # ids of two nodes at edge
+        edgeCells::I # ids of two cells around edge
+        edgeCenter::J # edge center location
     end
 
 Physical space with unstructured mesh
 
 """
-struct UnstructMesh{A,B,C,D,E,F,G,H,I} <: AbstractPhysicalSpace
-    nodes::A # locations of vertex points
-    cells::B # node indices of elements
-    cellid::C
-    cellNeighbors::D
-    cellArea::E
-    cellCenter::F
-    edgeNodes::G
-    edgeCells::H
-    edgeCenter::I
+struct UnstructMesh{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
+    cells::A # all information: cell, line, vertex
+    nodes::B # locations of vertex points
+    cellid::C # node indices of elements
+    cellType::D # inner/boundary cell
+    cellNeighbors::E # neighboring cell id
+    cellArea::F # cell size
+    cellCenter::G # cell center location
+    edgeNodes::H # ids of two nodes at edge
+    edgeCells::I # ids of two cells around edge
+    edgeCenter::J # edge center location
 end
 
 
@@ -33,14 +42,12 @@ function read_mesh(file::T) where {T<:AbstractString}
     meshio = pyimport("meshio")
     m0 = meshio.read(file)
     nodes = m0.points
-    cellobj = m0.cells
-    cells = meshio_filter(cellobj)
+    cells = m0.cells
 
     return nodes, cells
 end
 
-
-function meshio_filter(cellobj)
+function extract_cell(cellobj)
     for i in eachindex(cellobj)
         if !(cellobj[i][1] in ["line", "vertex"])
             return cellobj[i][2] .+ 1 # python data is zero-indexed
@@ -50,12 +57,11 @@ end
 
 
 """
-    mesh_connectivity_2D(cells::AbstractArray{<:Integer,2})
+    mesh_connectivity_2D(_cells::AbstractArray{<:Integer,2})
 
 Compute connectivity of 2D unstructured mesh
 """
 function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Integer,2}}
-
     nNodesPerCell = size(cells, 2)
     nCells = size(cells, 1)
     nEdgesMax = nNodesPerCell * nCells
@@ -101,7 +107,6 @@ function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Integer,2}}
     end
 
     return edgeNodes, edgeCells, cellNeighbors
-
 end
 
 
