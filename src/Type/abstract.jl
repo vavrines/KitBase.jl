@@ -13,6 +13,7 @@ abstract type AbstractControlVolume end
 abstract type AbstractInterface end
 abstract type AbstractControlVolume1D <: AbstractControlVolume end
 abstract type AbstractControlVolume2D <: AbstractControlVolume end
+abstract type AbstractUnstructControlVolume <: AbstractControlVolume end
 abstract type AbstractInterface1D <: AbstractInterface end
 abstract type AbstractInterface2D <: AbstractInterface end
 

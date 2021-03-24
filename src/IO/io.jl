@@ -4,6 +4,7 @@
 
 export read_dict,
        write_jld,
+       write_vtk,
        plot_line,
        plot_contour
 
@@ -101,6 +102,22 @@ function write_jld(
 
     save(fileOut, Dict("set" => KS, "ctr" => ctr, "t" => t))
 
+end
+
+
+"""
+    write_vtk(points, cells, cdata, pdata = zeros(axes(points, 1)))
+
+Write data into VTK
+"""
+function write_vtk(points::T, cells, cdata, pdata = zeros(axes(points, 1))) where {T<:AbstractMatrix}
+    mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, cells[i, :]) for i in axes(cells, 1)]
+    vtkfile = vtk_grid("sol", permutedims(points), mcells)
+    vtkfile["cell_data", VTKCellData()] = cdata
+    vtkfile["point_data", VTKPointData()] = pdata
+    outfiles = vtk_save(vtkfile)
+
+    return nothing
 end
 
 

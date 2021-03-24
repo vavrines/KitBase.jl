@@ -1093,7 +1093,8 @@ end
 # ------------------------------------------------------------
 
 """
-    mutable struct ControlVolumeUS{F,A,B,C} <: AbstractControlVolume
+    mutable struct ControlVolumeUS{E,F,A,B,C} <: AbstractUnstructControlVolume
+        n::E
         x::F
         dx::F
 
@@ -1105,7 +1106,8 @@ end
 Unstructured control volume with no distribution function
 
 """
-mutable struct ControlVolumeUS{F,A,B,C} <: AbstractControlVolume
+mutable struct ControlVolumeUS{E,F,A,B,C} <: AbstractUnstructControlVolume
+    n::E
     x::F
     dx::F
 
@@ -1114,7 +1116,8 @@ mutable struct ControlVolumeUS{F,A,B,C} <: AbstractControlVolume
     sw::C
 end
 
-function ControlVolumeUS(X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractVector}}
+function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractVector}}
+    n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -1122,12 +1125,13 @@ function ControlVolumeUS(X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractVect
     prim = deepcopy(PRIM)
     sw = zeros(eltype(W), axes(W)..., axes(X)...)
 
-    return ControlVolumeUS{typeof(x),typeof(w),typeof(prim),typeof(sw)}(x, dx, w, prim, sw)
+    return ControlVolumeUS{typeof(n),typeof(x),typeof(w),typeof(prim),typeof(sw)}(n, x, dx, w, prim, sw)
 end
 
 
 """
-    mutable struct ControlVolumeUS1F{F,A,B,C,D} <: AbstractControlVolume
+    mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+        n::E
         x::F
         dx::F
 
@@ -1142,7 +1146,8 @@ end
 Unstructured control volume with 1 distribution function
 
 """
-mutable struct ControlVolumeUS1F{F,A,B,C,D} <: AbstractControlVolume
+mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+    n::E
     x::F
     dx::F
 
@@ -1155,12 +1160,14 @@ mutable struct ControlVolumeUS1F{F,A,B,C,D} <: AbstractControlVolume
 end
 
 function ControlVolumeUS1F(
+    N,
     X,
     DX,
-    W::T1,
-    PRIM::T1,
-    F::T2,
-) where {T1<:AbstractArray,T2<:AbstractArray}
+    W,
+    PRIM,
+    F::T,
+) where {T<:AbstractArray}
+    n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -1171,13 +1178,14 @@ function ControlVolumeUS1F(
     f = deepcopy(F)
     sf = zeros(eltype(F), axes(F)..., axes(X)...)
 
-    return ControlVolumeUS1F{typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(x, dx, w, prim, sw, f, sf)
+    return ControlVolumeUS1F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(n, x, dx, w, prim, sw, f, sf)
 end
 
 
 
 """
-    mutable struct ControlVolumeUS2F{F,A,B,C,D} <: AbstractControlVolume
+    mutable struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+        n::E
         x::F
         dx::F
 
@@ -1194,7 +1202,8 @@ end
 Unstructured control volume with 2 distribution functions
 
 """
-mutable struct ControlVolumeUS2F{F,A,B,C,D} <: AbstractControlVolume
+mutable struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+    n::E
     x::F
     dx::F
 
@@ -1209,6 +1218,7 @@ mutable struct ControlVolumeUS2F{F,A,B,C,D} <: AbstractControlVolume
 end
 
 function ControlVolumeUS2F(
+    N,
     X,
     DX,
     W::T1,
@@ -1216,6 +1226,7 @@ function ControlVolumeUS2F(
     H::T2,
     B::T2,
 ) where {T1<:AbstractArray,T2<:AbstractArray}
+    n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -1228,7 +1239,8 @@ function ControlVolumeUS2F(
     sh = zeros(eltype(H), axes(H)..., axes(X)...)
     sb = zeros(eltype(B), axes(B)..., axes(X)...)
 
-    return ControlVolumeUS2F{typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
+    return ControlVolumeUS2F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
+        n,
         x,
         dx,
         w,

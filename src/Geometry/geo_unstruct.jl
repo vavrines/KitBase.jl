@@ -1,21 +1,33 @@
 """
-    struct UnstructMesh{A,B} <: AbstractPhysicalSpace
-        nodes::A # locations of vertex points
-        cells::B # node indices of elements
+    struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K} <: AbstractPhysicalSpace
+        cells::A # all information: cell, line, vertex
+        points::B # locations of vertex points
+        cellid::C # node indices of elements
+        cellType::D # inner/boundary cell
+        cellNeighbors::E # neighboring cells id
+        cellEdges::F # cell edges id
+        cellCenter::G # cell center location
+        cellArea::H # cell size
+        edgePoints::I # ids of two points at edge
+        edgeCells::J # ids of two cells around edge
+        edgeCenter::K # edge center location
     end
 
 Physical space with unstructured mesh
 
 """
-struct UnstructMesh{A,B,C,D,E,F,G,H} <: AbstractPhysicalSpace
-    nodes::A # locations of vertex points
-    cells::B # node indices of elements
-    cellNeighbors::C
-    cellArea::D
-    cellCenter::E
-    edgeNodes::F
-    edgeCells::G
-    edgeCenter::H
+struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K} <: AbstractPhysicalSpace
+    cells::A # all information: cell, line, vertex
+    points::B # locations of vertex points
+    cellid::C # node indices of elements
+    cellType::D # inner/boundary cell
+    cellNeighbors::E # neighboring cells id
+    cellEdges::F # cell edges id
+    cellCenter::G # cell center location
+    cellArea::H # cell size
+    edgePoints::I # ids of two points at edge
+    edgeCells::J # ids of two cells around edge
+    edgeCenter::K # edge center location
 end
 
 
@@ -24,27 +36,32 @@ end
 
 Read mesh file
 
-* @return nodes : are saved with 3D coordinates (z=0 for 2D case)
-* @return cells : node ids inside cells
+* @return cells: node ids inside cells
+* @return points: are saved with 3D coordinates (z=0 for 2D case)
 
 """
 function read_mesh(file::T) where {T<:AbstractString}
     meshio = pyimport("meshio")
     m0 = meshio.read(file)
-    nodes = m0.points
-    cells = m0.cells[end][2] .+ 1 # python data is zero-indexed
 
-    return nodes, cells
+    return m0.cells, m0.points
+end
+
+function extract_cell(cells::T) where {T<:AbstractVector}
+    for i in eachindex(cells)
+        if !(cells[i][1] in ["line", "vertex"])
+            return cells[i][2] .+ 1 # python data is zero-indexed
+        end
+    end
 end
 
 
 """
-    mesh_connectivity_2D(cells::AbstractArray{<:Integer,2})
+    mesh_connectivity_2D(_cells::AbstractArray{<:Integer,2})
 
 Compute connectivity of 2D unstructured mesh
 """
 function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Integer,2}}
-
     nNodesPerCell = size(cells, 2)
     nCells = size(cells, 1)
     nEdgesMax = nNodesPerCell * nCells
@@ -90,7 +107,25 @@ function mesh_connectivity_2D(cells::T) where {T<:AbstractArray{<:Integer,2}}
     end
 
     return edgeNodes, edgeCells, cellNeighbors
+end
 
+
+"""
+    mesh_cell_type(cellNeighbors::T) where {T<:AbstractArray{<:Integer,2}}
+
+Compute types of elements
+- 0: inner
+- 1: boundary
+"""
+function mesh_cell_type(cellNeighbors::T) where {T<:AbstractArray{<:Integer,2}}
+    cellid = zeros(eltype(cellNeighbors), size(cellNeighbors, 1))
+    for i in axes(cellNeighbors, 1)
+        if -1 in cellNeighbors[i, :]
+            cellid[i] = 1
+        end
+    end
+
+    return cellid
 end
 
 
@@ -200,4 +235,30 @@ function mesh_edge_center(
 
     return edgeCenter
 
+end
+
+
+"""
+    mesh_edge_center(nodes::AbstractArray{<:AbstractFloat,2}, edgeNodes::AbstractArray{<:Integer,2})
+
+Compute central points of cell edges
+"""
+function mesh_cell_edge(cells::X, edgeCells::Y) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,2}}
+    ncell = size(cells, 1)
+    vv = [Int[] for i in 1:ncell]
+    for i in axes(edgeCells, 1)
+        if edgeCells[i, 1] != -1
+            push!(vv[edgeCells[i, 1]], i)
+        end
+        if edgeCells[i, 2] != -1
+            push!(vv[edgeCells[i, 2]], i)
+        end
+    end
+
+    cellEdges = zero(cells)
+    for i in axes(cellEdges, 1)
+        cellEdges[i, :] .= vv[i]
+    end
+
+    return cellEdges
 end

@@ -199,9 +199,9 @@ KitBase.ControlVolume2D3F(
     rand(8, 8),
 ) |> show
 # unstructured
-KitBase.ControlVolumeUS(x, dx, w, prim)
-KitBase.ControlVolumeUS1F(x, dx, w, prim, h)
-KitBase.ControlVolumeUS2F(x, dx, w, prim, h, b)
+KitBase.ControlVolumeUS([1, 0], x, dx, w, prim)
+KitBase.ControlVolumeUS1F([1,0], x, dx, w, prim, h)
+KitBase.ControlVolumeUS2F([1,0], x, dx, w, prim, h, b)
 
 #--- interface ---#
 KitBase.Interface1D(w) |> show
