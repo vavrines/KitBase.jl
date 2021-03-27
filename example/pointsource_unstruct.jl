@@ -1,4 +1,4 @@
-using LinearAlgebra, WriteVTK, ProgressMeter
+using LinearAlgebra, ProgressMeter
 import KitBase
 
 function KitBase.write_vtk(ps, ctr)
@@ -13,23 +13,18 @@ begin
     cd(@__DIR__)
 
     # time
-    tspan = (0.0, 1.0)
-    cfl = 0.8
+    tspan = (0.0, 0.2)
+    cfl = 0.7
 
     # quadrature
     quadratureorder = 6
     points, triangulation = KitBase.octa_quadrature(quadratureorder)
     weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
-
-    vs = KitBase.UnstructVSpace(-1.0, 1.0, nq, points, ones(nq) .* 2 / nq)
-
-    # IC
-    s2 = 0.03^2
-    init_field(x, y) = max(1e-4, 1.0 / (4.0 * π * s2) * exp(-(x^2 + y^2) / 4.0 / s2))
+    vs = KitBase.UnstructVSpace(-1.0, 1.0, nq, points, weights)
 
     # geometry
-    cells, points = KitBase.read_mesh("../assets/mesh/linesource.su2")
+    cells, points = KitBase.read_mesh("../assets/mesh/pointsource.su2")
     cellid = KitBase.extract_cell(cells)
     edgePoints, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cellid)
     cellType = KitBase.mesh_cell_type(cellNeighbors)
@@ -37,7 +32,6 @@ begin
     cellCenter = KitBase.mesh_center_2D(points, cellid)
     edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
     cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
-
     ps = KitBase.UnstructPSpace(cells, points, cellid, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgePoints, edgeCells, edgeCenter)
 
     # particle
@@ -57,8 +51,13 @@ for i in eachindex(ctr)
         end
     end
 
-    phi = zeros(nq)
-    phi .= init_field(ps.cellCenter[i, 1], ps.cellCenter[i, 2]) / 4.0 / π
+    phi = ones(nq) .* 1e-4
+    if 0.49 <= ps.cellCenter[i, 1] <= 0.51 && 0.49 <= ps.cellCenter[i, 2] <= 0.51
+        phi .= 10.0
+    end
+    #s2 = 0.03^2
+    #phi .= max(1e-4, 1.0 / (4.0 * π * s2) * exp(-((ps.cellCenter[i, 1]-0.5)^2 + (ps.cellCenter[i, 2]-0.5)^2) / 4.0 / s2))
+
     w = sum(weights .* phi)
     dx = [
         KitBase.point_distance(cellCenter[i, :], ps.points[ps.cellid[i, 1], :], ps.points[ps.cellid[i, 2], :]),
@@ -102,25 +101,53 @@ for i in eachindex(face)
     )
 end
 
-dt = 1.2 / 400 * 0.2
-
-@showprogress for iter = 1:100
-    for i in eachindex(face)
+dt = 1.0 / 200 * cfl
+nt = tspan[2] ÷ dt |> Int
+@showprogress for iter = 1:20#nt
+    @inbounds Threads.@threads for i in eachindex(face)
         velo = vs.u[:, 1] .* face[i].n[1] + vs.u[:, 2] .* face[i].n[2]
         if !(-1 in ps.edgeCells[i, :])
             KitBase.flux_kfvs!(face[i].ff, ctr[ps.edgeCells[i, 1]].f, ctr[ps.edgeCells[i, 2]].f, velo, dt)
         end
     end
 
-    for i in eachindex(ctr)
+    @inbounds Threads.@threads for i in eachindex(ctr)
         if ps.cellType[i] == 0
             for j in 1:3
                 dirc = sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n))
                 @. ctr[i].f -= dirc * face[ps.cellEdges[i, j]].ff * face[ps.cellEdges[i, j]].len / ps.cellArea[i]
             end
+
+            #integral = KitBase.discrete_moments(ctr[i].f, vs.weights)
+            #integral /= 4.0 * π
+            #@. ctr[i].f += (integral - ctr[i].f) * dt
+            
             ctr[i].w = sum(ctr[i].f .* vs.weights)
         end
     end
 end
 
 KitBase.write_vtk(ps, ctr)
+
+
+@inbounds Threads.@threads for i in eachindex(face)
+    velo = vs.u[:, 1] .* face[i].n[1] + vs.u[:, 2] .* face[i].n[2]
+    if !(-1 in ps.edgeCells[i, :])
+        KitBase.flux_kfvs!(face[i].ff, ctr[ps.edgeCells[i, 1]].f, ctr[ps.edgeCells[i, 2]].f, velo, dt)
+    end
+end
+
+@inbounds Threads.@threads for i in eachindex(ctr)
+    if ps.cellType[i] == 0
+        for j in 1:3
+            dirc = sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n))
+            @. ctr[i].f -= dirc * face[ps.cellEdges[i, j]].ff * face[ps.cellEdges[i, j]].len / ps.cellArea[i]
+        end
+
+        #integral = KitBase.discrete_moments(ctr[i].f, vs.weights)
+        #integral /= 4.0 * π
+        #@. ctr[i].f += (integral - ctr[i].f) * dt
+        
+        ctr[i].w = sum(ctr[i].f .* vs.weights)
+    end
+end
