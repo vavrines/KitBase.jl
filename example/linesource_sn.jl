@@ -1,4 +1,4 @@
-using ProgressMeter, KitBase
+using ProgressMeter, KitBase, Plots
 
 begin
     # space
@@ -39,7 +39,7 @@ for j = 1:nx
         y = y0 + (i - 0.5) * dy
         x = x0 + (j - 0.5) * dx
         for q = 1:nq
-            phi[q, i, j] = init_field(x, y) / 4.0 / π
+            phi[q, i, j] = init_field(x, y) * 4π
 
             #if -0.01 <= pspace.x[i, j] <= 0.01 && -0.01 <= pspace.y[i, j] <= 0.01
             #    phi[q, i, j] = 1.0
@@ -85,5 +85,4 @@ for i = 1:nx, j = 1:ny
     ρ[i, j] = discrete_moments(phi[:, i, j], weights)
 end
 
-using Plots
-contourf(pspace.x[1:nx, 1], pspace.y[1, 1:ny], ρ[:, :], color=:PiYG_3)
+contourf(pspace.x[1:nx, 1], pspace.y[1, 1:ny], ρ', color=:PiYG_3)
