@@ -24,9 +24,10 @@ end
 
 begin
     # quadrature
-    quadratureorder = 8
-    points, triangulation = KitBase.octa_quadrature(quadratureorder)
-    weights = KitBase.quadrature_weights(points, triangulation)
+    quadratureorder = 10
+    points, weights = KitBase.legendre_quadrature(quadratureorder)
+    #points, triangulation = KitBase.octa_quadrature(quadratureorder)
+    #weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
     vs = KitBase.UnstructVSpace(-1.0, 1.0, nq, points, weights)
 
@@ -40,7 +41,7 @@ begin
     SigmaT = SigmaS + SigmaA
 
     # time
-    tspan = (0.0, 0.24)
+    tspan = (0.0, 0.3)
     cfl = 0.7
 end
 
@@ -56,7 +57,7 @@ for i in eachindex(ctr)
     end
 
     phi = zeros(nq)
-    phi .= init_field(ps.cellCenter[i, 1], ps.cellCenter[i, 2]) / 4.0 / π
+    phi .= init_field(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
     #phi = ones(nq) .* 1e-4
     #if -0.01 <= ps.cellCenter[i, 1] <= 0.01 && -0.01 <= ps.cellCenter[i, 2] <= 0.01
     #    phi .= 1.0

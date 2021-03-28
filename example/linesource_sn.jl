@@ -6,8 +6,8 @@ begin
     x1 = 1.5
     y0 = -1.5
     y1 = 1.5
-    nx = 50#100
-    ny = 50#100
+    nx = 100
+    ny = 100
     dx = (x1 - x0) / nx
     dy = (y1 - y0) / ny
 
@@ -18,14 +18,15 @@ begin
     cfl = 0.95
 
     # quadrature
-    quadratureorder = 6
+    quadratureorder = 8
+    #points, weights = legendre_quadrature(quadratureorder)
     points, triangulation = octa_quadrature(quadratureorder)
     weights = quadrature_weights(points, triangulation)
     nq = size(points, 1)
 
     # particle
-    SigmaS = 1 * ones(ny + 4, nx + 4)
-    SigmaA = 0 * ones(ny + 4, nx + 4)
+    SigmaS = 1 .* ones(ny, nx)
+    SigmaA = 0 .* ones(ny, nx)
     SigmaT = SigmaS + SigmaA
 end
 
@@ -39,7 +40,7 @@ for j = 1:nx
         y = y0 + (i - 0.5) * dy
         x = x0 + (j - 0.5) * dx
         for q = 1:nq
-            phi[q, i, j] = init_field(x, y) * 4π
+            phi[q, i, j] = init_field(x, y)
 
             #if -0.01 <= pspace.x[i, j] <= 0.01 && -0.01 <= pspace.y[i, j] <= 0.01
             #    phi[q, i, j] = 1.0
