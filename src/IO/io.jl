@@ -66,11 +66,12 @@ function read_dict(filename::T) where {T<:AbstractString}
         if length(line) == 0 || line[1] == '#'
             continue
         end
+        println(line)
 
         var, val = split(line, "=")
         stripped = strip(var)
         stripped = Symbol(stripped)
-        println(line)
+        val = split(val, "#")[1]
 
         tmp = tryparse(Float64, val)
         if isa(tmp, Nothing)

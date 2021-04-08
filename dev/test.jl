@@ -22,3 +22,6 @@ f = KitBase.chapman_enskog(u, primL, a, A, τ)
 
 sum(M)
 sum(f)
+
+cd(@__DIR__)
+set, ctr, face, t = KitBase.initialize("config.toml")

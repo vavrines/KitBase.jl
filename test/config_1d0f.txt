@@ -3,17 +3,17 @@
 # ------------------------------------------------------------
 
 # setup
-matter = gas
-case = sod
-space = 1d0f0v
-flux = gks
-collision = bgk
-nSpecies = 1
-interpOrder = 2
-limiter = vanleer
-boundary = fix
-cfl = 0.95
-maxTime = 0.0001
+matter = gas # matter
+case = sod # case
+space = 1d0f0v # phase
+flux = gks # flux function
+collision = bgk # intermolecular collision
+nSpecies = 1 # number of species
+interpOrder = 2 # interpolation order of accuracy
+limiter = vanleer # limiter function
+boundary = fix # boundary condition
+cfl = 0.95 # CFL number
+maxTime = 0.0001 # maximal simulation time
 
 # phase space
 x0 = -35.0
