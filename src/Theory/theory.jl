@@ -45,7 +45,8 @@ export gauss_moments,
        boltzmann_fft,
        boltzmann_fft!,
        boltzmann_ode!,
-       bgk_ode!
+       bgk_ode!,
+       chapman_enskog
 export heat_capacity_ratio,
        sound_speed
 export sample_maxwell,
@@ -53,7 +54,13 @@ export sample_maxwell,
        boundary_time
 
 include("theory_continuum.jl")
+include("theory_plasma.jl")
+include("theory_maxwellian.jl")
+include("theory_shakhov.jl")
+include("theory_diatomic.jl")
 include("theory_atom.jl")
+include("theory_pdf.jl")
+include("theory_fsm.jl")
 include("theory_moments_pure.jl")
 include("theory_moments_mixture.jl")
 include("theory_thermo.jl")
