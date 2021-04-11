@@ -17,7 +17,7 @@ import Pkg
 
 @info "installing meshio"
 #cmd = `pip3 install meshio --user`
-cmd = `./usr/bin/pip3 install meshio --user`
+cmd = `./usr/bin/pip install meshio --user`
 run(cmd)
 
 meshio = pyimport("meshio")
