@@ -1,4 +1,5 @@
-using PyCall, Conda, Pkg
+using PyCall, Conda
+import Pkg
 
 # try importing meshio
 # catch the installation
