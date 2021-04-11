@@ -7,8 +7,6 @@ using PyCall, Conda
 
 cmd = `pip3 install meshio --user`
 run(cmd)
-
-#Conda.add_channel("conda-forge")
-#Conda.add("meshio")
-
+Conda.add_channel("conda-forge")
+Conda.add("meshio")
 meshio = pyimport("meshio")
