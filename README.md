@@ -1,13 +1,12 @@
 # KitBase.jl
 
 [![version](https://juliahub.com/docs/KitBase/version.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS)
-[![pkgeval](https://juliahub.com/docs/KitBase/pkgeval.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS)
 ![CI](https://github.com/vavrines/KitBase.jl/workflows/CI/badge.svg)
 [![](https://img.shields.io/badge/docs-stable-green.svg)](https://xiaotianbai.com/Kinetic.jl/stable/)
 [![](https://img.shields.io/badge/docs-dev-green.svg)](https://xiaotianbai.com/Kinetic.jl/dev/)
 [![codecov](https://codecov.io/gh/vavrines/KitBase.jl/branch/main/graph/badge.svg?token=vGgQhyGJ6L)](https://codecov.io/gh/vavrines/KitBase.jl)
 [![deps](https://juliahub.com/docs/KitBase/deps.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS?t=2)
-[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/vavrines/KitBase.jl/v0.4.0.svg?style=social&logo=github)](https://github.com/vavrines/KitBase.jl)
+[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/vavrines/KitBase.jl/v0.4.3.svg?style=social&logo=github)](https://github.com/vavrines/KitBase.jl)
 
 **KitBase.jl** serves as a lightweight module of physical formulations in [Kinetic.jl](https://github.com/vavrines/Kinetic.jl) ecosystem.
 The package is interested in theoretical and numerical studies of many-particle systems of gases, photons, plasmas, neutrons, etc.
