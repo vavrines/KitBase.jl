@@ -1,12 +1,15 @@
-using PyCall, Conda
+using PyCall, Conda, Pkg
 
 # try importing meshio
 # catch the installation
 # 1) Julia built-in miniconda
 # 2) global pip installer
 
-Conda.add_channel("conda-forge")
-Conda.add("meshio")
+ENV["PYTHON"] = "/usr/bin/python3"
+Pkg.build("PyCall")
+
+#Conda.add_channel("conda-forge")
+#Conda.add("meshio")
 #Conda.pip_interop(true)
 #Conda.pip("install", "meshio")
 
