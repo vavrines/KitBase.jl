@@ -9,5 +9,6 @@ cmd = `pip3 install meshio --user`
 run(cmd)
 Conda.add_channel("conda-forge")
 #Conda.add("meshio")
+Conda.pip_interop(true)
 Conda.pip("install", "meshio")
 meshio = pyimport("meshio")
