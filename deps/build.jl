@@ -6,18 +6,18 @@ import Pkg
 # 1) Julia built-in miniconda
 # 2) global pip installer
 
-#ENV["PYTHON"] = "/usr/bin/python3"
+ENV["PYTHON"] = "/usr/bin/python"
 #ENV["PYTHON"] = "~/.julia/conda/3/bin/python"
-#Pkg.build("PyCall")
+Pkg.build("PyCall")
 
-#Conda.add_channel("conda-forge")
-#Conda.add("meshio")
+Conda.add_channel("conda-forge")
+Conda.add("meshio")
 #Conda.pip_interop(true)
 #Conda.pip("install", "meshio")
 
 @info "installing meshio"
-#cmd = `pip3 install meshio --user`
-cmd = `./usr/bin/pip install meshio --user`
+cmd = `pip install meshio --user`
+#cmd = `./usr/bin/pip install meshio --user`
 run(cmd)
 
 meshio = pyimport("meshio")
