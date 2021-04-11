@@ -27,7 +27,7 @@ WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 
 [compat]
 CSV = "0.8"
-CUDA = "^2, 3.0"
+CUDA = "^2, ^3"
 Conda = "^1"
 Distributions = "0.21, 0.22, 0.23, 0.24"
 FFTW = "^1"
