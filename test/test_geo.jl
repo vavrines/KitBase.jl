@@ -48,7 +48,7 @@ cellArea = KitBase.mesh_area_2D(nodes, cellid)
 cellCenter = KitBase.mesh_center_2D(nodes, cellid)
 edgeCenter = KitBase.mesh_edge_center(nodes, edgeNodes)
 cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
-KitBase.UnstructPSpace(cells, nodes, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgeNodes, edgeCells, edgeCenter)
+KitBase.UnstructPSpace(cellid, nodes, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgeNodes, edgeCells, edgeCenter)
 KitBase.write_vtk(nodes, cellid, randn(size(cellid, 1)))
 
 cells, nodes = KitBase.read_mesh("square.msh")
