@@ -1,31 +1,34 @@
 """
-    struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
+    struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K,L} <: AbstractPhysicalSpace
         cells::A # all information: cell, line, vertex
         points::B # locations of vertex points
-        cellType::C # inner/boundary cell
-        cellNeighbors::D # neighboring cells id
-        cellEdges::E # cell edges id
-        cellCenter::F # cell center location
-        cellArea::G # cell size
-        edgePoints::H # ids of two points at edge
-        edgeCells::I # ids of two cells around edge
-        edgeCenter::J # edge center location
+        cellid::C # node indices of elements
+        cellType::D # inner/boundary cell
+        cellNeighbors::E # neighboring cells id
+        cellEdges::F # cell edges id
+        cellCenter::G # cell center location
+        cellArea::H # cell size
+        edgePoints::I # ids of two points at edge
+        edgeCells::J # ids of two cells around edge
+        edgeCenter::K # edge center location
+        edgeType::L
     end
 
 Physical space with unstructured mesh
-
 """
-struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
+struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K,L} <: AbstractPhysicalSpace
     cells::A # all information: cell, line, vertex
     points::B # locations of vertex points
-    cellType::C # inner/boundary cell
-    cellNeighbors::D # neighboring cells id
-    cellEdges::E # cell edges id
-    cellCenter::F # cell center location
-    cellArea::G # cell size
-    edgePoints::H # ids of two points at edge
-    edgeCells::I # ids of two cells around edge
-    edgeCenter::J # edge center location
+    cellid::C # node indices of elements
+    cellType::D # inner/boundary cell
+    cellNeighbors::E # neighboring cells id
+    cellEdges::F # cell edges id
+    cellCenter::G # cell center location
+    cellArea::H # cell size
+    edgePoints::I # ids of two points at edge
+    edgeCells::J # ids of two cells around edge
+    edgeCenter::K # edge center location
+    edgeType::L
 end
 
 
@@ -45,14 +48,26 @@ function read_mesh(file::T) where {T<:AbstractString}
     def read(file):
         m0 = meshio.read(file)
         points = m0.points
-        celllist = m0.cells
-        for cell in celllist:
-            if not(cell[0] in ["line", "vertex"]):
-                cells = cell[1] + 1
+        cells = m0.cells
+
         return cells, points
     """
 
-    return py"read"(file)
+    cells, points = py"read"(file) 
+    for cell in cells
+        cell[2] .+= 1 # python index is zero-based
+    end
+
+    return cells, points
+end
+
+
+function extract_cell(cells::T) where {T<:AbstractVector}
+    for i in eachindex(cells)
+        if !(cells[i][1] in ["line", "vertex"])
+            return cells[i][2]
+        end
+    end
 end
 
 
@@ -261,4 +276,27 @@ function mesh_cell_edge(cells::X, edgeCells::Y) where {X<:AbstractArray{<:Intege
     end
 
     return cellEdges
+end
+
+
+"""
+Compute type of edges
+
+- 0: inner
+- 1: boundary
+"""
+function mesh_edge_type(edgeCells::X, cellType::Y) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,1}}
+    edgeType = zeros(eltype(edgeCells), size(edgeCells, 1))
+
+    for i in axes(edgeCells, 1)
+        i1 = edgeCells[i, 1]
+        i2 = edgeCells[i, 2]
+        if cellType[i1] != 0 || cellType[i2] !=0
+            edgeType[i] = 0
+        else
+            edgeType[i] = 1
+        end
+    end
+
+    return edgeType
 end
