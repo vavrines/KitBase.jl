@@ -1,33 +1,31 @@
 """
-    struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K} <: AbstractPhysicalSpace
+    struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
         cells::A # all information: cell, line, vertex
         points::B # locations of vertex points
-        cellid::C # node indices of elements
-        cellType::D # inner/boundary cell
-        cellNeighbors::E # neighboring cells id
-        cellEdges::F # cell edges id
-        cellCenter::G # cell center location
-        cellArea::H # cell size
-        edgePoints::I # ids of two points at edge
-        edgeCells::J # ids of two cells around edge
-        edgeCenter::K # edge center location
+        cellType::C # inner/boundary cell
+        cellNeighbors::D # neighboring cells id
+        cellEdges::E # cell edges id
+        cellCenter::F # cell center location
+        cellArea::G # cell size
+        edgePoints::H # ids of two points at edge
+        edgeCells::I # ids of two cells around edge
+        edgeCenter::J # edge center location
     end
 
 Physical space with unstructured mesh
 
 """
-struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K} <: AbstractPhysicalSpace
+struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J} <: AbstractPhysicalSpace
     cells::A # all information: cell, line, vertex
     points::B # locations of vertex points
-    cellid::C # node indices of elements
-    cellType::D # inner/boundary cell
-    cellNeighbors::E # neighboring cells id
-    cellEdges::F # cell edges id
-    cellCenter::G # cell center location
-    cellArea::H # cell size
-    edgePoints::I # ids of two points at edge
-    edgeCells::J # ids of two cells around edge
-    edgeCenter::K # edge center location
+    cellType::C # inner/boundary cell
+    cellNeighbors::D # neighboring cells id
+    cellEdges::E # cell edges id
+    cellCenter::F # cell center location
+    cellArea::G # cell size
+    edgePoints::H # ids of two points at edge
+    edgeCells::I # ids of two cells around edge
+    edgeCenter::J # edge center location
 end
 
 
@@ -42,17 +40,25 @@ Read mesh file
 """
 function read_mesh(file::T) where {T<:AbstractString}
     meshio = pyimport("meshio")
+
+    py"""
+    import meshio
+
+    def read(file):
+        m0 = meshio.read(file)
+
+        points = m0.points
+        celllist = m0.cells
+        for cell in celllist:
+            if not(cell[0] in ["line", "vertex"]):
+                cells = cell[1] + 1
+
+        return cells, points
+    """
+
     m0 = meshio.read(file)
 
-    return m0.cells, m0.points
-end
-
-function extract_cell(cells::T) where {T<:AbstractVector}
-    for i in eachindex(cells)
-        if !(cells[i][1] in ["line", "vertex"])
-            return cells[i][2] .+ 1 # python data is zero-indexed
-        end
-    end
+    return py"read"(file)
 end
 
 
