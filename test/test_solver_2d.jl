@@ -14,6 +14,7 @@ KitBase.evolve!(ks, ctr, a1face, a2face, dt; mode = :kcu, bc = :maxwell)
 KitBase.plot_contour(ks, ctr)
 
 #--- unstructured mesh ---#
+using LinearAlgebra
 D = KitBase.read_dict("t1.txt")
 set = KitBase.set_setup(D)
 ps = KitBase.set_geometry(D)
