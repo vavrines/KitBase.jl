@@ -31,6 +31,20 @@ struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K,L} <: AbstractPhysicalSpace
     edgeType::L
 end
 
+function UnstructPSpace(file::T) where {T<:AbstractString}
+    cells, points = KitBase.read_mesh(file)
+    cellid = KitBase.extract_cell(cells)
+    edgePoints, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cellid)
+    cellType = KitBase.mesh_cell_type(cellNeighbors)
+    cellArea = KitBase.mesh_area_2D(points, cellid)
+    cellCenter = KitBase.mesh_center_2D(points, cellid)
+    edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
+    cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
+    edgeType = KitBase.mesh_edge_type(edgeCells, cellType)
+    
+    return UnstructPSpace(cells, points, cellid, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgePoints, edgeCells, edgeCenter, edgeType)
+end
+
 
 """
 Cell connectivity information
@@ -243,10 +257,10 @@ function mesh_center_2D(
     cells::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Integer,2}}
 
-    cellMidPoints = zeros(size(cells, 1), 2)
+    cellMidPoints = zeros(size(cells, 1), size(nodes, 2))
     for i in axes(cellMidPoints, 1) # nCells
         for j in axes(cells, 2) # nNodesPerCell
-            cellMidPoints[i, :] .+= nodes[cells[i, j], 1:2]
+            cellMidPoints[i, :] .+= nodes[cells[i, j], :]
         end
     end
     cellMidPoints ./= size(cells, 2)
@@ -316,7 +330,7 @@ function mesh_edge_type(edgeCells::X, cellType::Y) where {X<:AbstractArray{<:Int
     for i in axes(edgeCells, 1)
         i1 = edgeCells[i, 1]
         i2 = edgeCells[i, 2]
-        if cellType[i1] != 0 || cellType[i2] !=0
+        if cellType[i1] == 0 && cellType[i2] ==0
             edgeType[i] = 0
         else
             edgeType[i] = 1

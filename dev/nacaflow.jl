@@ -23,12 +23,13 @@ end=#
 begin
     cd(@__DIR__)
     cells, points = KitBase.read_mesh("../assets/mesh/naca0012.su2")
-    edgePoints, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cells)
+    cellid = KitBase.extract_cell(cells)
+    edgePoints, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cellid)
     cellType = KitBase.mesh_cell_type(cellNeighbors)
-    cellArea = KitBase.mesh_area_2D(points, cells)
-    cellCenter = KitBase.mesh_center_2D(points, cells)
+    cellArea = KitBase.mesh_area_2D(points, cellid)
+    cellCenter = KitBase.mesh_center_2D(points, cellid)
     edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
-    cellEdges = KitBase.mesh_cell_edge(cells, edgeCells)
+    cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
 
     for i in eachindex(cellType)
         if cellType[i] == 1 && -0.5 < cellCenter[i, 2] < 0.5
@@ -36,7 +37,7 @@ begin
         end
     end
 
-    ps = KitBase.UnstructPSpace(cells, points, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgePoints, edgeCells, edgeCenter)
+    ps = KitBase.UnstructPSpace(cells, points, cellid, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgePoints, edgeCells, edgeCenter)
 end
 
 set = KitBase.Setup(

@@ -4,7 +4,8 @@
 
 export AbstractSolverSet
 export AbstractSetup, AbstractProperty, AbstractCondition
-export AbstractVelocitySpace, AbstractPhysicalSpace
+export AbstractPhysicalSpace, AbstractPhysicalSpace1D, AbstractPhysicalSpace2D
+export AbstractVelocitySpace, AbstractVelocitySpace1D, AbstractVelocitySpace2D
 export AbstractControlVolume, AbstractControlVolume1D, AbstractControlVolume2D
 export AbstractUnstructControlVolume
 export AbstractInterface, AbstractInterface1D, AbstractInterface2D

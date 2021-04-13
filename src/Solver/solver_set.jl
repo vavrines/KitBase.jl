@@ -232,13 +232,17 @@ function set_geometry(dict::T) where {T<:AbstractDict}
         @eval $s = $(dict[key])
     end
 
-    Dx = parse(Int, space[1])
-    if Dx == 1
-        pSpace = PSpace1D(x0, x1, nx, nxg)
-    elseif Dx == 2
-        pSpace = PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
+    if @isdefined mesh
+        pSpace = UnstructPSpace(mesh)
     else
-        throw("No preset available for 3D simulation, please set it up manually.")
+        Dx = parse(Int, space[1])
+        if Dx == 1
+            pSpace = PSpace1D(x0, x1, nx, nxg)
+        elseif Dx == 2
+            pSpace = PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
+        else
+            throw("No preset available for 3D simulation, please set it up manually.")
+        end
     end
 
     return pSpace
