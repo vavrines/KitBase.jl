@@ -10,7 +10,7 @@
 1D physical space with structured mesh
 
 """
-struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace
+struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace1D
     x0::TR
     x1::TR
     nx::TI
@@ -53,7 +53,7 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 2D Physical space with structured mesh
 
 """
-struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractPhysicalSpace
+struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractPhysicalSpace2D
     x0::TR
     x1::TR
     nx::TI
