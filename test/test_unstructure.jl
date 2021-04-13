@@ -1,4 +1,5 @@
 using LinearAlgebra
+cd(@__DIR__)
 D = KitBase.read_dict("t1.txt")
 set = KitBase.set_setup(D)
 ps = KitBase.set_geometry(D)
