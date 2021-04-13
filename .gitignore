@@ -1,4 +1,5 @@
 Manifest.toml
 dev/ctr.jld2
+dev/sol.vtu
 .vscode/*
 .vscode

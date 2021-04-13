@@ -343,6 +343,81 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
     return ctr, a1face, a2face
 end
 
+function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
+    if KS.set.space[3:4] == "2f"
+
+        ctr = Array{KitBase.ControlVolumeUS2F}(undef, size(ps.cellid, 1))
+        for i in eachindex(ctr)
+            n = Vector{Float64}[]
+            for j = 1:3
+                push!(n, KitBase.unit_normal(ps.points[ps.edgePoints[ps.cellEdges[i, j], 1], :], ps.points[ps.edgePoints[ps.cellEdges[i, j], 2], :]))
+
+                if dot(ps.edgeCenter[ps.cellEdges[i, j], 1:2] .- ps.cellCenter[i, 1:2], n[j]) < 0
+                    n[j] .= -n[j]
+                end
+            end
+
+            dx = [
+                KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 1], :], ps.points[ps.cellid[i, 2], :]),
+                KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 2], :], ps.points[ps.cellid[i, 3], :]),
+                KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 3], :], ps.points[ps.cellid[i, 1], :]),
+            ]
+
+            if ps.cellCenter[i, 1] <= minimum(ps.cellCenter[:, 1]) + (maximum(ps.cellCenter[:, 1]) - minimum(ps.cellCenter[:, 1])) / 2
+                ctr[i] = KitBase.ControlVolumeUS2F(
+                    n,
+                    ps.cellCenter[i, :],
+                    dx,
+                    KS.ib.wL,
+                    KS.ib.primL,
+                    KS.ib.hL,
+                    KS.ib.bL,
+                )
+            else
+                ctr[i] = KitBase.ControlVolumeUS2F(
+                    n,
+                    ps.cellCenter[i, :],
+                    dx,
+                    KS.ib.wR,
+                    KS.ib.primR,
+                    KS.ib.hR,
+                    KS.ib.bR,
+                )
+            end
+        end
+
+        face = Array{KitBase.Interface2D2F}(undef, size(ps.edgePoints, 1))
+        for i in eachindex(face)
+            len = norm(ps.points[ps.edgePoints[i, 1], :] .- ps.points[ps.edgePoints[i, 2], :])
+            n = KitBase.unit_normal(ps.points[ps.edgePoints[i, 1], :], ps.points[ps.edgePoints[i, 2], :])
+            
+            if !(-1 in ps.edgeCells[i, :])
+                n0 = ps.cellCenter[ps.edgeCells[i, 2], :] .- ps.cellCenter[ps.edgeCells[i, 1], :]
+            else
+                idx = ifelse(ps.edgeCells[i, 1] != -1, ps.edgeCells[i, 1], ps.edgeCells[i, 2])
+                n0 = ps.cellCenter[idx, :] .- ps.edgeCenter[i, :]
+            end
+            if dot(n, n0[1:2]) < 0
+                n .= -n
+            end
+            
+            fw = zero(KS.ib.wL)
+            fh = zero(KS.ib.hL)
+
+            face[i] = KitBase.Interface2D2F(
+                len,
+                n[1],
+                n[2],
+                fw,
+                fh,
+            )
+        end
+
+    end
+
+    return ctr, face
+end
+
 
 """
     init_ptc!(

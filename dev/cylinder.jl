@@ -27,6 +27,11 @@ for i in eachindex(ps.edgeType)
         end
     end
 end
+for i in eachindex(ps.cellType)
+    if ps.cellType[i] == 1 && ps.cellCenter[i, 1] > 0.0
+        ps.cellType[i] = 3
+    end
+end
 
 vs = KitBase.set_velocity(D)
 gas = KitBase.set_property(D)
@@ -46,67 +51,203 @@ begin
         hL,
         bL,
         primL,
-        wR,
-        primR,
-        hR,
-        bR,
+        wL,
+        primL,
+        hL,
+        bL,
         primR,
     )
 end
 
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
 
-ctr = Array{KitBase.ControlVolumeUS2F}(undef, size(ps.cellid, 1))
-for i in eachindex(ctr)
-    n = Vector{Float64}[]
-    for j = 1:3
-        push!(n, KitBase.unit_normal(ps.points[ps.edgePoints[ps.cellEdges[i, j], 1], :], ps.points[ps.edgePoints[ps.cellEdges[i, j], 2], :]))
+ctr, face = KitBase.init_fvm(ks, ks.pSpace)
 
-        if dot(ps.edgeCenter[ps.cellEdges[i, j], 1:2] .- ps.cellCenter[i, 1:2], n[j]) < 0
-            n[j] .= -n[j]
+dt = KitBase.timestep(ks, ctr, 0.0)
+nt = ks.set.maxTime ÷ dt |> Int
+#=
+@showprogress for iter = 1:2000#nt
+    @inbounds Threads.@threads for i in eachindex(face)
+        vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
+        vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
+        
+        if !(-1 in ps.edgeCells[i, :])
+            KitBase.flux_kfvs!(
+                face[i].fw,
+                face[i].fh,
+                face[i].fb,
+                ctr[ps.edgeCells[i, 1]].h,
+                ctr[ps.edgeCells[i, 1]].b,
+                ctr[ps.edgeCells[i, 2]].h,
+                ctr[ps.edgeCells[i, 2]].b,
+                vn,
+                vt,
+                ks.vSpace.weights,
+                dt,
+                face[i].len,
+            )
+            face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+        else
+            idx = ifelse(ps.edgeCells[i, 1] != -1, 1, 2)
+
+            if ps.cellType[ps.edgeCells[i, idx]] == 2
+                bc = KitBase.local_frame(ks.ib.primR, face[i].n[1], face[i].n[2])
+
+                KitBase.flux_boundary_maxwell!(
+                    face[i].fw,
+                    face[i].fh,
+                    face[i].fb,
+                    bc,
+                    ctr[ps.edgeCells[i, idx]].h,
+                    ctr[ps.edgeCells[i, idx]].b,
+                    vn,
+                    vt,
+                    ks.vSpace.weights,
+                    ks.gas.K,
+                    dt,
+                    face[i].len,
+                )
+            
+                face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+            end
         end
     end
 
-    dx = [
-        KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 1], :], ps.points[ps.cellid[i, 2], :]),
-        KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 2], :], ps.points[ps.cellid[i, 3], :]),
-        KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 3], :], ps.points[ps.cellid[i, 1], :]),
-    ]
+    @inbounds Threads.@threads for i in eachindex(ctr)
+        if ps.cellType[i] in (0, 2)
+            MH = KitBase.maxwellian(vs.u, vs.v, ctr[i].prim)
+            MB = MH .* ks.gas.K ./ (2.0 * ctr[i].prim[end])
+            τ = KitBase.vhs_collision_time(ctr[i].prim, ks.gas.μᵣ, ks.gas.ω)
 
-    ctr[i] = KitBase.ControlVolumeUS2F(
-        n,
-        ps.cellCenter[i, :],
-        dx,
-        wL,
-        primL,
-        hL,
-        bL,
-    )
+            for j in 1:3
+                dirc = sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n))
+                @. ctr[i].w -= dirc * face[ps.cellEdges[i, j]].fw / ps.cellArea[i]
+                @. ctr[i].h -= dirc * face[ps.cellEdges[i, j]].fh / ps.cellArea[i]
+                @. ctr[i].b -= dirc * face[ps.cellEdges[i, j]].fb / ps.cellArea[i]
+            end
+            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
+
+            @. ctr[i].h += (MH - ctr[i].h) * dt / τ
+            @. ctr[i].b += (MB - ctr[i].b) * dt / τ
+            #=for q in axes(vs.v, 2), p in axes(vs.u, 1)
+                ctr[i].h[p, q] = (ctr[i].h[p, q] - (face[ps.cellEdges[i, 1]].fh[p, q] + face[ps.cellEdges[i, 2]].fh[p, q] + face[ps.cellEdges[i, 3]].fh[p, q]) / ps.cellArea[i] + 
+                    dt / τ * MH[p, q]) / (1.0 + dt / τ)
+                ctr[i].b[p, q] = (ctr[i].b[p, q] - (face[ps.cellEdges[i, 1]].fb[p, q] + face[ps.cellEdges[i, 2]].fb[p, q] + face[ps.cellEdges[i, 3]].fb[p, q]) / ps.cellArea[i] + 
+                    dt / τ * MB[p, q]) / (1.0 + dt / τ)
+            end=#
+        end
+    end
+
+    for i in eachindex(ps.cellType)
+        if ps.cellType[i] == 3
+            ids = ps.cellNeighbors[i, :]
+            deleteat!(ids, findall(x->x==-1, ids))
+            id1, id2 = ids
+            ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
+            ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)
+            ctr[i].b .= 0.5 .* (ctr[id1].b .+ ctr[id2].b)
+            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
+        end
+    end
+end
+=#
+
+@showprogress for iter = 1:nt
+    @inbounds Threads.@threads for i in eachindex(face)
+        vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
+        vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
+        
+        if !(-1 in ps.edgeCells[i, :])
+            KitBase.flux_kfvs!(
+                face[i].fw,
+                face[i].fh,
+                face[i].fb,
+                ctr[ps.edgeCells[i, 1]].h,
+                ctr[ps.edgeCells[i, 1]].b,
+                ctr[ps.edgeCells[i, 2]].h,
+                ctr[ps.edgeCells[i, 2]].b,
+                vn,
+                vt,
+                ks.vSpace.weights,
+                dt,
+                face[i].len,
+            )
+            face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+        else
+            idx = ifelse(ps.edgeCells[i, 1] != -1, 1, 2)
+
+            if ps.cellType[ps.edgeCells[i, idx]] == 2
+                bc = KitBase.local_frame(ks.ib.primR, face[i].n[1], face[i].n[2])
+
+                KitBase.flux_boundary_maxwell!(
+                    face[i].fw,
+                    face[i].fh,
+                    face[i].fb,
+                    bc,
+                    ctr[ps.edgeCells[i, idx]].h,
+                    ctr[ps.edgeCells[i, idx]].b,
+                    vn,
+                    vt,
+                    ks.vSpace.weights,
+                    ks.gas.K,
+                    dt,
+                    face[i].len,
+                )
+            
+                face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+            end
+        end
+    end
+
+    sumres = zeros(4)
+    sumavg = zeros(4)
+    @inbounds Threads.@threads for i in eachindex(ctr)
+        if ps.cellType[i] in (0, 2)
+            dirc = [sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n)) for j = 1:3]
+
+            KitBase.step!(
+                ctr[i].w,
+                ctr[i].prim,
+                ctr[i].h,
+                ctr[i].b,
+                face[ps.cellEdges[i, 1]].fw,
+                face[ps.cellEdges[i, 1]].fh,
+                face[ps.cellEdges[i, 1]].fb,
+                face[ps.cellEdges[i, 2]].fw,
+                face[ps.cellEdges[i, 2]].fh,
+                face[ps.cellEdges[i, 2]].fb,
+                face[ps.cellEdges[i, 3]].fw,
+                face[ps.cellEdges[i, 3]].fh,
+                face[ps.cellEdges[i, 3]].fb,
+                ks.vSpace.u,
+                ks.vSpace.v,
+                ks.vSpace.weights,
+                ks.gas.K,
+                ks.gas.γ,
+                ks.gas.μᵣ,
+                ks.gas.ω,
+                ks.gas.Pr,
+                ks.pSpace.cellArea[i],
+                dirc,
+                dt,
+                sumres,
+                sumavg,
+                :bgk,
+            )
+        end
+    end
+
+    for i in eachindex(ps.cellType)
+        if ps.cellType[i] == 3
+            ids = ps.cellNeighbors[i, :]
+            deleteat!(ids, findall(x->x==-1, ids))
+            id1, id2 = ids
+            ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
+            ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)
+            ctr[i].b .= 0.5 .* (ctr[id1].b .+ ctr[id2].b)
+            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
+        end
+    end
 end
 
-face = Array{KitBase.Interface2D2F}(undef, size(ps.edgePoints, 1))
-for i in eachindex(face)
-    len = norm(ps.points[ps.edgePoints[i, 1], :] .- ps.points[ps.edgePoints[i, 2], :])
-    n = KitBase.unit_normal(ps.points[ps.edgePoints[i, 1], :], ps.points[ps.edgePoints[i, 2], :])
-    
-    if !(-1 in ps.edgeCells[i, :])
-        n0 = ps.cellCenter[ps.edgeCells[i, 2], :] .- ps.cellCenter[ps.edgeCells[i, 1], :]
-    else
-        idx = ifelse(ps.edgeCells[i, 1] != -1, ps.edgeCells[i, 1], ps.edgeCells[i, 2])
-        n0 = ps.cellCenter[idx, :] .- ps.edgeCenter[i, :]
-    end
-    if dot(n, n0[1:2]) < 0
-        n .= -n
-    end
-    
-    fw = zero(ks.ib.wL)
-    fh = zero(ks.ib.hL)
-
-    face[i] = KitBase.Interface2D2F(
-        len,
-        n[1],
-        n[2],
-        fw,
-        fh,
-    )
-end
+KitBase.write_vtk(ks, ctr)
