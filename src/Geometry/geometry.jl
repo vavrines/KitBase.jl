@@ -13,6 +13,7 @@ export uniform_mesh,
        meshgrid,
        find_idx
 export UnstructPSpace,
+       Cells,
        read_mesh,
        extract_cell,
        mesh_connectivity_2D,

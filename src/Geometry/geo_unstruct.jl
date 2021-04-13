@@ -33,6 +33,15 @@ end
 
 
 """
+Cell connectivity information
+"""
+struct Cells{T1,T2}
+    type::T1
+    index::T2
+end
+
+
+"""
     read_mesh(file::T) where {T<:AbstractString}
 
 Read mesh file
@@ -50,13 +59,21 @@ function read_mesh(file::T) where {T<:AbstractString}
         points = m0.points
         cells = m0.cells
 
-        return cells, points
+        keys = []
+        vals = []
+        for cell in cells:
+            keys.append(cell[0])
+            vals.append(cell[1])
+
+        return points, keys, vals
     """
 
-    cells, points = py"read"(file) 
-    for cell in cells
-        cell[2] .+= 1 # python index is zero-based
+    points, keys, vals = py"read"(file) 
+    for val in vals
+        val .+= 1 # python index is zero-based
     end
+
+    cells = Cells(keys, vals)
 
     return cells, points
 end
@@ -66,6 +83,14 @@ function extract_cell(cells::T) where {T<:AbstractVector}
     for i in eachindex(cells)
         if !(cells[i][1] in ["line", "vertex"])
             return cells[i][2]
+        end
+    end
+end
+
+function extract_cell(cells::Cells)
+    for i in eachindex(cells.type)
+        if !(cells.type[i] in ["line", "vertex"])
+            return cells.index[i]
         end
     end
 end
