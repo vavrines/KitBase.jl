@@ -1,37 +1,26 @@
-using LinearAlgebra, ProgressMeter, JLD2, WriteVTK, PyCall
+using LinearAlgebra, ProgressMeter, JLD2
 import KitBase
-#=function KitBase.write_vtk(ps::KitBase.AbstractPhysicalSpace, ctr)
-    mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, ps.cells[i, :]) for i in axes(ps.cells, 1)]
-    vtkfile = vtk_grid("sol", permutedims(ps.points), mcells)
-    
-    cdata = zeros(length(ctr), 4)
-    for i in eachindex(ctr)
-        cdata[i, :] .= ctr[i].prim
-    end
-
-    vtkfile["Density", VTKCellData()] = cdata[:, 1]
-    vtkfile["U", VTKCellData()] = cdata[:, 2]
-    vtkfile["V", VTKCellData()] = cdata[:, 3]
-    vtkfile["Temperature", VTKCellData()] = 1.0 ./ cdata[:, 4]
-
-    outfiles = vtk_save(vtkfile)
-
-    return nothing
-end=#
 
 cd(@__DIR__)
-#@load "ctr.jld2" ctr
-D = KitBase.read_dict("nacaflow.txt")
+D = KitBase.read_dict("naca_coarse.txt")
 set = KitBase.set_setup(D)
 
 ps = KitBase.set_geometry(D)
 for i in eachindex(ps.cellType)
-    if ps.cellType[i] == 1 && -1.0 < ps.cellCenter[i, 1] < 1.0
+    if ps.cellType[i] == 1 && -0.5 < ps.cellCenter[i, 1] < 1.5 && -0.1 < ps.cellCenter[i, 2] < 0.1
         ps.cellType[i] = 2
 
         for j = 1:3
             if ps.edgeType[ps.cellEdges[i, j]] == 1
                 ps.edgeType[ps.cellEdges[i, j]] = 2
+            end
+        end
+    elseif ps.cellType[i] == 1 && ps.cellCenter[i, 1] > 0.5
+        ps.cellType[i] = 3
+
+        for j = 1:3
+            if ps.edgeType[ps.cellEdges[i, j]] == 1
+                ps.edgeType[ps.cellEdges[i, j]] = 3
             end
         end
     end
@@ -42,6 +31,7 @@ gas = KitBase.set_property(D)
 
 begin
     primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, KitBase.sound_speed(1.0, gas.γ) * gas.Ma * 0.0875, 1.0]
+    #primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, 0.0, 1.0]
     wL = KitBase.prim_conserve(primL, gas.γ)
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
     bL = @. hL * gas.K / 2 / primL[end]
@@ -66,10 +56,11 @@ end
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
 
 ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+#@load "ctr.jld2" ctr
 
 dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
-
+res = zeros(4)
 @showprogress for iter = 1:nt
     @inbounds Threads.@threads for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
@@ -154,12 +145,26 @@ nt = ks.set.maxTime ÷ dt |> Int
             )
         end
     end
+    
+    for i in eachindex(ps.cellType)
+        if ps.cellType[i] == 3
+            ids = ps.cellNeighbors[i, :]
+            deleteat!(ids, findall(x->x==-1, ids))
+            id1, id2 = ids
+            ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
+            ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)
+            ctr[i].b .= 0.5 .* (ctr[id1].b .+ ctr[id2].b)
+            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
+        end
+    end
 
+    res = sqrt.(length(ctr) .* sumres) ./ (sumavg .+ 1e-6)
     if iter % 1000 == 0
+        @show res
         @save "ctr.jld2" ctr
         KitBase.write_vtk(ks, ctr)
     end
 end
 
-#KitBase.write_vtk(ks, ctr)
-#@save "ctr.jld2" ctr
+KitBase.write_vtk(ks, ctr)
+@save "ctr.jld2" ctr

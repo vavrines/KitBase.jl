@@ -12,7 +12,7 @@ cfl = 0.5 # CFL number
 maxTime = 5.0 # maximal simulation time
 
 # physical space
-mesh = ../assets/mesh/naca0012.su2
+mesh = ../assets/mesh/naca_coarse.msh
 
 # velocity space
 umin = -6.0 # starting point in u
@@ -26,8 +26,8 @@ nug = 0 # number of ghost cell in u
 nvg = 0 # number of ghost cell in v
 
 # gas property
-knudsen = 0.075 # Knudsen number
-mach = 0.8 # Mach number
+knudsen = 0.0001 # Knudsen number
+mach = 0.82 # Mach number
 prandtl = 1.0 # Prandtl number
 inK = 1.0 # molecular inner degree of freedom
 omega = 0.81 # viscosity index of hard-sphere gas
