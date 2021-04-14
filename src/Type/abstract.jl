@@ -3,7 +3,13 @@
 # ============================================================
 
 abstract type AbstractPhysicalSpace end
+abstract type AbstractPhysicalSpace1D <: AbstractPhysicalSpace end
+abstract type AbstractPhysicalSpace2D <: AbstractPhysicalSpace end
+abstract type AbstractPhysicalSpace3D <: AbstractPhysicalSpace end
 abstract type AbstractVelocitySpace end
+abstract type AbstractVelocitySpace1D <: AbstractVelocitySpace end
+abstract type AbstractVelocitySpace2D <: AbstractVelocitySpace end
+abstract type AbstractVelocitySpace3D <: AbstractVelocitySpace end
 abstract type AbstractSetup end
 abstract type AbstractProperty end
 abstract type AbstractCondition end

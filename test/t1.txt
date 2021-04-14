@@ -1,0 +1,35 @@
+# setup
+matter = gas
+case = cavity # case
+space = 2d2f2v # phase
+flux = kfvs # flux function
+collision = bgk # intermolecular collision
+nSpecies = 1 # number of species
+interpOrder = 1 # interpolation order of accuracy
+limiter = vanleer # limiter function
+boundary = maxwell # boundary condition
+cfl = 0.8 # CFL number
+maxTime = 0.001 # maximal simulation time
+
+# physical space
+mesh = t1.msh
+
+# velocity space
+umin = -5.0 # starting point in u
+umax = 5.0 # ending point in u
+nu = 16 # number of cells in u
+vmin = -5.0 # starting point in v
+vmax = 5.0 # ending point in v
+nv = 16 # number of cells in v
+vMeshType = rectangle # mesh type
+nug = 0 # number of ghost cell in u
+nvg = 0 # number of ghost cell in v
+
+# gas property
+knudsen = 0.075 # Knudsen number
+mach = 0.0 # Mach number
+prandtl = 1.0 # Prandtl number
+inK = 1.0 # molecular inner degree of freedom
+omega = 0.72 # viscosity index of hard-sphere gas
+alphaRef = 1.0 # viscosity index of hard-sphere gas in reference state
+omegaRef = 0.5 # viscosity index of hard-sphere gas ub reference state

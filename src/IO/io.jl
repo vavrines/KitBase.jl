@@ -114,9 +114,33 @@ Write data into VTK
 function write_vtk(points::T, cells, cdata, pdata = zeros(axes(points, 1))) where {T<:AbstractMatrix}
     mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, cells[i, :]) for i in axes(cells, 1)]
     vtkfile = vtk_grid("sol", permutedims(points), mcells)
-    vtkfile["cell_data", VTKCellData()] = cdata
-    vtkfile["point_data", VTKPointData()] = pdata
+    
+    len = size(cdata, 2)
+    cname = Array{String}(undef, len)
+    for i in eachindex(cname)
+        cname[i] = "c" * string(i)
+        vtkfile[cname[i], VTKCellData()] = cdata[:, i]
+    end
+    
+    len = size(pdata, 2)
+    pname = Array{String}(undef, len)
+    for i in eachindex(pname)
+        pname[i] = "p" * string(i)
+        vtkfile[pname[i], VTKPointData()] = pdata[:, i]
+    end
+
     outfiles = vtk_save(vtkfile)
+
+    return nothing
+end
+
+function write_vtk(ks::T1, ctr) where {T1<:AbstractSolverSet}
+    cdata = zeros(length(ctr), length(ctr[1].w))
+    for i in eachindex(ctr)
+        cdata[i, :] .= ctr[i].prim
+        cdata[i, end] = 1.0 / cdata[i, end]
+    end
+    KitBase.write_vtk(ks.pSpace.points, ks.pSpace.cellid, cdata)
 
     return nothing
 end

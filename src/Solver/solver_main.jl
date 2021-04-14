@@ -241,3 +241,34 @@ function timestep(
     return dt
 
 end
+
+function timestep(
+    KS::X,
+    ctr::Y,
+    simTime,
+) where {X<:AbstractSolverSet,Y<:AbstractVector{<:AbstractUnstructControlVolume}}
+
+    tmax = 0.0
+
+    if KS.set.nSpecies == 1
+
+        @inbounds Threads.@threads for i in eachindex(ctr)
+            prim = ctr[i].prim
+            sos = sound_speed(prim, KS.gas.γ)
+            umax = KS.vSpace.u1 + sos
+            vmax = KS.vSpace.v1 + sos
+            pd = abs.([dot([umax, vmax], ctr[i].n[j]) for j in eachindex(ctr[i].n)]) ./ ctr[i].dx
+            #tmax = max(tmax, maximum(pd))
+            tmax = max(tmax, sqrt(umax^2 + vmax^2) / minimum(ctr[i].dx))
+        end
+
+    elseif KS.set.nSpecies == 2
+
+    end
+
+    dt = KS.set.cfl / tmax
+    dt = ifelse(dt < (KS.set.maxTime - simTime), dt, KS.set.maxTime - simTime)
+
+    return dt
+
+end
