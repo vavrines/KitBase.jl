@@ -362,7 +362,23 @@ end
 
 
 """
-    
+    function chapman_enskog(
+        u::AbstractVector{T1},
+        prim::AbstractVector{T2},
+        a::AbstractVector{T3},
+        A::AbstractVector{T3},
+        τ::Real,
+    ) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
+
+    function chapman_enskog(
+        u::AbstractMatrix{T1},
+        v::AbstractMatrix{T1},
+        prim::AbstractVector{T2},
+        a::AbstractVector{T3},
+        b::AbstractVector{T3},
+        A::AbstractVector{T3},
+        τ::Real,
+    ) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
 
 Recover discrete Chapman-Enskog expansion
 """
@@ -375,6 +391,25 @@ function chapman_enskog(
 ) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
     M = maxwellian(u, prim)
     f = @. M * (1 - τ * (a[1] * u + a[2] * u^2 + 0.5 * a[3] * u^3 + A[1] + A[2] * u + 0.5 * A[3] * u^2))
+
+    return f
+end
+
+function chapman_enskog(
+    u::AbstractMatrix{T1},
+    v::AbstractMatrix{T1},
+    prim::AbstractVector{T2},
+    a::AbstractVector{T3},
+    b::AbstractVector{T3},
+    A::AbstractVector{T3},
+    τ::Real,
+) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
+    M = maxwellian(u, v, prim)
+    f = @. M * (1.0 - 
+        τ * (a[1] * u + a[2] * u^2 + a[3] * u * v + 0.5 * a[4] * u * (u^2 + v^2)) -
+        τ * (b[1] * v + b[2] * u * v + b[3] * v^2 + 0.5 * b[4] * v * (u^2 + v^2)) -
+        τ * (A[1] + A[2] * u + A[3] * v + 0.5 * A[4] * (u^2 + v^2))
+    )
 
     return f
 end
