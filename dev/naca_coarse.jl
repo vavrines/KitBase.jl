@@ -28,9 +28,20 @@ end
 
 vs = KitBase.set_velocity(D)
 gas = KitBase.set_property(D)
+c0 = KitBase.sound_speed(1.0, gas.γ) * gas.Ma
+α0 = π / 180 * 7.0
+
+uq = [-0.9491079123427586,
+-0.7415311855993946,
+-0.40584515137739735,
+2.788418582445668e-17,
+0.4058451513773973,
+0.7415311855993946,
+0.9491079123427586] * π / 180 * 3.0
+α = α0 + uq[1]
 
 begin
-    primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, KitBase.sound_speed(1.0, gas.γ) * gas.Ma * 0.0875, 1.0]
+    primL = [1.0, c0 * cos(α), c0 * sin(α), 1.0]
     #primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, 0.0, 1.0]
     wL = KitBase.prim_conserve(primL, gas.γ)
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
@@ -168,3 +179,7 @@ end
 
 KitBase.write_vtk(ks, ctr)
 @save "ctr.jld2" ctr
+
+# pressure
+(0.5 * ctr[3002].prim[1] / ctr[3002].prim[4] - 0.5 * ks.ib.primL[1] / ks.ib.primL[end])
+0.5 * (ks.ib.primL[2]^2 + ks.ib.primL[3]^2)

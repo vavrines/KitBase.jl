@@ -9,7 +9,7 @@ interpOrder = 1 # interpolation order of accuracy
 limiter = vanleer # limiter function
 boundary = maxwell # boundary condition
 cfl = 0.5 # CFL number
-maxTime = 5.0 # maximal simulation time
+maxTime = 50.0 # maximal simulation time
 
 # physical space
 mesh = ../assets/mesh/naca_coarse.msh
