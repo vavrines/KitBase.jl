@@ -1,6 +1,6 @@
 using LinearAlgebra
 cd(@__DIR__)
-D = KitBase.read_dict("t1.txt")
+D = KitBase.read_dict("t1_2f.txt")
 set = KitBase.set_setup(D)
 ps = KitBase.set_geometry(D)
 vs = KitBase.set_velocity(D)
@@ -17,6 +17,8 @@ ctr, face = KitBase.init_fvm(ks, ks.pSpace)
 dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
 for iter = 1:nt
+    KitBase.reconstruct!(ks, ctr)
+
     @inbounds for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
@@ -114,3 +116,21 @@ for iter = 1:nt
     end
 end
 KitBase.write_vtk(ks, ctr)
+
+D = KitBase.read_dict("t1_1f.txt")
+set = KitBase.set_setup(D)
+begin
+    primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, 0.0, 1.0]
+    wL = KitBase.prim_conserve(primL, gas.γ)
+    hL = KitBase.maxwellian(vs.u, vs.v, primL)
+    ib = KitBase.IB1F(wL, primL, hL, primL, wL, primL, hL, primL)
+end
+ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
+ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+KitBase.reconstruct!(ks, ctr)
+
+D = KitBase.read_dict("t1_0f.txt")
+set = KitBase.set_setup(D)
+ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
+ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+KitBase.reconstruct!(ks, ctr)

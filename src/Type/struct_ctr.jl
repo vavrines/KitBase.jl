@@ -1128,7 +1128,7 @@ function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractV
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), axes(W)..., axes(X)...)
+    sw = zeros(eltype(W), axes(W)..., length(N[1]))
 
     return ControlVolumeUS{typeof(n),typeof(x),typeof(w),typeof(prim),typeof(sw)}(
         n,
@@ -1178,10 +1178,10 @@ function ControlVolumeUS1F(N, X, DX, W, PRIM, F::T) where {T<:AbstractArray}
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), axes(W)..., axes(X)...)
+    sw = zeros(eltype(W), axes(W)..., length(N[1]))
 
     f = deepcopy(F)
-    sf = zeros(eltype(F), axes(F)..., axes(X)...)
+    sf = zeros(eltype(F), axes(F)..., length(N[1]))
 
     return ControlVolumeUS1F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(
         n,
@@ -1246,12 +1246,12 @@ function ControlVolumeUS2F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), axes(W)..., axes(X)...)
+    sw = zeros(eltype(W), axes(W)..., length(N[1]))
 
     h = deepcopy(H)
     b = deepcopy(B)
-    sh = zeros(eltype(H), axes(H)..., axes(X)...)
-    sb = zeros(eltype(B), axes(B)..., axes(X)...)
+    sh = zeros(eltype(H), axes(H)..., length(N[1]))
+    sb = zeros(eltype(B), axes(B)..., length(N[1]))
 
     return ControlVolumeUS2F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
         n,
