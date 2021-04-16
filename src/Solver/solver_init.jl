@@ -18,7 +18,7 @@ function initialize(configfilename::T) where {T<:AbstractString}
     println("")
     @info "initializing solver"
     println("")
-    
+
     if configfilename[end-3:end] == "jld2"
         D = load(configfilename)
         ks = D["set"]
@@ -49,7 +49,7 @@ function initialize(config::T) where {T<:AbstractDict}
     println("")
     @info "initializing solver"
     println("")
-    
+
     ks = SolverSet(config)
 
     if ks.set.space[1:2] == "1d"
@@ -76,19 +76,11 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
 
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
-                ctr[i] = ControlVolume1D(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
-                    KS.ib.wL,
-                    KS.ib.primL,
-                )
+                ctr[i] =
+                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], KS.ib.wL, KS.ib.primL)
             else
-                ctr[i] = ControlVolume1D(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
-                    KS.ib.wR,
-                    KS.ib.primR,
-                )
+                ctr[i] =
+                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], KS.ib.wR, KS.ib.primR)
             end
         end
 
@@ -278,15 +270,19 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
 
         for j = 1:KS.pSpace.ny
             for i = 1:KS.pSpace.nx
-                a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
+                a1face[i, j] =
+                    Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
             end
-            a1face[KS.pSpace.nx+1, j] = Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
+            a1face[KS.pSpace.nx+1, j] =
+                Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
         end
         for i = 1:KS.pSpace.nx
             for j = 1:KS.pSpace.ny
-                a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
+                a2face[i, j] =
+                    Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
             end
-            a2face[i, KS.pSpace.ny+1] = Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
+            a2face[i, KS.pSpace.ny+1] =
+                Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
         end
 
     elseif KS.set.space[3:4] == "2f"
@@ -327,15 +323,19 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
 
         for j = 1:KS.pSpace.ny
             for i = 1:KS.pSpace.nx
-                a1face[i, j] = Interface2D2F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                a1face[i, j] =
+                    Interface2D2F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
             end
-            a1face[KS.pSpace.nx+1, j] = Interface2D2F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+            a1face[KS.pSpace.nx+1, j] =
+                Interface2D2F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
         end
         for i = 1:KS.pSpace.nx
             for j = 1:KS.pSpace.ny
-                a2face[i, j] = Interface2D2F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                a2face[i, j] =
+                    Interface2D2F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
             end
-            a2face[i, KS.pSpace.ny+1] = Interface2D2F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+            a2face[i, KS.pSpace.ny+1] =
+                Interface2D2F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
         end
 
     end
@@ -344,26 +344,228 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
 end
 
 function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
-    if KS.set.space[3:4] == "2f"
-
-        ctr = Array{KitBase.ControlVolumeUS2F}(undef, size(ps.cellid, 1))
+    if KS.set.space[3:4] == "0f"
+        
+        ctr = Array{KitBase.ControlVolumeUS}(undef, size(ps.cellid, 1))
         for i in eachindex(ctr)
             n = Vector{Float64}[]
             for j = 1:3
-                push!(n, KitBase.unit_normal(ps.points[ps.edgePoints[ps.cellEdges[i, j], 1], :], ps.points[ps.edgePoints[ps.cellEdges[i, j], 2], :]))
+                push!(
+                    n,
+                    KitBase.unit_normal(
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
+                    ),
+                )
 
-                if dot(ps.edgeCenter[ps.cellEdges[i, j], 1:2] .- ps.cellCenter[i, 1:2], n[j]) < 0
+                if dot(
+                    ps.faceCenter[ps.cellFaces[i, j], 1:2] .- ps.cellCenter[i, 1:2],
+                    n[j],
+                ) < 0
                     n[j] .= -n[j]
                 end
             end
 
             dx = [
-                KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 1], :], ps.points[ps.cellid[i, 2], :]),
-                KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 2], :], ps.points[ps.cellid[i, 3], :]),
-                KitBase.point_distance(ps.cellCenter[i, :], ps.points[ps.cellid[i, 3], :], ps.points[ps.cellid[i, 1], :]),
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 1], :],
+                    ps.points[ps.cellid[i, 2], :],
+                ),
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 2], :],
+                    ps.points[ps.cellid[i, 3], :],
+                ),
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 3], :],
+                    ps.points[ps.cellid[i, 1], :],
+                ),
             ]
 
-            if ps.cellCenter[i, 1] <= minimum(ps.cellCenter[:, 1]) + (maximum(ps.cellCenter[:, 1]) - minimum(ps.cellCenter[:, 1])) / 2
+            if ps.cellCenter[i, 1] <=
+               minimum(ps.cellCenter[:, 1]) +
+               (maximum(ps.cellCenter[:, 1]) - minimum(ps.cellCenter[:, 1])) / 2
+                ctr[i] = KitBase.ControlVolumeUS(
+                    n,
+                    ps.cellCenter[i, :],
+                    dx,
+                    KS.ib.wL,
+                    KS.ib.primL,
+                )
+            else
+                ctr[i] = KitBase.ControlVolumeUS(
+                    n,
+                    ps.cellCenter[i, :],
+                    dx,
+                    KS.ib.wR,
+                    KS.ib.primR,
+                )
+            end
+        end
+
+        face = Array{KitBase.Interface2D}(undef, size(ps.facePoints, 1))
+        for i in eachindex(face)
+            len =
+                norm(ps.points[ps.facePoints[i, 1], :] .- ps.points[ps.facePoints[i, 2], :])
+            n = KitBase.unit_normal(
+                ps.points[ps.facePoints[i, 1], :],
+                ps.points[ps.facePoints[i, 2], :],
+            )
+
+            if !(-1 in ps.faceCells[i, :])
+                n0 =
+                    ps.cellCenter[ps.faceCells[i, 2], :] .-
+                    ps.cellCenter[ps.faceCells[i, 1], :]
+            else
+                idx =
+                    ifelse(ps.faceCells[i, 1] != -1, ps.faceCells[i, 1], ps.faceCells[i, 2])
+                n0 = ps.cellCenter[idx, :] .- ps.faceCenter[i, :]
+            end
+            if dot(n, n0[1:2]) < 0
+                n .= -n
+            end
+
+            fw = zero(KS.ib.wL)
+
+            face[i] = KitBase.Interface2D(len, n[1], n[2], fw)
+        end
+    
+    elseif KS.set.space[3:4] == "1f"
+    
+        ctr = Array{KitBase.ControlVolumeUS1F}(undef, size(ps.cellid, 1))
+        for i in eachindex(ctr)
+            n = Vector{Float64}[]
+            for j = 1:3
+                push!(
+                    n,
+                    KitBase.unit_normal(
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
+                    ),
+                )
+
+                if dot(
+                    ps.faceCenter[ps.cellFaces[i, j], 1:2] .- ps.cellCenter[i, 1:2],
+                    n[j],
+                ) < 0
+                    n[j] .= -n[j]
+                end
+            end
+
+            dx = [
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 1], :],
+                    ps.points[ps.cellid[i, 2], :],
+                ),
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 2], :],
+                    ps.points[ps.cellid[i, 3], :],
+                ),
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 3], :],
+                    ps.points[ps.cellid[i, 1], :],
+                ),
+            ]
+
+            if ps.cellCenter[i, 1] <=
+               minimum(ps.cellCenter[:, 1]) +
+               (maximum(ps.cellCenter[:, 1]) - minimum(ps.cellCenter[:, 1])) / 2
+                ctr[i] = KitBase.ControlVolumeUS1F(
+                    n,
+                    ps.cellCenter[i, :],
+                    dx,
+                    KS.ib.wL,
+                    KS.ib.primL,
+                    KS.ib.fL,
+                )
+            else
+                ctr[i] = KitBase.ControlVolumeUS1F(
+                    n,
+                    ps.cellCenter[i, :],
+                    dx,
+                    KS.ib.wR,
+                    KS.ib.primR,
+                    KS.ib.fR,
+                )
+            end
+        end
+
+        face = Array{KitBase.Interface2D1F}(undef, size(ps.facePoints, 1))
+        for i in eachindex(face)
+            len =
+                norm(ps.points[ps.facePoints[i, 1], :] .- ps.points[ps.facePoints[i, 2], :])
+            n = KitBase.unit_normal(
+                ps.points[ps.facePoints[i, 1], :],
+                ps.points[ps.facePoints[i, 2], :],
+            )
+
+            if !(-1 in ps.faceCells[i, :])
+                n0 =
+                    ps.cellCenter[ps.faceCells[i, 2], :] .-
+                    ps.cellCenter[ps.faceCells[i, 1], :]
+            else
+                idx =
+                    ifelse(ps.faceCells[i, 1] != -1, ps.faceCells[i, 1], ps.faceCells[i, 2])
+                n0 = ps.cellCenter[idx, :] .- ps.faceCenter[i, :]
+            end
+            if dot(n, n0[1:2]) < 0
+                n .= -n
+            end
+
+            fw = zero(KS.ib.wL)
+            ff = zero(KS.ib.fL)
+
+            face[i] = KitBase.Interface2D1F(len, n[1], n[2], fw, ff)
+        end
+    
+    elseif KS.set.space[3:4] == "2f"
+
+        ctr = Array{KitBase.ControlVolumeUS2F}(undef, size(ps.cellid, 1))
+        for i in eachindex(ctr)
+            n = Vector{Float64}[]
+            for j = 1:3
+                push!(
+                    n,
+                    KitBase.unit_normal(
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
+                    ),
+                )
+
+                if dot(
+                    ps.faceCenter[ps.cellFaces[i, j], 1:2] .- ps.cellCenter[i, 1:2],
+                    n[j],
+                ) < 0
+                    n[j] .= -n[j]
+                end
+            end
+
+            dx = [
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 1], :],
+                    ps.points[ps.cellid[i, 2], :],
+                ),
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 2], :],
+                    ps.points[ps.cellid[i, 3], :],
+                ),
+                KitBase.point_distance(
+                    ps.cellCenter[i, :],
+                    ps.points[ps.cellid[i, 3], :],
+                    ps.points[ps.cellid[i, 1], :],
+                ),
+            ]
+
+            if ps.cellCenter[i, 1] <=
+               minimum(ps.cellCenter[:, 1]) +
+               (maximum(ps.cellCenter[:, 1]) - minimum(ps.cellCenter[:, 1])) / 2
                 ctr[i] = KitBase.ControlVolumeUS2F(
                     n,
                     ps.cellCenter[i, :],
@@ -386,31 +588,32 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
             end
         end
 
-        face = Array{KitBase.Interface2D2F}(undef, size(ps.edgePoints, 1))
+        face = Array{KitBase.Interface2D2F}(undef, size(ps.facePoints, 1))
         for i in eachindex(face)
-            len = norm(ps.points[ps.edgePoints[i, 1], :] .- ps.points[ps.edgePoints[i, 2], :])
-            n = KitBase.unit_normal(ps.points[ps.edgePoints[i, 1], :], ps.points[ps.edgePoints[i, 2], :])
-            
-            if !(-1 in ps.edgeCells[i, :])
-                n0 = ps.cellCenter[ps.edgeCells[i, 2], :] .- ps.cellCenter[ps.edgeCells[i, 1], :]
+            len =
+                norm(ps.points[ps.facePoints[i, 1], :] .- ps.points[ps.facePoints[i, 2], :])
+            n = KitBase.unit_normal(
+                ps.points[ps.facePoints[i, 1], :],
+                ps.points[ps.facePoints[i, 2], :],
+            )
+
+            if !(-1 in ps.faceCells[i, :])
+                n0 =
+                    ps.cellCenter[ps.faceCells[i, 2], :] .-
+                    ps.cellCenter[ps.faceCells[i, 1], :]
             else
-                idx = ifelse(ps.edgeCells[i, 1] != -1, ps.edgeCells[i, 1], ps.edgeCells[i, 2])
-                n0 = ps.cellCenter[idx, :] .- ps.edgeCenter[i, :]
+                idx =
+                    ifelse(ps.faceCells[i, 1] != -1, ps.faceCells[i, 1], ps.faceCells[i, 2])
+                n0 = ps.cellCenter[idx, :] .- ps.faceCenter[i, :]
             end
             if dot(n, n0[1:2]) < 0
                 n .= -n
             end
-            
+
             fw = zero(KS.ib.wL)
             fh = zero(KS.ib.hL)
 
-            face[i] = KitBase.Interface2D2F(
-                len,
-                n[1],
-                n[2],
-                fw,
-                fh,
-            )
+            face[i] = KitBase.Interface2D2F(len, n[1], n[2], fw, fh)
         end
 
     end

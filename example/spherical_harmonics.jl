@@ -12,4 +12,4 @@ KitBase.ylm(2, 2, x, y, z)
 f = KitBase.ylm(3, 3, x, y, z)
 
 # evaluate at quadrature point
-f(x=>0.5, y=>-1.0, z=>0.25) # MultivariatePolynomials.jl
+f(x => 0.5, y => -1.0, z => 0.25) # MultivariatePolynomials.jl

@@ -31,22 +31,22 @@ for i in eachindex(ctr)
         ks.pSpace.x[i],
         ks.pSpace.dx[i],
         u,
-        KitBase.conserve_prim(u)
+        KitBase.conserve_prim(u),
     )
 end
 
-face = Array{KitBase.Interface1D}(undef, ks.pSpace.nx+1)
+face = Array{KitBase.Interface1D}(undef, ks.pSpace.nx + 1)
 for i = 1:ks.pSpace.nx+1
     face[i] = KitBase.Interface1D(0.0)
 end
 
 t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
-nt = ks.set.maxTime÷dt |> Int
+nt = ks.set.maxTime ÷ dt |> Int
 
 anim = @animate for iter = 1:nt
     KitBase.reconstruct!(ks, ctr)
-    
+
     for i in eachindex(face)
         face[i].fw = KitBase.flux_gks(
             ctr[i-1].w,
@@ -58,7 +58,7 @@ anim = @animate for iter = 1:nt
         )
     end
 
-    for i in 1:ks.pSpace.nx
+    for i = 1:ks.pSpace.nx
         ctr[i].w += (face[i].fw - face[i+1].fw) / ctr[i].dx
         ctr[i].prim .= KitBase.conserve_prim(ctr[i].w)
     end
@@ -66,10 +66,10 @@ anim = @animate for iter = 1:nt
     ctr[ks.pSpace.nx+1].w = ctr[1].w
 
     sol = zeros(ks.pSpace.nx)
-    for i in 1:ks.pSpace.nx
+    for i = 1:ks.pSpace.nx
         sol[i] = ctr[i].w
     end
-    plot(ks.pSpace.x[1:ks.pSpace.nx], sol, xlabel="x", label="u", ylims=[-1, 1])
+    plot(ks.pSpace.x[1:ks.pSpace.nx], sol, xlabel = "x", label = "u", ylims = [-1, 1])
 end
 
 gif(anim, "burgers.gif", fps = 45)

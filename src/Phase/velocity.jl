@@ -15,7 +15,8 @@
 1D velocity space
 
 """
-struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <: AbstractVelocitySpace1D
+struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <:
+       AbstractVelocitySpace1D
     u0::TR
     u1::TR
     nu::TI
@@ -251,7 +252,24 @@ function VSpace3D(
         throw("No velocity quadrature available")
     end
 
-    return VSpace3D{PRECISION,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, W0, W1, NW, u, v, w, du, dv, dw, weights)
+    return VSpace3D{PRECISION,TI,typeof(u)}(
+        U0,
+        U1,
+        NU,
+        V0,
+        V1,
+        NV,
+        W0,
+        W1,
+        NW,
+        u,
+        v,
+        w,
+        du,
+        dv,
+        dw,
+        weights,
+    )
 
 end
 
@@ -273,7 +291,8 @@ VSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 1D multi-component velocity space
 
 """
-struct MVSpace1D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace1D
+struct MVSpace1D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,2}} <:
+       AbstractVelocitySpace1D
     u0::TR
     u1::TR
     nu::TI
@@ -342,7 +361,8 @@ MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1
 2D multi-component velocity space
 
 """
-struct MVSpace2D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{Float64,3}} <: AbstractVelocitySpace2D
+struct MVSpace2D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{Float64,3}} <:
+       AbstractVelocitySpace2D
     u0::TR
     u1::TR
     nu::TI
@@ -441,7 +461,8 @@ MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
 3D multi-component velocity space
 
 """
-struct MVSpace3D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,4}} <: AbstractVelocitySpace3D
+struct MVSpace3D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,4}} <:
+       AbstractVelocitySpace3D
     u0::TR
     u1::TR
     nu::TI
@@ -531,7 +552,24 @@ function MVSpace3D(
         throw("No velocity quadrature available")
     end
 
-    return MVSpace3D{typeof(u0),TI,typeof(u)}(u0, u1, NU, v0, v1, NV, w0, w1, NW, u, v, v, du, dv, dw, weights)
+    return MVSpace3D{typeof(u0),TI,typeof(u)}(
+        u0,
+        u1,
+        NU,
+        v0,
+        v1,
+        NV,
+        w0,
+        w1,
+        NW,
+        u,
+        v,
+        v,
+        du,
+        dv,
+        dw,
+        weights,
+    )
 
 end
 
@@ -552,7 +590,8 @@ MVSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 Unstructured velocity space
 
 """
-struct UnstructVSpace{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <: AbstractVelocitySpace
+struct UnstructVSpace{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <:
+       AbstractVelocitySpace
     u0::TR
     u1::TR
     nu::TI
@@ -584,25 +623,34 @@ end
 # Extended Base.show()
 # ------------------------------------------------------------
 function Base.show(io::IO, vs::VSpace1D{TR,TI,TA,TB}) where {TR,TI,TA,TB}
-    print(io, "VelocitySpace1D{$TR,$TI,$TA,$TB}\n",
-              "domain: ($(vs.u0),$(vs.u1))\n",
-              "resolution: $(vs.nu)\n",
-              "ghost: $(1-firstindex(vs.u))\n")
+    print(
+        io,
+        "VelocitySpace1D{$TR,$TI,$TA,$TB}\n",
+        "domain: ($(vs.u0),$(vs.u1))\n",
+        "resolution: $(vs.nu)\n",
+        "ghost: $(1-firstindex(vs.u))\n",
+    )
 end
 
 function Base.show(io::IO, vs::VSpace2D{TR,TI,TA}) where {TR,TI,TA}
-    print(io, "VelocitySpace2D{$TR,$TI,$TA}\n",
-              "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1))\n",
-              "resolution: $(vs.nu) × $(vs.nv)\n",
-              "ghost in u: $(1-firstindex(vs.u[:, 1]))\n",
-              "ghost in v: $(1-firstindex(vs.v[1, :]))\n")
+    print(
+        io,
+        "VelocitySpace2D{$TR,$TI,$TA}\n",
+        "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1))\n",
+        "resolution: $(vs.nu) × $(vs.nv)\n",
+        "ghost in u: $(1-firstindex(vs.u[:, 1]))\n",
+        "ghost in v: $(1-firstindex(vs.v[1, :]))\n",
+    )
 end
 
 function Base.show(io::IO, vs::VSpace3D{TR,TI,TA}) where {TR,TI,TA}
-    print(io, "VelocitySpace3D{$TR,$TI,$TA}\n",
-              "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1)) × ($(vs.w0),$(vs.w1))\n",
-              "resolution: $(vs.nu) × $(vs.nv) × $(vs.nw)\n",
-              "ghost in u: $(1-firstindex(vs.u[:, 1, 1]))\n",
-              "ghost in v: $(1-firstindex(vs.v[1, :, 1]))\n",
-              "ghost in w: $(1-firstindex(vs.w[1, 1, :]))\n")
+    print(
+        io,
+        "VelocitySpace3D{$TR,$TI,$TA}\n",
+        "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1)) × ($(vs.w0),$(vs.w1))\n",
+        "resolution: $(vs.nu) × $(vs.nv) × $(vs.nw)\n",
+        "ghost in u: $(1-firstindex(vs.u[:, 1, 1]))\n",
+        "ghost in v: $(1-firstindex(vs.v[1, :, 1]))\n",
+        "ghost in w: $(1-firstindex(vs.w[1, 1, :]))\n",
+    )
 end

@@ -372,9 +372,9 @@ function diatomic_moments_conserve(
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
-    w[3] = 
+    w[3] =
         0.5 * (
-            discrete_moments(h, u, ω, 2) + 
+            discrete_moments(h, u, ω, 2) +
             discrete_moments(b, u, ω, 0) +
             discrete_moments(r, u, ω, 0)
         )
@@ -634,7 +634,9 @@ function heat_flux(
 
     q = similar(h, 2)
 
-    q[1] = 0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
+    q[1] =
+        0.5 *
+        (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
     q[2] = 0.5 * (sum(@. ω * (u - prim[2]) * r))
 
     return q
@@ -744,20 +746,26 @@ function heat_flux(
     q = similar(f, 3)
 
     q[1] =
-        0.5 * sum(@. ω *
+        0.5 * sum(
+            @. ω *
                (u - prim[2]) *
                ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2) *
-               f)
+               f
+        )
     q[2] =
-        0.5 * sum(@. ω *
+        0.5 * sum(
+            @. ω *
                (v - prim[3]) *
                ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2) *
-               f)
+               f
+        )
     q[3] =
-        0.5 * sum(@. ω *
+        0.5 * sum(
+            @. ω *
                (w - prim[4]) *
                ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2) *
-               f)
+               f
+        )
 
     return q
 

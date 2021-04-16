@@ -163,13 +163,13 @@ conserve_prim(ρ, MX, MY, MZ, E, γ) = conserve_prim([ρ, MX, MY, MZ, E], γ)
 
 #--- Rykov ---#
 function conserve_prim(w::T, K, Kr) where {T<:AbstractArray{<:Real,1}}
-    
+
     if eltype(w) <: Int
         prim = similar(w, Float64, length(w) + 1)
     else
         prim = similar(w, length(w) + 1)
     end
-    
+
     if length(w) == 4 # 1D
         prim[1] = w[1]
         prim[2] = w[2] / w[1]

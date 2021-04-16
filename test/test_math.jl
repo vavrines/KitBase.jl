@@ -54,7 +54,7 @@ L = 1
 ne = (L + 1)^2
 
 α = zeros(ne)
-u = [2., 0., 0., 0.]
+u = [2.0, 0.0, 0.0, 0.0]
 m = KitBase.eval_spherharmonic(points, L)
 
 KitBase.eval_sphermonomial(rand(6), L)
@@ -67,4 +67,9 @@ using KitBase.TypedPolynomials
 KitBase.rlylm(2, 2, _x, _y, _z)
 
 res = KitBase.optimize_closure(α, m, weights, u, KitBase.maxwell_boltzmann_dual)
-u1 = KitBase.realizable_reconstruct(res.minimizer, m, weights, KitBase.maxwell_boltzmann_dual_prime)
+u1 = KitBase.realizable_reconstruct(
+    res.minimizer,
+    m,
+    weights,
+    KitBase.maxwell_boltzmann_dual_prime,
+)

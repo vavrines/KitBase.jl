@@ -45,7 +45,18 @@ begin
 end
 
 γ = KitBase.heat_capacity_ratio(inK, inKr, 1)
-set = KitBase.Setup(case, space, flux, collision, nSpecies, interpOrder, limiter, boundary, cfl, maxTime)
+set = KitBase.Setup(
+    case,
+    space,
+    flux,
+    collision,
+    nSpecies,
+    interpOrder,
+    limiter,
+    boundary,
+    cfl,
+    maxTime,
+)
 pSpace = KitBase.PSpace1D(x0, x1, nx)
 vSpace = KitBase.VSpace1D(umin, umax, nu)
 gas = KitBase.DiatomicGas(
@@ -81,7 +92,7 @@ Rr = similar(r0)
 
 KitBase.maxwellian!(Ht, Bt, Rt, Hr, Br, Rr, vSpace.u, prim0, inK, inKr)
 
-Zr = KitBase.rykov_zr(1/prim0[4], Tr0, Z0)
+Zr = KitBase.rykov_zr(1 / prim0[4], Tr0, Z0)
 
 @. h0 = (1.0 - 1.0 / Zr) * Ht + 1.0 / Zr * Hr
 @. b0 = (1.0 - 1.0 / Zr) * Bt + 1.0 / Zr * Br
@@ -133,17 +144,39 @@ function step(KS, w, prim, h, b, r, dt)
     MHR = similar(h)
     MBR = similar(b)
     MRR = similar(r)
-    
-    KitBase.maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, KS.vSpace.u, prim, KS.gas.K, KS.gas.Kr)
+
+    KitBase.maxwellian!(
+        MHT,
+        MBT,
+        MRT,
+        MHR,
+        MBR,
+        MRR,
+        KS.vSpace.u,
+        prim,
+        KS.gas.K,
+        KS.gas.Kr,
+    )
     τ_old = KitBase.vhs_collision_time(prim[1:end-1], KS.gas.μᵣ, KS.gas.ω)
     Zr = KitBase.rykov_zr(1.0 / prim[4], KS.gas.T₀, KS.gas.Z₀)
     Er0_old = 0.5 * sum(@. KS.vSpace.weights * ((1.0 / Zr) * MRR + (1.0 - 1.0 / Zr) * MRT))
-    
+
     w[4] += dt * (Er0_old - w_old[4]) / τ_old
     prim .= KitBase.conserve_prim(w, KS.gas.K, KS.gas.Kr)
 
     #--- calculate M^{n+1} and tau^{n+1} ---#
-    KitBase.maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, KS.vSpace.u, prim, KS.gas.K, KS.gas.Kr)
+    KitBase.maxwellian!(
+        MHT,
+        MBT,
+        MRT,
+        MHR,
+        MBR,
+        MRR,
+        KS.vSpace.u,
+        prim,
+        KS.gas.K,
+        KS.gas.Kr,
+    )
 
     SHT = similar(h)
     SBT = similar(b)
@@ -205,7 +238,7 @@ end
 
 w_his = solve(ks, w, prim, h, b, r, dt, nt)
 prim_his = zeros(5, nt)
-for i in 1:nt
+for i = 1:nt
     prim_his[:, i] .= KitBase.conserve_prim(w_his[:, i], ks.gas.K, ks.gas.Kr)
 end
 

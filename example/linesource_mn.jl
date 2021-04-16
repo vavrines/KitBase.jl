@@ -11,11 +11,16 @@ begin
     ne = (L + 1)^2
 
     α = zeros(ne)
-    u0 = [2., 0., 0., 0.]
+    u0 = [2.0, 0.0, 0.0, 0.0]
     m = KitBase.eval_spherharmonic(points, L)
 
     res = KitBase.optimize_closure(α, m, weights, u0, KitBase.maxwell_boltzmann_dual)
-    u = KitBase.realizable_reconstruct(res.minimizer, m, weights, KitBase.maxwell_boltzmann_dual_prime)
+    u = KitBase.realizable_reconstruct(
+        res.minimizer,
+        m,
+        weights,
+        KitBase.maxwell_boltzmann_dual_prime,
+    )
 end
 
 # multi-cell case
@@ -41,7 +46,14 @@ begin
     points, triangulation = KitBase.octa_quadrature(quadratureorder)
     weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
-    vspace = KitBase.VSpace1D{Float64,Int64,typeof(points),typeof(weights)}(-1.0, 1.0, nq, points, zero(points), weights)
+    vspace = KitBase.VSpace1D{Float64,Int64,typeof(points),typeof(weights)}(
+        -1.0,
+        1.0,
+        nq,
+        points,
+        zero(points),
+        weights,
+    )
 
     # particle
     SigmaS = 1.0 * ones(ny, nx)
@@ -79,19 +91,36 @@ flux2 = zeros(ne, nx, ny + 1)
     # regularization
     Threads.@threads for j = 1:ny
         for i = 1:nx
-            res = KitBase.optimize_closure(α[:, i, j], m, vspace.weights, phi[:, i, j], KitBase.maxwell_boltzmann_dual)
+            res = KitBase.optimize_closure(
+                α[:, i, j],
+                m,
+                vspace.weights,
+                phi[:, i, j],
+                KitBase.maxwell_boltzmann_dual,
+            )
             α[:, i, j] .= res.minimizer
-            
-            phi[:, i, j] .= KitBase.realizable_reconstruct(res.minimizer, m, vspace.weights, KitBase.maxwell_boltzmann_dual_prime)
+
+            phi[:, i, j] .= KitBase.realizable_reconstruct(
+                res.minimizer,
+                m,
+                vspace.weights,
+                KitBase.maxwell_boltzmann_dual_prime,
+            )
         end
     end
-    
+
     # flux
     fη1 = zeros(nq)
     for j = 1:ny
         for i = 2:nx
-            KitBase.flux_kfvs!(fη1, KitBase.maxwell_boltzmann_dual.(α[:, i-1, j]' * m)[:], KitBase.maxwell_boltzmann_dual.(α[:, i, j]' * m)[:], vspace.u[:, 1], dt)
-            
+            KitBase.flux_kfvs!(
+                fη1,
+                KitBase.maxwell_boltzmann_dual.(α[:, i-1, j]' * m)[:],
+                KitBase.maxwell_boltzmann_dual.(α[:, i, j]' * m)[:],
+                vspace.u[:, 1],
+                dt,
+            )
+
             for k in axes(flux1, 1)
                 flux1[k, i, j] = sum(m[k, :] .* vspace.weights .* fη1)
             end
@@ -101,14 +130,20 @@ flux2 = zeros(ne, nx, ny + 1)
     fη2 = zeros(nq)
     for i = 1:nx
         for j = 2:ny
-            KitBase.flux_kfvs!(fη2, KitBase.maxwell_boltzmann_dual.(α[:, i, j-1]' * m)[:], KitBase.maxwell_boltzmann_dual.(α[:, i, j]' * m)[:], vspace.u[:, 2], dt)
-            
+            KitBase.flux_kfvs!(
+                fη2,
+                KitBase.maxwell_boltzmann_dual.(α[:, i, j-1]' * m)[:],
+                KitBase.maxwell_boltzmann_dual.(α[:, i, j]' * m)[:],
+                vspace.u[:, 2],
+                dt,
+            )
+
             for k in axes(flux2, 1)
                 flux2[k, i, j] = sum(m[k, :] .* (vspace.weights .* fη2))
             end
         end
     end
-    
+
     # update
     for j = 2:ny-1
         for i = 2:nx-1
@@ -125,7 +160,7 @@ flux2 = zeros(ne, nx, ny + 1)
                     phi[q, i, j] +
                     (flux1[q, i, j] - flux1[q, i+1, j]) / dx +
                     (flux2[q, i, j] - flux2[q, i, j+1]) / dy +
-                    (- SigmaT[i, j] * phi[q, i, j]) * dt
+                    (-SigmaT[i, j] * phi[q, i, j]) * dt
             end
         end
     end

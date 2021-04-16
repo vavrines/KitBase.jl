@@ -92,11 +92,7 @@ end
 
 Write data into JLD2
 """
-function write_jld(
-    KS::X,
-    ctr::Y,
-    t = 0,
-) where {X<:AbstractSolverSet,Y}
+function write_jld(KS::X, ctr::Y, t = 0) where {X<:AbstractSolverSet,Y}
 
     strIter = string(t)
     fileOut = KS.outputFolder * "data/t=" * strIter * ".jld2"
@@ -111,17 +107,22 @@ end
 
 Write data into VTK
 """
-function write_vtk(points::T, cells, cdata, pdata = zeros(axes(points, 1))) where {T<:AbstractMatrix}
+function write_vtk(
+    points::T,
+    cells,
+    cdata,
+    pdata = zeros(axes(points, 1)),
+) where {T<:AbstractMatrix}
     mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, cells[i, :]) for i in axes(cells, 1)]
     vtkfile = vtk_grid("sol", permutedims(points), mcells)
-    
+
     len = size(cdata, 2)
     cname = Array{String}(undef, len)
     for i in eachindex(cname)
         cname[i] = "c" * string(i)
         vtkfile[cname[i], VTKCellData()] = cdata[:, i]
     end
-    
+
     len = size(pdata, 2)
     pname = Array{String}(undef, len)
     for i in eachindex(pname)
@@ -217,10 +218,26 @@ function plot_contour(
         end
     end
 
-    p1 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[1, :, :]')
-    p2 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[2, :, :]')
-    p3 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[3, :, :]')
-    p4 = contourf(KS.pSpace.x[1:KS.pSpace.nx, 1], KS.pSpace.y[1, 1:KS.pSpace.ny], sol[4, :, :]')
+    p1 = contourf(
+        KS.pSpace.x[1:KS.pSpace.nx, 1],
+        KS.pSpace.y[1, 1:KS.pSpace.ny],
+        sol[1, :, :]',
+    )
+    p2 = contourf(
+        KS.pSpace.x[1:KS.pSpace.nx, 1],
+        KS.pSpace.y[1, 1:KS.pSpace.ny],
+        sol[2, :, :]',
+    )
+    p3 = contourf(
+        KS.pSpace.x[1:KS.pSpace.nx, 1],
+        KS.pSpace.y[1, 1:KS.pSpace.ny],
+        sol[3, :, :]',
+    )
+    p4 = contourf(
+        KS.pSpace.x[1:KS.pSpace.nx, 1],
+        KS.pSpace.y[1, 1:KS.pSpace.ny],
+        sol[4, :, :]',
+    )
 
     plot(p1, p2, p3, p4, layout = (2, 2))
 

@@ -79,7 +79,18 @@ mutable struct IB{A,B,C} <: AbstractCondition
             end
         end
 
-        new{typeof(wL),typeof(primL),typeof(vL)}(wL, primL, bcL, wR, primR, bcR, bcU, bcD, vL, vR)
+        new{typeof(wL),typeof(primL),typeof(vL)}(
+            wL,
+            primL,
+            bcL,
+            wR,
+            primR,
+            bcR,
+            bcU,
+            bcD,
+            vL,
+            vR,
+        )
     end
 
 end

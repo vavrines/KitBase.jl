@@ -498,7 +498,7 @@ function update!(
     update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
 
     return nothing
-    
+
 end
 
 #--- 2d2f ---#
@@ -567,5 +567,5 @@ function update!(
     update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
 
     return nothing
-    
+
 end

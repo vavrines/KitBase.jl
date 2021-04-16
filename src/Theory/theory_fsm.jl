@@ -129,7 +129,7 @@ function kernel_mode(
 
         s = Fre_vx * cos(θ + π / 2) + Fre_vy * sin(θ + π / 2)
         αq[:, :, lp] .= 2.0 * supp .* sin.(supp .* s) ./ (supp .* s) * (π / M)
-        
+
         s = Fre_vx * cos(θ) + Fre_vy * sin(θ)
         αp[:, :, lp] .= 2.0 * supp .* sin.(supp .* s) ./ (supp .* s)
     end

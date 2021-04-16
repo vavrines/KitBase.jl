@@ -10,7 +10,19 @@ KitBase.Setup() |> show
 KitBase.Scalar(1.0, 1e-3)
 KitBase.Radiation(1e-2, 1.0, 0.0, 1e-3, 1000)
 KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01) |> show
-KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01, 1e-4, 10000) |> show
+KitBase.Gas(
+    knudsen,
+    mach,
+    prandtl,
+    inK,
+    3.0,
+    omega,
+    alphaRef,
+    omegaRef,
+    0.01,
+    1e-4,
+    10000,
+) |> show
 KitBase.Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5) |> show
 KitBase.Plasma1D(
     [0.1, 0.5],
@@ -185,7 +197,20 @@ KitBase.ControlVolume1D4F(
 KitBase.ControlVolume2D(x, dx, x, dx, w, prim) |> show
 KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h) |> show
 KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b) |> show
-KitBase.ControlVolume2D3F(x, dx, x, dx, w, prim, h, b, b, zeros(3), zeros(3), zeros(3, 2)) |> show
+KitBase.ControlVolume2D3F(
+    x,
+    dx,
+    x,
+    dx,
+    w,
+    prim,
+    h,
+    b,
+    b,
+    zeros(3),
+    zeros(3),
+    zeros(3, 2),
+) |> show
 # Rykov
 KitBase.ControlVolume2D3F(
     x,
@@ -200,8 +225,8 @@ KitBase.ControlVolume2D3F(
 ) |> show
 # unstructured
 KitBase.ControlVolumeUS([1, 0], x, dx, w, prim)
-KitBase.ControlVolumeUS1F([1,0], x, dx, w, prim, h)
-KitBase.ControlVolumeUS2F([1,0], x, dx, w, prim, h, b)
+KitBase.ControlVolumeUS1F([1, 0], x, dx, w, prim, h)
+KitBase.ControlVolumeUS2F([1, 0], x, dx, w, prim, h, b)
 
 #--- interface ---#
 KitBase.Interface1D(w) |> show

@@ -59,10 +59,7 @@ function step!(
     dt,
     RES,
     AVG,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
-}
+) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2}}
 
     #--- update conservative flow variables ---#
     # w^n
@@ -467,7 +464,7 @@ function step!(
     τ_old = vhs_collision_time(prim[1:end-1], μᵣ, ω)
     Zr = rykov_zr(1.0 / prim[4], T₀, Z₀)
     Er0_old = 0.5 * sum(@. weights * ((1.0 / Zr) * MRR + (1.0 - 1.0 / Zr) * MRT))
-    
+
     w[4] += dt * (Er0_old - w_old[4]) / τ_old
     prim .= conserve_prim(w, K, Kr)
 
@@ -1053,7 +1050,12 @@ function step!(
 
     #--- update distribution function ---#
     for j in axes(v, 2), i in axes(u, 1)
-        h[i, j] = (h[i, j] + (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs + dt / τ * MH[i, j]) / (1.0 + dt / τ)
+        h[i, j] =
+            (
+                h[i, j] +
+                (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs +
+                dt / τ * MH[i, j]
+            ) / (1.0 + dt / τ)
     end
 
 end
@@ -1122,8 +1124,18 @@ function step!(
 
     #--- update distribution function ---#
     for j in axes(v, 2), i in axes(u, 1)
-        h[i, j] = (h[i, j] + (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs + dt / τ * MH[i, j]) / (1.0 + dt / τ)
-        b[i, j] = (b[i, j] + (fbL[i, j] - fbR[i, j] + fbD[i, j] - fbU[i, j]) / Δs + dt / τ * MB[i, j]) / (1.0 + dt / τ)
+        h[i, j] =
+            (
+                h[i, j] +
+                (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs +
+                dt / τ * MH[i, j]
+            ) / (1.0 + dt / τ)
+        b[i, j] =
+            (
+                b[i, j] +
+                (fbL[i, j] - fbR[i, j] + fbD[i, j] - fbU[i, j]) / Δs +
+                dt / τ * MB[i, j]
+            ) / (1.0 + dt / τ)
     end
 
 end
@@ -1194,8 +1206,18 @@ function step!(
 
     #--- update distribution function ---#
     for j in axes(v, 2), i in axes(u, 1)
-        h[i, j] = (h[i, j] - (fh1[i, j] * dirc[1] + fh2[i, j] * dirc[2] + fh3[i, j] * dirc[3]) / Δs + dt / τ * MH[i, j]) / (1.0 + dt / τ)
-        b[i, j] = (b[i, j] - (fb1[i, j] * dirc[1] + fb2[i, j] * dirc[2] + fb3[i, j] * dirc[3]) / Δs + dt / τ * MB[i, j]) / (1.0 + dt / τ)
+        h[i, j] =
+            (
+                h[i, j] -
+                (fh1[i, j] * dirc[1] + fh2[i, j] * dirc[2] + fh3[i, j] * dirc[3]) / Δs +
+                dt / τ * MH[i, j]
+            ) / (1.0 + dt / τ)
+        b[i, j] =
+            (
+                b[i, j] -
+                (fb1[i, j] * dirc[1] + fb2[i, j] * dirc[2] + fb3[i, j] * dirc[3]) / Δs +
+                dt / τ * MB[i, j]
+            ) / (1.0 + dt / τ)
     end
 
 end

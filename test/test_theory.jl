@@ -259,4 +259,13 @@ KitBase.aap_hs_diffeq!(
 KitBase.shift_pdf!(M, 1.0, 1e-4, 1e-4)
 KitBase.shift_pdf!(rand(16, 2), randn(2), rand(2), 1e-4)
 
-KitBase.chapman_enskog(rand(16), [1., 0., 1.], rand(3), rand(3), 0.1)
+KitBase.chapman_enskog(rand(16), [1.0, 0.0, 1.0], rand(3), rand(3), 0.1)
+KitBase.chapman_enskog(
+    rand(16, 16),
+    rand(16, 16),
+    [1.0, 0.0, 0.0, 1.0],
+    rand(4),
+    rand(4),
+    rand(4),
+    0.1,
+)

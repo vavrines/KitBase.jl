@@ -58,7 +58,15 @@ function solve!(
         #dt = timestep(KS, ctr, simTime)
         reconstruct!(KS, ctr)
         evolve!(KS, ctr, face, dt; mode = Symbol(KS.set.flux), bc = Symbol(KS.set.boundary))
-        update!(KS, ctr, face, dt, res; coll = Symbol(KS.set.collision), bc = Symbol(KS.set.boundary))
+        update!(
+            KS,
+            ctr,
+            face,
+            dt,
+            res;
+            coll = Symbol(KS.set.collision),
+            bc = Symbol(KS.set.boundary),
+        )
 
         #iter += 1
         t += dt
@@ -107,8 +115,25 @@ function solve!(
     #--- main loop ---#
     @showprogress for iter = 1:nt
         reconstruct!(KS, ctr)
-        evolve!(KS, ctr, a1face, a2face, dt; mode = Symbol(KS.set.flux), bc = Symbol(KS.set.boundary))
-        update!(KS, ctr, a1face, a2face, dt, res; coll = Symbol(KS.set.collision), bc = Symbol(KS.set.boundary))
+        evolve!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            dt;
+            mode = Symbol(KS.set.flux),
+            bc = Symbol(KS.set.boundary),
+        )
+        update!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            dt,
+            res;
+            coll = Symbol(KS.set.collision),
+            bc = Symbol(KS.set.boundary),
+        )
 
         t += dt
 
@@ -144,7 +169,7 @@ function timestep(
     tmax = 0.0
 
     if ctr[1].w isa Number
-        
+
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             prim = ctr[i].prim
             vmax = abs(ctr[i].prim[2])
@@ -225,7 +250,7 @@ function timestep(
                     tmax = max(
                         tmax,
                         umax / ctr[i, j].dx + vmax / ctr[i, j].dy,
-                        KS.gas.sol / ctr[i, j].dx + KS.gas.sol / ctr[i, j].dy
+                        KS.gas.sol / ctr[i, j].dx + KS.gas.sol / ctr[i, j].dy,
                     )
                 else
                     tmax = max(tmax, umax / ctr[i, j].dx + vmax / ctr[i, j].dy)
@@ -257,7 +282,8 @@ function timestep(
             sos = sound_speed(prim, KS.gas.γ)
             umax = KS.vSpace.u1 + sos
             vmax = KS.vSpace.v1 + sos
-            pd = abs.([dot([umax, vmax], ctr[i].n[j]) for j in eachindex(ctr[i].n)]) ./ ctr[i].dx
+            pd =
+                abs.([dot([umax, vmax], ctr[i].n[j]) for j in eachindex(ctr[i].n)]) ./ ctr[i].dx
             #tmax = max(tmax, maximum(pd))
             tmax = max(tmax, sqrt(umax^2 + vmax^2) / minimum(ctr[i].dx))
         end

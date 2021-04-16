@@ -1,16 +1,16 @@
 function ylmKCoefficient(l::Integer, m::Integer)
     k = BigInt(4) # BigInt avoids overflow
-    for i in l-m+1:l+m
+    for i = l-m+1:l+m
         k *= i
     end
-    
+
     return sqrt((2.0 * l + 1) / k / π)
 end
 
 function ylmCosSinPolynomial(m::Integer, x::Variable, y::Variable)
     sum = 0.0 * (x + y)
-    for j in 0:m÷2
-        sum += (-1)^j * binomial(m, 2 * j) * (y^(2 * j)) * (x^(m-2 * j))
+    for j = 0:m÷2
+        sum += (-1)^j * binomial(m, 2 * j) * (y^(2 * j)) * (x^(m - 2 * j))
     end
 
     return sum
@@ -18,7 +18,7 @@ end
 
 function ylmSinSinPolynomial(m::Integer, x::Variable, y::Variable)
     sum = 0.0 * (x + y)
-    for j in 0:(m-1)÷2
+    for j = 0:(m-1)÷2
         sum += ((-1)^j) * binomial(m, 2 * j + 1) * (y^(2 * j + 1)) * (x^(m - 2 * j - 1))
     end
 
@@ -63,16 +63,16 @@ end
 Calculate r^l * Ylm(x,y,z)
 """
 function rlylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
-	p = ylm(l, m, x, y, z)
+    p = ylm(l, m, x, y, z)
     tout = []
-    
-	for t in terms(p)
-		deg = degree(monomial(t))
-		degR = l - deg
-		push!(tout, (x^2 + y^2 + z^2)^Int(degR / 2) * t)
-	end
 
-	return polynomial(tout)
+    for t in terms(p)
+        deg = degree(monomial(t))
+        degR = l - deg
+        push!(tout, (x^2 + y^2 + z^2)^Int(degR / 2) * t)
+    end
+
+    return polynomial(tout)
 end
 
 
@@ -90,7 +90,12 @@ function eval_spherharmonic(points::T, L) where {T<:AbstractArray{<:Real,2}}
     if L == 0
         spe = [ylm(0, 0, x, y, z)]
     elseif L == 1
-        spe = [ylm(0, 0, x, y, z), ylm(1, -1, x, y, z), ylm(1, 0, x, y, z), ylm(1, 1, x, y, z)]
+        spe = [
+            ylm(0, 0, x, y, z),
+            ylm(1, -1, x, y, z),
+            ylm(1, 0, x, y, z),
+            ylm(1, 1, x, y, z),
+        ]
     elseif L == 2
         spe = [
             ylm(0, 0, x, y, z),
@@ -102,11 +107,11 @@ function eval_spherharmonic(points::T, L) where {T<:AbstractArray{<:Real,2}}
             ylm(2, 0, x, y, z),
             ylm(2, 1, x, y, z),
             ylm(2, 2, x, y, z),
-            ]
+        ]
     end
 
     for j in axes(m, 2), i in axes(m, 1)
-        m[i, j] = spe[i](x=>points[j, 1], y=>points[j, 2], z=>points[j, 3])
+        m[i, j] = spe[i](x => points[j, 1], y => points[j, 2], z => points[j, 3])
     end
 
     return m
