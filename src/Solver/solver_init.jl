@@ -353,13 +353,13 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                 push!(
                     n,
                     KitBase.unit_normal(
-                        ps.points[ps.edgePoints[ps.cellEdges[i, j], 1], :],
-                        ps.points[ps.edgePoints[ps.cellEdges[i, j], 2], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
                     ),
                 )
 
                 if dot(
-                    ps.edgeCenter[ps.cellEdges[i, j], 1:2] .- ps.cellCenter[i, 1:2],
+                    ps.faceCenter[ps.cellFaces[i, j], 1:2] .- ps.cellCenter[i, 1:2],
                     n[j],
                 ) < 0
                     n[j] .= -n[j]
@@ -405,23 +405,23 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
             end
         end
 
-        face = Array{KitBase.Interface2D}(undef, size(ps.edgePoints, 1))
+        face = Array{KitBase.Interface2D}(undef, size(ps.facePoints, 1))
         for i in eachindex(face)
             len =
-                norm(ps.points[ps.edgePoints[i, 1], :] .- ps.points[ps.edgePoints[i, 2], :])
+                norm(ps.points[ps.facePoints[i, 1], :] .- ps.points[ps.facePoints[i, 2], :])
             n = KitBase.unit_normal(
-                ps.points[ps.edgePoints[i, 1], :],
-                ps.points[ps.edgePoints[i, 2], :],
+                ps.points[ps.facePoints[i, 1], :],
+                ps.points[ps.facePoints[i, 2], :],
             )
 
-            if !(-1 in ps.edgeCells[i, :])
+            if !(-1 in ps.faceCells[i, :])
                 n0 =
-                    ps.cellCenter[ps.edgeCells[i, 2], :] .-
-                    ps.cellCenter[ps.edgeCells[i, 1], :]
+                    ps.cellCenter[ps.faceCells[i, 2], :] .-
+                    ps.cellCenter[ps.faceCells[i, 1], :]
             else
                 idx =
-                    ifelse(ps.edgeCells[i, 1] != -1, ps.edgeCells[i, 1], ps.edgeCells[i, 2])
-                n0 = ps.cellCenter[idx, :] .- ps.edgeCenter[i, :]
+                    ifelse(ps.faceCells[i, 1] != -1, ps.faceCells[i, 1], ps.faceCells[i, 2])
+                n0 = ps.cellCenter[idx, :] .- ps.faceCenter[i, :]
             end
             if dot(n, n0[1:2]) < 0
                 n .= -n
@@ -441,13 +441,13 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                 push!(
                     n,
                     KitBase.unit_normal(
-                        ps.points[ps.edgePoints[ps.cellEdges[i, j], 1], :],
-                        ps.points[ps.edgePoints[ps.cellEdges[i, j], 2], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
                     ),
                 )
 
                 if dot(
-                    ps.edgeCenter[ps.cellEdges[i, j], 1:2] .- ps.cellCenter[i, 1:2],
+                    ps.faceCenter[ps.cellFaces[i, j], 1:2] .- ps.cellCenter[i, 1:2],
                     n[j],
                 ) < 0
                     n[j] .= -n[j]
@@ -495,23 +495,23 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
             end
         end
 
-        face = Array{KitBase.Interface2D1F}(undef, size(ps.edgePoints, 1))
+        face = Array{KitBase.Interface2D1F}(undef, size(ps.facePoints, 1))
         for i in eachindex(face)
             len =
-                norm(ps.points[ps.edgePoints[i, 1], :] .- ps.points[ps.edgePoints[i, 2], :])
+                norm(ps.points[ps.facePoints[i, 1], :] .- ps.points[ps.facePoints[i, 2], :])
             n = KitBase.unit_normal(
-                ps.points[ps.edgePoints[i, 1], :],
-                ps.points[ps.edgePoints[i, 2], :],
+                ps.points[ps.facePoints[i, 1], :],
+                ps.points[ps.facePoints[i, 2], :],
             )
 
-            if !(-1 in ps.edgeCells[i, :])
+            if !(-1 in ps.faceCells[i, :])
                 n0 =
-                    ps.cellCenter[ps.edgeCells[i, 2], :] .-
-                    ps.cellCenter[ps.edgeCells[i, 1], :]
+                    ps.cellCenter[ps.faceCells[i, 2], :] .-
+                    ps.cellCenter[ps.faceCells[i, 1], :]
             else
                 idx =
-                    ifelse(ps.edgeCells[i, 1] != -1, ps.edgeCells[i, 1], ps.edgeCells[i, 2])
-                n0 = ps.cellCenter[idx, :] .- ps.edgeCenter[i, :]
+                    ifelse(ps.faceCells[i, 1] != -1, ps.faceCells[i, 1], ps.faceCells[i, 2])
+                n0 = ps.cellCenter[idx, :] .- ps.faceCenter[i, :]
             end
             if dot(n, n0[1:2]) < 0
                 n .= -n
@@ -532,13 +532,13 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                 push!(
                     n,
                     KitBase.unit_normal(
-                        ps.points[ps.edgePoints[ps.cellEdges[i, j], 1], :],
-                        ps.points[ps.edgePoints[ps.cellEdges[i, j], 2], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
+                        ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
                     ),
                 )
 
                 if dot(
-                    ps.edgeCenter[ps.cellEdges[i, j], 1:2] .- ps.cellCenter[i, 1:2],
+                    ps.faceCenter[ps.cellFaces[i, j], 1:2] .- ps.cellCenter[i, 1:2],
                     n[j],
                 ) < 0
                     n[j] .= -n[j]
@@ -588,23 +588,23 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
             end
         end
 
-        face = Array{KitBase.Interface2D2F}(undef, size(ps.edgePoints, 1))
+        face = Array{KitBase.Interface2D2F}(undef, size(ps.facePoints, 1))
         for i in eachindex(face)
             len =
-                norm(ps.points[ps.edgePoints[i, 1], :] .- ps.points[ps.edgePoints[i, 2], :])
+                norm(ps.points[ps.facePoints[i, 1], :] .- ps.points[ps.facePoints[i, 2], :])
             n = KitBase.unit_normal(
-                ps.points[ps.edgePoints[i, 1], :],
-                ps.points[ps.edgePoints[i, 2], :],
+                ps.points[ps.facePoints[i, 1], :],
+                ps.points[ps.facePoints[i, 2], :],
             )
 
-            if !(-1 in ps.edgeCells[i, :])
+            if !(-1 in ps.faceCells[i, :])
                 n0 =
-                    ps.cellCenter[ps.edgeCells[i, 2], :] .-
-                    ps.cellCenter[ps.edgeCells[i, 1], :]
+                    ps.cellCenter[ps.faceCells[i, 2], :] .-
+                    ps.cellCenter[ps.faceCells[i, 1], :]
             else
                 idx =
-                    ifelse(ps.edgeCells[i, 1] != -1, ps.edgeCells[i, 1], ps.edgeCells[i, 2])
-                n0 = ps.cellCenter[idx, :] .- ps.edgeCenter[i, :]
+                    ifelse(ps.faceCells[i, 1] != -1, ps.faceCells[i, 1], ps.faceCells[i, 2])
+                n0 = ps.cellCenter[idx, :] .- ps.faceCenter[i, :]
             end
             if dot(n, n0[1:2]) < 0
                 n .= -n
