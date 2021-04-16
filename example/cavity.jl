@@ -36,7 +36,7 @@ end
             )
         end
     end
-    
+
     # vertical flux
     vn = ks.vSpace.v
     vt = -ks.vSpace.u
@@ -56,10 +56,10 @@ end
                 dt,
                 a2face[i, j].len,
             )
-            a2face[i, j].fw .= KitBase.global_frame(a2face[i, j].fw, 0., 1.)
+            a2face[i, j].fw .= KitBase.global_frame(a2face[i, j].fw, 0.0, 1.0)
         end
     end
-    
+
     # boundary flux
     @inbounds Threads.@threads for j = 1:ks.pSpace.ny
         KitBase.flux_boundary_maxwell!(
@@ -75,7 +75,7 @@ end
             ks.gas.K,
             dt,
             ctr[1, j].dy,
-            1.,
+            1.0,
         )
 
         KitBase.flux_boundary_maxwell!(
@@ -91,10 +91,10 @@ end
             ks.gas.K,
             dt,
             ctr[ks.pSpace.nx, j].dy,
-            -1.,
+            -1.0,
         )
     end
-    
+
     @inbounds Threads.@threads for i = 1:ks.pSpace.nx
         KitBase.flux_boundary_maxwell!(
             a2face[i, 1].fw,
@@ -111,13 +111,13 @@ end
             ctr[i, 1].dx,
             1,
         )
-        a2face[i, 1].fw .= KitBase.global_frame(a2face[i, 1].fw, 0., 1.)
-        
+        a2face[i, 1].fw .= KitBase.global_frame(a2face[i, 1].fw, 0.0, 1.0)
+
         KitBase.flux_boundary_maxwell!(
             a2face[i, ks.pSpace.ny+1].fw,
             a2face[i, ks.pSpace.ny+1].fh,
             a2face[i, ks.pSpace.ny+1].fb,
-            [1., 0.0, -0.15, 1.0],
+            [1.0, 0.0, -0.15, 1.0],
             ctr[i, ks.pSpace.ny].h,
             ctr[i, ks.pSpace.ny].b,
             vn,
@@ -128,11 +128,8 @@ end
             ctr[i, ks.pSpace.ny].dy,
             -1,
         )
-        a2face[i, ks.pSpace.ny+1].fw .= KitBase.global_frame(
-            a2face[i, ks.pSpace.ny+1].fw,
-            0.,
-            1.,
-        )
+        a2face[i, ks.pSpace.ny+1].fw .=
+            KitBase.global_frame(a2face[i, ks.pSpace.ny+1].fw, 0.0, 1.0)
     end
 
     # update

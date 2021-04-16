@@ -93,13 +93,13 @@ end
 
 function SolverSet(dict::T) where {T<:AbstractDict}
     # setup
-    set = set_setup(;dict...)
+    set = set_setup(; dict...)
 
     # physical space
-    pSpace = set_geometry(;dict...)
+    pSpace = set_geometry(; dict...)
 
     # velocity space
-    vSpace = set_velocity(;dict...)
+    vSpace = set_velocity(; dict...)
 
     # gas property
     gas = set_property(dict)
@@ -554,7 +554,7 @@ function set_property(dict::T) where {T<:AbstractDict}
         else
             throw("The gas property only supports up to two species.")
         end
-    
+
     elseif matter == "plasma"
 
         kne = knudsen * (me / mi)
@@ -595,7 +595,7 @@ function set_property(dict::T) where {T<:AbstractDict}
         else
             throw("The plasma property only supports up to 2D case.")
         end
-    
+
     end
 
     return gas
@@ -678,7 +678,8 @@ function set_ib(
                     ib_sod(gas.γ, vSpace.u, vSpace.v, vSpace.w)
                 ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
             elseif set.space[3:end] == "2f1v"
-                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR = ib_sod(gas.γ, gas.K, vSpace.u)
+                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
+                    ib_sod(gas.γ, gas.K, vSpace.u)
                 ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
             end
         elseif set.nSpecies == 2

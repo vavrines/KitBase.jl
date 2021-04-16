@@ -245,7 +245,7 @@ function update_boundary!(
                 Symbol(KS.set.collision),
             )
         end
-        
+
     end
 
     for i in eachindex(residual)
@@ -479,7 +479,7 @@ function update_boundary!(
     if bc != :fix
         i = 1
         j = KS.pSpace.nx
-        
+
         step!(KS, face[i], ctr[i], face[i+1], dt, resL, avgL, coll, isMHD)
         step!(KS, face[j], ctr[j], face[j+1], dt, resR, avgR, coll, isMHD)
     end
@@ -555,12 +555,9 @@ function update_boundary!(
         ctr[0].ψ = 0.5 * (ctr[-1].ψ + ctr[1].ψ)
         @. ctr[0].lorenz = 0.5 * (ctr[-1].lorenz + ctr[1].lorenz)
 
-        @. ctr[KS.pSpace.nx+1].h0 =
-            0.5 * (ctr[KS.pSpace.nx].h0 + ctr[KS.pSpace.nx+2].h0)
-        @. ctr[KS.pSpace.nx+1].h1 =
-            0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
-        @. ctr[KS.pSpace.nx+1].h2 =
-            0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
+        @. ctr[KS.pSpace.nx+1].h0 = 0.5 * (ctr[KS.pSpace.nx].h0 + ctr[KS.pSpace.nx+2].h0)
+        @. ctr[KS.pSpace.nx+1].h1 = 0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
+        @. ctr[KS.pSpace.nx+1].h2 = 0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
         @. ctr[KS.pSpace.nx+1].E = 0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
         @. ctr[KS.pSpace.nx+1].B = 0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
         ctr[KS.pSpace.nx+1].ϕ = 0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
@@ -594,7 +591,7 @@ function update_boundary!(
     if bc != :fix
         i = 1
         j = KS.pSpace.nx
-        
+
         step!(KS, face[i], ctr[i], face[i+1], dt, resL, avgL, coll, isMHD)
         step!(KS, face[j], ctr[j], face[j+1], dt, resR, avgR, coll, isMHD)
     end
@@ -675,14 +672,10 @@ function update_boundary!(
         ctr[0].ψ = 0.5 * (ctr[-1].ψ + ctr[1].ψ)
         @. ctr[0].lorenz = 0.5 * (ctr[-1].lorenz + ctr[1].lorenz)
 
-        @. ctr[KS.pSpace.nx+1].h0 =
-            0.5 * (ctr[KS.pSpace.nx].h0 + ctr[KS.pSpace.nx+2].h0)
-        @. ctr[KS.pSpace.nx+1].h1 =
-            0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
-        @. ctr[KS.pSpace.nx+1].h2 =
-            0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
-        @. ctr[KS.pSpace.nx+1].h3 =
-            0.5 * (ctr[KS.pSpace.nx].h3 + ctr[KS.pSpace.nx+2].h3)
+        @. ctr[KS.pSpace.nx+1].h0 = 0.5 * (ctr[KS.pSpace.nx].h0 + ctr[KS.pSpace.nx+2].h0)
+        @. ctr[KS.pSpace.nx+1].h1 = 0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
+        @. ctr[KS.pSpace.nx+1].h2 = 0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
+        @. ctr[KS.pSpace.nx+1].h3 = 0.5 * (ctr[KS.pSpace.nx].h3 + ctr[KS.pSpace.nx+2].h3)
         @. ctr[KS.pSpace.nx+1].E = 0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
         @. ctr[KS.pSpace.nx+1].B = 0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
         ctr[KS.pSpace.nx+1].ϕ = 0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
@@ -828,7 +821,9 @@ function update_boundary!(
     end
 
     for i in eachindex(residual)
-        residual[i] += sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) / (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
+        residual[i] +=
+            sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) /
+            (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
@@ -841,7 +836,7 @@ function update_boundary!(
             ctr[KS.pSpace.nx+i, j].prim .= ctr[KS.pSpace.nx, j].prim
 
             ctr[1-i, j].f .= ctr[1, j].f
-            ctr[KS.pSpace.nx+i, j].f .= ctr[KS.pSpace.nx, j].f           
+            ctr[KS.pSpace.nx+i, j].f .= ctr[KS.pSpace.nx, j].f
         end
 
         for i = 1:KS.pSpace.nx, j = 1:ngy
@@ -851,12 +846,12 @@ function update_boundary!(
             ctr[i, KS.pSpace.ny+j].prim .= ctr[i, KS.pSpace.ny].prim
 
             ctr[i, 1-j].f .= ctr[i, 1].f
-            ctr[i, KS.pSpace.ny+j].f .= ctr[i, KS.pSpace.ny].f          
+            ctr[i, KS.pSpace.ny+j].f .= ctr[i, KS.pSpace.ny].f
         end
     elseif bc == :period
 
     elseif bc == :balance
-        
+
     end
 
 end
@@ -1020,7 +1015,9 @@ function update_boundary!(
     end
 
     for i in eachindex(residual)
-        residual[i] += sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) / (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
+        residual[i] +=
+            sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) /
+            (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
@@ -1035,7 +1032,7 @@ function update_boundary!(
             ctr[1-i, j].h .= ctr[1, j].h
             ctr[1-i, j].b .= ctr[1, j].b
             ctr[KS.pSpace.nx+i, j].h .= ctr[KS.pSpace.nx, j].h
-            ctr[KS.pSpace.nx+i, j].b .= ctr[KS.pSpace.nx, j].b            
+            ctr[KS.pSpace.nx+i, j].b .= ctr[KS.pSpace.nx, j].b
         end
 
         for i = 1:KS.pSpace.nx, j = 1:ngy
@@ -1047,12 +1044,12 @@ function update_boundary!(
             ctr[i, 1-j].h .= ctr[i, 1].h
             ctr[i, 1-j].b .= ctr[i, 1].b
             ctr[i, KS.pSpace.ny+j].h .= ctr[i, KS.pSpace.ny].h
-            ctr[i, KS.pSpace.ny+j].b .= ctr[i, KS.pSpace.ny].b            
+            ctr[i, KS.pSpace.ny+j].b .= ctr[i, KS.pSpace.ny].b
         end
     elseif bc == :period
 
     elseif bc == :balance
-        
+
     end
 
 end

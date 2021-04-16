@@ -29,7 +29,12 @@ mutable struct ControlVolume1D{F,A,B} <: AbstractControlVolume1D
     sw::A
 end
 
-function ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T3) where {T1<:Real,T2,T3<:AbstractArray}
+function ControlVolume1D(
+    X::T1,
+    DX::T1,
+    W::T2,
+    PRIM::T3,
+) where {T1<:Real,T2,T3<:AbstractArray}
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -1125,7 +1130,14 @@ function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractV
     prim = deepcopy(PRIM)
     sw = zeros(eltype(W), axes(W)..., axes(X)...)
 
-    return ControlVolumeUS{typeof(n),typeof(x),typeof(w),typeof(prim),typeof(sw)}(n, x, dx, w, prim, sw)
+    return ControlVolumeUS{typeof(n),typeof(x),typeof(w),typeof(prim),typeof(sw)}(
+        n,
+        x,
+        dx,
+        w,
+        prim,
+        sw,
+    )
 end
 
 
@@ -1159,14 +1171,7 @@ mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     sf::D
 end
 
-function ControlVolumeUS1F(
-    N,
-    X,
-    DX,
-    W,
-    PRIM,
-    F::T,
-) where {T<:AbstractArray}
+function ControlVolumeUS1F(N, X, DX, W, PRIM, F::T) where {T<:AbstractArray}
     n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)
@@ -1178,7 +1183,16 @@ function ControlVolumeUS1F(
     f = deepcopy(F)
     sf = zeros(eltype(F), axes(F)..., axes(X)...)
 
-    return ControlVolumeUS1F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(n, x, dx, w, prim, sw, f, sf)
+    return ControlVolumeUS1F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(
+        n,
+        x,
+        dx,
+        w,
+        prim,
+        sw,
+        f,
+        sf,
+    )
 end
 
 

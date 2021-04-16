@@ -41,8 +41,21 @@ function UnstructPSpace(file::T) where {T<:AbstractString}
     edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
     cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
     edgeType = KitBase.mesh_edge_type(edgeCells, cellType)
-    
-    return UnstructPSpace(cells, points, cellid, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgePoints, edgeCells, edgeCenter, edgeType)
+
+    return UnstructPSpace(
+        cells,
+        points,
+        cellid,
+        cellType,
+        cellNeighbors,
+        cellEdges,
+        cellCenter,
+        cellArea,
+        edgePoints,
+        edgeCells,
+        edgeCenter,
+        edgeType,
+    )
 end
 
 
@@ -82,7 +95,7 @@ function read_mesh(file::T) where {T<:AbstractString}
         return points, keys, vals
     """
 
-    points, keys, vals = py"read"(file) 
+    points, keys, vals = py"read"(file)
     for val in vals
         val .+= 1 # python index is zero-based
     end
@@ -279,7 +292,7 @@ function mesh_edge_center(
     nodes::X,
     edgeNodes::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Integer,2}}
-    
+
     edgeCenter = zeros(size(edgeNodes, 1), size(nodes, 2))
     for i in axes(edgeCenter, 1)
         id1 = edgeNodes[i, 1]
@@ -297,9 +310,12 @@ end
 
 Compute central points of cell edges
 """
-function mesh_cell_edge(cells::X, edgeCells::Y) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,2}}
+function mesh_cell_edge(
+    cells::X,
+    edgeCells::Y,
+) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,2}}
     ncell = size(cells, 1)
-    vv = [Int[] for i in 1:ncell]
+    vv = [Int[] for i = 1:ncell]
     for i in axes(edgeCells, 1)
         if edgeCells[i, 1] != -1
             push!(vv[edgeCells[i, 1]], i)
@@ -324,13 +340,16 @@ Compute type of edges
 - 0: inner
 - 1: boundary
 """
-function mesh_edge_type(edgeCells::X, cellType::Y) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,1}}
+function mesh_edge_type(
+    edgeCells::X,
+    cellType::Y,
+) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,1}}
     edgeType = zeros(eltype(edgeCells), size(edgeCells, 1))
 
     for i in axes(edgeCells, 1)
         i1 = edgeCells[i, 1]
         i2 = edgeCells[i, 2]
-        if cellType[i1] == 0 && cellType[i2] ==0
+        if cellType[i1] == 0 && cellType[i2] == 0
             edgeType[i] = 0
         else
             edgeType[i] = 1

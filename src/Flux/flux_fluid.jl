@@ -11,7 +11,7 @@ Upwind flux
 """
 function flux_upwind(uL, uR, Ω::T, n::T, dt) where {T<:AbstractVector}
     ip = dot(Ω, n) # inner product
-    
+
     if ip > 0
         return dt * ip * uL
     else

@@ -86,4 +86,4 @@ for i = 1:nx, j = 1:ny
     ρ[i, j] = discrete_moments(phi[:, i, j], weights)
 end
 
-contourf(pspace.x[1:nx, 1], pspace.y[1, 1:ny], ρ', color=:PiYG_3)
+contourf(pspace.x[1:nx, 1], pspace.y[1, 1:ny], ρ', color = :PiYG_3)

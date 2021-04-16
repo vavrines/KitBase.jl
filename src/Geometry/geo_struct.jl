@@ -125,7 +125,7 @@ Equivalent N-dimensional mesh generator as matlab
 """
 ndgrid(v::AbstractVector) = copy(v)
 
-function ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where T
+function ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where {T}
     m, n = length(v1), length(v2)
     v1 = reshape(v1, m, 1)
     v2 = reshape(v2, 1, n)
@@ -133,21 +133,21 @@ function ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where T
     return (repeat(v1, 1, n), repeat(v2, m, 1))
 end
 
-function ndgrid(vs::AbstractVector{T}...) where T
+function ndgrid(vs::AbstractVector{T}...) where {T}
     ndgrid_fill(a, v, s, snext) = begin
         for j = 1:length(a)
-            a[j] = v[div(rem(j-1, snext), s)+1]
+            a[j] = v[div(rem(j - 1, snext), s)+1]
         end
     end
 
     n = length(vs)
     sz = map(length, vs)
-    out = ntuple(i->Array{T}(undef, sz), n)
+    out = ntuple(i -> Array{T}(undef, sz), n)
     s = 1
-    for i=1:n
+    for i = 1:n
         a = out[i]::Array
         v = vs[i]
-        snext = s*size(a,i)
+        snext = s * size(a, i)
         ndgrid_fill(a, v, s, snext)
         s = snext
     end
@@ -210,16 +210,22 @@ end
 # Extended Base.show()
 # ------------------------------------------------------------
 function Base.show(io::IO, ps::PSpace1D{TR,TI,TA}) where {TR,TI,TA}
-    print(io, "PhysicalSpace1D{$TR,$TI,$TA}\n",
-              "domain: ($(ps.x0),$(ps.x1))\n",
-              "resolution: $(ps.nx)\n",
-              "ghost: $(1-firstindex(ps.x))\n")
+    print(
+        io,
+        "PhysicalSpace1D{$TR,$TI,$TA}\n",
+        "domain: ($(ps.x0),$(ps.x1))\n",
+        "resolution: $(ps.nx)\n",
+        "ghost: $(1-firstindex(ps.x))\n",
+    )
 end
 
 function Base.show(io::IO, ps::PSpace2D{TR,TI,TA}) where {TR,TI,TA}
-    print(io, "PhysicalSpace2D{$TR,$TI,$TA}\n",
-              "domain: ($(ps.x0),$(ps.x1)) × ($(ps.y0),$(ps.y1))\n",
-              "resolution: $(ps.nx) × $(ps.nx)\n",
-              "ghost in x: $(1-firstindex(ps.x[:, 1]))\n",
-              "ghost in y: $(1-firstindex(ps.y[1, :]))\n")
+    print(
+        io,
+        "PhysicalSpace2D{$TR,$TI,$TA}\n",
+        "domain: ($(ps.x0),$(ps.x1)) × ($(ps.y0),$(ps.y1))\n",
+        "resolution: $(ps.nx) × $(ps.nx)\n",
+        "ghost in x: $(1-firstindex(ps.x[:, 1]))\n",
+        "ghost in y: $(1-firstindex(ps.y[1, :]))\n",
+    )
 end

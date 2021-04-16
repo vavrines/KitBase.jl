@@ -41,7 +41,12 @@ vs = KitBase.set_velocity(D)
 gas = KitBase.set_property(D)
 
 begin
-    primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, KitBase.sound_speed(1.0, gas.γ) * gas.Ma * 0.0875, 1.0]
+    primL = [
+        1.0,
+        KitBase.sound_speed(1.0, gas.γ) * gas.Ma,
+        KitBase.sound_speed(1.0, gas.γ) * gas.Ma * 0.0875,
+        1.0,
+    ]
     wL = KitBase.prim_conserve(primL, gas.γ)
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
     bL = @. hL * gas.K / 2 / primL[end]
@@ -49,18 +54,7 @@ begin
     wR = KitBase.prim_conserve(primR, gas.γ)
     hR = KitBase.maxwellian(vs.u, vs.v, primR)
     bR = @. hR * gas.K / 2 / primR[end]
-    ib = KitBase.IB2F(
-        wL,
-        primL,
-        hL,
-        bL,
-        primL,
-        wL,
-        primL,
-        hL,
-        bL,
-        primR,
-    )
+    ib = KitBase.IB2F(wL, primL, hL, bL, primL, wL, primL, hL, bL, primR)
 end
 
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
@@ -74,7 +68,7 @@ nt = ks.set.maxTime ÷ dt |> Int
     @inbounds Threads.@threads for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
-        
+
         if !(-1 in ps.edgeCells[i, :])
             KitBase.flux_kfvs!(
                 face[i].fw,
@@ -111,7 +105,7 @@ nt = ks.set.maxTime ÷ dt |> Int
                     dt,
                     face[i].len,
                 )
-            
+
                 face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
             end
         end

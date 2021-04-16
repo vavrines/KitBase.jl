@@ -33,7 +33,19 @@ struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
     maxTime::F
 end
 
-Setup() = Setup{String,Int,Float64,Float64}("gas", "sod", "1d1f1v", "kfvs", "bgk", 1, 1, "vanleer", "fix", 0.5, 2.0)
+Setup() = Setup{String,Int,Float64,Float64}(
+    "gas",
+    "sod",
+    "1d1f1v",
+    "kfvs",
+    "bgk",
+    1,
+    1,
+    "vanleer",
+    "fix",
+    0.5,
+    2.0,
+)
 
 
 """
@@ -230,7 +242,7 @@ struct DiatomicGas{TA,TI,TF} <: AbstractProperty
         _Ma = typeof(Kn)(Ma)
         _Pr = typeof(Kn)(Pr)
         _Kr = typeof(K)(Kr)
-        
+
         T = typeof(γ)
         _ω = T(ω)
         _αᵣ = T(αᵣ)
@@ -242,11 +254,7 @@ struct DiatomicGas{TA,TI,TF} <: AbstractProperty
         _ω₁ = T(ω₁)
         _ω₂ = T(ω₂)
 
-        new{
-            typeof(Kn),
-            typeof(K),
-            T,
-        }(
+        new{typeof(Kn),typeof(K),T}(
             Kn,
             _Ma,
             _Pr,

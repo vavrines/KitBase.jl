@@ -19,7 +19,19 @@ begin
     cellCenter = KitBase.mesh_center_2D(points, cellid)
     edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
     cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
-    ps = KitBase.UnstructPSpace(cells, points, cellid, cellType, cellNeighbors, cellEdges, cellCenter, cellArea, edgePoints, edgeCells, edgeCenter)
+    ps = KitBase.UnstructPSpace(
+        cells,
+        points,
+        cellid,
+        cellType,
+        cellNeighbors,
+        cellEdges,
+        cellCenter,
+        cellArea,
+        edgePoints,
+        edgeCells,
+        edgeCenter,
+    )
 end
 
 begin
@@ -49,7 +61,13 @@ ctr = Array{KitBase.ControlVolumeUS1F}(undef, size(ps.cellid, 1))
 for i in eachindex(ctr)
     n = Vector{Float64}[]
     for j = 1:3
-        push!(n, KitBase.unit_normal(ps.points[edgePoints[cellEdges[i, j], 1], :], ps.points[edgePoints[cellEdges[i, j], 2], :]))
+        push!(
+            n,
+            KitBase.unit_normal(
+                ps.points[edgePoints[cellEdges[i, j], 1], :],
+                ps.points[edgePoints[cellEdges[i, j], 2], :],
+            ),
+        )
 
         if dot(ps.edgeCenter[ps.cellEdges[i, j], :] .- ps.cellCenter[i, :], n[j]) < 0
             n[j] .= -n[j]
@@ -62,29 +80,34 @@ for i in eachindex(ctr)
     #if -0.01 <= ps.cellCenter[i, 1] <= 0.01 && -0.01 <= ps.cellCenter[i, 2] <= 0.01
     #    phi .= 1.0
     #end
-    
+
     w = sum(weights .* phi)
     dx = [
-        KitBase.point_distance(cellCenter[i, :], ps.points[ps.cellid[i, 1], :], ps.points[ps.cellid[i, 2], :]),
-        KitBase.point_distance(cellCenter[i, :], ps.points[ps.cellid[i, 2], :], ps.points[ps.cellid[i, 3], :]),
-        KitBase.point_distance(cellCenter[i, :], ps.points[ps.cellid[i, 3], :], ps.points[ps.cellid[i, 1], :]),
+        KitBase.point_distance(
+            cellCenter[i, :],
+            ps.points[ps.cellid[i, 1], :],
+            ps.points[ps.cellid[i, 2], :],
+        ),
+        KitBase.point_distance(
+            cellCenter[i, :],
+            ps.points[ps.cellid[i, 2], :],
+            ps.points[ps.cellid[i, 3], :],
+        ),
+        KitBase.point_distance(
+            cellCenter[i, :],
+            ps.points[ps.cellid[i, 3], :],
+            ps.points[ps.cellid[i, 1], :],
+        ),
     ]
 
-    ctr[i] = KitBase.ControlVolumeUS1F(
-        n,
-        cellCenter[i, :],
-        dx,
-        w,
-        w,
-        phi
-    )
+    ctr[i] = KitBase.ControlVolumeUS1F(n, cellCenter[i, :], dx, w, w, phi)
 end
 
 face = Array{KitBase.Interface2D1F}(undef, size(ps.edgePoints, 1))
 for i in eachindex(face)
     len = norm(ps.points[edgePoints[i, 1], :] .- ps.points[edgePoints[i, 2], :])
     n = KitBase.unit_normal(ps.points[edgePoints[i, 1], :], ps.points[edgePoints[i, 2], :])
-    
+
     if !(-1 in ps.edgeCells[i, :])
         n0 = ps.cellCenter[ps.edgeCells[i, 2], :] .- ps.cellCenter[ps.edgeCells[i, 1], :]
     else
@@ -93,17 +116,11 @@ for i in eachindex(face)
     if dot(n, n0) < 0
         n .= -n
     end
-    
+
     fw = 0.0
     ff = zeros(nq)
 
-    face[i] = KitBase.Interface2D1F(
-        len,
-        n[1],
-        n[2],
-        fw,
-        ff,
-    )
+    face[i] = KitBase.Interface2D1F(len, n[1], n[2], fw, ff)
 end
 
 dt = 1.2 / 150 * cfl
@@ -112,15 +129,23 @@ nt = tspan[2] ÷ dt |> Int
     @inbounds Threads.@threads for i in eachindex(face)
         velo = vs.u[:, 1] .* face[i].n[1] + vs.u[:, 2] .* face[i].n[2]
         if !(-1 in ps.edgeCells[i, :])
-            KitBase.flux_kfvs!(face[i].ff, ctr[ps.edgeCells[i, 1]].f, ctr[ps.edgeCells[i, 2]].f, velo, dt)
+            KitBase.flux_kfvs!(
+                face[i].ff,
+                ctr[ps.edgeCells[i, 1]].f,
+                ctr[ps.edgeCells[i, 2]].f,
+                velo,
+                dt,
+            )
         end
     end
 
     @inbounds Threads.@threads for i in eachindex(ctr)
         if ps.cellType[i] == 0
-            for j in 1:3
+            for j = 1:3
                 dirc = sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n))
-                @. ctr[i].f -= dirc * face[ps.cellEdges[i, j]].ff * face[ps.cellEdges[i, j]].len / ps.cellArea[i]
+                @. ctr[i].f -=
+                    dirc * face[ps.cellEdges[i, j]].ff * face[ps.cellEdges[i, j]].len /
+                    ps.cellArea[i]
             end
 
             integral = KitBase.discrete_moments(ctr[i].f, vs.weights)

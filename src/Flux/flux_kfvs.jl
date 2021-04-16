@@ -253,7 +253,7 @@ function flux_kfvs!(
     fw[3] =
         dt * 0.5 * (sum(ω .* u .^ 3 .* h) + sum(ω .* u .* b)) -
         0.5 * dt^2 * 0.5 * (sum(ω .* u .^ 4 .* sh) + sum(ω .* u .^ 2 .* sb))
-    fw[4] = dt * 0.5* sum(ω .* u .* r) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* sr)
+    fw[4] = dt * 0.5 * sum(ω .* u .* r) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* sr)
 
     # micro fluxes
     @. fh = dt * u * h - 0.5 * dt^2 * u^2 * sh

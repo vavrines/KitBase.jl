@@ -7,7 +7,9 @@ set = KitBase.set_setup(D)
 
 ps = KitBase.set_geometry(D)
 for i in eachindex(ps.cellType)
-    if ps.cellType[i] == 1 && -0.5 < ps.cellCenter[i, 1] < 1.5 && -0.1 < ps.cellCenter[i, 2] < 0.1
+    if ps.cellType[i] == 1 &&
+       -0.5 < ps.cellCenter[i, 1] < 1.5 &&
+       -0.1 < ps.cellCenter[i, 2] < 0.1
         ps.cellType[i] = 2
 
         for j = 1:3
@@ -31,13 +33,16 @@ gas = KitBase.set_property(D)
 c0 = KitBase.sound_speed(1.0, gas.γ) * gas.Ma
 α0 = π / 180 * 7.0
 
-uq = [-0.9491079123427586,
--0.7415311855993946,
--0.40584515137739735,
-2.788418582445668e-17,
-0.4058451513773973,
-0.7415311855993946,
-0.9491079123427586] * π / 180 * 3.0
+uq =
+    [
+        -0.9491079123427586,
+        -0.7415311855993946,
+        -0.40584515137739735,
+        2.788418582445668e-17,
+        0.4058451513773973,
+        0.7415311855993946,
+        0.9491079123427586,
+    ] * π / 180 * 3.0
 α = α0 + uq[1]
 
 begin
@@ -50,18 +55,7 @@ begin
     wR = KitBase.prim_conserve(primR, gas.γ)
     hR = KitBase.maxwellian(vs.u, vs.v, primR)
     bR = @. hR * gas.K / 2 / primR[end]
-    ib = KitBase.IB2F(
-        wL,
-        primL,
-        hL,
-        bL,
-        primL,
-        wL,
-        primL,
-        hL,
-        bL,
-        primR,
-    )
+    ib = KitBase.IB2F(wL, primL, hL, bL, primL, wL, primL, hL, bL, primR)
 end
 
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
@@ -76,7 +70,7 @@ res = zeros(4)
     @inbounds Threads.@threads for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
-        
+
         if !(-1 in ps.edgeCells[i, :])
             KitBase.flux_kfvs!(
                 face[i].fw,
@@ -113,7 +107,7 @@ res = zeros(4)
                     dt,
                     face[i].len,
                 )
-            
+
                 face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
             end
         end
@@ -156,11 +150,11 @@ res = zeros(4)
             )
         end
     end
-    
+
     for i in eachindex(ps.cellType)
         if ps.cellType[i] == 3
             ids = ps.cellNeighbors[i, :]
-            deleteat!(ids, findall(x->x==-1, ids))
+            deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)

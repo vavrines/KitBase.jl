@@ -10,18 +10,7 @@ begin
     wL = KitBase.prim_conserve(primL, gas.γ)
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
     bL = @. hL * gas.K / 2 / primL[end]
-    ib = KitBase.IB2F(
-        wL,
-        primL,
-        hL,
-        bL,
-        primL,
-        wL,
-        primL,
-        hL,
-        bL,
-        primL,
-    )
+    ib = KitBase.IB2F(wL, primL, hL, bL, primL, wL, primL, hL, bL, primL)
 end
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
 ctr, face = KitBase.init_fvm(ks, ks.pSpace)
@@ -31,7 +20,7 @@ for iter = 1:nt
     @inbounds for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
-        
+
         if !(-1 in ps.edgeCells[i, :])
             KitBase.flux_kfvs!(
                 face[i].fw,
@@ -68,7 +57,7 @@ for iter = 1:nt
                     dt,
                     face[i].len,
                 )
-            
+
                 face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
             end
         end
@@ -115,7 +104,7 @@ for iter = 1:nt
     for i in eachindex(ps.cellType)
         if ps.cellType[i] == 3
             ids = ps.cellNeighbors[i, :]
-            deleteat!(ids, findall(x->x==-1, ids))
+            deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)

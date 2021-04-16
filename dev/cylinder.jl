@@ -13,7 +13,8 @@ for i in eachindex(ps.edgeType)
     i1 = ps.edgePoints[i, 1]
     i2 = ps.edgePoints[i, 2]
 
-    if i1 in [ps.cells.index[1]; ps.cells.index[2]] && i2 in [ps.cells.index[1]; ps.cells.index[2]]
+    if i1 in [ps.cells.index[1]; ps.cells.index[2]] &&
+       i2 in [ps.cells.index[1]; ps.cells.index[2]]
         ps.edgeType[i] = 2
         c1 = ps.edgeCells[i, 1]
         c2 = ps.edgeCells[i, 2]
@@ -45,18 +46,7 @@ begin
     wR = KitBase.prim_conserve(primR, gas.γ)
     hR = KitBase.maxwellian(vs.u, vs.v, primR)
     bR = @. hR * gas.K / 2 / primR[end]
-    ib = KitBase.IB2F(
-        wL,
-        primL,
-        hL,
-        bL,
-        primL,
-        wL,
-        primL,
-        hL,
-        bL,
-        primR,
-    )
+    ib = KitBase.IB2F(wL, primL, hL, bL, primL, wL, primL, hL, bL, primR)
 end
 
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
@@ -156,7 +146,7 @@ end
     @inbounds Threads.@threads for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
-        
+
         if !(-1 in ps.edgeCells[i, :])
             KitBase.flux_kfvs!(
                 face[i].fw,
@@ -193,7 +183,7 @@ end
                     dt,
                     face[i].len,
                 )
-            
+
                 face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
             end
         end
@@ -240,7 +230,7 @@ end
     for i in eachindex(ps.cellType)
         if ps.cellType[i] == 3
             ids = ps.cellNeighbors[i, :]
-            deleteat!(ids, findall(x->x==-1, ids))
+            deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)

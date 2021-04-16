@@ -3,7 +3,7 @@
 
 Maxwell Boltzmann entropy
 """
-maxwell_boltzmann(f::T) where {T<:Real} = f * log(f) - f 
+maxwell_boltzmann(f::T) where {T<:Real} = f * log(f) - f
 
 
 """
