@@ -5,13 +5,13 @@
         cellid::C # node indices of elements
         cellType::D # inner/boundary cell
         cellNeighbors::E # neighboring cells id
-        cellEdges::F # cell edges id
+        cellFaces::F # cell edges id
         cellCenter::G # cell center location
         cellArea::H # cell size
-        edgePoints::I # ids of two points at edge
-        edgeCells::J # ids of two cells around edge
-        edgeCenter::K # edge center location
-        edgeType::L
+        facePoints::I # ids of two points at edge
+        faceCells::J # ids of two cells around edge
+        faceCenter::K # edge center location
+        faceType::L
     end
 
 Physical space with unstructured mesh
@@ -22,13 +22,13 @@ struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K,L} <: AbstractPhysicalSpace
     cellid::C # node indices of elements
     cellType::D # inner/boundary cell
     cellNeighbors::E # neighboring cells id
-    cellEdges::F # cell edges id
+    cellFaces::F # cell edges id
     cellCenter::G # cell center location
     cellArea::H # cell size
-    edgePoints::I # ids of two points at edge
-    edgeCells::J # ids of two cells around edge
-    edgeCenter::K # edge center location
-    edgeType::L
+    facePoints::I # ids of two points at edge
+    faceCells::J # ids of two cells around edge
+    faceCenter::K # edge center location
+    faceType::L
 end
 
 function UnstructPSpace(file::T) where {T<:AbstractString}
