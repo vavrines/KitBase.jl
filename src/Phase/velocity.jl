@@ -140,6 +140,24 @@ function VSpace2D(
                     δv
             end
         end
+    elseif TYPE == "algebra"
+        _nu = NU + 1
+        _nv = NV + 1
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
+        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
+        __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
+        __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
+        v, u = meshgrid(__u, __v)
+
+        _du = _u[2:end] - _u[1:end-1]
+        _dv = _v[2:end] - _v[1:end-1]
+        dv, du = meshgrid(_du, _dv)
+        
+        for j in axes(u, 2)
+            for i in axes(u, 1)
+                weights[i, j] = du[i, j] * dv[i, j]
+            end
+        end
     else
         throw("No velocity quadrature available")
     end
