@@ -223,6 +223,50 @@ function step!(
 
 end
 
+function step!(
+    fwL::T1,
+    ffL::T2,
+    w::T3,
+    prim::T3,
+    f::T4,
+    fwR::T1,
+    ffR::T2,
+    γ,
+    Kn_bz,
+    nm,
+    phi,
+    psi,
+    phipsi,
+    dx,
+    dt,
+    RES,
+    AVG,
+    collision = :fsm::Symbol,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,3},
+    T3<:AbstractArray{<:AbstractFloat,1},
+    T4<:AbstractArray{<:AbstractFloat,3},
+}
+
+    @assert collision == :fsm
+
+    w_old = deepcopy(w)
+    @. w += (fwL - fwR) / dx
+    prim .= conserve_prim(w, γ)
+
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+    Q = zero(f[:, :, :])
+    boltzmann_fft!(Q, f, Kn_bz, nm, phi, psi, phipsi)
+
+    for k in axes(f, 3), j in axes(f, 2), i in axes(f, 1)
+        f[i, j, k] += (ffL[i, j, k] - ffR[i, j, k]) / dx + dt * Q[i, j, k]
+    end
+
+end
+
 #--- 1D2F1V ---#
 function step!(
     fwL::T1,
