@@ -114,7 +114,31 @@ KitBase.step!(
     zeros(5),
     zeros(5),
     :fsm,
-) 
+)
+KitBase.step!(
+    [1.0, 0.0, 0.0, 0.0, 1.0],
+    KitBase.conserve_prim([1.0, 0.0, 0.0, 0.0, 1.0], 5 / 3),
+    rand(16, 16, 16),
+    zeros(5),
+    zeros(16, 16, 16),
+    zeros(5),
+    zeros(16, 16, 16),
+    zeros(5),
+    zeros(16, 16, 16),
+    zeros(5),
+    zeros(16, 16, 16),
+    5 / 3,
+    1.0,
+    5,
+    ones(16, 16, 16, 20),
+    ones(16, 16, 16, 20),
+    ones(16, 16, 16),
+    0.1,
+    0.01,
+    zeros(5),
+    zeros(5),
+    :fsm,
+)
 
 # Rykov
 KitBase.step!(
