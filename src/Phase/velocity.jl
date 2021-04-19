@@ -158,6 +158,35 @@ function VSpace2D(
                 weights[i, j] = du[i, j] * dv[i, j]
             end
         end
+    elseif TYPE == "maxwell"
+        _u, _uw = maxwell_quadrature(NU, U1 / 5.76)
+        _v, _vw = maxwell_quadrature(NV, V1 / 5.76)
+        v, u = meshgrid(_u, _v)
+        for j in axes(weights, 2), i in axes(weights, 1)
+            weights[i, j] = _uw[i] * _vw[j]
+        end
+
+        _du = zero(_u)
+        for i in eachindex(_u)
+            if i == 1
+                _du[i] = _u[2] - _u[1]
+            elseif i == length(_u)
+                _du[i] = _u[end] - _u[end-1]
+            else
+                _du[i] = (_u[i+1] - _u[i-1]) / 2 
+            end
+        end
+        _dv = zero(_v)
+        for i in eachindex(_v)
+            if i == 1
+                _dv[i] = _v[2] - _v[1]
+            elseif i == length(_v)
+                _dv[i] = _v[end] - _v[end-1]
+            else
+                _dv[i] = (_v[i+1] - _v[i-1]) / 2 
+            end
+        end
+        dv, du = meshgrid(_du, _dv)
     else
         throw("No velocity quadrature available")
     end
@@ -671,4 +700,47 @@ function Base.show(io::IO, vs::VSpace3D{TR,TI,TA}) where {TR,TI,TA}
         "ghost in v: $(1-firstindex(vs.v[1, :, 1]))\n",
         "ghost in w: $(1-firstindex(vs.w[1, 1, :]))\n",
     )
+end
+
+
+function maxwell_quadrature(N::Integer, C = 1::Real)
+    @assert N <= 33
+
+    py"""
+    import numpy as np
+    from numpy import linalg as LA
+
+    def dvGH(N2,C):
+        N = N2//2
+
+        a = np.zeros(N)
+        b = np.zeros(N)
+        a[0] = 1.0/np.sqrt(np.pi)
+        a[1] = 2.0/np.sqrt(np.pi)/(np.pi-2.0)
+        b[1] = a[0]/( a[0] + a[1])/2.0
+
+        for i in range(2,N):
+            b[i] = (i-1)+1.0/2.0-b[i-1]-a[i-1]**2
+            a[i] = (i**2/4.0/b[i]-b[i-1]-1.0/2)/a[i-1]-a[i-1]
+
+        J = np.diag(a) + np.diag(np.sqrt(b[1:N]),1) \
+        + np.diag(np.sqrt(b[1:N]),-1)
+
+        v,V = LA.eig(J)
+
+        w = V[0,:]*V[0,:]*np.sqrt(np.pi)/2.0
+
+        vw = np.transpose(np.vstack((v,w)))
+        vw = vw[vw[:,0].argsort()]
+        v = vw[:,0]
+        w = vw[:,1]
+
+        Xis = np.hstack((-np.flipud(v),v))
+        weights = np.hstack((np.flipud(w),w))
+        weights = weights*np.exp(Xis**2)*C
+        Xis = Xis*C
+        return (Xis, weights)
+    """
+
+    p, w = py"dvGH"(N, C)
 end

@@ -495,6 +495,19 @@ KitBase.flux_boundary_maxwell!(
     dx,
     1,
 )
+KitBase.flux_boundary_maxwell!(
+    zeros(5),
+    zeros(16, 16, 16),
+    [1.0, 0.3, 0.1, 0.1, 0.89],
+    rand(16, 16, 16),
+    randn(16, 16, 16),
+    randn(16, 16, 16),
+    randn(16, 16, 16),
+    ones(16, 16, 16),
+    dt,
+    1,
+)
+
 KitBase.flux_boundary_specular!(zeros(3), zeros(16), rand(16), randn(16), ones(16), dt)
 KitBase.flux_boundary_specular!(
     zeros(3),
