@@ -202,6 +202,58 @@ function flux_boundary_maxwell!(
 
 end
 
+# ------------------------------------------------------------
+# 1F3V
+# ------------------------------------------------------------
+function flux_boundary_maxwell!(
+    fw::T1,
+    ff::T2,
+    bc::T3,
+    f::T4,
+    u::T5,
+    v::T5,
+    w::T5,
+    ω::T5,
+    dt,
+    area,
+    rot = 1,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,3},
+    T3<:Array{<:Real,1},
+    T4<:AbstractArray{<:AbstractFloat,3},
+    T5<:AbstractArray{<:AbstractFloat,3},
+}
+
+    @assert length(bc) == 5
+
+    δ = heaviside.(u .* rot)
+    SF = sum(ω .* u .* f .* (1.0 .- δ))
+    SG =
+        (bc[end] / π)^1.5 *
+        sum(ω .* u .* exp.(-bc[end] .* ((u .- bc[2]) .^ 2 .+ (v .- bc[3]) .^ 2 .+ (w .- bc[4]) .^ 2)) .* δ)
+    prim = [-SF / SG; bc[2:end]]
+
+    M = maxwellian(u, v, w, prim)
+    fWall = M .* δ .+ f .* (1.0 .- δ)
+
+    fw[1] = discrete_moments(fWall, u, ω, 1) * area * dt
+    fw[2] = discrete_moments(fWall, u, ω, 2) * area * dt
+    fw[3] = discrete_moments(fWall .* u, v, ω, 1) * area * dt
+    fw[4] = discrete_moments(fWall .* u, w, ω, 1) * area * dt
+    fw[5] =
+        (
+            0.5 * discrete_moments(fWall .* (u .^ 2 .+ v .^ 2 + w .^2), u, ω, 1)
+        ) *
+        area *
+        dt
+
+    @. ff = u * fWall * area * dt
+
+    return nothing
+
+end
+
 
 """
     flux_boundary_specular!(
