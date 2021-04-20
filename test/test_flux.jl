@@ -181,6 +181,18 @@ KitBase.flux_kfvs!(
 )
 KitBase.flux_kfvs!(
     zeros(5),
+    zeros(16, 16, 16),
+    rand(16, 16, 16),
+    rand(16, 16, 16),
+    randn(16, 16, 16),
+    randn(16, 16, 16),
+    randn(16, 16, 16),
+    ones(16, 16, 16),
+    dt,
+    1.0,
+)
+KitBase.flux_kfvs!(
+    zeros(5),
     zeros(16),
     zeros(16),
     zeros(16),
