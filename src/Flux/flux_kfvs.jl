@@ -342,6 +342,7 @@ function flux_kfvs!(
         dt * 0.5 * sum(ω .* u .* (u .^ 2 .+ v .^ 2 .+ w .^ 2) .* f) -
         0.5 * dt^2 * 0.5 * sum(ω .* u .^ 2 .* (u .^ 2 .+ v .^ 2 .+ w .^ 2) .* sf)
 
+    @. fw *= len
     @. ff = (dt * u * f - 0.5 * dt^2 * u^2 * sf) * len
 
     return nothing
