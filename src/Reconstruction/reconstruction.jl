@@ -31,7 +31,7 @@ function vanleer(sL::T, s::T, sR::T) where {T}
         (fortsign(1.0, sL) + fortsign(1.0, s)) * abs(sL) * abs(s) /
         (abs(sL) + abs(s) + 1.e-7),
     ]
-    id = findmin(abs.(δ))
+    id = findmin(abs.(δ))[2]
 
     return δ[id]
 end
@@ -51,7 +51,7 @@ function minmod(sL::T, s::T, sR::T) where {T}
         0.5 * (fortsign(1.0, s) + fortsign(1.0, sR)) * min(abs(sR), abs(s)),
         0.5 * (fortsign(1.0, sL) + fortsign(1.0, s)) * min(abs(s), abs(sL)),
     ]
-    id = findmin(abs.(δ))
+    id = findmin(abs.(δ))[2]
 
     return δ[id]
 end
