@@ -2,13 +2,16 @@
 # Reconstruction and Slope Limiters
 # ============================================================
 
-export vanleer, minmod, superbee, vanalbaba
+export linear, vanleer, minmod, superbee, vanalbaba
 export reconstruct2, reconstruct2!, reconstruct3, reconstruct3!
 export weno5
 
 # ------------------------------------------------------------
 # Slope limiter functions
 # ------------------------------------------------------------
+
+linear(sL::T, sR::T) where {T} = 0.5 * (sL + sR)
+
 
 """
     vanleer(sL::Real, sR::Real)
@@ -19,6 +22,20 @@ vanleer(sL::T, sR::T) where {T} =
     (fortsign(1.0, sL) + fortsign(1.0, sR)) * abs(sL) * abs(sR) /
     (abs(sL) + abs(sR) + 1.e-7)
 
+function vanleer(sL::T, s::T, sR::T) where {T}
+    δ = [
+        (fortsign(1.0, sL) + fortsign(1.0, sR)) * abs(sL) * abs(sR) /
+        (abs(sL) + abs(sR) + 1.e-7),
+        (fortsign(1.0, s) + fortsign(1.0, sR)) * abs(s) * abs(sR) /
+        (abs(s) + abs(sR) + 1.e-7),
+        (fortsign(1.0, sL) + fortsign(1.0, s)) * abs(sL) * abs(s) /
+        (abs(sL) + abs(s) + 1.e-7),
+    ]
+    id = findmin(abs.(δ))
+
+    return δ[id]
+end
+
 
 """
     minmod(sL::Real, sR::Real)
@@ -27,6 +44,17 @@ MinMod limiter
 """
 minmod(sL::T, sR::T) where {T} =
     0.5 * (fortsign(1.0, sL) + fortsign(1.0, sR)) * min(abs(sR), abs(sL))
+
+function minmod(sL::T, s::T, sR::T) where {T}
+    δ = [
+        0.5 * (fortsign(1.0, sL) + fortsign(1.0, sR)) * min(abs(sR), abs(sL)),
+        0.5 * (fortsign(1.0, s) + fortsign(1.0, sR)) * min(abs(sR), abs(s)),
+        0.5 * (fortsign(1.0, sL) + fortsign(1.0, s)) * min(abs(s), abs(sL)),
+    ]
+    id = findmin(abs.(δ))
+
+    return δ[id]
+end
 
 
 """
@@ -205,19 +233,10 @@ function reconstruct3(
     ΔxR::T,
     limiter = :vanleer::Symbol,
 ) where {T}
-
     sL = (wN - wL) / ΔxL
     sR = (wR - wN) / ΔxR
 
-    if limiter == :linear
-        return 0.5 * (sL + sR)
-    elseif limiter == :vanleer
-        return vanleer(sL, sR)
-    elseif limiter == :minmod
-        return minmod(sL, sR)
-    else
-    end
-
+    return eval(limiter)(sL, sR)
 end
 
 function reconstruct3(
@@ -228,19 +247,10 @@ function reconstruct3(
     ΔxR,
     limiter = :vanleer::Symbol,
 ) where {T<:AbstractArray{<:Real,1}}
-
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
 
-    if limiter == :linear
-        return 0.5 .* (sL .+ sR)
-    elseif limiter == :vanleer
-        return vanleer.(sL, sR)
-    elseif limiter == :minmod
-        return minmod.(sL, sR)
-    else
-    end
-
+    return eval(limiter).(sL, sR)
 end
 
 function reconstruct3(
@@ -333,19 +343,10 @@ function reconstruct3!(
     ΔxR,
     limiter = :vanleer::Symbol,
 ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
-
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
 
-    if limiter == :linear
-        sw .= 0.5 .* (sL .+ sR)
-    elseif limiter == :vanleer
-        sw .= vanleer.(sL, sR)
-    elseif limiter == :minmod
-        sw .= minmod.(sL, sR)
-    else
-    end
-
+    sw .= eval(limiter).(sL, sR)
 end
 
 function reconstruct3!(

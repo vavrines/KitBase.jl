@@ -1,7 +1,7 @@
 name = "KitBase"
 uuid = "86eed249-3a28-466f-8d3a-596821e1af9a"
 authors = ["Tianbai Xiao <tianbaixiao@gmail.com>"]
-version = "0.4.8"
+version = "0.4.9"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
@@ -29,7 +29,7 @@ WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 CSV = "0.8"
 CUDA = "^2, ^3"
 Conda = "^1"
-Distributions = "0.21, 0.22, 0.23, 0.24"
+Distributions = "0.21, 0.22, 0.23, 0.24, 0.25"
 FFTW = "^1"
 FastGaussQuadrature = "0.2, 0.3, 0.4"
 FileIO = "^1"

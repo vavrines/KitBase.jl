@@ -864,83 +864,184 @@ function reconstruct!(
     end
 
     @inbounds Threads.@threads for i in eachindex(ctr)
-        ids = ps.cellNeighbors[i, :]
-        deleteat!(ids, findall(x -> x == -1, ids))
-        id1, id2 = ids[1:2]
+        ids = KS.pSpace.cellNeighbors[i, :]
+        if -1 in ids
+            deleteat!(ids, findall(x -> x == -1, ids))
+            id1, id2 = ids[1:2]
 
-        swx = KitBase.extract_last(ctr[i].sw, 1, mode = :view)
-        swy = KitBase.extract_last(ctr[i].sw, 2, mode = :view)
-        shx = KitBase.extract_last(ctr[i].sh, 1, mode = :view)
-        shy = KitBase.extract_last(ctr[i].sh, 2, mode = :view)
-        sbx = KitBase.extract_last(ctr[i].sb, 1, mode = :view)
-        sby = KitBase.extract_last(ctr[i].sb, 2, mode = :view)
+            swx = KitBase.extract_last(ctr[i].sw, 1, mode = :view)
+            swy = KitBase.extract_last(ctr[i].sw, 2, mode = :view)
+            shx = KitBase.extract_last(ctr[i].sh, 1, mode = :view)
+            shy = KitBase.extract_last(ctr[i].sh, 2, mode = :view)
+            sbx = KitBase.extract_last(ctr[i].sb, 1, mode = :view)
+            sby = KitBase.extract_last(ctr[i].sb, 2, mode = :view)
 
-        wL = ctr[id1].w
-        wR = ctr[id2].w
-        hL = ctr[id1].h
-        hR = ctr[id2].h
-        bL = ctr[id1].b
-        bR = ctr[id2].b
+            wL = ctr[id1].w
+            wR = ctr[id2].w
+            hL = ctr[id1].h
+            hR = ctr[id2].h
+            bL = ctr[id1].b
+            bR = ctr[id2].b
 
-        dxL = ctr[i].x[1] - ctr[id1].x[1]
-        dxR = ctr[id2].x[1] - ctr[i].x[1]
-        dyL = ctr[i].x[2] - ctr[id1].x[2]
-        dyR = ctr[id2].x[2] - ctr[i].x[2]
+            dxL = ctr[i].x[1] - ctr[id1].x[1]
+            dxR = ctr[id2].x[1] - ctr[i].x[1]
+            dyL = ctr[i].x[2] - ctr[id1].x[2]
+            dyR = ctr[id2].x[2] - ctr[i].x[2]
 
-        reconstruct3!(
-            swx,
-            wL,
-            ctr[i].w,
-            wR,
-            dxL,
-            dxR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            swy,
-            wL,
-            ctr[i].w,
-            wR,
-            dyL,
-            dyR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            shx,
-            hL,
-            ctr[i].h,
-            hR,
-            dxL,
-            dxR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            shy,
-            hL,
-            ctr[i].h,
-            hR,
-            dyL,
-            dyR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            sbx,
-            bL,
-            ctr[i].b,
-            bR,
-            dxL,
-            dxR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            sby,
-            bL,
-            ctr[i].b,
-            bR,
-            dyL,
-            dyR,
-            Symbol(KS.set.limiter),
-        )
+            reconstruct3!(
+                swx,
+                wL,
+                ctr[i].w,
+                wR,
+                dxL,
+                dxR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                swy,
+                wL,
+                ctr[i].w,
+                wR,
+                dyL,
+                dyR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                shx,
+                hL,
+                ctr[i].h,
+                hR,
+                dxL,
+                dxR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                shy,
+                hL,
+                ctr[i].h,
+                hR,
+                dyL,
+                dyR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                sbx,
+                bL,
+                ctr[i].b,
+                bR,
+                dxL,
+                dxR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                sby,
+                bL,
+                ctr[i].b,
+                bR,
+                dyL,
+                dyR,
+                Symbol(KS.set.limiter),
+            )
+        else
+            #=id1, id2, id3 = ids
+
+            swx = KitBase.extract_last(ctr[i].sw, 1, mode = :view)
+            swy = KitBase.extract_last(ctr[i].sw, 2, mode = :view)
+            shx = KitBase.extract_last(ctr[i].sh, 1, mode = :view)
+            shy = KitBase.extract_last(ctr[i].sh, 2, mode = :view)
+            sbx = KitBase.extract_last(ctr[i].sb, 1, mode = :view)
+            sby = KitBase.extract_last(ctr[i].sb, 2, mode = :view)
+
+            w1 = ctr[id1].w
+            w2 = ctr[id2].w
+            w3 = ctr[id3].w
+            h1 = ctr[id1].h
+            h2 = ctr[id2].h
+            h3 = ctr[id3].h
+            b1 = ctr[id1].b
+            b2 = ctr[id2].b
+            b3 = ctr[id3].b
+
+            swx1 = zero(w1)
+            swx2 = zero(w2)
+            swx3 = zero(w3)
+            swy1 = zero(w1)
+            swy2 = zero(w2)
+            swy3 = zero(w3)
+            shx1 = zero(h1)
+            shx2 = zero(h2)
+            shx3 = zero(h3)
+            shy1 = zero(h1)
+            shy2 = zero(h2)
+            shy3 = zero(h3)
+            sbx1 = zero(b1)
+            sbx2 = zero(b2)
+            sbx3 = zero(b3)
+            sby1 = zero(b1)
+            sby2 = zero(b2)
+            sby3 = zero(b3)
+
+            dx1 = ctr[i].x[1] - ctr[id1].x[1]
+            dx2 = ctr[id2].x[1] - ctr[i].x[1]
+
+            dyL = ctr[i].x[2] - ctr[id1].x[2]
+            dyR = ctr[id2].x[2] - ctr[i].x[2]
+
+            reconstruct3!(
+                swx,
+                wL,
+                ctr[i].w,
+                wR,
+                dxL,
+                dxR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                swy,
+                wL,
+                ctr[i].w,
+                wR,
+                dyL,
+                dyR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                shx,
+                hL,
+                ctr[i].h,
+                hR,
+                dxL,
+                dxR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                shy,
+                hL,
+                ctr[i].h,
+                hR,
+                dyL,
+                dyR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                sbx,
+                bL,
+                ctr[i].b,
+                bR,
+                dxL,
+                dxR,
+                Symbol(KS.set.limiter),
+            )
+            reconstruct3!(
+                sby,
+                bL,
+                ctr[i].b,
+                bR,
+                dyL,
+                dyR,
+                Symbol(KS.set.limiter),
+            )=#
+        end
     end
 
 end
