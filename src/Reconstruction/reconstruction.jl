@@ -3,7 +3,7 @@
 # ============================================================
 
 export linear, vanleer, minmod, superbee, vanalbaba
-export reconstruct2, reconstruct2!, reconstruct3, reconstruct3!
+export reconstruct2, reconstruct2!, reconstruct3, reconstruct3!, reconstruct4!
 export weno5
 
 # ------------------------------------------------------------
@@ -402,6 +402,82 @@ function reconstruct3!(
             wR[:, j, k, l],
             ΔxL,
             ΔxR,
+            limiter,
+        )
+    end
+
+end
+
+
+"""
+    function reconstruct4!(
+        sw::X,
+        wN::Y
+        w1::Y,
+        w2::Y,
+        w3::Y,
+        Δx1,
+        Δx2,
+        Δx3,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
+
+    function reconstruct4!(
+        sw::X,
+        wN::Y
+        w1::Y,
+        w2::Y,
+        w3::Y,
+        Δx1,
+        Δx2,
+        Δx3,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+
+Four-cell reconstruction for triangular mesh
+
+"""
+function reconstruct4!(
+    sw::X,
+    wN::Y,
+    w1::Y,
+    w2::Y,
+    w3::Y,
+    Δx1,
+    Δx2,
+    Δx3,
+    limiter = :vanleer::Symbol,
+) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
+    s1 = (wN .- w1) ./ Δx1
+    s2 = (wN .- w2) ./ Δx2
+    s3 = (wN .- w3) ./ Δx3
+
+    sw .= eval(limiter).(s1, s2, s3)
+end
+
+function reconstruct4!(
+    sw::X,
+    wN::Y,
+    w1::Y,
+    w2::Y,
+    w3::Y,
+    Δx1,
+    Δx2,
+    Δx3,
+    limiter = :vanleer::Symbol,
+) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+
+    for j in axes(sw, 2)
+        swj = @view sw[:, j]
+        reconstruct4!(
+            swj,
+            wN[:, j],
+            w1[:, j],
+            w2[:, j],
+            w3[:, j],
+            Δx1,
+            Δx2,
+            Δx3,
             limiter,
         )
     end
