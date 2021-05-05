@@ -1053,3 +1053,29 @@ function update_boundary!(
     end
 
 end
+
+function update_boundary!(
+    KS::X,
+    ctr::Y,
+    face::Z,
+    dt,
+    residual;
+    coll::Symbol,
+    bc::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractVector{ControlVolumeUS2F},
+    Z<:AbstractVector{Interface2D2F},
+}
+    for i in eachindex(KS.ps.cellType)
+        if KS.ps.cellType[i] == 3
+            ids = KS.ps.cellNeighbors[i, :]
+            deleteat!(ids, findall(x->x==-1, ids))
+            id1, id2 = ids
+            ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
+            ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)
+            ctr[i].b .= 0.5 .* (ctr[id1].b .+ ctr[id2].b)
+            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
+        end
+    end
+end

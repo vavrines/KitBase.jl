@@ -18,7 +18,8 @@ dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
 for iter = 1:nt
     KitBase.reconstruct!(ks, ctr)
-
+    KitBase.evolve!(ks, ctr, face, dt)
+    #=
     @inbounds for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
@@ -64,7 +65,10 @@ for iter = 1:nt
             end
         end
     end
-
+    =#
+    res = zeros(4)
+    KitBase.update!(ks, ctr, face, dt, res)
+    #=
     sumres = zeros(4)
     sumavg = zeros(4)
     @inbounds for i in eachindex(ctr)
@@ -114,6 +118,7 @@ for iter = 1:nt
             ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
         end
     end
+    =#
 end
 KitBase.write_vtk(ks, ctr)
 

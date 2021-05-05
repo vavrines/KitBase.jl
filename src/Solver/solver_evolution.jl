@@ -33,7 +33,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume1D,1},T2<:AbstractArray{Interface1D,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -107,7 +107,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume1D1F,1},T2<:AbstractArray{Interface1D1F,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -206,7 +206,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume1D2F,1},T2<:AbstractArray{Interface1D2F,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -327,7 +327,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
 ) where {T1<:AbstractArray{ControlVolume1D4F,1},T2<:AbstractArray{Interface1D4F,1}}
@@ -440,7 +440,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
 ) where {T1<:AbstractArray{ControlVolume1D3F,1},T2<:AbstractArray{Interface1D3F,1}}
@@ -587,7 +587,7 @@ function evolve!(
     a2face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume2D1F,2},T2<:AbstractArray{Interface2D1F,2}}
 
     if firstindex(KS.pSpace.x[:, 1]) < 1
@@ -844,7 +844,7 @@ function evolve!(
     a2face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume2D2F,2},T2<:AbstractArray{Interface2D2F,2}}
 
     if firstindex(KS.pSpace.x[:, 1]) < 1
@@ -1128,13 +1128,13 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractVector{ControlVolumeUS2F},T2<:AbstractVector{Interface2D2F}}
 
     if mode == :kfvs
 
         @inbounds Threads.@threads for i in eachindex(face)
-            if !(-1 in ps.faceCells[i, :]) # exclude boundary face
+            if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
                 vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
                 vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
 
@@ -1142,10 +1142,10 @@ function evolve!(
                     face[i].fw,
                     face[i].fh,
                     face[i].fb,
-                    ctr[KS.ps.faceCells[i, 1]].h .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
-                    ctr[KS.ps.faceCells[i, 1]].b .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
-                    ctr[KS.ps.faceCells[i, 2]].h .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
-                    ctr[KS.ps.faceCells[i, 2]].b .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    ctr[KS.ps.faceCells[i, 1]].h .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 1]].b .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].h .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].b .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
                     vn,
                     vt,
                     KS.vSpace.weights,
