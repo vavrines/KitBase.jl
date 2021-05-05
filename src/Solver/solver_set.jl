@@ -36,8 +36,10 @@ struct SolverSet{
     set::TS
     # physical space
     pSpace::TP
+    ps::TP
     # velocity space
     vSpace::TV
+    vs::TV
     # gas property
     gas::TG
     # initial and boundary condition
@@ -55,9 +57,11 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
 
     # physical space
     pSpace = set_geometry(dict)
+    ps = pSpace
 
     # velocity space
     vSpace = set_velocity(dict)
+    vs = vSpace
 
     # gas property
     gas = set_property(dict)
@@ -84,7 +88,9 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     }(
         set,
         pSpace,
+        ps,
         vSpace,
+        vs,
         gas,
         ib,
         outputFolder,
@@ -97,10 +103,12 @@ function SolverSet(dict::T) where {T<:AbstractDict}
 
     # physical space
     pSpace = set_geometry(; dict...)
+    ps = pSpace
 
     # velocity space
     vSpace = set_velocity(; dict...)
-
+    vs = vSpace
+    
     # gas property
     gas = set_property(dict)
 

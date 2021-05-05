@@ -1121,3 +1121,45 @@ function evolve!(
     end
 
 end
+
+function evolve!(
+    KS::SolverSet,
+    ctr::T1,
+    face::T2,
+    dt;
+    mode = Symbol(KS.set.flux)::Symbol,
+    bc = :fix::Symbol,
+) where {T1<:AbstractVector{ControlVolumeUS2F},T2<:AbstractVector{Interface2D2F}}
+
+    if mode == :kfvs
+
+        @inbounds Threads.@threads for i in eachindex(face)
+            
+            if !(-1 in ps.faceCells[i, :])
+
+                vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
+                vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+
+                flux_kfvs!(
+                    face[i].fw,
+                    face[i].fh,
+                    face[i].fb,
+                    ctr[KS.ps.faceCells[i, 1]].h .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 1]].b .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].h .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].b .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    vn,
+                    vt,
+                    ks.vSpace.weights,
+                    dt,
+                    face[i].len,
+                )
+                face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+
+            end
+
+        end
+
+    end
+
+end
