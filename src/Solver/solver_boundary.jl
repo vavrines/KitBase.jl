@@ -1075,7 +1075,7 @@ function update_boundary!(
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)
             ctr[i].b .= 0.5 .* (ctr[id1].b .+ ctr[id2].b)
-            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
+            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
         end
     end
 end

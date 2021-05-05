@@ -49,10 +49,11 @@ ctr, face = KitBase.init_fvm(ks, ks.pSpace)
 
 dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
-
-@showprogress for iter = 1:100#nt
+@showprogress for iter = 1:200#nt
     KitBase.reconstruct!(ks, ctr)
 
+    KitBase.evolve!(ks, ctr, face, dt; mode=:kfvs, bc=:maxwell)
+    #=
     @inbounds Threads.@threads for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
@@ -77,7 +78,7 @@ nt = ks.set.maxTime ÷ dt |> Int
             idx = ifelse(ps.faceCells[i, 1] != -1, 1, 2)
 
             if ps.cellType[ps.faceCells[i, idx]] == 2
-                bc = KitBase.local_frame(ks.ib.primR, face[i].n[1], face[i].n[2])
+                bc = KitBase.local_frame(ks.ib.bcR, face[i].n[1], face[i].n[2])
 
                 KitBase.flux_boundary_maxwell!(
                     face[i].fw,
@@ -97,8 +98,11 @@ nt = ks.set.maxTime ÷ dt |> Int
                 face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
             end
         end
-    end
+    end=#
 
+    res = zeros(4)
+    KitBase.update!(ks, ctr, face, dt, res; coll=:bgk, bc=:maxwell)
+    #=
     sumres = zeros(4)
     sumavg = zeros(4)
     @inbounds Threads.@threads for i in eachindex(ctr)
@@ -148,8 +152,8 @@ nt = ks.set.maxTime ÷ dt |> Int
             ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, ks.gas.γ)
         end
     end
+    res = sqrt.(length(ctr) .* sumres) ./ (sumavg .+ 1e-6)=#
 
-    res = sqrt.(length(ctr) .* sumres) ./ (sumavg .+ 1e-6)
     if iter % 1000 == 0
         println(res)
         @save "ctr.jld2" ctr

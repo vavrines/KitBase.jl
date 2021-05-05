@@ -1134,10 +1134,10 @@ function evolve!(
     if mode == :kfvs
 
         @inbounds Threads.@threads for i in eachindex(face)
-            if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
-                vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
-                vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+            vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
+            vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
 
+            if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
                 flux_kfvs!(
                     face[i].fw,
                     face[i].fh,
