@@ -1134,9 +1134,7 @@ function evolve!(
     if mode == :kfvs
 
         @inbounds Threads.@threads for i in eachindex(face)
-            
-            if !(-1 in ps.faceCells[i, :])
-
+            if !(-1 in ps.faceCells[i, :]) # exclude boundary face
                 vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
                 vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
 
@@ -1150,14 +1148,35 @@ function evolve!(
                     ctr[KS.ps.faceCells[i, 2]].b .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
                     vn,
                     vt,
-                    ks.vSpace.weights,
+                    KS.vSpace.weights,
                     dt,
                     face[i].len,
                 )
                 face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+            else
+                idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
 
+                if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
+                    bc = KitBase.local_frame(KS.ib.bcR, face[i].n[1], face[i].n[2])
+
+                    KitBase.flux_boundary_maxwell!(
+                        face[i].fw,
+                        face[i].fh,
+                        face[i].fb,
+                        bc,
+                        ctr[KS.ps.faceCells[i, idx]].h .+ ctr[KS.ps.faceCells[i, idx]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+ ctr[KS.ps.faceCells[i, idx]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
+                        ctr[KS.ps.faceCells[i, idx]].b .+ ctr[KS.ps.faceCells[i, idx]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+ ctr[KS.ps.faceCells[i, idx]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
+                        vn,
+                        vt,
+                        KS.vSpace.weights,
+                        KS.gas.K,
+                        dt,
+                        face[i].len,
+                    )
+                
+                    face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+                end
             end
-
         end
 
     end
