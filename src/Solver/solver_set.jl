@@ -48,6 +48,26 @@ struct SolverSet{
     outputFolder::TO
 end
 
+function SolverSet(SET, PS, VS, GAS, IB, DIR)
+    return SolverSet{
+        typeof(SET),
+        typeof(PS),
+        typeof(VS),
+        typeof(GAS),
+        typeof(IB),
+        typeof(DIR),
+    }(
+        SET,
+        PS,
+        PS,
+        VS,
+        VS,
+        GAS,
+        IB,
+        DIR,
+    )
+end
+
 function SolverSet(configfilename::T) where {T<:AbstractString}
     # generate variables from configuration file
     dict = read_dict(configfilename)
@@ -57,11 +77,9 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
 
     # physical space
     pSpace = set_geometry(dict)
-    ps = pSpace
 
     # velocity space
     vSpace = set_velocity(dict)
-    vs = vSpace
 
     # gas property
     gas = set_property(dict)
@@ -88,9 +106,7 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     }(
         set,
         pSpace,
-        ps,
         vSpace,
-        vs,
         gas,
         ib,
         outputFolder,
@@ -103,12 +119,10 @@ function SolverSet(dict::T) where {T<:AbstractDict}
 
     # physical space
     pSpace = set_geometry(; dict...)
-    ps = pSpace
 
     # velocity space
     vSpace = set_velocity(; dict...)
-    vs = vSpace
-    
+
     # gas property
     gas = set_property(dict)
 
