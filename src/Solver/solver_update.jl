@@ -81,8 +81,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D,1},
@@ -142,8 +142,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :fix::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D1F,1},
@@ -220,8 +220,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D2F,1},
@@ -306,8 +306,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -413,8 +413,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -446,8 +446,8 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = :bgk::Symbol,
-    bc = :fix::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D1F,2},
@@ -509,8 +509,8 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = :bgk::Symbol,
-    bc = :fix::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D2F,2},
@@ -576,8 +576,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolumeUS2F,1},
