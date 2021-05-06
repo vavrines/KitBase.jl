@@ -38,9 +38,9 @@ function UnstructPSpace(file::T) where {T<:AbstractString}
     cellType = KitBase.mesh_cell_type(cellNeighbors)
     cellArea = KitBase.mesh_area_2D(points, cellid)
     cellCenter = KitBase.mesh_center_2D(points, cellid)
-    edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
-    cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
-    edgeType = KitBase.mesh_edge_type(edgeCells, cellType)
+    edgeCenter = KitBase.mesh_face_center(points, edgePoints)
+    cellEdges = KitBase.mesh_cell_face(cellid, edgeCells)
+    edgeType = KitBase.mesh_face_type(edgeCells, cellType)
 
     return UnstructPSpace(
         cells,
@@ -286,9 +286,9 @@ end
 """
     mesh_edge_center(nodes::AbstractArray{<:AbstractFloat,2}, edgeNodes::AbstractArray{<:Integer,2})
 
-Compute central points of cell edges
+Compute central points of cell faces
 """
-function mesh_edge_center(
+function mesh_face_center(
     nodes::X,
     edgeNodes::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Integer,2}}
@@ -308,9 +308,9 @@ end
 """
     mesh_edge_center(nodes::AbstractArray{<:AbstractFloat,2}, edgeNodes::AbstractArray{<:Integer,2})
 
-Compute central points of cell edges
+Compute central points of cell faces
 """
-function mesh_cell_edge(
+function mesh_cell_face(
     cells::X,
     edgeCells::Y,
 ) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,2}}
@@ -335,12 +335,12 @@ end
 
 
 """
-Compute type of edges
+Compute type of faces
 
 - 0: inner
 - 1: boundary
 """
-function mesh_edge_type(
+function mesh_face_type(
     edgeCells::X,
     cellType::Y,
 ) where {X<:AbstractArray{<:Integer,2},Y<:AbstractArray{<:Integer,1}}
