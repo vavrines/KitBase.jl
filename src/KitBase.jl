@@ -29,6 +29,7 @@ using PyCall
 using Distributed
 using CUDA
 using WriteVTK
+using StaticArrays: SVector, MVector, SMatrix, MMatrix, SArray, MArray
 
 include("Data/data.jl")
 include("Macro/macro.jl")
