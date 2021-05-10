@@ -1,8 +1,11 @@
 sL = 0.13
 sR = -0.27
 
+KitBase.linear(sL, sR)
 KitBase.vanleer(sL, sR)
+KitBase.vanleer(sL, sR, sR)
 KitBase.minmod(sL, sR)
+KitBase.minmod(sL, sR, sR)
 KitBase.vanalbaba(sL, sR)
 KitBase.superbee(0.51, 1.99)
 KitBase.superbee(0.49, 2.01)

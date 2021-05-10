@@ -68,7 +68,9 @@ end
 Initialize finite volume method
 
 """
-function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
+    funcar = eval(array)
+    
     if KS.set.space[3:4] == "0f"
 
         ctr = OffsetArray{ControlVolume1D}(undef, eachindex(KS.pSpace.x))
@@ -77,10 +79,10 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
                 ctr[i] =
-                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], KS.ib.wL, KS.ib.primL)
+                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], funcar(KS.ib.wL), funcar(KS.ib.primL))
             else
                 ctr[i] =
-                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], KS.ib.wR, KS.ib.primR)
+                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], funcar(KS.ib.wR), funcar(KS.ib.primR))
             end
         end
 
@@ -98,23 +100,23 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                 ctr[i] = ControlVolume1D1F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wL,
-                    KS.ib.primL,
-                    KS.ib.fL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                    funcar(KS.ib.fL),
                 )
             else
                 ctr[i] = ControlVolume1D1F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.fR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.fR),
                 )
             end
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D1F(KS.ib.wL, KS.ib.fL)
+            face[i] = Interface1D1F(funcar(KS.ib.wL), funcar(KS.ib.fL))
         end
 
     elseif KS.set.space[3:4] == "2f"
@@ -127,25 +129,25 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                 ctr[i] = ControlVolume1D2F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wL,
-                    KS.ib.primL,
-                    KS.ib.hL,
-                    KS.ib.bL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                    funcar(KS.ib.hL),
+                    funcar(KS.ib.bL),
                 )
             else
                 ctr[i] = ControlVolume1D2F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.hR,
-                    KS.ib.bR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.hR),
+                    funcar(KS.ib.bR),
                 )
             end
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D2F(KS.ib.wL, KS.ib.hL)
+            face[i] = Interface1D2F(funcar(KS.ib.wL), funcar(KS.ib.hL))
         end
 
     elseif KS.set.space[3:4] == "3f"
@@ -158,33 +160,33 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                 ctr[i] = ControlVolume1D3F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wL,
-                    KS.ib.primL,
-                    KS.ib.h0L,
-                    KS.ib.h1L,
-                    KS.ib.h2L,
-                    KS.ib.EL,
-                    KS.ib.BL,
-                    KS.ib.lorenzL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                    funcar(KS.ib.h0L),
+                    funcar(KS.ib.h1L),
+                    funcar(KS.ib.h2L),
+                    funcar(KS.ib.EL),
+                    funcar(KS.ib.BL),
+                    funcar(KS.ib.lorenzL),
                 )
             else
                 ctr[i] = ControlVolume1D3F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.h0R,
-                    KS.ib.h1R,
-                    KS.ib.h2R,
-                    KS.ib.ER,
-                    KS.ib.BR,
-                    KS.ib.lorenzR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.h0R),
+                    funcar(KS.ib.h1R),
+                    funcar(KS.ib.h2R),
+                    funcar(KS.ib.ER),
+                    funcar(KS.ib.BR),
+                    funcar(KS.ib.lorenzR),
                 )
             end
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D3F(KS.ib.wL, KS.ib.h0L, KS.ib.EL)
+            face[i] = Interface1D3F(funcar(KS.ib.wL), funcar(KS.ib.h0L), funcar(KS.ib.EL))
         end
 
     elseif KS.set.space[3:4] == "4f"
@@ -197,35 +199,35 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                 ctr[i] = ControlVolume1D4F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wL,
-                    KS.ib.primL,
-                    KS.ib.h0L,
-                    KS.ib.h1L,
-                    KS.ib.h2L,
-                    KS.ib.h3L,
-                    KS.ib.EL,
-                    KS.ib.BL,
-                    KS.ib.lorenzL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                    funcar(KS.ib.h0L),
+                    funcar(KS.ib.h1L),
+                    funcar(KS.ib.h2L),
+                    funcar(KS.ib.h3L),
+                    funcar(KS.ib.EL),
+                    funcar(KS.ib.BL),
+                    funcar(KS.ib.lorenzL),
                 )
             else
                 ctr[i] = ControlVolume1D4F(
                     KS.pSpace.x[i],
                     KS.pSpace.dx[i],
-                    KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.h0R,
-                    KS.ib.h1R,
-                    KS.ib.h2R,
-                    KS.ib.h3R,
-                    KS.ib.ER,
-                    KS.ib.BR,
-                    KS.ib.lorenzR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.h0R),
+                    funcar(KS.ib.h1R),
+                    funcar(KS.ib.h2R),
+                    funcar(KS.ib.h3R),
+                    funcar(KS.ib.ER),
+                    funcar(KS.ib.BR),
+                    funcar(KS.ib.lorenzR),
                 )
             end
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D4F(KS.ib.wL, KS.ib.h0L, KS.ib.EL)
+            face[i] = Interface1D4F(funcar(KS.ib.wL), funcar(KS.ib.h0L), funcar(KS.ib.EL))
         end
 
     end
@@ -233,7 +235,9 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
     return ctr, face
 end
 
-function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
+    funcar = eval(array)
+
     if KS.set.space[3:4] == "1f"
 
         ctr = OffsetArray{ControlVolume2D1F}(
@@ -251,9 +255,9 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                     KS.pSpace.y[i, j],
                     KS.pSpace.dx[i, j],
                     KS.pSpace.dy[i, j],
-                    KS.ib.wL,
-                    KS.ib.primL,
-                    KS.ib.fL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                    funcar(KS.ib.fL),
                 )
             else
                 ctr[i, j] = ControlVolume2D1F(
@@ -261,9 +265,9 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                     KS.pSpace.y[i, j],
                     KS.pSpace.dx[i, j],
                     KS.pSpace.dy[i, j],
-                    KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.fR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.fR),
                 )
             end
         end
@@ -271,18 +275,18 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
         for j = 1:KS.pSpace.ny
             for i = 1:KS.pSpace.nx
                 a1face[i, j] =
-                    Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
+                    Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
             end
             a1face[KS.pSpace.nx+1, j] =
-                Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.fL)
+                Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
         end
         for i = 1:KS.pSpace.nx
             for j = 1:KS.pSpace.ny
                 a2face[i, j] =
-                    Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
+                    Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
             end
             a2face[i, KS.pSpace.ny+1] =
-                Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.fL)
+                Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
         end
 
     elseif KS.set.space[3:4] == "2f"
@@ -302,10 +306,10 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                     KS.pSpace.y[i, j],
                     KS.pSpace.dx[i, j],
                     KS.pSpace.dy[i, j],
-                    KS.ib.wL,
-                    KS.ib.primL,
-                    KS.ib.hL,
-                    KS.ib.bL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                    funcar(KS.ib.hL),
+                    funcar(KS.ib.bL),
                 )
             else
                 ctr[i, j] = ControlVolume2D2F(
@@ -313,10 +317,10 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
                     KS.pSpace.y[i, j],
                     KS.pSpace.dx[i, j],
                     KS.pSpace.dy[i, j],
-                    KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.hR,
-                    KS.ib.bR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.hR),
+                    funcar(KS.ib.bR),
                 )
             end
         end
@@ -324,18 +328,18 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
         for j = 1:KS.pSpace.ny
             for i = 1:KS.pSpace.nx
                 a1face[i, j] =
-                    Interface2D2F(KS.pSpace.dy[i, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                    Interface2D2F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
             end
             a1face[KS.pSpace.nx+1, j] =
-                Interface2D2F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, KS.ib.wL, KS.ib.hL)
+                Interface2D2F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
         end
         for i = 1:KS.pSpace.nx
             for j = 1:KS.pSpace.ny
                 a2face[i, j] =
-                    Interface2D2F(KS.pSpace.dx[i, j], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                    Interface2D2F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
             end
             a2face[i, KS.pSpace.ny+1] =
-                Interface2D2F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, KS.ib.wL, KS.ib.hL)
+                Interface2D2F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
         end
 
     end
@@ -343,7 +347,9 @@ function init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysica
     return ctr, a1face, a2face
 end
 
-function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
+function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array) where {T<:AbstractSolverSet}
+    funcar = eval(array)
+
     if KS.set.space[3:4] == "0f"
         
         ctr = Array{KitBase.ControlVolumeUS}(undef, size(ps.cellid, 1))
@@ -355,7 +361,7 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                     KitBase.unit_normal(
                         ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
                         ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
-                    ),
+                    ) |> funcar,
                 )
 
                 if dot(
@@ -382,25 +388,25 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                     ps.points[ps.cellid[i, 3], :],
                     ps.points[ps.cellid[i, 1], :],
                 ),
-            ]
+            ] |> funcar
 
             if ps.cellCenter[i, 1] <=
                minimum(ps.cellCenter[:, 1]) +
                (maximum(ps.cellCenter[:, 1]) - minimum(ps.cellCenter[:, 1])) / 2
                 ctr[i] = KitBase.ControlVolumeUS(
                     n,
-                    ps.cellCenter[i, :],
+                    funcar(ps.cellCenter[i, :]),
                     dx,
-                    KS.ib.wL,
-                    KS.ib.primL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
                 )
             else
                 ctr[i] = KitBase.ControlVolumeUS(
                     n,
-                    ps.cellCenter[i, :],
+                    funcar(ps.cellCenter[i, :]),
                     dx,
-                    KS.ib.wR,
-                    KS.ib.primR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
                 )
             end
         end
@@ -427,7 +433,7 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                 n .= -n
             end
 
-            fw = zero(KS.ib.wL)
+            fw = zero(KS.ib.wL) |> funcar
 
             face[i] = KitBase.Interface2D(len, n[1], n[2], fw)
         end
@@ -443,7 +449,7 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                     KitBase.unit_normal(
                         ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
                         ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
-                    ),
+                    ) |> funcar,
                 )
 
                 if dot(
@@ -470,7 +476,7 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                     ps.points[ps.cellid[i, 3], :],
                     ps.points[ps.cellid[i, 1], :],
                 ),
-            ]
+            ] |> funcar
 
             if ps.cellCenter[i, 1] <=
                minimum(ps.cellCenter[:, 1]) +
@@ -486,11 +492,11 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
             else
                 ctr[i] = KitBase.ControlVolumeUS1F(
                     n,
-                    ps.cellCenter[i, :],
+                    funcar(ps.cellCenter[i, :]),
                     dx,
                     KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.fR,
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.fR),
                 )
             end
         end
@@ -520,7 +526,7 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
             fw = zero(KS.ib.wL)
             ff = zero(KS.ib.fL)
 
-            face[i] = KitBase.Interface2D1F(len, n[1], n[2], fw, ff)
+            face[i] = KitBase.Interface2D1F(len, n[1], n[2], funcar(fw), funcar(ff))
         end
     
     elseif KS.set.space[3:4] == "2f"
@@ -534,7 +540,7 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                     KitBase.unit_normal(
                         ps.points[ps.facePoints[ps.cellFaces[i, j], 1], :],
                         ps.points[ps.facePoints[ps.cellFaces[i, j], 2], :],
-                    ),
+                    ) |> funcar,
                 )
 
                 if dot(
@@ -561,29 +567,29 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
                     ps.points[ps.cellid[i, 3], :],
                     ps.points[ps.cellid[i, 1], :],
                 ),
-            ]
+            ] |> funcar
 
             if ps.cellCenter[i, 1] <=
                minimum(ps.cellCenter[:, 1]) +
                (maximum(ps.cellCenter[:, 1]) - minimum(ps.cellCenter[:, 1])) / 2
                 ctr[i] = KitBase.ControlVolumeUS2F(
                     n,
-                    ps.cellCenter[i, :],
+                    funcar(ps.cellCenter[i, :]),
                     dx,
-                    KS.ib.wL,
-                    KS.ib.primL,
-                    KS.ib.hL,
-                    KS.ib.bL,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                    funcar(KS.ib.hL),
+                    funcar(KS.ib.bL),
                 )
             else
                 ctr[i] = KitBase.ControlVolumeUS2F(
                     n,
-                    ps.cellCenter[i, :],
+                    funcar(ps.cellCenter[i, :]),
                     dx,
-                    KS.ib.wR,
-                    KS.ib.primR,
-                    KS.ib.hR,
-                    KS.ib.bR,
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                    funcar(KS.ib.hR),
+                    funcar(KS.ib.bR),
                 )
             end
         end
@@ -613,7 +619,7 @@ function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
             fw = zero(KS.ib.wL)
             fh = zero(KS.ib.hL)
 
-            face[i] = KitBase.Interface2D2F(len, n[1], n[2], fw, fh)
+            face[i] = KitBase.Interface2D2F(len, n[1], n[2], funcar(fw), funcar(fh))
         end
 
     end

@@ -81,8 +81,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D,1},
@@ -142,8 +142,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :fix::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D1F,1},
@@ -220,8 +220,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D2F,1},
@@ -306,8 +306,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -413,8 +413,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = :bgk::Symbol,
-    bc = :extra::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -446,8 +446,8 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = :bgk::Symbol,
-    bc = :fix::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D1F,2},
@@ -509,8 +509,8 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = :bgk::Symbol,
-    bc = :fix::Symbol,
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D2F,2},
@@ -565,6 +565,174 @@ function update!(
     end
 
     update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+
+    return nothing
+
+end
+
+function update!(
+    KS::X,
+    ctr::Y,
+    face::Z,
+    dt,
+    residual; # 1D / 2D
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolumeUS,1},
+    Z<:AbstractArray{Interface2D,1},
+}
+
+    sumRes = zero(KS.ib.wL)
+    sumAvg = zero(KS.ib.wL)
+
+    @inbounds Threads.@threads for i in eachindex(ctr)
+        if KS.ps.cellType[i] in (0, 2)
+            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
+
+            step!(
+                ctr[i].w,
+                ctr[i].prim,
+                face[KS.ps.cellFaces[i, 1]].fw,
+                face[KS.ps.cellFaces[i, 2]].fw,
+                face[KS.ps.cellFaces[i, 3]].fw,
+                KS.gas.γ,
+                KS.pSpace.cellArea[i],
+                dirc,
+                sumRes,
+                sumAvg,
+            )
+        end
+    end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
+    end
+
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+
+    return nothing
+
+end
+
+function update!(
+    KS::X,
+    ctr::Y,
+    face::Z,
+    dt,
+    residual; # 1D / 2D
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolumeUS1F,1},
+    Z<:AbstractArray{Interface2D1F,1},
+}
+
+    sumRes = zero(KS.ib.wL)
+    sumAvg = zero(KS.ib.wL)
+
+    @inbounds Threads.@threads for i in eachindex(ctr)
+        if KS.ps.cellType[i] in (0, 2)
+            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
+
+            step!(
+                ctr[i].w,
+                ctr[i].prim,
+                ctr[i].f,
+                face[KS.ps.cellFaces[i, 1]].fw,
+                face[KS.ps.cellFaces[i, 1]].ff,
+                face[KS.ps.cellFaces[i, 2]].fw,
+                face[KS.ps.cellFaces[i, 2]].ff,
+                face[KS.ps.cellFaces[i, 3]].fw,
+                face[KS.ps.cellFaces[i, 3]].ff,
+                KS.vSpace.u,
+                KS.vSpace.v,
+                KS.vSpace.weights,
+                KS.gas.K,
+                KS.gas.γ,
+                KS.gas.μᵣ,
+                KS.gas.ω,
+                KS.gas.Pr,
+                KS.pSpace.cellArea[i],
+                dirc,
+                dt,
+                sumRes,
+                sumAvg,
+                coll,
+            )
+        end
+    end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
+    end
+
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+
+    return nothing
+
+end
+
+function update!(
+    KS::X,
+    ctr::Y,
+    face::Z,
+    dt,
+    residual; # 1D / 2D
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolumeUS2F,1},
+    Z<:AbstractArray{Interface2D2F,1},
+}
+
+    sumRes = zero(KS.ib.wL)
+    sumAvg = zero(KS.ib.wL)
+
+    @inbounds Threads.@threads for i in eachindex(ctr)
+        if KS.ps.cellType[i] in (0, 2)
+            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
+
+            step!(
+                ctr[i].w,
+                ctr[i].prim,
+                ctr[i].h,
+                ctr[i].b,
+                face[KS.ps.cellFaces[i, 1]].fw,
+                face[KS.ps.cellFaces[i, 1]].fh,
+                face[KS.ps.cellFaces[i, 1]].fb,
+                face[KS.ps.cellFaces[i, 2]].fw,
+                face[KS.ps.cellFaces[i, 2]].fh,
+                face[KS.ps.cellFaces[i, 2]].fb,
+                face[KS.ps.cellFaces[i, 3]].fw,
+                face[KS.ps.cellFaces[i, 3]].fh,
+                face[KS.ps.cellFaces[i, 3]].fb,
+                KS.vSpace.u,
+                KS.vSpace.v,
+                KS.vSpace.weights,
+                KS.gas.K,
+                KS.gas.γ,
+                KS.gas.μᵣ,
+                KS.gas.ω,
+                KS.gas.Pr,
+                KS.pSpace.cellArea[i],
+                dirc,
+                dt,
+                sumRes,
+                sumAvg,
+                coll,
+            )
+        end
+    end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
+    end
+
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
 
     return nothing
 

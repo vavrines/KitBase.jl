@@ -36,14 +36,43 @@ struct SolverSet{
     set::TS
     # physical space
     pSpace::TP
+    ps::TP
     # velocity space
     vSpace::TV
+    vs::TV
     # gas property
     gas::TG
     # initial and boundary condition
     ib::TI
     # file system
     outputFolder::TO
+end
+
+function SolverSet(
+    SET::AbstractSetup,
+    PS::AbstractPhysicalSpace,
+    VS::Union{AbstractVelocitySpace,Nothing},
+    GAS::AbstractProperty,
+    IB::AbstractCondition,
+    DIR::AbstractString,
+)
+    return SolverSet{
+        typeof(SET),
+        typeof(PS),
+        typeof(VS),
+        typeof(GAS),
+        typeof(IB),
+        typeof(DIR),
+    }(
+        SET,
+        PS,
+        PS,
+        VS,
+        VS,
+        GAS,
+        IB,
+        DIR,
+    )
 end
 
 function SolverSet(configfilename::T) where {T<:AbstractString}
@@ -74,21 +103,7 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     cp(configfilename, string(outputFolder, "config.txt"))
 
     # create new struct
-    return SolverSet{
-        typeof(set),
-        typeof(pSpace),
-        typeof(vSpace),
-        typeof(gas),
-        typeof(ib),
-        typeof(outputFolder),
-    }(
-        set,
-        pSpace,
-        vSpace,
-        gas,
-        ib,
-        outputFolder,
-    )
+    return SolverSet(set, pSpace, vSpace, gas, ib, outputFolder)
 end
 
 function SolverSet(dict::T) where {T<:AbstractDict}
@@ -115,21 +130,7 @@ function SolverSet(dict::T) where {T<:AbstractDict}
     CSV.write(string(outputFolder, "config.csv"), dict)
 
     # create new struct
-    return SolverSet{
-        typeof(set),
-        typeof(pSpace),
-        typeof(vSpace),
-        typeof(gas),
-        typeof(ib),
-        typeof(outputFolder),
-    }(
-        set,
-        pSpace,
-        vSpace,
-        gas,
-        ib,
-        outputFolder,
-    )
+    return SolverSet(set, pSpace, vSpace, gas, ib, outputFolder)
 end
 
 

@@ -2,13 +2,16 @@
 # Reconstruction and Slope Limiters
 # ============================================================
 
-export vanleer, minmod, superbee, vanalbaba
-export reconstruct2, reconstruct2!, reconstruct3, reconstruct3!
+export linear, vanleer, minmod, superbee, vanalbaba
+export reconstruct2, reconstruct2!, reconstruct3, reconstruct3!, reconstruct4!
 export weno5
 
 # ------------------------------------------------------------
 # Slope limiter functions
 # ------------------------------------------------------------
+
+linear(sL::T, sR::T) where {T} = 0.5 * (sL + sR)
+
 
 """
     vanleer(sL::Real, sR::Real)
@@ -19,6 +22,26 @@ vanleer(sL::T, sR::T) where {T} =
     (fortsign(1.0, sL) + fortsign(1.0, sR)) * abs(sL) * abs(sR) /
     (abs(sL) + abs(sR) + 1.e-7)
 
+function vanleer(sL::T, s::T, sR::T) where {T}
+    #=δ = [
+        (fortsign(1.0, sL) + fortsign(1.0, s)) * abs(sL) * abs(s) /
+        (abs(sL) + abs(s) + 1.e-7),
+        (fortsign(1.0, s) + fortsign(1.0, sR)) * abs(s) * abs(sR) /
+        (abs(s) + abs(sR) + 1.e-7),
+        (fortsign(1.0, sL) + fortsign(1.0, sR)) * abs(sL) * abs(sR) /
+        (abs(sL) + abs(sR) + 1.e-7),
+    ]=#
+    δ = (
+        (fortsign(1.0, sL) + fortsign(1.0, s)) * abs(sL) * abs(s) /
+        (abs(sL) + abs(s) + 1.e-7),
+        (fortsign(1.0, s) + fortsign(1.0, sR)) * abs(s) * abs(sR) /
+        (abs(s) + abs(sR) + 1.e-7),
+    )
+    id = findmin(abs.(δ))[2]
+
+    return δ[id]
+end
+
 
 """
     minmod(sL::Real, sR::Real)
@@ -27,6 +50,21 @@ MinMod limiter
 """
 minmod(sL::T, sR::T) where {T} =
     0.5 * (fortsign(1.0, sL) + fortsign(1.0, sR)) * min(abs(sR), abs(sL))
+
+function minmod(sL::T, s::T, sR::T) where {T}
+    #=δ = [
+        0.5 * (fortsign(1.0, sL) + fortsign(1.0, s)) * min(abs(s), abs(sL)),
+        0.5 * (fortsign(1.0, s) + fortsign(1.0, sR)) * min(abs(sR), abs(s)),
+        0.5 * (fortsign(1.0, sL) + fortsign(1.0, sR)) * min(abs(sR), abs(sL)),
+    ]=#
+    δ = (
+        0.5 * (fortsign(1.0, sL) + fortsign(1.0, s)) * min(abs(s), abs(sL)),
+        0.5 * (fortsign(1.0, s) + fortsign(1.0, sR)) * min(abs(sR), abs(s)),
+    )
+    id = findmin(abs.(δ))[2]
+
+    return δ[id]
+end
 
 
 """
@@ -205,19 +243,10 @@ function reconstruct3(
     ΔxR::T,
     limiter = :vanleer::Symbol,
 ) where {T}
-
     sL = (wN - wL) / ΔxL
     sR = (wR - wN) / ΔxR
 
-    if limiter == :linear
-        return 0.5 * (sL + sR)
-    elseif limiter == :vanleer
-        return vanleer(sL, sR)
-    elseif limiter == :minmod
-        return minmod(sL, sR)
-    else
-    end
-
+    return eval(limiter)(sL, sR)
 end
 
 function reconstruct3(
@@ -228,19 +257,10 @@ function reconstruct3(
     ΔxR,
     limiter = :vanleer::Symbol,
 ) where {T<:AbstractArray{<:Real,1}}
-
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
 
-    if limiter == :linear
-        return 0.5 .* (sL .+ sR)
-    elseif limiter == :vanleer
-        return vanleer.(sL, sR)
-    elseif limiter == :minmod
-        return minmod.(sL, sR)
-    else
-    end
-
+    return eval(limiter).(sL, sR)
 end
 
 function reconstruct3(
@@ -333,19 +353,10 @@ function reconstruct3!(
     ΔxR,
     limiter = :vanleer::Symbol,
 ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
-
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
 
-    if limiter == :linear
-        sw .= 0.5 .* (sL .+ sR)
-    elseif limiter == :vanleer
-        sw .= vanleer.(sL, sR)
-    elseif limiter == :minmod
-        sw .= minmod.(sL, sR)
-    else
-    end
-
+    sw .= eval(limiter).(sL, sR)
 end
 
 function reconstruct3!(
@@ -401,6 +412,82 @@ function reconstruct3!(
             wR[:, j, k, l],
             ΔxL,
             ΔxR,
+            limiter,
+        )
+    end
+
+end
+
+
+"""
+    function reconstruct4!(
+        sw::X,
+        wN::Y
+        w1::Y,
+        w2::Y,
+        w3::Y,
+        Δx1,
+        Δx2,
+        Δx3,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
+
+    function reconstruct4!(
+        sw::X,
+        wN::Y
+        w1::Y,
+        w2::Y,
+        w3::Y,
+        Δx1,
+        Δx2,
+        Δx3,
+        limiter = :vanleer::Symbol,
+    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+
+Four-cell reconstruction for triangular mesh
+
+"""
+function reconstruct4!(
+    sw::X,
+    wN::Y,
+    w1::Y,
+    w2::Y,
+    w3::Y,
+    Δx1,
+    Δx2,
+    Δx3,
+    limiter = :vanleer::Symbol,
+) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
+    s1 = (wN .- w1) ./ Δx1
+    s2 = (wN .- w2) ./ Δx2
+    s3 = (wN .- w3) ./ Δx3
+
+    sw .= eval(limiter).(s1, s2, s3)
+end
+
+function reconstruct4!(
+    sw::X,
+    wN::Y,
+    w1::Y,
+    w2::Y,
+    w3::Y,
+    Δx1,
+    Δx2,
+    Δx3,
+    limiter = :vanleer::Symbol,
+) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+
+    for j in axes(sw, 2)
+        swj = @view sw[:, j]
+        reconstruct4!(
+            swj,
+            wN[:, j],
+            w1[:, j],
+            w2[:, j],
+            w3[:, j],
+            Δx1,
+            Δx2,
+            Δx3,
             limiter,
         )
     end

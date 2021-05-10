@@ -98,7 +98,7 @@ function ControlVolume1D1F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zero(w)
+    sw = zero(W)
 
     f = deepcopy(F)
     sf = zero(f)
@@ -167,7 +167,7 @@ function ControlVolume1D2F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zero(w)
+    sw = zero(W)
 
     h = deepcopy(H)
     b = deepcopy(B)
@@ -269,14 +269,14 @@ function ControlVolume1D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(H0), axes(W))
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
-    sh0 = zeros(eltype(H0), axes(H0))
-    sh1 = zeros(eltype(H1), axes(H1))
-    sh2 = zeros(eltype(H2), axes(H2))
+    sh0 = zero(H0)
+    sh1 = zero(H1)
+    sh2 = zero(H2)
 
     E = deepcopy(E0)
     B = deepcopy(B0)
@@ -326,14 +326,14 @@ function ControlVolume1D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(H0), axes(W))
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
-    sh0 = zeros(eltype(H0), axes(H0))
-    sh1 = zeros(eltype(H1), axes(H1))
-    sh2 = zeros(eltype(H2), axes(H2))
+    sh0 = zero(H0)
+    sh1 = zero(H1)
+    sh2 = zero(H2)
 
     E = nothing
     B = nothing
@@ -386,19 +386,19 @@ function ControlVolume1D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(H0), axes(W))
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
-    sh0 = zeros(eltype(H0), axes(H0))
-    sh1 = zeros(eltype(H1), axes(H1))
-    sh2 = zeros(eltype(H2), axes(H2))
+    sh0 = zero(H0)
+    sh1 = zero(H1)
+    sh2 = zero(H2)
 
     E = deepcopy(E0)
     B = deepcopy(B0)
-    ϕ = zeros(axes(E, 2)) # here is difference
-    ψ = zeros(axes(B, 2))
+    ϕ = zero(E[1, :]) # here is difference
+    ψ = zero(B[1, :])
     lorenz = deepcopy(L)
 
     return ControlVolume1D3F{
@@ -518,16 +518,16 @@ function ControlVolume1D4F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(typeof(W[1]), axes(W))
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
     h3 = deepcopy(H3)
-    sh0 = zeros(typeof(H0[1]), axes(H0))
-    sh1 = zeros(typeof(H1[1]), axes(H1))
-    sh2 = zeros(typeof(H2[1]), axes(H2))
-    sh3 = zeros(typeof(H3[1]), axes(H3))
+    sh0 = deepcopy(H0)
+    sh1 = deepcopy(H1)
+    sh2 = deepcopy(H2)
+    sh3 = deepcopy(H3)
 
     E = deepcopy(E0)
     B = deepcopy(B0)
@@ -585,21 +585,21 @@ function ControlVolume1D4F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(typeof(W[1]), axes(W))
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
     h3 = deepcopy(H3)
-    sh0 = zeros(typeof(H0[1]), axes(H0))
-    sh1 = zeros(typeof(H1[1]), axes(H1))
-    sh2 = zeros(typeof(H2[1]), axes(H2))
-    sh3 = zeros(typeof(H3[1]), axes(H3))
+    sh0 = zero(H0)
+    sh1 = zero(H1)
+    sh2 = zero(H2)
+    sh3 = zero(H3)
 
     E = deepcopy(E0)
     B = deepcopy(B0)
-    ϕ = zeros(axes(E, 2))
-    ψ = zeros(axes(B, 2))
+    ϕ = zero(E[1, :])
+    ψ = zero(B[1, :])
     lorenz = deepcopy(L)
 
     return ControlVolume1D4F{
@@ -694,7 +694,8 @@ function ControlVolume2D(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
+    #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
+    sw = slope_array(W)
 
     return ControlVolume2D{typeof(x),typeof(w),typeof(sw)}(x, dx, y, dy, w, prim, sw)
 end
@@ -761,10 +762,12 @@ function ControlVolume2D1F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
+    #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
+    sw = slope_array(W)
 
     f = deepcopy(F)
-    sf = zeros(eltype(F), (axes(F)..., Base.OneTo(2)))
+    #sf = zeros(eltype(F), (axes(F)..., Base.OneTo(2)))
+    sf = slope_array(F)
 
     return ControlVolume2D1F{typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(
         x,
@@ -849,12 +852,15 @@ function ControlVolume2D2F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
+    #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
+    sw = slope_array(W)
 
     h = deepcopy(H)
     b = deepcopy(B)
-    sh = zeros(eltype(H), (axes(H)..., Base.OneTo(2)))
-    sb = zeros(eltype(B), (axes(B)..., Base.OneTo(2)))
+    #sh = zeros(eltype(H), (axes(H)..., Base.OneTo(2)))
+    #sb = zeros(eltype(B), (axes(B)..., Base.OneTo(2)))
+    sh = slope_array(H)
+    sb = slope_array(B)
 
     return ControlVolume2D2F{typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
         x,
@@ -961,14 +967,18 @@ function ControlVolume2D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
+    #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
+    sw = slope_array(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
-    sh0 = zeros(eltype(H0), (axes(H0)..., Base.OneTo(2)))
-    sh1 = zeros(eltype(H1), (axes(H1)..., Base.OneTo(2)))
-    sh2 = zeros(eltype(H2), (axes(H2)..., Base.OneTo(2)))
+    #sh0 = zeros(eltype(H0), (axes(H0)..., Base.OneTo(2)))
+    #sh1 = zeros(eltype(H1), (axes(H1)..., Base.OneTo(2)))
+    #sh2 = zeros(eltype(H2), (axes(H2)..., Base.OneTo(2)))
+    sh0 = slope_array(H0)
+    sh1 = slope_array(H1)
+    sh2 = slope_array(H2)
 
     E = deepcopy(E0)
     B = deepcopy(B0)
@@ -1026,14 +1036,18 @@ function ControlVolume2D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
+    #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
+    sw = slope_array(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
-    sh0 = zeros(eltype(H0), (axes(H0)..., Base.OneTo(2)))
-    sh1 = zeros(eltype(H1), (axes(H1)..., Base.OneTo(2)))
-    sh2 = zeros(eltype(H2), (axes(H2)..., Base.OneTo(2)))
+    #sh0 = zeros(eltype(H0), (axes(H0)..., Base.OneTo(2)))
+    #sh1 = zeros(eltype(H1), (axes(H1)..., Base.OneTo(2)))
+    #sh2 = zeros(eltype(H2), (axes(H2)..., Base.OneTo(2)))
+    sh0 = slope_array(H0)
+    sh1 = slope_array(H1)
+    sh2 = slope_array(H2)
 
     E = nothing
     B = nothing
@@ -1128,7 +1142,8 @@ function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractV
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), axes(W)..., length(N[1]))
+    #sw = zeros(eltype(W), axes(W)..., length(N[1]))
+    sw = ifelse(length(N[1]) == 2, slope_array(W; reduction=true), slope_array(W; reduction=false))
 
     return ControlVolumeUS{typeof(n),typeof(x),typeof(w),typeof(prim),typeof(sw)}(
         n,
@@ -1178,10 +1193,12 @@ function ControlVolumeUS1F(N, X, DX, W, PRIM, F::T) where {T<:AbstractArray}
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), axes(W)..., length(N[1]))
+    #sw = zeros(eltype(W), axes(W)..., length(N[1]))
+    sw = ifelse(length(N[1]) == 2, slope_array(W; reduction=true), slope_array(W; reduction=false))
 
     f = deepcopy(F)
-    sf = zeros(eltype(F), axes(F)..., length(N[1]))
+    #sf = zeros(eltype(F), axes(F)..., length(N[1]))
+    sf = ifelse(length(N[1]) == 2, slope_array(F; reduction=true), slope_array(F; reduction=false))
 
     return ControlVolumeUS1F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(
         n,
@@ -1194,7 +1211,6 @@ function ControlVolumeUS1F(N, X, DX, W, PRIM, F::T) where {T<:AbstractArray}
         sf,
     )
 end
-
 
 
 """
@@ -1246,12 +1262,15 @@ function ControlVolumeUS2F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zeros(eltype(W), axes(W)..., length(N[1]))
+    #sw = zeros(eltype(W), axes(W)..., length(N[1]))
+    sw = ifelse(length(N[1]) == 2, slope_array(W; reduction=true), slope_array(W; reduction=false))
 
     h = deepcopy(H)
     b = deepcopy(B)
-    sh = zeros(eltype(H), axes(H)..., length(N[1]))
-    sb = zeros(eltype(B), axes(B)..., length(N[1]))
+    #sh = zeros(eltype(H), axes(H)..., length(N[1]))
+    #sb = zeros(eltype(B), axes(B)..., length(N[1]))
+    sh = ifelse(length(N[1]) == 2, slope_array(H; reduction=true), slope_array(H; reduction=false))
+    sb = ifelse(length(N[1]) == 2, slope_array(B; reduction=true), slope_array(B; reduction=false))
 
     return ControlVolumeUS2F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
         n,

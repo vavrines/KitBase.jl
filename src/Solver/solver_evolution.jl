@@ -33,7 +33,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume1D,1},T2<:AbstractArray{Interface1D,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -107,7 +107,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume1D1F,1},T2<:AbstractArray{Interface1D1F,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -206,7 +206,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume1D2F,1},T2<:AbstractArray{Interface1D2F,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -327,7 +327,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
 ) where {T1<:AbstractArray{ControlVolume1D4F,1},T2<:AbstractArray{Interface1D4F,1}}
@@ -440,7 +440,7 @@ function evolve!(
     face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
     isPlasma = false::Bool,
     isMHD = false::Bool,
 ) where {T1<:AbstractArray{ControlVolume1D3F,1},T2<:AbstractArray{Interface1D3F,1}}
@@ -587,7 +587,7 @@ function evolve!(
     a2face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume2D1F,2},T2<:AbstractArray{Interface2D1F,2}}
 
     if firstindex(KS.pSpace.x[:, 1]) < 1
@@ -844,7 +844,7 @@ function evolve!(
     a2face::T2,
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
-    bc = :fix::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume2D2F,2},T2<:AbstractArray{Interface2D2F,2}}
 
     if firstindex(KS.pSpace.x[:, 1]) < 1
@@ -1116,6 +1116,184 @@ function evolve!(
                 a2face[i, KS.pSpace.ny+1].n[1],
                 a2face[i, KS.pSpace.ny+1].n[2],
             )
+        end
+
+    end
+
+end
+
+function evolve!(
+    KS::SolverSet,
+    ctr::T1,
+    face::T2,
+    dt;
+    mode = Symbol(KS.set.flux)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
+) where {T1<:AbstractVector{ControlVolumeUS},T2<:AbstractVector{Interface2D}}
+
+    if mode == :hll
+
+        @inbounds Threads.@threads for i in eachindex(face)
+            vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
+            vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+
+            if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
+                flux_hll!(
+                    face[i].fw,
+                    ctr[KS.ps.faceCells[i, 1]].w .+ ctr[KS.ps.faceCells[i, 1]].sw[:, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sw[:, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].w .+ ctr[KS.ps.faceCells[i, 2]].sw[:, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sw[:, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    KS.gas.γ,
+                    dt,
+                )
+                face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2]) .* face[i].len
+            else
+                idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
+
+                if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
+                    prim = KitBase.local_frame(ctr[KS.ps.faceCells[i, idx]].prim, face[i].n[1], face[i].n[2])
+                    bc = copy(KS.ib.bcR)
+                    bc[2] = -prim[2]
+                    bc[3] = -prim[3]
+                    bc[4] = 2.0 * KS.ib.bcR[4] - prim[4]
+                    bc[1] = (2.0 * KS.ib.bcR[4] - prim[4]) / prim[4] * prim[1]
+                    bc_w = KitBase.prim_conserve(bc, KS.gas.γ)
+
+                    if idx == 1
+                        wL = bc_w
+                        wR = KitBase.local_frame(ctr[KS.ps.faceCells[i, idx]].w, face[i].n[1], face[i].n[2])
+                    else
+                        wL = KitBase.local_frame(ctr[KS.ps.faceCells[i, idx]].w, face[i].n[1], face[i].n[2])
+                        wR = bc_w
+                    end
+
+                    KitBase.flux_hll!(
+                        face[i].fw,
+                        wL,
+                        wR,
+                        KS.gas.γ,
+                        dt,
+                    )
+
+                    face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2]) .* face[i].len
+                end
+            end
+        end
+
+    end
+
+end
+
+function evolve!(
+    KS::SolverSet,
+    ctr::T1,
+    face::T2,
+    dt;
+    mode = Symbol(KS.set.flux)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
+) where {T1<:AbstractVector{ControlVolumeUS1F},T2<:AbstractVector{Interface2D1F}}
+
+    if mode == :kfvs
+
+        @inbounds Threads.@threads for i in eachindex(face)
+            vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
+            vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+
+            if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
+                flux_kfvs!(
+                    face[i].fw,
+                    face[i].ff,
+                    ctr[KS.ps.faceCells[i, 1]].f .+ ctr[KS.ps.faceCells[i, 1]].sf[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sf[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].f .+ ctr[KS.ps.faceCells[i, 2]].sf[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sf[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    vn,
+                    vt,
+                    KS.vSpace.weights,
+                    dt,
+                    face[i].len,
+                )
+                face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+            else
+                idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
+
+                if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
+                    bc = KitBase.local_frame(KS.ib.bcR, face[i].n[1], face[i].n[2])
+
+                    KitBase.flux_boundary_maxwell!(
+                        face[i].fw,
+                        face[i].ff,
+                        bc,
+                        ctr[KS.ps.faceCells[i, idx]].f .+ ctr[KS.ps.faceCells[i, idx]].sf[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+ ctr[KS.ps.faceCells[i, idx]].sf[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
+                        vn,
+                        vt,
+                        KS.vSpace.weights,
+                        KS.gas.K,
+                        dt,
+                        face[i].len,
+                    )
+                
+                    face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+                end
+            end
+        end
+
+    end
+
+end
+
+function evolve!(
+    KS::SolverSet,
+    ctr::T1,
+    face::T2,
+    dt;
+    mode = Symbol(KS.set.flux)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
+) where {T1<:AbstractVector{ControlVolumeUS2F},T2<:AbstractVector{Interface2D2F}}
+
+    if mode == :kfvs
+
+        @inbounds Threads.@threads for i in eachindex(face)
+            vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
+            vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+
+            if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
+                flux_kfvs!(
+                    face[i].fw,
+                    face[i].fh,
+                    face[i].fb,
+                    ctr[KS.ps.faceCells[i, 1]].h .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 1]].b .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 1]) .+ ctr[KS.ps.faceCells[i, 1]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 1], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].h .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    ctr[KS.ps.faceCells[i, 2]].b .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 1]) .+ ctr[KS.ps.faceCells[i, 2]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
+                    vn,
+                    vt,
+                    KS.vSpace.weights,
+                    dt,
+                    face[i].len,
+                )
+                face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+            else
+                idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
+
+                if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
+                    bc = KitBase.local_frame(KS.ib.bcR, face[i].n[1], face[i].n[2])
+
+                    KitBase.flux_boundary_maxwell!(
+                        face[i].fw,
+                        face[i].fh,
+                        face[i].fb,
+                        bc,
+                        ctr[KS.ps.faceCells[i, idx]].h .+ ctr[KS.ps.faceCells[i, idx]].sh[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+ ctr[KS.ps.faceCells[i, idx]].sh[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
+                        ctr[KS.ps.faceCells[i, idx]].b .+ ctr[KS.ps.faceCells[i, idx]].sb[:, :, 1] .* (KS.ps.faceCenter[i, 1] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+ ctr[KS.ps.faceCells[i, idx]].sb[:, :, 2] .* (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
+                        vn,
+                        vt,
+                        KS.vSpace.weights,
+                        KS.gas.K,
+                        dt,
+                        face[i].len,
+                    )
+                
+                    face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
+                end
+            end
         end
 
     end
