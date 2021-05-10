@@ -27,6 +27,7 @@ export Flux1D, Flux1D1F, Flux1D2F
 export Flux2D, Flux2D1F, Flux2D2F
 export Particle, Particle1D, Particle2D
 export ControlVolumeParticle1D, ControlVolumeParticle2D
+export static_array
 
 include("abstract.jl")
 include("struct_general.jl")
@@ -36,3 +37,4 @@ include("struct_face.jl")
 include("struct_sol.jl")
 include("struct_flux.jl")
 include("struct_ptc.jl")
+include("conversion.jl")
