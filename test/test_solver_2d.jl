@@ -1,6 +1,7 @@
 cd(@__DIR__)
 ks, ctr, a1face, a2face, simTime = KitBase.initialize("config_2d2f.txt")
 simTime = KitBase.solve!(ks, ctr, a1face, a2face, simTime)
+
 res = zeros(4)
 dt = KitBase.timestep(ks, ctr, simTime)
 KitBase.evolve!(ks, ctr, a1face, a2face, dt; mode = :kcu, bc = :maxwell)

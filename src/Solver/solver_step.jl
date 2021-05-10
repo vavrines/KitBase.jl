@@ -1122,9 +1122,9 @@ function step!(
     fwU::T1,
     fhU::T2,
     fbU::T2,
-    u::T2,
-    v::T2,
-    weights::T2,
+    u::T3,
+    v::T3,
+    weights::T3,
     K,
     γ,
     μᵣ,
@@ -1135,7 +1135,11 @@ function step!(
     RES,
     AVG,
     collision = :bgk,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,2}}
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,2},
+    T3<:AbstractArray{<:AbstractFloat,2},
+}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)

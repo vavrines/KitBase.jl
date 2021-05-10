@@ -7,7 +7,7 @@ Copyright (c) 2021 Tianbai Xiao <tianbaixiao@gmail.com>
 module KitBase
 
 if VERSION < v"1.3"
-    @warn "Kinetic matches perfectly with Julia 1.3 or newer versions."
+    @warn "Kinetic works better with Julia 1.3 or newer versions."
 end
 
 using Dates
@@ -29,7 +29,7 @@ using PyCall
 using Distributed
 using CUDA
 using WriteVTK
-using StaticArrays: SVector, MVector, SMatrix, MMatrix, SArray, MArray
+using StaticArrays
 
 include("Data/data.jl")
 include("Macro/macro.jl")
