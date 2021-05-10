@@ -13,3 +13,4 @@ KitBase.evolve!(ks, ctr, a1face, a2face, dt; mode = :kfvs, bc = :maxwell)
 KitBase.evolve!(ks, ctr, a1face, a2face, dt; mode = :kcu, bc = :maxwell)
 
 KitBase.plot_contour(ks, ctr)
+

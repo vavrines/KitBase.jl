@@ -347,7 +347,9 @@ function init_fvm(KS::T, ps::T1, array=:static_array) where {T<:AbstractSolverSe
     return ctr, a1face, a2face
 end
 
-function init_fvm(KS::T, ps::UnstructPSpace) where {T<:AbstractSolverSet}
+function init_fvm(KS::T, ps::UnstructPSpace, array=:static_array) where {T<:AbstractSolverSet}
+    funcar = eval(array)
+
     if KS.set.space[3:4] == "0f"
         
         ctr = Array{KitBase.ControlVolumeUS}(undef, size(ps.cellid, 1))

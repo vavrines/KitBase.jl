@@ -98,7 +98,7 @@ function ControlVolume1D1F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zero(w)
+    sw = zero(W)
 
     f = deepcopy(F)
     sf = zero(f)
@@ -167,7 +167,7 @@ function ControlVolume1D2F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = zero(w)
+    sw = zero(W)
 
     h = deepcopy(H)
     b = deepcopy(B)
@@ -269,7 +269,7 @@ function ControlVolume1D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = eltype(H0).(deepcopy(W) |> zero)
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
@@ -326,7 +326,7 @@ function ControlVolume1D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = eltype(H0).(deepcopy(W) |> zero)
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
@@ -386,7 +386,7 @@ function ControlVolume1D3F(
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
-    sw = eltype(H0).(deepcopy(W) |> zero)
+    sw = zero(W)
 
     h0 = deepcopy(H0)
     h1 = deepcopy(H1)
@@ -524,10 +524,10 @@ function ControlVolume1D4F(
     h1 = deepcopy(H1)
     h2 = deepcopy(H2)
     h3 = deepcopy(H3)
-    sh0 = zero(H0)
-    sh1 = zero(H1)
-    sh2 = zero(H2)
-    sh3 = zero(H3)
+    sh0 = deepcopy(H0)
+    sh1 = deepcopy(H1)
+    sh2 = deepcopy(H2)
+    sh3 = deepcopy(H3)
 
     E = deepcopy(E0)
     B = deepcopy(B0)
