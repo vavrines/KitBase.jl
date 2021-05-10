@@ -68,7 +68,7 @@ end
 Initialize finite volume method
 
 """
-function init_fvm(KS::T, ps::T1, array=:static_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
     funcar = eval(array)
     
     if KS.set.space[3:4] == "0f"
@@ -235,7 +235,7 @@ function init_fvm(KS::T, ps::T1, array=:static_array) where {T<:AbstractSolverSe
     return ctr, face
 end
 
-function init_fvm(KS::T, ps::T1, array=:static_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
     funcar = eval(array)
 
     if KS.set.space[3:4] == "1f"
@@ -347,7 +347,7 @@ function init_fvm(KS::T, ps::T1, array=:static_array) where {T<:AbstractSolverSe
     return ctr, a1face, a2face
 end
 
-function init_fvm(KS::T, ps::UnstructPSpace, array=:static_array) where {T<:AbstractSolverSet}
+function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array) where {T<:AbstractSolverSet}
     funcar = eval(array)
 
     if KS.set.space[3:4] == "0f"

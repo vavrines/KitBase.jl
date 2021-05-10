@@ -1039,6 +1039,40 @@ function step!(
 end
 
 # ------------------------------------------------------------
+# 2D0F
+# ------------------------------------------------------------
+
+#--- triangle ---#
+function step!(
+    w::T1,
+    prim::T1,
+    fw1::T1,
+    fw2::T1,
+    fw3::T1,
+    γ,
+    Δs,
+    dirc::T2,
+    RES,
+    AVG,
+) where {
+    T1<:AbstractVector{<:AbstractFloat},
+    T2<:AbstractVector{<:Real},
+}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    #--- update W^{n+1} ---#
+    @. w -= (fw1 * dirc[1] + fw2 * dirc[2] + fw3 * dirc[3]) / Δs
+    prim .= conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+end
+
+# ------------------------------------------------------------
 # 2D1F2V
 # ------------------------------------------------------------
 function step!(
@@ -1103,6 +1137,75 @@ function step!(
                 h[i, j] +
                 (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs +
                 dt / τ * MH[i, j]
+            ) / (1.0 + dt / τ)
+    end
+
+end
+
+#--- triangle ---#
+function step!(
+    w::T1,
+    prim::T1,
+    f::T2,
+    fw1::T1,
+    ff1::T2,
+    fw2::T1,
+    ff2::T2,
+    fw3::T1,
+    ff3::T2,
+    u::T3,
+    v::T3,
+    weights::T3,
+    K,
+    γ,
+    μᵣ,
+    ω,
+    Pr,
+    Δs,
+    dirc::T4,
+    dt,
+    RES,
+    AVG,
+    collision = :bgk,
+) where {
+    T1<:AbstractVector{<:AbstractFloat},
+    T2<:AbstractArray{<:AbstractFloat,2},
+    T3<:AbstractArray{<:AbstractFloat,2},
+    T4<:AbstractVector{<:Real},
+}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    if collision == :shakhov
+        q = heat_flux(h, b, prim, u, v, weights)
+
+        M_old = maxwellian(u, v, prim)
+        S = shakhov(u, v, M_old, q, prim, Pr, K)
+    else
+        S = zero(f)
+    end
+
+    #--- update W^{n+1} ---#
+    @. w -= (fw1 * dirc[1] + fw2 * dirc[2] + fw3 * dirc[3]) / Δs
+    prim .= conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+    #--- calculate M^{n+1} and tau^{n+1} ---#
+    M = maxwellian(u, v, prim)
+    M .+= S
+    τ = vhs_collision_time(prim, μᵣ, ω)
+
+    #--- update distribution function ---#
+    for j in axes(v, 2), i in axes(u, 1)
+        f[i, j] =
+            (
+                f[i, j] -
+                (ff1[i, j] * dirc[1] + ff2[i, j] * dirc[2] + ff3[i, j] * dirc[3]) / Δs +
+                dt / τ * M[i, j]
             ) / (1.0 + dt / τ)
     end
 
