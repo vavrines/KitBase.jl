@@ -1,7 +1,7 @@
 """
 KitBase.jl: The lightweight module of physical formulations in Kinetic.jl
 
-Copyright (c) 2021 Tianbai Xiao <tianbaixiao@gmail.com>
+Copyright (c) 2020-2021 Tianbai Xiao <tianbaixiao@gmail.com>
 """
 
 module KitBase
@@ -10,26 +10,27 @@ if VERSION < v"1.3"
     @warn "Kinetic works better with Julia 1.3 or newer versions."
 end
 
-using Dates
-using OffsetArrays
-using LinearAlgebra
-using FastGaussQuadrature
-using SpecialFunctions
-using FFTW
-using Plots
-using FileIO
-using JLD2
 using CSV
-using ProgressMeter
-using Distributions
-using Optim
-using MultivariatePolynomials
-using TypedPolynomials
-using PyCall
-using Distributed
 using CUDA
-using WriteVTK
+using Dates
+using Distributed
+using Distributions
+using FastGaussQuadrature
+using FFTW
+using FileIO
+using FiniteMesh
+using JLD2
+using LinearAlgebra
+using MultivariatePolynomials
+using OffsetArrays
+using Optim
+using Plots
+using ProgressMeter
+using PyCall
+using SpecialFunctions
 using StaticArrays
+using TypedPolynomials
+using WriteVTK
 
 include("Data/data.jl")
 include("Macro/macro.jl")

@@ -58,7 +58,7 @@ function UnstructPSpace(file::T) where {T<:AbstractString}
     )
 end
 
-
+#=
 """
 Cell connectivity information
 """
@@ -358,3 +358,4 @@ function mesh_face_type(
 
     return edgeType
 end
+=#
