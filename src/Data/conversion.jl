@@ -1,3 +1,5 @@
+slope_array(w::Number; kwargs...) = deepcopy(w)
+
 function slope_array(w::AbstractArray; reduction=true)
     nd = ndims(w)
     ids = []

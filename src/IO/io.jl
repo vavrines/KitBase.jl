@@ -136,12 +136,18 @@ function write_vtk(
 end
 
 function write_vtk(ks::T1, ctr) where {T1<:AbstractSolverSet}
+    KitBase.write_vtk(ks.ps, ctr)
+
+    return nothing
+end
+
+function KitBase.write_vtk(ps::UnstructPSpace, ctr)
     cdata = zeros(length(ctr), length(ctr[1].w))
     for i in eachindex(ctr)
         cdata[i, :] .= ctr[i].prim
-        cdata[i, end] = 1.0 / cdata[i, end]
+        size(cdata, 2) > 1 && cdata[i, end] = 1.0 / cdata[i, end]
     end
-    KitBase.write_vtk(ks.pSpace.points, ks.pSpace.cellid, cdata)
+    KitBase.write_vtk(ps.points, ps.cellid, cdata)
 
     return nothing
 end
