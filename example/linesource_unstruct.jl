@@ -1,5 +1,5 @@
 using LinearAlgebra, ProgressMeter
-import KitBase
+using KitBase
 
 function KitBase.write_vtk(ps, ctr)
     cdata = zeros(length(ctr))
@@ -17,8 +17,9 @@ begin
     cellType = KitBase.mesh_cell_type(cellNeighbors)
     cellArea = KitBase.mesh_area_2D(points, cellid)
     cellCenter = KitBase.mesh_center_2D(points, cellid)
-    edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
-    cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
+    edgeCenter = KitBase.mesh_face_center(points, edgePoints)
+    cellEdges = KitBase.mesh_cell_face(cellid, edgeCells)
+    edgeType = mesh_face_type(edgeCells, cellType)
     ps = KitBase.UnstructPSpace(
         cells,
         points,
@@ -31,6 +32,7 @@ begin
         edgePoints,
         edgeCells,
         edgeCenter,
+        edgeType,
     )
 end
 

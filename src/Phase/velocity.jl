@@ -637,8 +637,12 @@ MVSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 Unstructured velocity space
 
 """
-struct UnstructVSpace{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <:
-       AbstractVelocitySpace
+struct UnstructVSpace{
+    TR<:Union{Real,AbstractVector},
+    TI<:Union{Integer,AbstractVector},
+    TA<:AbstractArray,
+    TB<:AbstractVector{<:Real},
+} <: AbstractVelocitySpace
     u0::TR
     u1::TR
     nu::TI
