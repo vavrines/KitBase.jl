@@ -544,7 +544,11 @@ function set_property(dict::T) where {T<:AbstractDict}
     end
     γ = heat_capacity_ratio(inK, γD)
 
-    if matter == "gas"
+    if matter == "radiation"
+        
+        gas = Radiation(knudsen, sigmaS, sigmaA)
+
+    elseif matter == "gas"
 
         if nSpecies == 1
             μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
