@@ -336,11 +336,8 @@ mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
         len = L
         n = [C, S]
 
-        fw = deepcopy(w)
-        ff = deepcopy(f)
-
-        fw .= 0.0
-        ff .= 0.0
+        fw = zero(w)
+        ff = zero(f)
 
         new{typeof(len),typeof(n),typeof(fw),typeof(ff)}(len, n, fw, ff)
     end
@@ -394,13 +391,9 @@ mutable struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
         len = L
         n = @SArray [C, S]
 
-        fw = deepcopy(w)
-        fh = deepcopy(f)
-        fb = deepcopy(f)
-
-        fw .= 0.0
-        fh .= 0.0
-        fb .= 0.0
+        fw = zero(w)
+        fh = zero(f)
+        fb = zero(f)
 
         new{typeof(len),typeof(n),typeof(fw),typeof(fh)}(len, n, fw, fh, fb)
     end
@@ -464,14 +457,10 @@ mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
         len = L
         n = @SArray [C, S]
 
-        fw = deepcopy(w)
-        fh0 = deepcopy(f)
-        fh1 = deepcopy(f)
-        fh2 = deepcopy(f)
-        fw .= 0.0
-        fh0 .= 0.0
-        fh1 .= 0.0
-        fh2 .= 0.0
+        fw = zero(w)
+        fh0 = zero(f)
+        fh1 = zero(f)
+        fh2 = zero(f)
 
         femL = zeros(eltype(E), 8)
         femR = zeros(eltype(E), 8)
@@ -507,14 +496,10 @@ mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
         len = L
         n = [C, S]
 
-        fw = deepcopy(w)
-        fh0 = deepcopy(f)
-        fh1 = deepcopy(f)
-        fh2 = deepcopy(f)
-        fw .= 0.0
-        fh0 .= 0.0
-        fh1 .= 0.0
-        fh2 .= 0.0
+        fw = zero(w)
+        fh0 = zero(f)
+        fh1 = zero(f)
+        fh2 = zero(f)
 
         femL = zeros(eltype(E), 8, axes(E, 2))
         femR = zeros(eltype(E), 8, axes(E, 2))
@@ -544,14 +529,10 @@ mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
         len = L
         n = [C, S]
 
-        fw = deepcopy(w)
-        fh0 = deepcopy(f)
-        fh1 = deepcopy(f)
-        fh2 = deepcopy(f)
-        fw .= 0.0
-        fh0 .= 0.0
-        fh1 .= 0.0
-        fh2 .= 0.0
+        fw = zero(w)
+        fh0 = zero(f)
+        fh1 = zero(f)
+        fh2 = zero(f)
 
         femL = nothing
         femR = nothing

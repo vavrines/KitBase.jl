@@ -1,38 +1,33 @@
 using LinearAlgebra, ProgressMeter
-import KitBase
-
-function KitBase.write_vtk(ps, ctr)
-    cdata = zeros(length(ctr))
-    for i in eachindex(cdata)
-        cdata[i] = ctr[i].w
-    end
-    KitBase.write_vtk(ps.points, ps.cellid, cdata)
-end
+using KitBase
 
 begin
     cd(@__DIR__)
     cells, points = KitBase.read_mesh("../assets/mesh/linesource.su2")
     cellid = KitBase.extract_cell(cells)
-    edgePoints, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cellid)
+    facePoints, faceCells, cellNeighbors = KitBase.mesh_connectivity_2D(cellid)
     cellType = KitBase.mesh_cell_type(cellNeighbors)
     cellArea = KitBase.mesh_area_2D(points, cellid)
     cellCenter = KitBase.mesh_center_2D(points, cellid)
-    edgeCenter = KitBase.mesh_edge_center(points, edgePoints)
-    cellEdges = KitBase.mesh_cell_edge(cellid, edgeCells)
+    faceCenter = KitBase.mesh_face_center(points, facePoints)
+    cellFaces = KitBase.mesh_cell_face(cellid, faceCells)
+    faceType = mesh_face_type(faceCells, cellType)
     ps = KitBase.UnstructPSpace(
         cells,
         points,
         cellid,
         cellType,
         cellNeighbors,
-        cellEdges,
+        cellFaces,
         cellCenter,
         cellArea,
-        edgePoints,
-        edgeCells,
-        edgeCenter,
+        facePoints,
+        faceCells,
+        faceCenter,
+        faceType,
     )
 end
+ps = KitBase.UnstructPSpace("../assets/mesh/linesource.su2")
 
 begin
     # quadrature
@@ -64,12 +59,12 @@ for i in eachindex(ctr)
         push!(
             n,
             KitBase.unit_normal(
-                ps.points[edgePoints[cellEdges[i, j], 1], :],
-                ps.points[edgePoints[cellEdges[i, j], 2], :],
+                ps.points[facePoints[cellFaces[i, j], 1], :],
+                ps.points[facePoints[cellFaces[i, j], 2], :],
             ),
         )
 
-        if dot(ps.edgeCenter[ps.cellEdges[i, j], :] .- ps.cellCenter[i, :], n[j]) < 0
+        if dot(ps.faceCenter[ps.cellFaces[i, j], :] .- ps.cellCenter[i, :], n[j]) < 0
             n[j] .= -n[j]
         end
     end
@@ -103,13 +98,13 @@ for i in eachindex(ctr)
     ctr[i] = KitBase.ControlVolumeUS1F(n, cellCenter[i, :], dx, w, w, phi)
 end
 
-face = Array{KitBase.Interface2D1F}(undef, size(ps.edgePoints, 1))
+face = Array{KitBase.Interface2D1F}(undef, size(ps.facePoints, 1))
 for i in eachindex(face)
-    len = norm(ps.points[edgePoints[i, 1], :] .- ps.points[edgePoints[i, 2], :])
-    n = KitBase.unit_normal(ps.points[edgePoints[i, 1], :], ps.points[edgePoints[i, 2], :])
+    len = norm(ps.points[facePoints[i, 1], :] .- ps.points[facePoints[i, 2], :])
+    n = KitBase.unit_normal(ps.points[facePoints[i, 1], :], ps.points[facePoints[i, 2], :])
 
-    if !(-1 in ps.edgeCells[i, :])
-        n0 = ps.cellCenter[ps.edgeCells[i, 2], :] .- ps.cellCenter[ps.edgeCells[i, 1], :]
+    if !(-1 in ps.faceCells[i, :])
+        n0 = ps.cellCenter[ps.faceCells[i, 2], :] .- ps.cellCenter[ps.faceCells[i, 1], :]
     else
         n0 = zero(n)
     end
@@ -128,11 +123,11 @@ nt = tspan[2] ÷ dt |> Int
 @showprogress for iter = 1:nt
     @inbounds Threads.@threads for i in eachindex(face)
         velo = vs.u[:, 1] .* face[i].n[1] + vs.u[:, 2] .* face[i].n[2]
-        if !(-1 in ps.edgeCells[i, :])
+        if !(-1 in ps.faceCells[i, :])
             KitBase.flux_kfvs!(
                 face[i].ff,
-                ctr[ps.edgeCells[i, 1]].f,
-                ctr[ps.edgeCells[i, 2]].f,
+                ctr[ps.faceCells[i, 1]].f,
+                ctr[ps.faceCells[i, 2]].f,
                 velo,
                 dt,
             )
@@ -142,9 +137,9 @@ nt = tspan[2] ÷ dt |> Int
     @inbounds Threads.@threads for i in eachindex(ctr)
         if ps.cellType[i] == 0
             for j = 1:3
-                dirc = sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n))
+                dirc = sign(dot(ctr[i].n[j], face[ps.cellFaces[i, j]].n))
                 @. ctr[i].f -=
-                    dirc * face[ps.cellEdges[i, j]].ff * face[ps.cellEdges[i, j]].len /
+                    dirc * face[ps.cellFaces[i, j]].ff * face[ps.cellFaces[i, j]].len /
                     ps.cellArea[i]
             end
 
@@ -156,4 +151,10 @@ nt = tspan[2] ÷ dt |> Int
     end
 end
 
-KitBase.write_vtk(ps, ctr)
+#KitBase.write_vtk(ps, ctr)
+
+cdata = zeros(length(ctr), 1)
+for i in eachindex(ctr)
+    cdata[i, 1] = ctr[i].w
+end
+write_vtk(ps.points, ps.cellid, cdata)

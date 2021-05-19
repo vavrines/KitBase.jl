@@ -3,6 +3,8 @@
 # ============================================================
 
 abstract type AbstractPhysicalSpace end
+abstract type AbstractStructPhysicalSpace <: AbstractPhysicalSpace end
+abstract type AbstractUnstructPhysicalSpace <: AbstractPhysicalSpace end
 abstract type AbstractPhysicalSpace1D <: AbstractPhysicalSpace end
 abstract type AbstractPhysicalSpace2D <: AbstractPhysicalSpace end
 abstract type AbstractPhysicalSpace3D <: AbstractPhysicalSpace end

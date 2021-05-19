@@ -12,17 +12,7 @@ export uniform_mesh,
        ndgrid,
        meshgrid,
        find_idx
-export UnstructPSpace,
-       Cells,
-       read_mesh,
-       extract_cell,
-       mesh_connectivity_2D,
-       mesh_cell_type,
-       mesh_center_2D,
-       mesh_area_2D,
-       mesh_face_center,
-       mesh_cell_face,
-       mesh_face_type
+export UnstructPSpace
 
 include("geo_general.jl")
 include("geo_struct.jl")
