@@ -524,8 +524,8 @@ function set_property(dict::T) where {T<:AbstractDict}
         @eval $s = $(dict[key])
     end
 
-    Dx = parse(Int, space[1])
-    γD = map(parse(Int, space[3]), parse(Int, space[5])) do x, y # (x)f(y)v
+    Dx = parse(Int, dict[:space][1])
+    γD = map(parse(Int, dict[:space][3]), parse(Int, dict[:space][5])) do x, y # (x)f(y)v
         if x == 0
             return Dx
         elseif x == 1 # 1f
@@ -542,60 +542,60 @@ function set_property(dict::T) where {T<:AbstractDict}
             return nothing
         end
     end
-    γ = heat_capacity_ratio(inK, γD)
+    γ = heat_capacity_ratio(dict[:inK], γD)
 
     if matter == "radiation"
         
-        gas = Radiation(knudsen, sigmaS, sigmaA)
+        gas = Radiation(dict[:knudsen], dict[:sigmaS], dict[:sigmaA])
 
     elseif matter == "gas"
 
         if nSpecies == 1
-            μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
-            gas = Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ)
+            μᵣ = ref_vhs_vis(dict[:knudsen], dict[:alphaRef], dict[:omegaRef])
+            gas = Gas(dict[:knudsen], dict[:mach], dict[:prandtl], dict[:inK], γ, dict[:omega], dict[:alphaRef], dict[:omegaRef], μᵣ)
         elseif nSpecies == 2
-            kne = knudsen * (me / mi)
-            gas = Mixture([knudsen, kne], mach, prandtl, inK, γ, mi, ni, me, ne)
+            kne = dict[:knudsen] * (dict[:me] / dict[:mi])
+            gas = Mixture([dict[:knudsen], kne], dict[:mach], dict[:prandtl], dict[:inK], γ, dict[:mi], dict[:ni], dict[:me], dict[:ne])
         else
             throw("The gas property only supports up to two species.")
         end
 
     elseif matter == "plasma"
 
-        kne = knudsen * (me / mi)
+        kne = dict[:knudsen] * (dict[:me] / dict[:mi])
         if Dx == 1
             gas = Plasma1D(
-                [knudsen, kne],
-                mach,
-                prandtl,
-                inK,
+                [dict[:knudsen], kne],
+                dict[:mach],
+                dict[:prandtl],
+                dict[:inK],
                 γ,
-                mi,
-                ni,
-                me,
-                ne,
-                lD,
-                rL,
-                sol,
-                echi,
-                bnu,
+                dict[:mi],
+                dict[:ni],
+                dict[:me],
+                dict[:ne],
+                dict[:lD],
+                dict[:rL],
+                dict[:sol],
+                dict[:echi],
+                dict[:bnu],
             )
         elseif Dx == 2
             gas = Plasma2D(
-                [knudsen, kne],
-                mach,
-                prandtl,
-                inK,
+                [dict[:knudsen], kne],
+                dict[:mach],
+                dict[:prandtl],
+                dict[:inK],
                 γ,
-                mi,
-                ni,
-                me,
-                ne,
-                lD,
-                rL,
-                sol,
-                echi,
-                bnu,
+                dict[:mi],
+                dict[:ni],
+                dict[:me],
+                dict[:ne],
+                dict[:lD],
+                dict[:rL],
+                dict[:sol],
+                dict[:echi],
+                dict[:bnu],
             )
         else
             throw("The plasma property only supports up to 2D case.")
