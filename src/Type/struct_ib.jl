@@ -23,76 +23,64 @@ Initial & boundary condition with no distribution function
 
 """
 mutable struct IB{A,B,C} <: AbstractCondition
-
     wL::A
     primL::B
     bcL::B
-
     wR::A
     primR::B
     bcR::B
-
     bcU::B
     bcD::B
-
     vL::C
     vR::C
+end
 
-    # works for both 1V/3V and single-/multi-component gases
-    function IB(
-        wL,
-        primL::AbstractArray,
-        bcL::AbstractArray,
-        wR,
-        primR::AbstractArray,
-        bcR::AbstractArray,
-        bcU = deepcopy(bcR)::AbstractArray,
-        bcD = deepcopy(bcR)::AbstractArray,
-    )
-        if ndims(primL) == 1
-            vL = zeros(eltype(primL), 3)
-            vR = zeros(eltype(primR), 3)
+# works for both 1V/3V and single-/multi-component gases
+function IB(
+    wL,
+    primL,
+    bcL,
+    wR,
+    primR,
+    bcR,
+    bcU = deepcopy(bcR),
+    bcD = deepcopy(bcR),
+)
+    
+    if ndims(primL) == 0
+        vL = primL
+        vR = primR
+    elseif ndims(primL) == 1
+        vL = zeros(eltype(primL), 3)
+        vR = zeros(eltype(primR), 3)
 
-            if size(primL, 1) == 3
-                vL[1] = primL[2]
-                vR[1] = primR[2]
-            elseif size(primL, 1) == 4
-                vL[1:2] .= primL[2:3]
-                vR[1:2] .= primR[2:3]
-            elseif size(primL, 1) == 5
-                vL .= primL[2:4]
-                vR .= primR[2:4]
-            end
-        elseif ndims(primL) == 2
-            vL = zeros(eltype(primL), 3, size(primL, 2))
-            vR = zeros(eltype(primR), 3, size(primR, 2))
-
-            if size(primL, 1) == 3
-                vL[1, :] .= primL[2, :]
-                vR[1, :] .= primR[2, :]
-            elseif size(primL, 1) == 4
-                vL[1:2, :] .= primL[2:3, :]
-                vR[1:2, :] .= primR[2:3, :]
-            elseif size(primL, 1) == 5
-                vL .= primL[2:4, :]
-                vR .= primR[2:4, :]
-            end
+        if size(primL, 1) == 3
+            vL[1] = primL[2]
+            vR[1] = primR[2]
+        elseif size(primL, 1) == 4
+            vL[1:2] .= primL[2:3]
+            vR[1:2] .= primR[2:3]
+        elseif size(primL, 1) == 5
+            vL .= primL[2:4]
+            vR .= primR[2:4]
         end
+    elseif ndims(primL) == 2
+        vL = zeros(eltype(primL), 3, size(primL, 2))
+        vR = zeros(eltype(primR), 3, size(primR, 2))
 
-        new{typeof(wL),typeof(primL),typeof(vL)}(
-            wL,
-            primL,
-            bcL,
-            wR,
-            primR,
-            bcR,
-            bcU,
-            bcD,
-            vL,
-            vR,
-        )
+        if size(primL, 1) == 3
+            vL[1, :] .= primL[2, :]
+            vR[1, :] .= primR[2, :]
+        elseif size(primL, 1) == 4
+            vL[1:2, :] .= primL[2:3, :]
+            vR[1:2, :] .= primR[2:3, :]
+        elseif size(primL, 1) == 5
+            vL .= primL[2:4, :]
+            vR .= primR[2:4, :]
+        end
     end
 
+    return IB(wL,primL,bcL,wR,primR,bcR,bcU,bcD,vL,vR)
 end
 
 
@@ -116,36 +104,32 @@ Initial & boundary condition with 1 distribution function
 
 """
 mutable struct IB1F{A,B} <: AbstractCondition
-
     wL::A
     primL::A
     fL::B
     bcL::A
-
     wR::A
     primR::A
     fR::B
     bcR::A
-
     bcU::A
     bcD::A
 
     # works for both 1V/3V and single-/multi-component gases
     function IB1F(
-        wL::AbstractArray,
-        primL::AbstractArray,
-        fL::AbstractArray,
-        bcL::AbstractArray,
-        wR::AbstractArray,
-        primR::AbstractArray,
-        fR::AbstractArray,
-        bcR::Array,
-        bcU = deepcopy(bcR)::AbstractArray,
-        bcD = deepcopy(bcR)::AbstractArray,
+        wL,
+        primL,
+        fL,
+        bcL,
+        wR,
+        primR,
+        fR,
+        bcR,
+        bcU = deepcopy(bcR),
+        bcD = deepcopy(bcR),
     )
         new{typeof(wL),typeof(fL)}(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)
     end
-
 end
 
 
@@ -171,39 +155,35 @@ Initial & boundary condition with 2 distribution functions
 
 """
 mutable struct IB2F{A,B} <: AbstractCondition
-
     wL::A
     primL::A
     hL::B
     bL::B
     bcL::A
-
     wR::A
     primR::A
     hR::B
     bR::B
     bcR::A
-
     bcU::A
     bcD::A
 
     function IB2F(
-        wL::AbstractArray,
-        primL::AbstractArray,
-        hL::AbstractArray,
-        bL::AbstractArray,
-        bcL::AbstractArray,
-        wR::AbstractArray,
-        primR::AbstractArray,
-        hR::AbstractArray,
-        bR::AbstractArray,
-        bcR::AbstractArray,
-        bcU = deepcopy(bcR)::AbstractArray,
-        bcD = deepcopy(bcR)::AbstractArray,
+        wL,
+        primL,
+        hL,
+        bL,
+        bcL,
+        wR,
+        primR,
+        hR,
+        bR,
+        bcR,
+        bcU = deepcopy(bcR),
+        bcD = deepcopy(bcR),
     )
         new{typeof(wL),typeof(hL)}(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR, bcU, bcD)
     end
-
 end
 
 
@@ -237,7 +217,6 @@ Initial & boundary condition with 3 distribution functions
 
 """
 mutable struct IB3F{A,B,C,D} <: AbstractCondition
-
     wL::A
     primL::A
     h0L::B
