@@ -4,7 +4,7 @@
         TP<:AbstractPhysicalSpace,
         TV<:Union{AbstractVelocitySpace,Nothing},
         TG<:AbstractProperty,
-        TI<:AbstractCondition,
+        TI<:Union{AbstractCondition,Nothing},
         TO<:AbstractString,
     } <: AbstractSolverSet
         # setup
@@ -29,7 +29,7 @@ struct SolverSet{
     TP<:AbstractPhysicalSpace,
     TV<:Union{AbstractVelocitySpace,Nothing},
     TG<:AbstractProperty,
-    TI<:AbstractCondition,
+    TI<:Union{AbstractCondition,Nothing},
     TO<:AbstractString,
 } <: AbstractSolverSet
     # setup
@@ -53,7 +53,7 @@ function SolverSet(
     PS::AbstractPhysicalSpace,
     VS::Union{AbstractVelocitySpace,Nothing},
     GAS::AbstractProperty,
-    IB::AbstractCondition,
+    IB::Union{AbstractCondition,Nothing},
     DIR::AbstractString,
 )
     return SolverSet{
