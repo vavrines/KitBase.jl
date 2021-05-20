@@ -194,7 +194,7 @@ Plot solution contours
 function plot_contour(
     KS::X,
     ctr::Y;
-    color = :default,
+    color = :inferno,
     backend = :plots::Symbol,
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
 
