@@ -232,7 +232,7 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverS
 
     end
 
-    return ctr, face
+    return ctr |> StructArray, face |> StructArray
 end
 
 function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
@@ -344,7 +344,7 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverS
 
     end
 
-    return ctr, a1face, a2face
+    return ctr |> StructArray, a1face |> StructArray, a2face |> StructArray
 end
 
 function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array) where {T<:AbstractSolverSet}
@@ -624,7 +624,7 @@ function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array) where {T<:Abs
 
     end
 
-    return ctr, face
+    return ctr |> StructArray, face |> StructArray
 end
 
 
@@ -698,7 +698,7 @@ function init_ptc_aos!(
         end
     end
 
-    return ptc
+    return ptc |> StructArray
 
 end
 

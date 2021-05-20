@@ -1,6 +1,6 @@
-using Test
-import KitBase
+using Test, KitBase
 
+cd(@__DIR__)
 include("test_struct.jl")
 include("test_io.jl")
 include("test_math.jl")
