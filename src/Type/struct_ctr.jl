@@ -34,7 +34,7 @@ function ControlVolume1D(
     DX::T1,
     W::T2,
     PRIM::T3,
-) where {T1<:Real,T2,T3<:AbstractArray}
+) where {T1<:Real,T2,T3}
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -92,7 +92,7 @@ function ControlVolume1D1F(
     W::T1,
     PRIM::T1,
     F::T2,
-) where {T1<:AbstractArray,T2<:AbstractArray}
+) where {T1,T2}
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -684,8 +684,8 @@ function ControlVolume2D(
     DX::Real,
     Y::Real,
     DY::Real,
-    W::AbstractArray,
-    PRIM::AbstractArray,
+    W,
+    PRIM,
 )
     x = deepcopy(X)
     dx = deepcopy(DX)
@@ -750,8 +750,8 @@ function ControlVolume2D1F(
     DX::Real,
     Y::Real,
     DY::Real,
-    W::AbstractArray,
-    PRIM::AbstractArray,
+    W,
+    PRIM,
     F::AbstractArray,
 )
 

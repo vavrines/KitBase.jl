@@ -21,14 +21,12 @@
 
 """
 mutable struct Interface1D{A} <: AbstractInterface1D
-
     fw::A
 
     function Interface1D(w::Union{Real,AbstractArray})
         fw = zero(w)
         new{typeof(fw)}(fw)
     end
-
 end
 
 function Base.show(io::IO, ctr::Interface1D{A}) where {A}
@@ -53,7 +51,6 @@ end
 
 """
 mutable struct Interface1D1F{A,B} <: AbstractInterface1D
-
     fw::A
     ff::B
 
@@ -63,7 +60,6 @@ mutable struct Interface1D1F{A,B} <: AbstractInterface1D
 
         new{typeof(fw),typeof(ff)}(fw, ff)
     end
-
 end
 
 function Base.show(io::IO, ctr::Interface1D1F{A,B}) where {A,B}
@@ -95,19 +91,17 @@ end
 
 """
 mutable struct Interface1D2F{A,B} <: AbstractInterface1D
-
     fw::A
     fh::B
     fb::B
+end
 
-    function Interface1D2F(w::AbstractArray, f::AbstractArray)
-        fw = zero(w)
-        fh = zero(f)
-        fb = zero(f)
+function Interface1D2F(w::AbstractArray, f::AbstractArray)
+    fw = zero(w)
+    fh = zero(f)
+    fb = zero(f)
 
-        new{typeof(fw),typeof(fh)}(fw, fh, fb)
-    end
-
+    return Interface1D2F(fw, fh, fb)
 end
 
 function Base.show(io::IO, ctr::Interface1D2F{A,B}) where {A,B}
@@ -134,50 +128,48 @@ end
 
 """
 mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
-
     fw::A
     fh0::B
     fh1::B
     fh2::B
     femL::C
     femR::C
+end
 
-    # deterministic
-    function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
-        fw = zeros(eltype(w), axes(w))
-        fh0 = zeros(eltype(f), axes(f))
-        fh1 = zeros(eltype(f), axes(f))
-        fh2 = zeros(eltype(f), axes(f))
-        femL = zeros(eltype(E), 8)
-        femR = zeros(eltype(E), 8)
+# deterministic
+function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
+    fw = zeros(eltype(w), axes(w))
+    fh0 = zeros(eltype(f), axes(f))
+    fh1 = zeros(eltype(f), axes(f))
+    fh2 = zeros(eltype(f), axes(f))
+    femL = zeros(eltype(E), 8)
+    femR = zeros(eltype(E), 8)
 
-        new{typeof(fw),typeof(fh0),typeof(femL)}(fw, fh0, fh1, fh2, femL, femR)
-    end
+    return Interface1D3F(fw, fh0, fh1, fh2, femL, femR)
+end
 
-    # stochastic
-    function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
-        fw = zeros(eltype(w), axes(w))
-        fh0 = zeros(eltype(f), axes(f))
-        fh1 = zeros(eltype(f), axes(f))
-        fh2 = zeros(eltype(f), axes(f))
-        femL = zeros(eltype(E), 8, axes(E, 2))
-        femR = zeros(eltype(E), 8, axes(E, 2))
+# stochastic
+function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
+    fw = zeros(eltype(w), axes(w))
+    fh0 = zeros(eltype(f), axes(f))
+    fh1 = zeros(eltype(f), axes(f))
+    fh2 = zeros(eltype(f), axes(f))
+    femL = zeros(eltype(E), 8, axes(E, 2))
+    femR = zeros(eltype(E), 8, axes(E, 2))
 
-        new{typeof(fw),typeof(fh0),typeof(femL)}(fw, fh0, fh1, fh2, femL, femR)
-    end
+    return Interface1D3F(fw, fh0, fh1, fh2, femL, femR)
+end
 
-    # Rykov
-    function Interface1D3F(w::AbstractArray, f::AbstractArray)
-        fw = zero(w)
-        fh0 = zero(f)
-        fh1 = zero(f)
-        fh2 = zero(f)
-        femL = nothing
-        femR = nothing
+# Rykov
+function Interface1D3F(w::AbstractArray, f::AbstractArray)
+    fw = zero(w)
+    fh0 = zero(f)
+    fh1 = zero(f)
+    fh2 = zero(f)
+    femL = nothing
+    femR = nothing
 
-        new{typeof(fw),typeof(fh0),typeof(femL)}(fw, fh0, fh1, fh2, femL, femR)
-    end
-
+    return Interface1D3F(fw, fh0, fh1, fh2, femL, femR)
 end
 
 function Base.show(io::IO, ctr::Interface1D3F{A,B,C}) where {A,B,C}
@@ -206,7 +198,6 @@ end
 
 """
 mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
-
     fw::A
     fh0::B
     fh1::B
@@ -214,33 +205,32 @@ mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
     fh3::B
     femL::C
     femR::C
+end
 
-    # deterministic
-    function Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
-        fw = zeros(eltype(w), axes(w))
-        fh0 = zeros(eltype(f), axes(f))
-        fh1 = zeros(eltype(f), axes(f))
-        fh2 = zeros(eltype(f), axes(f))
-        fh3 = zeros(eltype(f), axes(f))
-        femL = zeros(eltype(E), 8)
-        femR = zeros(eltype(E), 8)
+# deterministic
+function Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
+    fw = zeros(eltype(w), axes(w))
+    fh0 = zeros(eltype(f), axes(f))
+    fh1 = zeros(eltype(f), axes(f))
+    fh2 = zeros(eltype(f), axes(f))
+    fh3 = zeros(eltype(f), axes(f))
+    femL = zeros(eltype(E), 8)
+    femR = zeros(eltype(E), 8)
 
-        new{typeof(fw),typeof(fh0),typeof(femL)}(fw, fh0, fh1, fh2, fh3, femL, femR)
-    end
+    return Interface1D4F(fw, fh0, fh1, fh2, fh3, femL, femR)
+end
 
-    # stochastic
-    function Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
-        fw = zeros(eltype(w), axes(w))
-        fh0 = zeros(eltype(f), axes(f))
-        fh1 = zeros(eltype(f), axes(f))
-        fh2 = zeros(eltype(f), axes(f))
-        fh3 = zeros(eltype(f), axes(f))
-        femL = zeros(eltype(E), 8, axes(E, 2))
-        femR = zeros(eltype(E), 8, axes(E, 2))
+# stochastic
+function Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
+    fw = zeros(eltype(w), axes(w))
+    fh0 = zeros(eltype(f), axes(f))
+    fh1 = zeros(eltype(f), axes(f))
+    fh2 = zeros(eltype(f), axes(f))
+    fh3 = zeros(eltype(f), axes(f))
+    femL = zeros(eltype(E), 8, axes(E, 2))
+    femR = zeros(eltype(E), 8, axes(E, 2))
 
-        new{typeof(fw),typeof(fh0),typeof(femL)}(fw, fh0, fh1, fh2, fh3, femL, femR)
-    end
-
+    return Interface1D4F(fw, fh0, fh1, fh2, fh3, femL, femR)
 end
 
 function Base.show(io::IO, ctr::Interface1D4F{A,B,C}) where {A,B,C}
@@ -277,20 +267,18 @@ end
 
 """
 mutable struct Interface2D{A,B,C} <: AbstractInterface2D
-
     len::A
     n::B
     fw::C
+end
 
-    function Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)
-        len = L
-        n = [C, S]
+function Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)
+    len = L
+    n = [C, S]
 
-        fw = zero(w)
+    fw = zero(w)
 
-        new{typeof(len),typeof(n),typeof(fw)}(len, n, fw)
-    end
-
+    return Interface2D(len, n, fw)
 end
 
 function Base.show(io::IO, ctr::Interface2D{A,B,C}) where {A,B,C}
@@ -326,22 +314,20 @@ end
 
 """
 mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
-
     len::A
     n::B
     fw::C
     ff::D
+end
 
-    function Interface2D1F(L::Real, C::Real, S::Real, w, f::AbstractArray)
-        len = L
-        n = [C, S]
+function Interface2D1F(L::Real, C::Real, S::Real, w, f::AbstractArray)
+    len = L
+    n = [C, S]
 
-        fw = zero(w)
-        ff = zero(f)
+    fw = zero(w)
+    ff = zero(f)
 
-        new{typeof(len),typeof(n),typeof(fw),typeof(ff)}(len, n, fw, ff)
-    end
-
+    return Interface2D1F(len, n, fw, ff)
 end
 
 function Base.show(io::IO, ctr::Interface2D1F{A,B,C,D}) where {A,B,C,D}
@@ -379,25 +365,23 @@ end
 2D cell interface with 2 distribution functions
 
 """
-mutable struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
-
+mutable struct Interface2D2F{A,B<:AbstractVector,C,D} <: AbstractInterface2D
     len::A
     n::B
     fw::C
     fh::D
     fb::D
+end
 
-    function Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
-        len = L
-        n = @SArray [C, S]
+function Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+    len = L
+    n = @SArray [C, S]
 
-        fw = zero(w)
-        fh = zero(f)
-        fb = zero(f)
+    fw = zero(w)
+    fh = zero(f)
+    fb = zero(f)
 
-        new{typeof(len),typeof(n),typeof(fw),typeof(fh)}(len, n, fw, fh, fb)
-    end
-
+    return Interface2D2F(len, n, fw, fh, fb)
 end
 
 function Base.show(io::IO, ctr::Interface2D2F{A,B,C,D}) where {A,B,C,D}
@@ -432,7 +416,6 @@ end
 
 """
 mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
-
     len::A
     n::B
     fw::C
@@ -445,118 +428,117 @@ mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
     femLD::E
     femRU::E
     femRD::E
+end
 
-    function Interface2D3F(
-        L::Real,
-        C::Real,
-        S::Real,
-        w::AbstractArray,
-        f::AbstractArray,
-        E::AbstractArray{<:Real,1},
+function Interface2D3F(
+    L::Real,
+    C::Real,
+    S::Real,
+    w::AbstractArray,
+    f::AbstractArray,
+    E::AbstractArray{<:Real,1},
+)
+    len = L
+    n = @SArray [C, S]
+
+    fw = zero(w)
+    fh0 = zero(f)
+    fh1 = zero(f)
+    fh2 = zero(f)
+
+    femL = zeros(eltype(E), 8)
+    femR = zeros(eltype(E), 8)
+    femLU = zeros(eltype(E), 8)
+    femLD = zeros(eltype(E), 8)
+    femRU = zeros(eltype(E), 8)
+    femRD = zeros(eltype(E), 8)
+
+    return Interface2D3F(
+        len,
+        n,
+        fw,
+        fh0,
+        fh1,
+        fh2,
+        femL,
+        femR,
+        femLU,
+        femLD,
+        femRU,
+        femRD,
     )
-        len = L
-        n = @SArray [C, S]
+end
 
-        fw = zero(w)
-        fh0 = zero(f)
-        fh1 = zero(f)
-        fh2 = zero(f)
+function Interface2D3F(
+    L::Real,
+    C::Real,
+    S::Real,
+    w::AbstractArray,
+    f::AbstractArray,
+    E::AbstractArray{<:Real,2},
+)
+    len = L
+    n = [C, S]
 
-        femL = zeros(eltype(E), 8)
-        femR = zeros(eltype(E), 8)
-        femLU = zeros(eltype(E), 8)
-        femLD = zeros(eltype(E), 8)
-        femRU = zeros(eltype(E), 8)
-        femRD = zeros(eltype(E), 8)
+    fw = zero(w)
+    fh0 = zero(f)
+    fh1 = zero(f)
+    fh2 = zero(f)
 
-        new{typeof(len),typeof(n),typeof(fw),typeof(fh0),typeof(femL)}(
-            len,
-            n,
-            fw,
-            fh0,
-            fh1,
-            fh2,
-            femL,
-            femR,
-            femLU,
-            femLD,
-            femRU,
-            femRD,
-        )
-    end
+    femL = zeros(eltype(E), 8, axes(E, 2))
+    femR = zeros(eltype(E), 8, axes(E, 2))
+    femLU = zeros(eltype(E), 8, axes(E, 2))
+    femLD = zeros(eltype(E), 8, axes(E, 2))
+    femRU = zeros(eltype(E), 8, axes(E, 2))
+    femRD = zeros(eltype(E), 8, axes(E, 2))
 
-    function Interface2D3F(
-        L::Real,
-        C::Real,
-        S::Real,
-        w::AbstractArray,
-        f::AbstractArray,
-        E::AbstractArray{<:Real,2},
+    return Interface2D3F(
+        len,
+        n,
+        fw,
+        fh0,
+        fh1,
+        fh2,
+        femL,
+        femR,
+        femLU,
+        femLD,
+        femRU,
+        femRD,
     )
-        len = L
-        n = [C, S]
+end
 
-        fw = zero(w)
-        fh0 = zero(f)
-        fh1 = zero(f)
-        fh2 = zero(f)
+# Rykov
+function Interface2D3F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+    len = L
+    n = [C, S]
 
-        femL = zeros(eltype(E), 8, axes(E, 2))
-        femR = zeros(eltype(E), 8, axes(E, 2))
-        femLU = zeros(eltype(E), 8, axes(E, 2))
-        femLD = zeros(eltype(E), 8, axes(E, 2))
-        femRU = zeros(eltype(E), 8, axes(E, 2))
-        femRD = zeros(eltype(E), 8, axes(E, 2))
+    fw = zero(w)
+    fh0 = zero(f)
+    fh1 = zero(f)
+    fh2 = zero(f)
 
-        new{typeof(len),typeof(n),typeof(fw),typeof(fh0),typeof(femL)}(
-            len,
-            n,
-            fw,
-            fh0,
-            fh1,
-            fh2,
-            femL,
-            femR,
-            femLU,
-            femLD,
-            femRU,
-            femRD,
-        )
-    end
+    femL = nothing
+    femR = nothing
+    femLU = nothing
+    femLD = nothing
+    femRU = nothing
+    femRD = nothing
 
-    # Rykov
-    function Interface2D3F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
-        len = L
-        n = [C, S]
-
-        fw = zero(w)
-        fh0 = zero(f)
-        fh1 = zero(f)
-        fh2 = zero(f)
-
-        femL = nothing
-        femR = nothing
-        femLU = nothing
-        femLD = nothing
-        femRU = nothing
-        femRD = nothing
-
-        new{typeof(len),typeof(n),typeof(fw),typeof(fh0),typeof(femL)}(
-            len,
-            n,
-            fw,
-            fh0,
-            fh1,
-            fh2,
-            femL,
-            femR,
-            femLU,
-            femLD,
-            femRU,
-            femRD,
-        )
-    end
-
+    return Interface2D3F(
+        len,
+        n,
+        fw,
+        fh0,
+        fh1,
+        fh2,
+        femL,
+        femR,
+        femLU,
+        femLD,
+        femRU,
+        femRD,
+    )
 end
 
 function Base.show(io::IO, ctr::Interface2D3F{A,B,C,D,E}) where {A,B,C,D,E}

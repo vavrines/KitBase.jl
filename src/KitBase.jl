@@ -30,6 +30,7 @@ using ProgressMeter
 using PyCall
 using SpecialFunctions
 using StaticArrays
+using StructArrays
 using TypedPolynomials
 using WriteVTK
 
