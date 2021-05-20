@@ -194,6 +194,7 @@ Plot solution contours
 function plot_contour(
     KS::X,
     ctr::Y;
+    color = :default,
     backend = :plots::Symbol,
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
 
@@ -211,21 +212,25 @@ function plot_contour(
         KS.pSpace.x[1:KS.pSpace.nx, 1],
         KS.pSpace.y[1, 1:KS.pSpace.ny],
         sol[1, :, :]',
+        color = color,
     )
     p2 = contourf(
         KS.pSpace.x[1:KS.pSpace.nx, 1],
         KS.pSpace.y[1, 1:KS.pSpace.ny],
         sol[2, :, :]',
+        color = color,
     )
     p3 = contourf(
         KS.pSpace.x[1:KS.pSpace.nx, 1],
         KS.pSpace.y[1, 1:KS.pSpace.ny],
         sol[3, :, :]',
+        color = color,
     )
     p4 = contourf(
         KS.pSpace.x[1:KS.pSpace.nx, 1],
         KS.pSpace.y[1, 1:KS.pSpace.ny],
         sol[4, :, :]',
+        color = color,
     )
 
     plot(p1, p2, p3, p4, layout = (2, 2))
