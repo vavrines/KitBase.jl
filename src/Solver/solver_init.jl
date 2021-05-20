@@ -68,9 +68,10 @@ end
 Initialize finite volume method
 
 """
-function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
     funcar = eval(array)
-    
+    funcst = ifelse(structarray, StructArray, dynamic_array)
+
     if KS.set.space[3:4] == "0f"
 
         ctr = OffsetArray{ControlVolume1D}(undef, eachindex(KS.pSpace.x))
@@ -232,11 +233,12 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverS
 
     end
 
-    return ctr |> StructArray, face |> StructArray
+    return ctr |> funcst, face |> funcst
 end
 
-function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
     funcar = eval(array)
+    funcst = ifelse(structarray, StructArray, dynamic_array)
 
     if KS.set.space[3:4] == "1f"
 
@@ -344,11 +346,12 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array) where {T<:AbstractSolverS
 
     end
 
-    return ctr |> StructArray, a1face |> StructArray, a2face |> StructArray
+    return ctr |> funcst, a1face |> funcst, a2face |> funcst
 end
 
-function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array) where {T<:AbstractSolverSet}
+function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray = true) where {T<:AbstractSolverSet}
     funcar = eval(array)
+    funcst = ifelse(structarray, StructArray, dynamic_array)
 
     if KS.set.space[3:4] == "0f"
         
@@ -624,7 +627,7 @@ function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array) where {T<:Abs
 
     end
 
-    return ctr |> StructArray, face |> StructArray
+    return ctr |> funcst, face |> funcst
 end
 
 
