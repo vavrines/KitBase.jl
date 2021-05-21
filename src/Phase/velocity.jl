@@ -147,12 +147,16 @@ function VSpace2D(
         _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
-        v, u = meshgrid(__u, __v)
+        u, v = meshgrid(__u, __v)
+        du = du |> permutedims
+        dv = dv |> permutedims
 
         _du = _u[2:end] - _u[1:end-1]
         _dv = _v[2:end] - _v[1:end-1]
-        dv, du = meshgrid(_du, _dv)
-        
+        du, dv = meshgrid(_du, _dv)
+        du = du |> permutedims
+        dv = dv |> permutedims
+
         for j in axes(u, 2)
             for i in axes(u, 1)
                 weights[i, j] = du[i, j] * dv[i, j]
@@ -305,12 +309,18 @@ function VSpace3D(
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
         __w = (_w[1:end-1] .+ _w[2:end]) ./ 2
-        w, v, u = meshgrid(__u, __v, __w)
+        u, v, w = meshgrid(__u, __v, __w)
+        u = permutedims(u, [3, 2, 1])
+        v = permutedims(v, [3, 2, 1])
+        w = permutedims(w, [3, 2, 1])
 
         _du = _u[2:end] - _u[1:end-1]
         _dv = _v[2:end] - _v[1:end-1]
         _dw = _w[2:end] - _w[1:end-1]
-        dw, dv, du = meshgrid(_du, _dv, _dw)
+        du, dv, dw = meshgrid(_du, _dv, _dw)
+        du = permutedims(du, [3, 2, 1])
+        dv = permutedims(dv, [3, 2, 1])
+        dw = permutedims(dw, [3, 2, 1])
         
         for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             weights[i, j, k] = du[i, j, k] * dv[i, j, k] * dw[i, j, k]
