@@ -148,8 +148,8 @@ function VSpace2D(
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
         u, v = meshgrid(__u, __v)
-        du = du |> permutedims
-        dv = dv |> permutedims
+        u = u |> permutedims
+        v = v |> permutedims
 
         _du = _u[2:end] - _u[1:end-1]
         _dv = _v[2:end] - _v[1:end-1]
