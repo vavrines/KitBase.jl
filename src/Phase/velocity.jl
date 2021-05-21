@@ -295,6 +295,26 @@ function VSpace3D(
                 newton_cotes(k + NGW, NW + NGW * 2) *
                 δw
         end
+    elseif TYPE == "algebra"
+        _nu = NU + 1
+        _nv = NV + 1
+        _nw = NW + 1
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
+        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
+        _w = [W1 / (_nw - 1)^3 * (-_nw + 1 + 2 * (k - 1))^3 for k = 1:_nw]
+        __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
+        __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
+        __w = (_w[1:end-1] .+ _w[2:end]) ./ 2
+        w, v, u = meshgrid(__u, __v, __w)
+
+        _du = _u[2:end] - _u[1:end-1]
+        _dv = _v[2:end] - _v[1:end-1]
+        _dw = _w[2:end] - _w[1:end-1]
+        dw, dv, du = meshgrid(_du, _dv, _dw)
+        
+        for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
+            weights[i, j, k] = du[i, j, k] * dv[i, j, k] * dw[i, j, k]
+        end
     else
         throw("No velocity quadrature available")
     end
