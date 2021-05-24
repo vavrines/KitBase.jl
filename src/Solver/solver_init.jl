@@ -68,7 +68,7 @@ end
 Initialize finite volume method
 
 """
-function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
@@ -88,7 +88,8 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D(KS.ib.wL)
+            fw = deepcopy(KS.ib.wL) |> funcar
+            face[i] = Interface1D(fw)
         end
 
     elseif KS.set.space[3:4] == "1f"
@@ -117,7 +118,9 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D1F(funcar(KS.ib.wL), funcar(KS.ib.fL))
+            fw = deepcopy(KS.ib.wL) |> funcar
+            ff = deepcopy(KS.ib.fL) |> funcar
+            face[i] = Interface1D1F(fw, ff)
         end
 
     elseif KS.set.space[3:4] == "2f"
@@ -148,7 +151,9 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D2F(funcar(KS.ib.wL), funcar(KS.ib.hL))
+            fw = deepcopy(KS.ib.wL) |> funcar
+            ff = deepcopy(KS.ib.hL) |> funcar
+            face[i] = Interface1D2F(fw, ff)
         end
 
     elseif KS.set.space[3:4] == "3f"
@@ -187,7 +192,10 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D3F(funcar(KS.ib.wL), funcar(KS.ib.h0L), funcar(KS.ib.EL))
+            fw = deepcopy(KS.ib.wL) |> funcar
+            ff = deepcopy(KS.ib.h0L) |> funcar
+            fe = deepcopy(KS.ib.EL) |> funcar
+            face[i] = Interface1D3F(fw, ff, fe)
         end
 
     elseif KS.set.space[3:4] == "4f"
@@ -228,7 +236,10 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where
         end
 
         for i = 1:KS.pSpace.nx+1
-            face[i] = Interface1D4F(funcar(KS.ib.wL), funcar(KS.ib.h0L), funcar(KS.ib.EL))
+            fw = deepcopy(KS.ib.wL) |> funcar
+            ff = deepcopy(KS.ib.h0L) |> funcar
+            fe = deepcopy(KS.ib.EL) |> funcar
+            face[i] = Interface1D4F(fw, ff, fe)
         end
 
     end
@@ -236,7 +247,7 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where
     return ctr |> funcst, face |> funcst
 end
 
-function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
+function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
@@ -349,7 +360,7 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = true) where
     return ctr |> funcst, a1face |> funcst, a2face |> funcst
 end
 
-function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray = true) where {T<:AbstractSolverSet}
+function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray = false) where {T<:AbstractSolverSet}
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 

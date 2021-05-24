@@ -13,6 +13,7 @@
     end
 
 1D cell interface with no distribution function
+Note that deepcopy constructor is needed to work with StructArrays
 
 """
 mutable struct Interface1D{A<:Union{Real,AbstractArray}} <: AbstractInterface1D
@@ -28,16 +29,10 @@ end
     mutable struct Interface1D1F{A,B} <: AbstractInterface1D
         fw::A
         ff::B
-
-        function Interface1D1F(w::AbstractArray, f::AbstractArray)
-            fw = zero(w)
-            ff = zero(f)
-
-            new{typeof(fw),typeof(ff)}(fw, ff)
-        end
     end
 
 1D cell interface with 1 distribution function
+Note that deepcopy constructor is needed to work with StructArrays
 
 """
 mutable struct Interface1D1F{A,B<:AbstractArray} <: AbstractInterface1D
