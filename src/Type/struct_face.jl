@@ -8,25 +8,16 @@
 # ------------------------------------------------------------
 
 """
-    mutable struct Interface1D{A} <: AbstractInterface1D
+    mutable struct Interface1D{A<:Union{Real,AbstractArray}} <: AbstractInterface1D
         fw::A
-
-        function Interface1D(w::Union{Real,AbstractArray})
-            fw = zero(w)
-            new{typeof(fw)}(fw)
-        end
     end
 
 1D cell interface with no distribution function
+Note that deepcopy constructor is needed to work with StructArrays
 
 """
-mutable struct Interface1D{A} <: AbstractInterface1D
+mutable struct Interface1D{A<:Union{Real,AbstractArray}} <: AbstractInterface1D
     fw::A
-
-    function Interface1D(w::Union{Real,AbstractArray})
-        fw = zero(w)
-        new{typeof(fw)}(fw)
-    end
 end
 
 function Base.show(io::IO, ctr::Interface1D{A}) where {A}
@@ -38,28 +29,15 @@ end
     mutable struct Interface1D1F{A,B} <: AbstractInterface1D
         fw::A
         ff::B
-
-        function Interface1D1F(w::AbstractArray, f::AbstractArray)
-            fw = zero(w)
-            ff = zero(f)
-
-            new{typeof(fw),typeof(ff)}(fw, ff)
-        end
     end
 
 1D cell interface with 1 distribution function
+Note that deepcopy constructor is needed to work with StructArrays
 
 """
-mutable struct Interface1D1F{A,B} <: AbstractInterface1D
+mutable struct Interface1D1F{A,B<:AbstractArray} <: AbstractInterface1D
     fw::A
     ff::B
-
-    function Interface1D1F(w::AbstractArray, f::AbstractArray)
-        fw = zero(w)
-        ff = zero(f)
-
-        new{typeof(fw),typeof(ff)}(fw, ff)
-    end
 end
 
 function Base.show(io::IO, ctr::Interface1D1F{A,B}) where {A,B}
@@ -90,13 +68,13 @@ end
 1D cell interface with 2 distribution functions
 
 """
-mutable struct Interface1D2F{A,B} <: AbstractInterface1D
+mutable struct Interface1D2F{A,B<:AbstractArray} <: AbstractInterface1D
     fw::A
     fh::B
     fb::B
 end
 
-function Interface1D2F(w::AbstractArray, f::AbstractArray)
+function Interface1D2F(w, f::AbstractArray)
     fw = zero(w)
     fh = zero(f)
     fb = zero(f)
