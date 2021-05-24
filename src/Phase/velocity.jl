@@ -151,6 +151,11 @@ function VSpace2D(
         u = u |> permutedims
         v = v |> permutedims
 
+        #_wx = [ 3.0 * (-_nu/2 + i - 0.5)^2 / (_nu/2 - 0.5)^3 for i = 1:_nu]
+        #_wy = [ 3.0 * (-_nv/2 + j - 0.5)^2 / (_nv/2 - 0.5)^3 for j = 1:_nv]
+        #wx = (_wx[1:end-1] .+ _wx[2:end]) ./ 2
+        #wy = (_wy[1:end-1] .+ _wy[2:end]) ./ 2
+
         _du = _u[2:end] - _u[1:end-1]
         _dv = _v[2:end] - _v[1:end-1]
         du, dv = meshgrid(_du, _dv)
@@ -160,6 +165,7 @@ function VSpace2D(
         for j in axes(u, 2)
             for i in axes(u, 1)
                 weights[i, j] = du[i, j] * dv[i, j]
+                #weights[i, j] = wx[i] * wy[j]
             end
         end
     elseif TYPE == "maxwell"
