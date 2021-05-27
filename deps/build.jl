@@ -1,6 +1,6 @@
 using PyCall, Conda
 
-# try importing meshio
+# try importing
 # catch the installation
 # 1) Julia built-in miniconda
 # 2) global pip installer
@@ -9,9 +9,12 @@ try
     using Conda
     Conda.add_channel("conda-forge")
     Conda.add("meshio")
-    meshio = pyimport("meshio")
+    Conda.add("scipy")
+    pyimport("meshio")
+    pyimport("scipy")
 catch
-    cmd = `pip3 install meshio --user`
+    cmd = `pip3 install meshio scipy --user`
     run(cmd)
-    meshio = pyimport("meshio")
+    pyimport("meshio")
+    pyimport("scipy")
 end
