@@ -51,6 +51,12 @@ function VSpace1D(
             du[i] = δ
             weights[i] = newton_cotes(i + NG, NU + NG * 2) * δ
         end
+    elseif TYPE == "algebra" # algebraic
+        _nu = NU + 1
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
+        u = (_u[1:end-1] .+ _u[2:end]) ./ 2
+        du = _u[2:end] - _u[1:end-1]
+        weights .= du
     else
         throw("No velocity quadrature available")
     end

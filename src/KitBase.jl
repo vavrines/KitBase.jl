@@ -34,6 +34,8 @@ using StructArrays
 using TypedPolynomials
 using WriteVTK
 
+const itp = pyimport("scipy.interpolate")
+
 include("Data/data.jl")
 include("Macro/macro.jl")
 include("Type/type.jl")
