@@ -106,6 +106,67 @@ function kernel_mode(
 end
 
 function kernel_mode(
+    M::I,
+    umax::R,
+    vmax::R,
+    wmax::R,
+    unum::I,
+    vnum::I,
+    wnum::I,
+    alpha::R;
+    quad_num = 64::I,
+) where {I<:Integer,R<:Real}
+
+    supp = sqrt(2.0) * 2.0 * max(umax, vmax, wmax) / (3.0 + sqrt(2.0))
+
+    fre_vx = [i * π / umax for i = -unum÷2:unum÷2-1]
+    fre_vy = [i * π / vmax for i = -vnum÷2:vnum÷2-1]
+    fre_vz = [i * π / wmax for i = -wnum÷2:wnum÷2-1]
+
+    abscissa, gweight = KitBase.lgwt(quad_num, 0, supp)
+
+    phi = zeros(unum, vnum, wnum, M * (M - 1))
+    psi = zeros(unum, vnum, wnum, M * (M - 1))
+    phipsi = zeros(unum, vnum, wnum)
+    for loop = 1:M-1
+        theta = π / M * loop
+        for loop2 = 1:M
+            theta2 = π / M * loop2
+            idx = (loop - 1) * M + loop2
+            for k = 1:wnum, j = 1:vnum, i = 1:unum
+                s =
+                    fre_vx[i] * sin(theta) * cos(theta2) +
+                    fre_vy[j] * sin(theta) * sin(theta2) +
+                    fre_vz[k] * cos(theta)
+                # phi
+                int_temp = 0.0
+                for id = 1:quad_num
+                    int_temp +=
+                        2.0 * gweight[id] * cos(s * abscissa[id]) * (abscissa[id]^alpha)
+                end
+                phi[i, j, k, idx] = int_temp * sin(theta)
+                # psi
+                s = fre_vx[i]^2 + fre_vy[j]^2 + fre_vz[k]^2 - s^2
+                if s <= 0.0
+                    psi[i, j, k, idx] = π * supp^2
+                else
+                    s = sqrt(s)
+                    bel = supp * s
+                    bessel = besselj(1, bel)
+                    psi[i, j, k, idx] = 2.0 * π * supp * bessel / s
+                end
+                # phipsi
+                phipsi[i, j, k] += phi[i, j, k, idx] * psi[i, j, k, idx]
+            end
+        end
+    end
+
+    return phi, psi, phipsi
+
+
+end
+
+function kernel_mode(
     M::TI,
     umax::TR,
     vmax::TR,
