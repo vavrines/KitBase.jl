@@ -148,6 +148,30 @@ end
 
 
 """
+    boltzmann_nuode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+
+RHS-ODE of Boltzmann equation with non-uniform velocity
+"""
+function boltzmann_nuode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+    Kn, M, phi, psi, phipsi, u, v, w, vnu, u1, v1, w1, vuni = p
+
+    nu = length(u)
+    nv = length(v)
+    nw = length(w)
+    nu1 = length(u1)
+    nv1 = length(v1)
+    nw1 = length(w1)
+
+    curve = itp.RegularGridInterpolator((u, v, w), f)
+    _f = reshape(curve(vuni), nu1, nv1, nw1)
+    _df = boltzmann_fft(_f, Kn, M, phi, psi, phipsi)
+
+    curve1 = itp.RegularGridInterpolator((u1, v1, w1), _df)
+    df .= reshape(curve1(vnu), nu, nv, nw)
+end
+
+
+"""
     bgk_ode!(df, f::T, p, t) where {T<:AbstractArray}
     
 RHS-ODE of BGK equation

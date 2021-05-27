@@ -10,6 +10,7 @@ KitBase.MVSpace2D() |> show
 KitBase.MVSpace3D() |> show
 
 KitBase.VSpace1D(-5, 5, 16, "newton")
+KitBase.VSpace1D(-5, 5, 16, "algebra")
 KitBase.VSpace2D(-5, 5, 16, -5, 5, 16, "newton")
 KitBase.VSpace2D(-5, 5, 16, -5, 5, 16, "algebra")
 KitBase.VSpace2D(-5, 5, 16, -5, 5, 16, "maxwell")

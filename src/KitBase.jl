@@ -34,6 +34,8 @@ using StructArrays
 using TypedPolynomials
 using WriteVTK
 
+const itp = PyNULL()
+
 include("Data/data.jl")
 include("Macro/macro.jl")
 include("Type/type.jl")
@@ -64,6 +66,8 @@ function __init__()
         @info "Scalar operation is disabled in CUDA"
         CUDA.allowscalar(false)
     end
+
+    copy!(itp, pyimport("scipy.interpolate"))
 end
 
 end

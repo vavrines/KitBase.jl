@@ -45,6 +45,7 @@ export gauss_moments,
        boltzmann_fft,
        boltzmann_fft!,
        boltzmann_ode!,
+       boltzmann_nuode!,
        bgk_ode!,
        chapman_enskog
 export heat_capacity_ratio,
