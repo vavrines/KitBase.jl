@@ -522,6 +522,139 @@ function flux_gks!(
 
 end
 
+#--- 1D1V ---#
+function flux_gks!(
+    fw::T1,
+    fh::T2,
+    wL::T3,
+    wR::T3,
+    u::T4,
+    inK,
+    γ,
+    visRef,
+    visIdx,
+    dt,
+    dxL,
+    dxR,
+    swL::T3,
+    swR::T3,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+    T2<:AbstractArray{<:AbstractFloat,1},
+    T3<:AbstractArray{<:Real,1},
+    T4<:AbstractArray{<:AbstractFloat,1},
+}
+
+    primL = conserve_prim(wL, γ)
+    primR = conserve_prim(wR, γ)
+
+    Mu1, Mxi1, MuL1, _ = gauss_moments(primL, inK)
+    Mu2, Mxi2, _, MuR2 = gauss_moments(primR, inK)
+
+    w =
+        primL[1] .* moments_conserve(MuL1, Mxi1, 0, 0) .+
+        primR[1] .* moments_conserve(MuR2, Mxi2, 0, 0)
+    prim = conserve_prim(w, γ)
+    tau =
+        vhs_collision_time(prim, visRef, visIdx) +
+        2.0 * dt * abs(primL[1] / primL[end] - primR[1] / primR[end]) /
+        (primL[1] / primL[end] + primR[1] / primR[end])
+
+    faL = pdf_slope(primL, swL, inK)
+    sw = -primL[1] .* moments_conserve_slope(faL, Mu1, Mxi1, 1)
+    faTL = pdf_slope(primL, sw, inK)
+
+    faR = pdf_slope(primR, swR, inK)
+    sw = -primR[1] .* moments_conserve_slope(faR, Mu2, Mxi2, 1)
+    faTR = pdf_slope(primR, sw, inK)
+
+    Mu, Mxi, MuL, MuR = gauss_moments(prim, inK)
+    sw0L = (w .- wL) ./ dxL
+    sw0R = (wR .- w) ./ dxR
+    gaL = pdf_slope(prim, sw0L, inK)
+    gaR = pdf_slope(prim, sw0R, inK)
+    sw =
+        -prim[1] .* (
+            moments_conserve_slope(gaL, MuL, Mxi, 1) .+
+            moments_conserve_slope(gaR, MuR, Mxi, 1)
+        )
+    # ga = pdf_slope(prim, sw, inK)
+    # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mxi, 1)
+    gaT = pdf_slope(prim, sw, inK)
+
+    # time-integration constants
+    Mt = zeros(5)
+    Mt[4] = tau * (1.0 - exp(-dt / tau))
+    Mt[5] = -tau * dt * exp(-dt / tau) + tau * Mt[4]
+    Mt[1] = dt - Mt[4]
+    Mt[2] = -tau * Mt[1] + Mt[5]
+    Mt[3] = 0.5 * dt^2 - tau * Mt[1]
+
+    # flux related to central distribution
+    Muv = moments_conserve(Mu, Mxi, 1, 0)
+    MauL = moments_conserve_slope(gaL, MuL, Mxi, 2)
+    MauR = moments_conserve_slope(gaR, MuR, Mxi, 2)
+    # Mau = moments_conserve_slope(ga, MuR, Mxi, 2)
+    MauT = moments_conserve_slope(gaT, Mu, Mxi, 1)
+
+    fw .=
+        Mt[1] .* prim[1] .* Muv .+ Mt[2] .* prim[1] .* (MauL .+ MauR) .+
+        Mt[3] .* prim[1] .* MauT
+    # fw .= Mt[1] .* prim[1] .* Muv .+ Mt[2] .* prim[1] .* Mau .+ Mt[3] .* prim[1] .* MauT
+
+    # flux related to upwind distribution
+    MuvL = moments_conserve(MuL1, Mxi1, 1, 0)
+    MauL = moments_conserve_slope(faL, MuL1, Mxi1, 2)
+    MauLT = moments_conserve_slope(faTL, MuL1, Mxi1, 1)
+
+    MuvR = moments_conserve(MuR2, Mxi2, 1, 0)
+    MauR = moments_conserve_slope(faR, MuR2, Mxi2, 2)
+    MauRT = moments_conserve_slope(faTR, MuR2, Mxi2, 1)
+
+    @. fw +=
+        Mt[4] * primL[1] * MuvL - (Mt[5] + tau * Mt[4]) * primL[1] * MauL -
+        tau * Mt[4] * primL[1] * MauLT + Mt[4] * primR[1] * MuvR -
+        (Mt[5] + tau * Mt[4]) * primR[1] * MauR - tau * Mt[4] * primR[1] * MauRT
+    # @. fw += Mt[4] * primL[1] * MuvL + Mt[4] * primR[1] * MuvR
+
+    #--- fluxes of distribution functions ---#
+    δ = heaviside.(u)
+    HL = maxwellian(u, primL)
+    HR = maxwellian(u, primR)
+    H = maxwellian(u, prim)
+
+    @. fh =
+        Mt[1] * u * H +
+        Mt[2] * u^2 * (gaL[1] * H + gaL[2] * u * H + 0.5 * gaL[3] * (u^2 * H)) * δ +
+        Mt[2] *
+        u^2 *
+        (gaR[1] * H + gaR[2] * u * H + 0.5 * gaR[3] * (u^2 * H)) *
+        (1.0 - δ) +
+        Mt[3] * u * (gaT[1] * H + gaT[2] * u * H + 0.5 * gaT[3] * (u^2 * H)) +
+        Mt[4] * u * HL * δ -
+        (Mt[5] + tau * Mt[4]) *
+        u^2 *
+        (faL[1] * HL + faL[2] * u * HL + 0.5 * faL[3] * (u^2 * HL)) *
+        δ + Mt[4] * u * HR * (1.0 - δ) -
+        (Mt[5] + tau * Mt[4]) *
+        u^2 *
+        (faR[1] * HR + faR[2] * u * HR + 0.5 * faR[3] * (u^2 * HR)) *
+        (1.0 - δ) -
+        tau *
+        Mt[4] *
+        u *
+        (faTL[1] * HL + faTL[2] * u * HL + 0.5 * faTL[3] * (u^2 * HL)) *
+        δ -
+        tau *
+        Mt[4] *
+        u *
+        (faTR[1] * HR + faTR[2] * u * HR + 0.5 * faTR[3] * (u^2 * HR)) *
+        (1.0 - δ)
+
+    return nothing
+
+end
+
 #--- 1D2V ---#
 function flux_gks!(
     fw::T1,
