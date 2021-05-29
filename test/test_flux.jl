@@ -49,6 +49,7 @@ KitBase.flux_gks!(
     zeros(4),
     zeros(4),
 ) # 2D
+KitBase.flux_gks!(fw, fh, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(4), zeros(4))
 KitBase.flux_gks!(fw, fh, fb, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(4), zeros(4))
 KitBase.flux_gks!(
     zeros(4, 2),

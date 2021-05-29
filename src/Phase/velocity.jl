@@ -54,8 +54,8 @@ function VSpace1D(
     elseif TYPE == "algebra" # algebraic
         _nu = NU + 1
         _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
-        u = (_u[1:end-1] .+ _u[2:end]) ./ 2
-        du = _u[2:end] - _u[1:end-1]
+        u .= (_u[1:end-1] .+ _u[2:end]) ./ 2
+        du .= _u[2:end] - _u[1:end-1]
         weights .= du
     else
         throw("No velocity quadrature available")
@@ -153,9 +153,9 @@ function VSpace2D(
         _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
-        u, v = meshgrid(__u, __v)
-        u = u |> permutedims
-        v = v |> permutedims
+        u1, v1 = meshgrid(__u, __v)
+        u .= u1 |> permutedims
+        v .= v1 |> permutedims
 
         #_wx = [ 3.0 * (-_nu/2 + i - 0.5)^2 / (_nu/2 - 0.5)^3 for i = 1:_nu]
         #_wy = [ 3.0 * (-_nv/2 + j - 0.5)^2 / (_nv/2 - 0.5)^3 for j = 1:_nv]
@@ -164,9 +164,9 @@ function VSpace2D(
 
         _du = _u[2:end] - _u[1:end-1]
         _dv = _v[2:end] - _v[1:end-1]
-        du, dv = meshgrid(_du, _dv)
-        du = du |> permutedims
-        dv = dv |> permutedims
+        du1, dv1 = meshgrid(_du, _dv)
+        du .= du1 |> permutedims
+        dv .= dv1 |> permutedims
 
         for j in axes(u, 2)
             for i in axes(u, 1)
@@ -177,7 +177,9 @@ function VSpace2D(
     elseif TYPE == "maxwell"
         _u, _uw = maxwell_quadrature(NU, U1 / 5.76)
         _v, _vw = maxwell_quadrature(NV, V1 / 5.76)
-        v, u = meshgrid(_u, _v)
+        u1, v1 = meshgrid(_u, _v)
+        u .= u1 |> permutedims
+        v .= v1 |> permutedims
         for j in axes(weights, 2), i in axes(weights, 1)
             weights[i, j] = _uw[i] * _vw[j]
         end
@@ -202,7 +204,9 @@ function VSpace2D(
                 _dv[i] = (_v[i+1] - _v[i-1]) / 2 
             end
         end
-        dv, du = meshgrid(_du, _dv)
+        du1, dv1 = meshgrid(_du, _dv)
+        du .= du1 |> permutedims
+        dv .= dv1 |> permutedims
     else
         throw("No velocity quadrature available")
     end
@@ -321,18 +325,18 @@ function VSpace3D(
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
         __w = (_w[1:end-1] .+ _w[2:end]) ./ 2
-        u, v, w = meshgrid(__u, __v, __w)
-        u = permutedims(u, [3, 2, 1])
-        v = permutedims(v, [3, 2, 1])
-        w = permutedims(w, [3, 2, 1])
+        u1, v1, w1 = meshgrid(__u, __v, __w)
+        u .= permutedims(u1, [3, 2, 1])
+        v .= permutedims(v1, [3, 2, 1])
+        w .= permutedims(w1, [3, 2, 1])
 
         _du = _u[2:end] - _u[1:end-1]
         _dv = _v[2:end] - _v[1:end-1]
         _dw = _w[2:end] - _w[1:end-1]
-        du, dv, dw = meshgrid(_du, _dv, _dw)
-        du = permutedims(du, [3, 2, 1])
-        dv = permutedims(dv, [3, 2, 1])
-        dw = permutedims(dw, [3, 2, 1])
+        du1, dv1, dw1 = meshgrid(_du, _dv, _dw)
+        du .= permutedims(du1, [3, 2, 1])
+        dv .= permutedims(dv1, [3, 2, 1])
+        dw .= permutedims(dw1, [3, 2, 1])
         
         for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             weights[i, j, k] = du[i, j, k] * dv[i, j, k] * dw[i, j, k]
@@ -711,6 +715,7 @@ function newton_cotes(idx::T, num::T) where {T<:Integer}
 
     return nc_coeff
 end
+
 
 # ------------------------------------------------------------
 # Extended Base.show()
