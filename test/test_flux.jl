@@ -30,10 +30,10 @@ KitBase.flux_roe!(fw, wL, wR, γ, dt)
 KitBase.flux_roe!(zeros(4), [1.0, 0.3, 0.0, 1.0], [0.3, -0.1, 0.0, 2.0], γ, dt)
 
 #--- gks flux ---#
-KitBase.flux_gks(0.3, 1e-3, dt, 1e-1, 0)
+KitBase.flux_gks(0.3, 1e-3, dt)
 KitBase.flux_gks(0.3, 1e-3, dt, 1e-1, 1.0)
-KitBase.flux_gks(1.0, 0.125, 1e-3, dt, 1e-2, 1e-2, 0.1, 0.3)
-KitBase.flux_gks!(fw, wL, wR, γ, inK, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
+KitBase.flux_gks(1.0, 0.125, 1e-3, dt, 1e-2, 1e-2)
+KitBase.flux_gks!(fw, wL, wR, γ, inK, 1e-3, 0.72, dt, dx, dx)
 KitBase.flux_gks!(
     zeros(4),
     [1.0, 0.3, 0.0, 1.0],
@@ -46,11 +46,11 @@ KitBase.flux_gks!(
     dx,
     dx,
     dx,
-    zeros(4),
-    zeros(4),
 ) # 2D
-KitBase.flux_gks!(fw, fh, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(4), zeros(4))
-KitBase.flux_gks!(fw, fh, fb, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(4), zeros(4))
+
+# discrete
+KitBase.flux_gks!(fw, fh, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
+KitBase.flux_gks!(fw, fh, fb, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
 KitBase.flux_gks!(
     zeros(4, 2),
     hcat([1.0, 0.3, 0.0, 1.0], [1.0, 0.3, 0.0, 1.0]),
@@ -68,7 +68,7 @@ KitBase.flux_gks!(
     dx,
     zeros(4, 2),
     zeros(4, 2),
-)
+) # mixture
 
 KitBase.flux_ugks!(
     fw,
