@@ -1,29 +1,21 @@
+# ============================================================
+# Gas Kinetic Flux Functions
+# ============================================================
+
 """
     flux_gks(u, μ, dt, a = 0::T, su = 0.0) where {T<:Real}
-    flux_gks(
-        uL::T,
-        uR::T,
-        μ,
-        dt,
-        dxL,
-        dxR,
-        a = 0,
-        suL = 0.0,
-        suR = 0.0,
-    ) where {T<:Real}
+    flux_gks(uL::T, uR::T, μ, dt, dxL, dxR, a = 0, suL = 0.0, suR = 0.0) where {T<:Real}
 
-Gas kinetic flux
+Gas kinetic scalar flux
 * @args: conservative scalars and their slopes
 * @args: viscosity
 * @args: time step and cell size
 * @return: scalar flux
 """
-function flux_gks(u, μ, dt, a = 0::T, su = 0.0) where {T<:Real}
-
+function flux_gks(u, μ, dt, a = 0, su = 0.0)
     prim = ifelse(a == 0, conserve_prim(u), conserve_prim(u, a))
 
-    Mu, MuL, MuR = gauss_moments(prim)
-
+    Mu = gauss_moments(prim)[1]
     tau = 2.0 * μ
 
     fa = pdf_slope(u, su)
@@ -45,7 +37,6 @@ function flux_gks(u, μ, dt, a = 0::T, su = 0.0) where {T<:Real}
         tau * Mt[4] * prim[1] * MauT
 
     return fw / dt
-
 end
 
 function flux_gks(
@@ -79,8 +70,8 @@ function flux_gks(
     faTR = pdf_slope(uR, Δ)
 
     Mu, MuL, MuR = gauss_moments(prim)
-    sw0L = (u - uL) / dxL
-    sw0R = (uR - u) / dxR
+    sw0L = (u - (uL - suL * dxL)) / dxL
+    sw0R = ((uR + suR * dxR) - u) / dxR
     gaL = pdf_slope(u, sw0L)
     gaR = pdf_slope(u, sw0R)
     Δ =
@@ -242,8 +233,8 @@ function flux_gks!(
     dt::Real,
     dxL::Real,
     dxR::Real,
-    swL::Y,
-    swR::Y,
+    swL = zero(wL)::Y,
+    swR = zero(wR)::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     primL = conserve_prim(wL, γ)
@@ -270,8 +261,8 @@ function flux_gks!(
     faTR = pdf_slope(primR, sw, inK)
 
     Mu, Mxi, MuL, MuR = gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ dxL
-    sw0R = (wR .- w) ./ dxR
+    sw0L = (w .- (wL .- swL .* dxL)) ./ dxL
+    sw0R = ((wR .+ swR .* dxR) .- w) ./ dxR
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
@@ -337,8 +328,8 @@ function flux_gks!(
     dt,
     dxL::Real,
     dxR::Real,
-    swL::Y,
-    swR::Y,
+    swL = zero(wL)::Y,
+    swR = zero(wR)::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
 
     primL = mixture_conserve_prim(wL, γ)
@@ -373,8 +364,8 @@ function flux_gks!(
     prim = aap_hs_prim(prim, tau, mi, ni, me, ne, Kn)
 
     Mu, Mxi, MuL, MuR = mixture_gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ dxL
-    sw0R = (wR .- w) ./ dxR
+    sw0L = (w .- (wL .- swL .* dxL)) ./ dxL
+    sw0R = ((wR .+ swR .* dxR) .- w) ./ dxR
     gaL = mixture_pdf_slope(prim, sw0L, inK)
     gaR = mixture_pdf_slope(prim, sw0R, inK)
     mmL = mixture_moments_conserve_slope(gaL, MuL, Mxi, 1)
@@ -440,8 +431,8 @@ function flux_gks!(
     dxL::Real,
     dxR::Real,
     dy::Real,
-    swL::Y,
-    swR::Y,
+    swL = zero(wL)::Y,
+    swR = zero(wR)::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
 
     primL = conserve_prim(wL, γ)
@@ -468,8 +459,8 @@ function flux_gks!(
     faTR = pdf_slope(primR, sw, inK)
 
     Mu, Mv, Mxi, MuL, MuR = gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ dxL
-    sw0R = (wR .- w) ./ dxR
+    sw0L = (w .- (wL .- swL .* dxL)) ./ dxL
+    sw0R = ((wR .+ swR .* dxR) .- w) ./ dxR
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
@@ -569,8 +560,8 @@ function flux_gks!(
     faTR = pdf_slope(primR, sw, inK)
 
     Mu, Mxi, MuL, MuR = gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ dxL
-    sw0R = (wR .- w) ./ dxR
+    sw0L = (w .- (wL .- swL .* dxL)) ./ dxL
+    sw0R = ((wR .+ swR .* dxR) .- w) ./ dxR
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
@@ -703,8 +694,8 @@ function flux_gks!(
     faTR = pdf_slope(primR, sw, inK)
 
     Mu, Mxi, MuL, MuR = gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ dxL
-    sw0R = (wR .- w) ./ dxR
+    sw0L = (w .- (wL .- swL .* dxL)) ./ dxL
+    sw0R = ((wR .+ swR .* dxR) .- w) ./ dxR
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
@@ -841,8 +832,8 @@ function flux_gks!(
     dxL,
     dxR,
     len,
-    swL::Y,
-    swR::Y,
+    swL = zero(wL)::Y,
+    swR = zero(wR)::Y,
 ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
 
     primL = mixture_conserve_prim(wL, γ)
@@ -877,8 +868,8 @@ function flux_gks!(
     faTR = mixture_pdf_slope(primR, sw, inK)
 
     Mu, Mv, Mw, MuL, MuR = mixture_gauss_moments(prim, inK)
-    sw0L = (w .- wL) ./ dxL
-    sw0R = (wR .- w) ./ dxR
+    sw0L = (w .- (wL .- swL .* dxL)) ./ dxL
+    sw0R = ((wR .+ swR .* dxR) .- w) ./ dxR
     gaL = mixture_pdf_slope(prim, sw0L, inK)
     gaR = mixture_pdf_slope(prim, sw0R, inK)
     sw =
