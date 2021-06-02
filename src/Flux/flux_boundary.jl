@@ -50,6 +50,39 @@ Maxwell's diffusive boundary flux
 """
 function flux_boundary_maxwell!(
     fw::T1,
+    bc::T3,
+    w::T4,
+    inK,
+    γ,
+    dt,
+    rot, # 1 / -1
+) where {
+    T1<:AbstractVector{<:AbstractFloat},
+    T3<:AbstractVector{<:Real},
+    T4<:AbstractVector{<:Real},
+} # 1D continuum
+
+    @assert length(bc) == 3
+
+    primL, primR = ifelse(rot==1, (bc, conserve_prim(w, γ)), (conserve_prim(w, γ), bc))
+
+    Mu1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)
+    Mu2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
+
+    Muv_L = moments_conserve(MuL1, Mxi1, 1, 0)
+    Muv_R = moments_conserve(MuR2, Mxi2, 1, 0)
+
+    ρ = ifelse(rot==1, -primR[1] * Muv_R[1] / Muv_L[1], -primL[1] * Muv_L[1] / Muv_R[1])
+
+    @. fw = ρ * (Muv_L + Muv_R) * dt
+
+    return nothing
+
+end
+
+#--- 1D2F1V ---#
+function flux_boundary_maxwell!(
+    fw::T1,
     fh::T2,
     fb::T2,
     bc::T3,
@@ -91,6 +124,40 @@ function flux_boundary_maxwell!(
 
     @. fh = u * hWall * dt
     @. fb = u * bWall * dt
+
+    return nothing
+
+end
+
+#--- 2D Continuum ---#
+function flux_boundary_maxwell!(
+    fw::T1,
+    bc::T3,
+    w::T4,
+    inK,
+    γ,
+    dt,
+    len,
+    rot,
+) where {
+    T1<:AbstractVector{<:AbstractFloat},
+    T3<:AbstractVector{<:Real},
+    T4<:AbstractVector{<:Real},
+}
+
+    @assert length(bc) == 4
+
+    primL, primR = ifelse(rot==1, (bc, conserve_prim(w, γ)), (conserve_prim(w, γ), bc))
+
+    Mu1, Mv1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)
+    Mu2, Mv2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
+
+    Muv_L = moments_conserve(MuL1, Mv1, Mxi1, 1, 0, 0)
+    Muv_R = moments_conserve(MuR2, Mv2, Mxi2, 1, 0, 0)
+
+    ρ = ifelse(rot==1, -primR[1] * Muv_R[1] / Muv_L[1], -primL[1] * Muv_L[1] / Muv_R[1])
+
+    @. fw = ρ * (Muv_L + Muv_R) * dt * len
 
     return nothing
 
