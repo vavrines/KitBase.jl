@@ -21,7 +21,7 @@ Read text into dictionary
 """
 function read_dict(filename::T, allowed) where {T<:AbstractString}
 
-    @info "Reading config from $filename"
+    @info "reading config from $filename"
     println("--------------------------------------------------------------")
     f = open(filename)
     vars = Dict{String,Any}()
@@ -57,7 +57,7 @@ end
 
 function read_dict(filename::T) where {T<:AbstractString}
 
-    @info "Reading config from $filename"
+    @info "reading config from $filename"
     println("--------------------------------------------------------------")
     f = open(filename)
     vars = Dict{Symbol,Any}()
