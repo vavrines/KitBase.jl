@@ -968,7 +968,8 @@ function flux_gks!(
         (faTR[1] * HR + faTR[2] * u * HR + faTR[3] * v * HR + 0.5 * faTR[4] * (u^2 + v^2) * HR) *
         (1.0 - δ)
 
-
+    ff .*= dy
+    
     return nothing
 
 end
@@ -1136,7 +1137,10 @@ function flux_gks!(
         u *
         (faTR[1] * BR + faTR[2] * u * BR + faTR[3] * v * BR + 0.5 * faTR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)) *
         (1.0 - δ)
-
+    
+    fh .*= dy
+    fb .*= dy
+    
     return nothing
 
 end
