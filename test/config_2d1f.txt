@@ -23,8 +23,8 @@ y0 = 0.0
 y1 = 1.0
 ny = 21
 pMeshType = uniform
-nxg = 0
-nyg = 0
+nxg = 1
+nyg = 1
 
 # velocity space
 umin = -5.0
