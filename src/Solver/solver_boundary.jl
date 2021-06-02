@@ -849,7 +849,25 @@ function update_boundary!(
             ctr[i, KS.pSpace.ny+j].f .= ctr[i, KS.pSpace.ny].f
         end
     elseif bc == :period
+        for i = 1:ngx, j = 1:KS.pSpace.ny
+            ctr[1-i, j].w .= ctr[KS.pSpace.nx-i+1, j].w
+            ctr[1-i, j].prim .= ctr[KS.pSpace.nx-i+1, j].prim
+            ctr[KS.pSpace.nx+i, j].w .= ctr[i, j].w
+            ctr[KS.pSpace.nx+i, j].prim .= ctr[i, j].prim
 
+            ctr[1-i, j].f .= ctr[KS.pSpace.nx-i+1, j].f
+            ctr[KS.pSpace.nx+i, j].f .= ctr[i, j].f
+        end
+
+        for i = 1:KS.pSpace.nx, j = 1:ngy
+            ctr[i, 1-j].w .= ctr[i, KS.pSpace.ny-j+1].w
+            ctr[i, 1-j].prim .= ctr[i, KS.pSpace.ny-j+1].prim
+            ctr[i, KS.pSpace.ny+j].w .= ctr[i, j].w
+            ctr[i, KS.pSpace.ny+j].prim .= ctr[i, j].prim
+
+            ctr[i, 1-j].f .= ctr[i, KS.pSpace.ny-j+1].f
+            ctr[i, KS.pSpace.ny+j].f .= ctr[i, j].f
+        end
     elseif bc == :balance
 
     end
@@ -1047,7 +1065,29 @@ function update_boundary!(
             ctr[i, KS.pSpace.ny+j].b .= ctr[i, KS.pSpace.ny].b
         end
     elseif bc == :period
+        for i = 1:ngx, j = 1:KS.pSpace.ny
+            ctr[1-i, j].w .= ctr[KS.pSpace.nx-i+1, j].w
+            ctr[1-i, j].prim .= ctr[KS.pSpace.nx-i+1, j].prim
+            ctr[KS.pSpace.nx+i, j].w .= ctr[i, j].w
+            ctr[KS.pSpace.nx+i, j].prim .= ctr[i, j].prim
 
+            ctr[1-i, j].h .= ctr[KS.pSpace.nx-i+1, j].h
+            ctr[1-i, j].b .= ctr[KS.pSpace.nx-i+1, j].b
+            ctr[KS.pSpace.nx+i, j].h .= ctr[i, j].h
+            ctr[KS.pSpace.nx+i, j].b .= ctr[i, j].b
+        end
+
+        for i = 1:KS.pSpace.nx, j = 1:ngy
+            ctr[i, 1-j].w .= ctr[i, KS.pSpace.ny-j+1].w
+            ctr[i, 1-j].prim .= ctr[i, KS.pSpace.ny-j+1].prim
+            ctr[i, KS.pSpace.ny+j].w .= ctr[i, j].w
+            ctr[i, KS.pSpace.ny+j].prim .= ctr[i, j].prim
+
+            ctr[i, 1-j].h .= ctr[i, KS.pSpace.ny-j+1].h
+            ctr[i, 1-j].b .= ctr[i, KS.pSpace.ny-j+1].b
+            ctr[i, KS.pSpace.ny+j].h .= ctr[i, j].h
+            ctr[i, KS.pSpace.ny+j].b .= ctr[i, j].b
+        end
     elseif bc == :balance
 
     end
