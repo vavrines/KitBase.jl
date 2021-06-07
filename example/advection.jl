@@ -2,8 +2,10 @@
 # Advection-Diffusion Example
 # ----------------------------
 
-using ProgressMeter, OffsetArrays
+using ProgressMeter, OffsetArrays, Plots
 import KitBase
+
+cd(@__DIR__)
 
 set = KitBase.Setup(
     "scalar", # matter
@@ -50,7 +52,7 @@ dt = KitBase.timestep(ks, ctr, t)
 nt = ks.set.maxTime / dt |> Int
 
 anim = @animate for iter = 1:nt
-    KitBase.reconstruct!(ks, ctr; bc = Symbol(ks.set.boundary))
+    KitBase.reconstruct!(ks, ctr)
 
     for i in eachindex(face)
         face[i].fw = KitBase.flux_gks(
