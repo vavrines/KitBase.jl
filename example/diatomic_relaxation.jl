@@ -3,6 +3,7 @@ import KitBase
 
 begin
     # case
+    matter = "gas"
     case = "relaxation"
     space = "1d3f1v"
     flux = "kfvs"
@@ -46,6 +47,7 @@ end
 
 γ = KitBase.heat_capacity_ratio(inK, inKr, 1)
 set = KitBase.Setup(
+    matter,
     case,
     space,
     flux,

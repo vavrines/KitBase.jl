@@ -11,6 +11,7 @@ begin
 
     γ = KitBase.heat_capacity_ratio(inK, 1)
     set = KitBase.Setup(
+        matter,
         case,
         space,
         flux,
@@ -18,10 +19,11 @@ begin
         nSpecies,
         interpOrder,
         limiter,
+        boundary,
         cfl,
         maxTime,
     )
-    pSpace = KitBase.PSpace1D(x0, x1, nx, pMeshType, nxg)
+    pSpace = KitBase.PSpace1D(x0, x1, nx, nxg)
     vSpace = KitBase.VSpace1D(umin, umax, nu, vMeshType, nug)
     μᵣ = KitBase.ref_vhs_vis(knudsen, alphaRef, omegaRef)
     gas =
@@ -63,7 +65,8 @@ end
 ptc = KitBase.init_ptc!(ks, ctr)
 
 @showprogress for iter = 1:100
-    KitBase.transport!(ks, ptc.x, ptc.v, ptc.flag, dt)
+    KitBase.free_transport!(ks, ptc.x, ptc.v, ptc.flag, dt)
+    KitBase.boundary!(ks, ctr, ptc, face, dt, :maxwell)
     KitBase.sort!(ks, ctr, ptc.x, ptc.idx, ptc.ref)
     KitBase.dsmc!(ks, ctr, ptc.ref, ptc.v, dt)
     KitBase.stat!(ks, ctr, ptc)
