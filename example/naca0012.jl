@@ -13,16 +13,16 @@ for i in eachindex(ps.cellType)
         ps.cellType[i] = 2
 
         for j = 1:3
-            if ps.edgeType[ps.cellEdges[i, j]] == 1
-                ps.edgeType[ps.cellEdges[i, j]] = 2
+            if ps.faceType[ps.cellFaces[i, j]] == 1
+                ps.faceType[ps.cellFaces[i, j]] = 2
             end
         end
     elseif ps.cellType[i] == 1 && ps.cellCenter[i, 1] > 0.5
         ps.cellType[i] = 3
 
         for j = 1:3
-            if ps.edgeType[ps.cellEdges[i, j]] == 1
-                ps.edgeType[ps.cellEdges[i, j]] = 3
+            if ps.faceType[ps.cellFaces[i, j]] == 1
+                ps.faceType[ps.cellFaces[i, j]] = 3
             end
         end
     end
@@ -59,15 +59,15 @@ res = zeros(4)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
 
-        if !(-1 in ps.edgeCells[i, :])
+        if !(-1 in ps.faceCells[i, :])
             KitBase.flux_kfvs!(
                 face[i].fw,
                 face[i].fh,
                 face[i].fb,
-                ctr[ps.edgeCells[i, 1]].h,
-                ctr[ps.edgeCells[i, 1]].b,
-                ctr[ps.edgeCells[i, 2]].h,
-                ctr[ps.edgeCells[i, 2]].b,
+                ctr[ps.faceCells[i, 1]].h,
+                ctr[ps.faceCells[i, 1]].b,
+                ctr[ps.faceCells[i, 2]].h,
+                ctr[ps.faceCells[i, 2]].b,
                 vn,
                 vt,
                 ks.vSpace.weights,
@@ -76,9 +76,9 @@ res = zeros(4)
             )
             face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
         else
-            idx = ifelse(ps.edgeCells[i, 1] != -1, 1, 2)
+            idx = ifelse(ps.faceCells[i, 1] != -1, 1, 2)
 
-            if ps.cellType[ps.edgeCells[i, idx]] == 2
+            if ps.cellType[ps.faceCells[i, idx]] == 2
                 bc = KitBase.local_frame(ks.ib.primR, face[i].n[1], face[i].n[2])
 
                 KitBase.flux_boundary_maxwell!(
@@ -86,8 +86,8 @@ res = zeros(4)
                     face[i].fh,
                     face[i].fb,
                     bc,
-                    ctr[ps.edgeCells[i, idx]].h,
-                    ctr[ps.edgeCells[i, idx]].b,
+                    ctr[ps.faceCells[i, idx]].h,
+                    ctr[ps.faceCells[i, idx]].b,
                     vn,
                     vt,
                     ks.vSpace.weights,
@@ -105,22 +105,22 @@ res = zeros(4)
     sumavg = zeros(4)
     @inbounds Threads.@threads for i in eachindex(ctr)
         if ps.cellType[i] in (0, 2)
-            dirc = [sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n)) for j = 1:3]
+            dirc = [sign(dot(ctr[i].n[j], face[ps.cellFaces[i, j]].n)) for j = 1:3]
 
             KitBase.step!(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
                 ctr[i].b,
-                face[ps.cellEdges[i, 1]].fw,
-                face[ps.cellEdges[i, 1]].fh,
-                face[ps.cellEdges[i, 1]].fb,
-                face[ps.cellEdges[i, 2]].fw,
-                face[ps.cellEdges[i, 2]].fh,
-                face[ps.cellEdges[i, 2]].fb,
-                face[ps.cellEdges[i, 3]].fw,
-                face[ps.cellEdges[i, 3]].fh,
-                face[ps.cellEdges[i, 3]].fb,
+                face[ps.cellFaces[i, 1]].fw,
+                face[ps.cellFaces[i, 1]].fh,
+                face[ps.cellFaces[i, 1]].fb,
+                face[ps.cellFaces[i, 2]].fw,
+                face[ps.cellFaces[i, 2]].fh,
+                face[ps.cellFaces[i, 2]].fb,
+                face[ps.cellFaces[i, 3]].fw,
+                face[ps.cellFaces[i, 3]].fh,
+                face[ps.cellFaces[i, 3]].fb,
                 ks.vSpace.u,
                 ks.vSpace.v,
                 ks.vSpace.weights,

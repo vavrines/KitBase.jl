@@ -11,6 +11,7 @@ begin
 
     γ = KitBase.heat_capacity_ratio(inK, 1)
     set = KitBase.Setup(
+        matter,
         case,
         space,
         flux,
@@ -18,10 +19,11 @@ begin
         nSpecies,
         interpOrder,
         limiter,
+        boundary,
         cfl,
         maxTime,
     )
-    pSpace = KitBase.PSpace1D(x0, x1, nx, pMeshType, nxg)
+    pSpace = KitBase.PSpace1D(x0, x1, nx, nxg)
     vSpace = KitBase.VSpace1D(umin, umax, nu, vMeshType, nug)
     μᵣ = KitBase.ref_vhs_vis(knudsen, alphaRef, omegaRef)
     gas =

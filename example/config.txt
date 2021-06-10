@@ -5,12 +5,13 @@
 # setup
 matter = gas
 case = shock
-space = 1d0f0v
+space = 1d2f1v
 flux = kfvs
 collision = bgk
 nSpecies = 1
 interpOrder = 2
 limiter = vanleer
+boundary = fix
 cfl = 0.8
 maxTime = 50.0
 
