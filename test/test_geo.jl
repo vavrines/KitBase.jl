@@ -43,8 +43,3 @@ KitBase.find_idx(randn(20), 0.13, mode = :nonuniform)
 cd(@__DIR__)
 ps = KitBase.UnstructPSpace("t1.msh")
 KitBase.write_vtk(ps.points, ps.cellid, randn(size(ps.cellid, 1)))
-
-cells, nodes = KitBase.read_mesh("square.msh")
-cellid = KitBase.extract_cell(cells)
-edgeNodes, edgeCells, cellNeighbors = KitBase.mesh_connectivity_2D(cellid)
-cellArea = KitBase.mesh_area_2D(nodes, cellid)
