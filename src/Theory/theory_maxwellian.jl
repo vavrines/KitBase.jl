@@ -1,27 +1,10 @@
 """
-    maxwellian(u::T, ρ, U, λ) where {T<:AbstractArray{<:AbstractFloat,1}}
-
-    maxwellian(
-        u::X,
-        prim::Y,
-    ) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}}
-
-    maxwellian(u::T, v::T, ρ, U, V, λ) where {T<:AbstractArray{<:AbstractFloat,2}}
-
-    maxwellian(
-        u::X,
-        v::X,
-        prim::Y,
-    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,1}}
-
-    maxwellian(u::T, v::T, w::T, ρ, U, V, W, λ) where {T<:AbstractArray{<:AbstractFloat,3}}
-
-    maxwellian(
-        u::X,
-        v::X,
-        w::X,
-        prim::Y,
-    ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,1}}
+    maxwellian(u, ρ, U, λ)
+    maxwellian(u, prim)
+    maxwellian(u, v, ρ, U, V, λ)
+    maxwellian(u, v, prim)
+    maxwellian(u, v, w, ρ, U, V, W, λ)
+    maxwellian(u, v, w, prim)
 
 Maxwellian in discrete form
 
@@ -30,36 +13,27 @@ Maxwellian in discrete form
 * @return: Maxwellian distribution function
 
 """
-maxwellian(u::T, ρ, U, λ) where {T<:AbstractArray{<:AbstractFloat,1}} =
+maxwellian(u, ρ, U, λ) =
     @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
 
 maxwellian(
-    u::X,
-    prim::Y,
-) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:Real,1}} =
+    u,
+    prim::AbstractVector{T},
+) where {T<:Real} =
     maxwellian(u, prim[1], prim[2], prim[end]) # in case of input with length 4/5
 
 #--- 2V ---#
-maxwellian(u::T, v::T, ρ, U, V, λ) where {T<:AbstractArray{<:AbstractFloat,2}} =
+maxwellian(u, v, ρ, U, V, λ) =
     @. ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
 
-maxwellian(
-    u::X,
-    v::X,
-    prim::Y,
-) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,1}} =
+maxwellian(u, v, prim::AbstractVector{T}) where {T<:Real} =
     maxwellian(u, v, prim[1], prim[2], prim[3], prim[end]) # in case of input with length 5
 
 #--- 3V ---#
-maxwellian(u::T, v::T, w::T, ρ, U, V, W, λ) where {T<:AbstractArray{<:AbstractFloat,3}} =
+maxwellian(u, v, w, ρ, U, V, W, λ) =
     @. ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
 
-maxwellian(
-    u::X,
-    v::X,
-    w::X,
-    prim::Y,
-) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,1}} =
+maxwellian(u, v, w, prim::AbstractVector{T}) where {T<:Real} =
     maxwellian(u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
 
