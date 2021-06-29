@@ -13,18 +13,13 @@ Maxwellian in discrete form
 * @return: Maxwellian distribution function
 
 """
-maxwellian(u, ρ, U, λ) =
-    @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
+maxwellian(u, ρ, U, λ) = @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
 
-maxwellian(
-    u,
-    prim::AbstractVector{T},
-) where {T<:Real} =
+maxwellian(u, prim::AbstractVector{T}) where {T<:Real} =
     maxwellian(u, prim[1], prim[2], prim[end]) # in case of input with length 4/5
 
 #--- 2V ---#
-maxwellian(u, v, ρ, U, V, λ) =
-    @. ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
+maxwellian(u, v, ρ, U, V, λ) = @. ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
 
 maxwellian(u, v, prim::AbstractVector{T}) where {T<:Real} =
     maxwellian(u, v, prim[1], prim[2], prim[3], prim[end]) # in case of input with length 5
@@ -38,105 +33,20 @@ maxwellian(u, v, w, prim::AbstractVector{T}) where {T<:Real} =
 
 
 """
-    maxwellian!(
-        M::T1,
-        u::T2,
-        ρ,
-        U,
-        λ,
-    ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
-
-    maxwellian!(
-        M::T1,
-        u::T2,
-        prim::T3,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,1},
-        T2<:AbstractArray{<:AbstractFloat,1},
-        T3<:AbstractArray{<:Real,1},
-    }
+    maxwellian!(M, u, ρ, U, λ)
+    maxwellian!(M, u, prim)
 
     # Rykov
-    maxwellian!(
-        Ht::T1,
-        Bt::T1,
-        Rt::T1,
-        Hr::T1,
-        Br::T1,
-        Rr::T1,
-        u::T2,
-        prim::T3,
-        K,
-        Kr,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,1},
-        T2<:AbstractArray{<:AbstractFloat,1},
-        T3<:AbstractArray{<:Real,1},
-    }
+    maxwellian!(Ht, Bt, Rt, Hr, Br, Rr, u, prim, K, Kr)
 
-    maxwellian!(
-        M::T1,
-        u::T2,
-        v::T2,
-        ρ,
-        U,
-        V,
-        λ,
-    ) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2}}
-
-    maxwellian!(
-        M::T1,
-        u::T2,
-        v::T2,
-        prim::T3,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,2},
-        T2<:AbstractArray{<:AbstractFloat,2},
-        T3<:AbstractArray{<:Real,1},
-    }
+    maxwellian!(M, u, v, ρ, U, V, λ)
+    maxwellian!(M, u, v, prim)
 
     # Rykov
-    maxwellian!(
-        Ht::T1,
-        Bt::T1,
-        Rt::T1,
-        Hr::T1,
-        Br::T1,
-        Rr::T1,
-        u::T2,
-        v::T2,
-        prim::T3,
-        K,
-        Kr,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,2},
-        T2<:AbstractArray{<:AbstractFloat,2},
-        T3<:AbstractArray{<:Real,1},
-    }
+    maxwellian!(Ht, Bt, Rt, Hr, Br, Rr, u, v, prim, K, Kr)
 
-    maxwellian!(
-        M::T1,
-        u::T2,
-        v::T2,
-        w::T2,
-        ρ,
-        U,
-        V,
-        W,
-        λ,
-    ) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3}}
-
-    maxwellian!(
-        M::T1,
-        u::T2,
-        v::T2,
-        w::T2,
-        prim::T3,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,3},
-        T2<:AbstractArray{<:AbstractFloat,3},
-        T3<:AbstractArray{<:Real,1},
-    }
+    maxwellian!(M, u, v, ρ, U, V, W, λ)
+    maxwellian!(M, u, v, w, prim)
 
 In-place Maxwellian
 
@@ -146,24 +56,24 @@ In-place Maxwellian
 
 """
 function maxwellian!(
-    M::T1,
-    u::T2,
+    M::AbstractVector{T1},
+    u::AbstractVector{T2},
     ρ,
     U,
     λ,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
+) where {T1<:AbstractFloat,T2<:AbstractFloat}
     @. M = ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
     return nothing
 end
 
 maxwellian!(
-    M::T1,
-    u::T2,
-    prim::T3,
+    M::AbstractVector{T1},
+    u::AbstractVector{T2},
+    prim::AbstractVector{T3},
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:Real,1},
+    T1<:AbstractFloat,
+    T2<:AbstractFloat,
+    T3<:Real,
 } = maxwellian!(M, u, prim[1], prim[2], prim[end])
 
 # Rykov
@@ -179,9 +89,9 @@ function maxwellian!(
     K,
     Kr,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:Real,1},
+    T1<:AbstractVector{<:AbstractFloat},
+    T2<:AbstractVector{<:AbstractFloat},
+    T3<:AbstractVector{<:Real},
 }
     @. Ht = prim[1] * sqrt(prim[4] / π) * exp(-prim[4] * (u - prim[2])^2)
     @. Bt = Ht * K / (2.0 * prim[4])
@@ -203,7 +113,7 @@ function maxwellian!(
     U,
     V,
     λ,
-) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2}}
+) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat}}
     @. M = ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
     return nothing
 end
@@ -215,7 +125,7 @@ maxwellian!(
     prim::T3,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat},
     T3<:AbstractArray{<:Real,1},
 } = maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
 
@@ -234,7 +144,7 @@ function maxwellian!(
     Kr,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
+    T2<:AbstractArray{<:AbstractFloat},
     T3<:AbstractArray{<:Real,1},
 }
     @. Ht = prim[1] * (prim[5] / π) * exp(-prim[5] * ((u - prim[2])^2 + (v - prim[3])^2))
@@ -259,7 +169,7 @@ function maxwellian!(
     V,
     W,
     λ,
-) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3}}
+) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat}}
     @. M = ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
     return nothing
 end
@@ -272,7 +182,7 @@ maxwellian!(
     prim::T3,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,3},
-    T2<:AbstractArray{<:AbstractFloat,3},
+    T2<:AbstractArray{<:AbstractFloat},
     T3<:AbstractArray{<:Real,1},
 } = maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
