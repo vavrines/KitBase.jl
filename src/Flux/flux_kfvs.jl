@@ -503,10 +503,10 @@ function flux_kfvs!(
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,2},
-    Z<:AbstractArray{<:AbstractFloat,2},
-    A<:AbstractArray{<:AbstractFloat,2},
+    X<:AbstractVector{<:AbstractFloat},
+    Y<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
+    Z<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
+    A<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
 }
 
     # --- upwind reconstruction ---#
@@ -551,10 +551,10 @@ function flux_kfvs!(
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,2},
-    Z<:AbstractArray{<:AbstractFloat,2},
-    A<:AbstractArray{<:AbstractFloat,2},
+    X<:AbstractVector{<:AbstractFloat},
+    Y<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
+    Z<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
+    A<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
 }
 
     # --- upwind reconstruction ---#
