@@ -136,7 +136,7 @@ mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
         _ω::Union{Real,AbstractArray},
         _αᵣ::Union{Real,AbstractArray},
         _ωᵣ::Union{Real,AbstractArray},
-        _μᵣ::Union{Real,AbstractArray},
+        _μᵣ = ref_vhs_vis(_Kn, _αᵣ, _ωᵣ)::Union{Real,AbstractArray},
         _m = 1e-3::Union{Real,AbstractArray},
         _np = 1000::Union{Integer,AbstractArray},
     )
