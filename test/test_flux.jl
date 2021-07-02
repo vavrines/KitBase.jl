@@ -33,6 +33,11 @@ KitBase.flux_roe!(zeros(4), [1.0, 0.3, 0.0, 1.0], [0.3, -0.1, 0.0, 2.0], γ, dt)
 KitBase.flux_gks(0.3, 1e-3, dt)
 KitBase.flux_gks(0.3, 1e-3, dt, 1e-1, 1.0)
 KitBase.flux_gks(1.0, 0.125, 1e-3, dt, 1e-2, 1e-2)
+
+KitBase.flux_gks!(zeros(3), [1.0, 0.0, 2.0], γ, inK, 1e-3, 0.72)
+KitBase.flux_gks!(zeros(4), [1.0, 0.0, 0.0, 2.0], γ, inK, 1e-3, 0.72)
+KitBase.flux_gks!(zeros(5), [1.0, 0.0, 0.0, 0.0, 2.0], γ, inK, 1e-3, 0.72)
+
 KitBase.flux_gks!(fw, wL, wR, γ, inK, 1e-3, 0.72, dt, dx, dx)
 KitBase.flux_gks!(
     zeros(4),

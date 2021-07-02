@@ -7,6 +7,7 @@
     flux_gks(uL::T, uR::T, μ, dt, dxL, dxR, a = 0, suL = 0.0, suR = 0.0) where {T<:Real}
 
 Gas kinetic scalar flux
+
 * @args: conservative scalars and their slopes
 * @args: viscosity
 * @args: time step and cell size
@@ -128,6 +129,50 @@ Gas kinetic Navier-Stokes flux
 * @args: time step and cell size
 
 """
+function flux_gks!(
+    fw::X,
+    w::Y,
+    inK::Real,
+    γ::Real,
+    μᵣ::Real,
+    ω::Real,
+    sw = zero(w)::Y,
+) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
+
+    prim = conserve_prim(w, γ)
+    mus = gauss_moments(prim, inK)
+    tau = vhs_collision_time(prim, μᵣ, ω)
+
+    ax = pdf_slope(prim, sw, inK)
+    if length(prim) == 3
+        ∂ft = -prim[1] .* moments_conserve_slope(ax, mus[1], mus[2], 1)
+        at = pdf_slope(prim, ∂ft, inK)
+
+        Muv = moments_conserve(mus[1], mus[2], 1, 0)
+        Mau = moments_conserve_slope(ax, mus[1], mus[2], 2)
+        Mtu = moments_conserve_slope(at, mus[1], mus[2], 1)
+    elseif length(prim) == 4
+        ∂ft = -prim[1] .* moments_conserve_slope(ax, mus[1], mus[2], mus[3], 1, 0)
+        at = pdf_slope(prim, ∂ft, inK)
+
+        Muv = moments_conserve(mus[1], mus[2], mus[3], 1, 0, 0)
+        Mau = moments_conserve_slope(ax, mus[1], mus[2], mus[3], 2, 0)
+        Mtu = moments_conserve_slope(at, mus[1], mus[2], mus[3], 1, 0)
+    elseif length(prim) == 5
+        ∂ft = -prim[1] .* moments_conserve_slope(ax, mus[1], mus[2], mus[3], 1, 0, 0)
+        at = pdf_slope(prim, ∂ft, inK)
+
+        Muv = moments_conserve(mus[1], mus[2], mus[3], 1, 0, 0)
+        Mau = moments_conserve_slope(ax, mus[1], mus[2], mus[3], 2, 0, 0)
+        Mtu = moments_conserve_slope(at, mus[1], mus[2], mus[3], 1, 0, 0)
+    end
+
+    @. fw = prim[1] * (Muv - tau * Mau - tau * Mtu)
+
+    return nothing
+
+end
+
 function flux_gks!(
     fw::X,
     wL::Y,
