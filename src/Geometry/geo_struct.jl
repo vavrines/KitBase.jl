@@ -19,8 +19,10 @@ struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace1D
 end
 
 function PSpace1D(X0::TR, X1::TR, NX::TI, NG = 0::Integer) where {TR,TI}
+    TX = ifelse(TR == Float32, Float32, Float64)
+
     δ = (X1 - X0) / NX
-    x = OffsetArray{Float64}(undef, 1-NG:NX+NG)
+    x = OffsetArray{TX}(undef, 1-NG:NX+NG)
     dx = similar(x)
 
     # uniform mesh
@@ -76,12 +78,14 @@ function PSpace2D(
     NGX = 0::Integer,
     NGY = 0::Integer,
 ) where {TR,TI}
+    TX = ifelse(TR == Float32, Float32, Float64)
+
     δx = (X1 - X0) / NX
     δy = (Y1 - Y0) / NY
-    x = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-    y = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-    dx = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-    dy = OffsetArray{Float64}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+    x = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+    y = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+    dx = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+    dy = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
 
     for j in axes(x, 2)
         for i in axes(x, 1)
@@ -105,14 +109,12 @@ PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45
 Generate uniform mesh
 """
 function uniform_mesh(x0, xnum::T, dx) where {T<:Int}
-
     points = zeros(xnum)
     for i = 1:xnum
         points[i] = x0 + (i - 0.5) * dx
     end
 
     return points
-
 end
 
 
