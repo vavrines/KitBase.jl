@@ -104,6 +104,65 @@ PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45
 
 
 """
+
+2D Circular space in polar coordinates
+
+"""
+struct CSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractPhysicalSpace2D
+    r0::TR
+    r1::TR
+    nr::TI
+    θ0::TR
+    θ1::TR
+    nθ::TI
+    r::TA
+    θ::TA
+    x::TA
+    y::TA
+    dr::TA
+    dθ::TA
+    darc::TA
+end
+
+function CSpace2D(
+    R0::TR,
+    R1::TR,
+    NR::TI,
+    θ0,
+    θ1,
+    Nθ::TI,
+    NGR = 0::TI,
+    NGθ = 0::TI,
+) where {TR,TI<:Integer}
+    TX = ifelse(TR == Float32, Float32, Float64)
+
+    δr = (R1 - R0) / NR
+    δθ = (θ1 - θ0) / Nθ
+    r = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+    θ = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+    x = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+    y = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+    dr = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+    dθ = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+    darc = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+
+    for j in axes(r, 2)
+        for i in axes(r, 1)
+            r[i, j] = R0 + (i - 0.5) * δr
+            θ[i, j] = θ0 + (j - 0.5) * δθ
+            x[i, j] = r[i, j] * cos(θ[i, j])
+            y[i, j] = r[i, j] * sin(θ[i, j])
+            dr[i, j] = δr
+            dθ[i, j] = δθ
+            darc[i, j] = r[i, j] * dθ[i, j]
+        end
+    end
+
+    return CSpace2D{TR,TI,typeof(x)}(R0, R1, NR, TX(θ0), TX(θ1), Nθ, r, θ, x, y, dr, dθ, darc)
+end
+
+
+"""
     uniform_mesh(x0::Real, xnum::Int, dx::Real)
 
 Generate uniform mesh
@@ -226,8 +285,19 @@ function Base.show(io::IO, ps::PSpace2D{TR,TI,TA}) where {TR,TI,TA}
         io,
         "PhysicalSpace2D{$TR,$TI,$TA}\n",
         "domain: ($(ps.x0),$(ps.x1)) × ($(ps.y0),$(ps.y1))\n",
-        "resolution: $(ps.nx) × $(ps.nx)\n",
+        "resolution: $(ps.nx) × $(ps.ny)\n",
         "ghost in x: $(1-firstindex(ps.x[:, 1]))\n",
         "ghost in y: $(1-firstindex(ps.y[1, :]))\n",
+    )
+end
+
+function Base.show(io::IO, ps::CSpace2D{TR,TI,TA}) where {TR,TI,TA}
+    print(
+        io,
+        "CircularSpace2D{$TR,$TI,$TA}\n",
+        "domain: ($(ps.r0),$(ps.r1)) × ($(ps.θ0),$(ps.θ1))\n",
+        "resolution: $(ps.nr) × $(ps.nθ)\n",
+        "ghost in r: $(1-firstindex(ps.x[:, 1]))\n",
+        "ghost in θ: $(1-firstindex(ps.y[1, :]))\n",
     )
 end
