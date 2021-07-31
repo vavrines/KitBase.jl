@@ -12,7 +12,7 @@ begin
     bL = @. hL * gas.K / 2 / primL[end]
     ib = KitBase.IB2F(wL, primL, hL, bL, primL, wL, primL, hL, bL, primL)
 end
-ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
+ks = KitBase.SolverSet(set, ps, vs, gas, ib)
 ctr, face = KitBase.init_fvm(ks, ks.pSpace)
 dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
