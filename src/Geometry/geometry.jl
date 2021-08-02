@@ -7,7 +7,8 @@ export global_frame,
        unit_normal,
        point_distance
 export PSpace1D,
-       PSpace2D
+       PSpace2D,
+       CSpace2D
 export uniform_mesh,
        ndgrid,
        meshgrid,
