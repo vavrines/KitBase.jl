@@ -176,15 +176,15 @@ function CSpace2D(
 
     vertices = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ, 4, 2)
     for j in axes(vertices, 2), i in axes(vertices, 1)
-        vertices[i, j, 1, 1] = (r[i, j] - 0.5 * dr[i, j]) * cos(θ[i, j] + 0.5 * dθ[i, j])
-        vertices[i, j, 2, 1] = (r[i, j] - 0.5 * dr[i, j]) * cos(θ[i, j] - 0.5 * dθ[i, j])
-        vertices[i, j, 3, 1] = (r[i, j] + 0.5 * dr[i, j]) * cos(θ[i, j] - 0.5 * dθ[i, j])
-        vertices[i, j, 4, 1] = (r[i, j] + 0.5 * dr[i, j]) * cos(θ[i, j] + 0.5 * dθ[i, j])
+        vertices[i, j, 1, 1] = (r[i, j] - 0.5 * dr[i, j]) * cos(θ[i, j] - 0.5 * dθ[i, j])
+        vertices[i, j, 2, 1] = (r[i, j] + 0.5 * dr[i, j]) * cos(θ[i, j] - 0.5 * dθ[i, j])
+        vertices[i, j, 3, 1] = (r[i, j] + 0.5 * dr[i, j]) * cos(θ[i, j] + 0.5 * dθ[i, j])
+        vertices[i, j, 4, 1] = (r[i, j] - 0.5 * dr[i, j]) * cos(θ[i, j] + 0.5 * dθ[i, j])
     
-        vertices[i, j, 1, 2] = (r[i, j] - 0.5 * dr[i, j]) * sin(θ[i, j] + 0.5 * dθ[i, j])
-        vertices[i, j, 2, 2] = (r[i, j] - 0.5 * dr[i, j]) * sin(θ[i, j] - 0.5 * dθ[i, j])
-        vertices[i, j, 3, 2] = (r[i, j] + 0.5 * dr[i, j]) * sin(θ[i, j] - 0.5 * dθ[i, j])
-        vertices[i, j, 4, 2] = (r[i, j] + 0.5 * dr[i, j]) * sin(θ[i, j] + 0.5 * dθ[i, j])
+        vertices[i, j, 1, 2] = (r[i, j] - 0.5 * dr[i, j]) * sin(θ[i, j] - 0.5 * dθ[i, j])
+        vertices[i, j, 2, 2] = (r[i, j] + 0.5 * dr[i, j]) * sin(θ[i, j] - 0.5 * dθ[i, j])
+        vertices[i, j, 3, 2] = (r[i, j] + 0.5 * dr[i, j]) * sin(θ[i, j] + 0.5 * dθ[i, j])
+        vertices[i, j, 4, 2] = (r[i, j] - 0.5 * dr[i, j]) * sin(θ[i, j] + 0.5 * dθ[i, j])
     end
 
     return CSpace2D{TR,TI,typeof(x),typeof(vertices)}(R0, R1, NR, TX(θ0), TX(θ1), Nθ, r, θ, x, y, dr, dθ, darc, vertices)
@@ -275,9 +275,9 @@ end
 
 Find the location index of a point in mesh
 
-- @args x: center locations of 1D mesh
-- @args p: point location
-- @args mode: choose uniform / nonuniform formulations
+- @arg x: center locations of 1D mesh
+- @arg p: point location
+- @arg mode: choose uniform / nonuniform formulations
 
 """
 function find_idx(
@@ -295,10 +295,10 @@ function find_idx(
 
 end
 
-
 # ------------------------------------------------------------
 # Extended Base.show()
 # ------------------------------------------------------------
+
 function Base.show(io::IO, ps::PSpace1D{TR,TI,TA}) where {TR,TI,TA}
     print(
         io,
