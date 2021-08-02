@@ -54,7 +54,7 @@ function SolverSet(
     VS::Union{AbstractVelocitySpace,Nothing},
     GAS::AbstractProperty,
     IB::Union{AbstractCondition,Nothing},
-    DIR::AbstractString,
+    DIR::AbstractString = @__DIR__,
 )
     return SolverSet{
         typeof(SET),

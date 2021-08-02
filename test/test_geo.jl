@@ -20,6 +20,7 @@ KitBase.PSpace1D()
 KitBase.PSpace1D(0.0, 1.0) |> show
 KitBase.PSpace2D()
 KitBase.PSpace2D(0.0, 1.0, 0.0, 1.0) |> show
+KitBase.CSpace2D(0.0, 1.0, 10, 0.0, π, 10) |> show
 
 x0 = 0.0
 nx = 15
