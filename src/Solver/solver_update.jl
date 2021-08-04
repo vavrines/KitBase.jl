@@ -126,7 +126,7 @@ function update!(
     ctr::Y,
     face::Z,
     dt,
-    residual::AbstractVector{T}; # 1D / 2D
+    residual::AbstractArray{T}; # 1D / 2D
     coll = Symbol(KS.set.collision)::Symbol,
     bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
