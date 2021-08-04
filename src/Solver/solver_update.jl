@@ -80,13 +80,60 @@ function update!(
     ctr::Y,
     face::Z,
     dt,
-    residual; # 1D / 2D
+    residual::T; # 1D / 2D
     coll = Symbol(KS.set.collision)::Symbol,
     bc = Symbol(KS.set.boundary)::Symbol,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D,1},
     Z<:AbstractArray{Interface1D,1},
+    T<:AbstractFloat,
+}
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
+
+    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+        ctr[i].w, sumRes, sumAvg = step!(
+            face[i].fw,
+            ctr[i].w,
+            ctr[i].prim,
+            face[i+1].fw,
+            KS.gas.a,
+            ctr[i].dx,
+            sumRes,
+            sumAvg,
+        )
+    end
+
+    residual = sqrt(sumRes * KS.pSpace.nx) / (sumAvg + 1.e-7)
+
+    if bc == :period
+        ctr[0].w = ctr[KS.pSpace.nx].w
+        ctr[0].sw = ctr[KS.pSpace.nx].sw
+        ctr[KS.pSpace.nx+1].w = ctr[1].w
+        ctr[KS.pSpace.nx+1].sw = ctr[1].sw
+    elseif bc == :extra
+        ctr[0].w = ctr[1].w
+        ctr[KS.pSpace.nx+1].w = ctr[KS.pSpace.nx].w
+    end
+
+    return residual
+
+end
+
+function update!(
+    KS::X,
+    ctr::Y,
+    face::Z,
+    dt,
+    residual::AbstractVector{T}; # 1D / 2D
+    coll = Symbol(KS.set.collision)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolume1D,1},
+    Z<:AbstractArray{Interface1D,1},
+    T<:AbstractFloat,
 }
 
     sumRes = zero(KS.ib.wL)

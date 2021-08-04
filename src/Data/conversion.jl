@@ -93,3 +93,4 @@ function static_array(x::AbstractArray{<:Number,4})
 end
 
 dynamic_array(x::AbstractArray) = x
+dynamic_array(x::Number) = x

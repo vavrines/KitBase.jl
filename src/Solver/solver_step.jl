@@ -19,6 +19,32 @@ Update flow variables with finite volume formulation
 """
 function step!(
     fwL::X,
+    w::X,
+    prim::AbstractVector{X},
+    fwR::X,
+    a,
+    dx,
+    RES,
+    AVG,
+) where {X<:AbstractFloat} # scalar
+
+    #--- store W^n and calculate H^n,\tau^n ---#
+    w_old = deepcopy(w)
+
+    #--- update W^{n+1} ---#
+    w += (fwL - fwR) / dx
+    prim .= conserve_prim(w, a)
+
+    #--- record residuals ---#
+    RES += (w - w_old)^2
+    AVG += abs(w)
+
+    return w, RES, AVG
+
+end
+
+function step!(
+    fwL::X,
     w::Y,
     prim::Y,
     fwR::X,

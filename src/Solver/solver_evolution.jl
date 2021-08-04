@@ -47,23 +47,42 @@ function evolve!(
     if mode == :gks
 
         if KS.set.nSpecies == 1
-            @inbounds Threads.@threads for i = idx0:idx1
-                flux_gks!(
-                    face[i].fw,
-                    ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
-                    ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
-                    KS.gas.γ,
-                    KS.gas.K,
-                    KS.gas.μᵣ,
-                    KS.gas.ω,
-                    dt,
-                    0.5 * ctr[i-1].dx,
-                    0.5 * ctr[i].dx,
-                    ctr[i-1].sw,
-                    ctr[i].sw,
-                )
+
+            if KS.set.matter == "scalar"
+                @inbounds Threads.@threads for i = idx0:idx1
+                    face[i].fw = KitBase.flux_gks(
+                        ctr[i-1].w + 0.5 * ctr[i-1].dx * ctr[i-1].sw,
+                        ctr[i].w - 0.5 * ctr[i].dx * ctr[i].sw,
+                        KS.gas.μᵣ,
+                        dt,
+                        0.5 * ctr[i-1].dx,
+                        0.5 * ctr[i].dx,
+                        KS.gas.a,
+                        ctr[i-1].sw,
+                        ctr[i].sw,
+                    )
+                end
+            else
+                @inbounds Threads.@threads for i = idx0:idx1
+                    flux_gks!(
+                        face[i].fw,
+                        ctr[i-1].w .+ 0.5 .* ctr[i-1].dx .* ctr[i-1].sw,
+                        ctr[i].w .- 0.5 .* ctr[i].dx .* ctr[i].sw,
+                        KS.gas.γ,
+                        KS.gas.K,
+                        KS.gas.μᵣ,
+                        KS.gas.ω,
+                        dt,
+                        0.5 * ctr[i-1].dx,
+                        0.5 * ctr[i].dx,
+                        ctr[i-1].sw,
+                        ctr[i].sw,
+                    )
+                end
             end
+
         elseif KS.set.nSpecies == 2
+
             @inbounds Threads.@threads for i = idx0:idx1
                 flux_gks!(
                     face[i].fw,
@@ -83,6 +102,7 @@ function evolve!(
                     ctr[i].sw,
                 )
             end
+
         end
 
     elseif mode == :roe
