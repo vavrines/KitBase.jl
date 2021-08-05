@@ -60,7 +60,7 @@ function flux_gks(
 
     u = primL[1] * moments_conserve(MuL1, 0) + primR[1] * moments_conserve(MuR2, 0)
     prim = ifelse(a == 0, conserve_prim(u), conserve_prim(u, a))
-    tau = 2.0 * μ# + 2.0 * abs(uL - uR) / (abs(uL) + abs(uR)) * dt
+    tau = 2.0 * μ + 1.0 * abs(uL - uR) / (abs(uL) + abs(uR)) * dt
 
     faL = pdf_slope(uL, suL)
     Δ = -primL[1] * moments_conserve_slope(faL, Mu1, 1)
