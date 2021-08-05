@@ -608,6 +608,83 @@ function evolve!(
     dt;
     mode = Symbol(KS.set.flux)::Symbol,
     bc = Symbol(KS.set.boundary)::Symbol,
+) where {T1<:AbstractArray{ControlVolume2D,2},T2<:AbstractArray{Interface2D,2}}
+
+    if firstindex(KS.pSpace.x[:, 1]) < 1
+        idx0 = 1
+        idx1 = KS.pSpace.nx + 1
+    else
+        idx0 = 2
+        idx1 = KS.pSpace.nx
+    end
+    if firstindex(KS.pSpace.y[1, :]) < 1
+        idy0 = 1
+        idy1 = KS.pSpace.ny + 1
+    else
+        idy0 = 2
+        idy1 = KS.pSpace.ny
+    end
+
+    if mode == :hll
+
+        # x direction
+        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
+            for i = idx0:idx1
+                flux_hll!(
+                    a1face[i, j].fw,
+                    local_frame(
+                        ctr[i-1, j].w .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sw[:, 1],
+                        a1face[i, j].n[1],
+                        a1face[i, j].n[2],
+                    ),
+                    local_frame(
+                        ctr[i, j].w .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sw[:, 1],
+                        a1face[i, j].n[1],
+                        a1face[i, j].n[2],
+                    ),
+                    KS.gas.γ,
+                    dt,
+                )
+                a1face[i, j].fw .=
+                    global_frame(a1face[i, j].fw, a1face[i, j].n[1], a1face[i, j].n[2]) .* a1face[i, j].len
+            end
+        end
+
+        # y direction
+        @inbounds Threads.@threads for j = idy0:idy1
+            for i = 1:KS.pSpace.nx
+                flux_hll!(
+                    a2face[i, j].fw,
+                    local_frame(
+                        ctr[i, j-1].w .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sw[:, 2],
+                        a2face[i, j].n[1],
+                        a2face[i, j].n[2],
+                    ),
+                    local_frame(
+                        ctr[i, j].w .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sw[:, 2],
+                        a2face[i, j].n[1],
+                        a2face[i, j].n[2],
+                    ),
+                    KS.gas.γ,
+                    dt,
+                )
+                a2face[i, j].fw .=
+                    global_frame(a2face[i, j].fw, a2face[i, j].n[1], a2face[i, j].n[2]) .* a2face[i, j].len
+            end
+        end
+
+    end
+
+end
+
+function evolve!(
+    KS::SolverSet,
+    ctr::T1,
+    a1face::T2,
+    a2face::T2,
+    dt;
+    mode = Symbol(KS.set.flux)::Symbol,
+    bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume2D1F,2},T2<:AbstractArray{Interface2D1F,2}}
 
     if firstindex(KS.pSpace.x[:, 1]) < 1

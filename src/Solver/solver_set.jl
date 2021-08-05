@@ -784,7 +784,11 @@ function set_ib(
 
     elseif set.case == "cavity"
 
-        if set.space[3:end] == "1f2v"
+        if set.space[3:4] == "0f"
+            wL, primL, bcL, wR, primR, bcR, bcU, bcD =
+                ib_cavity(gas.γ, uLid, vLid, tLid)
+            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)
+        elseif set.space[3:end] == "1f2v"
             wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD =
                 ib_cavity(gas.γ, uLid, vLid, tLid, vSpace.u, vSpace.v)
             ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)

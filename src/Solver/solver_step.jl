@@ -1098,6 +1098,36 @@ function step!(
 
 end
 
+#--- quadrilateral ---#
+function step!(
+    w::T1,
+    prim::T1,
+    fwL::T1,
+    fwR::T1,
+    fwD::T1,
+    fwU::T1,
+    γ,
+    Δs,
+    RES,
+    AVG,
+    collision = :bgk,
+) where {
+    T1<:AbstractArray{<:AbstractFloat,1},
+}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    #--- update W^{n+1} ---#
+    @. w += (fwL - fwR + fwD - fwU) / Δs
+    prim .= conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+end
+
 # ------------------------------------------------------------
 # 2D1F2V
 # ------------------------------------------------------------

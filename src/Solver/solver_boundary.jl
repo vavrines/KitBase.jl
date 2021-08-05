@@ -697,6 +697,134 @@ function update_boundary!(
     bc::Symbol,
 ) where {
     X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolume2D,2},
+    Z<:AbstractArray{Interface2D,2},
+}
+
+    resL = zero(KS.ib.wL)
+    avgL = zero(KS.ib.wL)
+    resR = zero(KS.ib.wL)
+    avgR = zero(KS.ib.wL)
+    resU = zero(KS.ib.wL)
+    avgU = zero(KS.ib.wL)
+    resD = zero(KS.ib.wL)
+    avgD = zero(KS.ib.wL)
+
+    if bc != :fix
+        @inbounds for j = 1:KS.pSpace.ny
+            step!(
+                ctr[1, j].w,
+                ctr[1, j].prim,
+                a1face[1, j].fw,
+                a1face[2, j].fw,
+                a2face[1, j].fw,
+                a2face[1, j+1].fw,
+                KS.gas.γ,
+                ctr[1, j].dx * ctr[1, j].dy,
+                resL,
+                avgL,
+                coll,
+            )
+
+            step!(
+                ctr[KS.pSpace.nx, j].w,
+                ctr[KS.pSpace.nx, j].prim,
+                a1face[KS.pSpace.nx, j].fw,
+                a1face[KS.pSpace.nx+1, j].fw,
+                a2face[KS.pSpace.nx, j].fw,
+                a2face[KS.pSpace.nx, j+1].fw,
+                KS.gas.γ,
+                ctr[KS.pSpace.nx, j].dx * ctr[KS.pSpace.nx, j].dy,
+                resR,
+                avgR,
+                coll,
+            )
+        end
+
+        @inbounds for i = 2:KS.pSpace.nx-1 # skip overlap
+            step!(
+                ctr[i, 1].w,
+                ctr[i, 1].prim,
+                a1face[i, 1].fw,
+                a1face[i+1, 1].fw,
+                a2face[i, 1].fw,
+                a2face[i, 2].fw,
+                KS.gas.γ,
+                ctr[i, 1].dx * ctr[i, 1].dy,
+                resD,
+                avgD,
+                coll,
+            )
+
+            step!(
+                ctr[i, KS.pSpace.ny].w,
+                ctr[i, KS.pSpace.ny].prim,
+                a1face[i, KS.pSpace.ny].fw,
+                a1face[i+1, KS.pSpace.ny].fw,
+                a2face[i, KS.pSpace.ny].fw,
+                a2face[i, KS.pSpace.ny+1].fw,
+                KS.gas.γ,
+                ctr[i, KS.pSpace.ny].dx * ctr[i, KS.pSpace.ny].dy,
+                resU,
+                avgU,
+                coll,
+            )
+        end
+    end
+
+    for i in eachindex(residual)
+        residual[i] +=
+            sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) /
+            (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
+    end
+
+    ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    if bc == :extra
+        for i = 1:ngx, j = 1:KS.pSpace.ny
+            ctr[1-i, j].w .= ctr[1, j].w
+            ctr[1-i, j].prim .= ctr[1, j].prim
+            ctr[KS.pSpace.nx+i, j].w .= ctr[KS.pSpace.nx, j].w
+            ctr[KS.pSpace.nx+i, j].prim .= ctr[KS.pSpace.nx, j].prim
+        end
+
+        for i = 1:KS.pSpace.nx, j = 1:ngy
+            ctr[i, 1-j].w .= ctr[i, 1].w
+            ctr[i, 1-j].prim .= ctr[i, 1].prim
+            ctr[i, KS.pSpace.ny+j].w .= ctr[i, KS.pSpace.ny].w
+            ctr[i, KS.pSpace.ny+j].prim .= ctr[i, KS.pSpace.ny].prim
+        end
+    elseif bc == :period
+        for i = 1:ngx, j = 1:KS.pSpace.ny
+            ctr[1-i, j].w .= ctr[KS.pSpace.nx-i+1, j].w
+            ctr[1-i, j].prim .= ctr[KS.pSpace.nx-i+1, j].prim
+            ctr[KS.pSpace.nx+i, j].w .= ctr[i, j].w
+            ctr[KS.pSpace.nx+i, j].prim .= ctr[i, j].prim
+        end
+
+        for i = 1:KS.pSpace.nx, j = 1:ngy
+            ctr[i, 1-j].w .= ctr[i, KS.pSpace.ny-j+1].w
+            ctr[i, 1-j].prim .= ctr[i, KS.pSpace.ny-j+1].prim
+            ctr[i, KS.pSpace.ny+j].w .= ctr[i, j].w
+            ctr[i, KS.pSpace.ny+j].prim .= ctr[i, j].prim
+        end
+    elseif bc == :balance
+
+    end
+
+end
+
+function update_boundary!(
+    KS::X,
+    ctr::Y,
+    a1face::Z,
+    a2face::Z,
+    dt,
+    residual;
+    coll::Symbol,
+    bc::Symbol,
+) where {
+    X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D1F,2},
     Z<:AbstractArray{Interface2D1F,2},
 }

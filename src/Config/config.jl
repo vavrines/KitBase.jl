@@ -262,12 +262,34 @@ end
 
 
 """
+    2d0f0v: ib_cavity(gam, Um, Vm, Tm) where {T<:AbstractArray{<:AbstractFloat,2}}
     2d1f2v: ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}}
     2d2f2v: ib_cavity(gam, Um, Vm, Tm, u::T, v::T, K) where {T<:AbstractArray{<:AbstractFloat,2}}
 
 Initialize lid-driven cavity
 """
-function ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}} # 2D1F2V
+function ib_cavity(gam, Um, Vm, Tm) where {T<:AbstractArray{<:AbstractFloat,2}} # 2D0F
+
+    primL = [1.0, 0.0, 0.0, 1.0]
+    primR = deepcopy(primL)
+
+    wL = prim_conserve(primL, gam)
+    wR = prim_conserve(primR, gam)
+
+    bcU = [1.0, Um, Vm, Tm]
+    bcD = deepcopy(primR)
+    bcL = deepcopy(primR)
+    bcR = deepcopy(primR)
+
+    return wL, primL, bcL, wR, primR, bcR, bcU, bcD
+
+end
+
+
+# ------------------------------------------------------------
+# 2D1F2V
+# ------------------------------------------------------------
+function ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}}
 
     primL = [1.0, 0.0, 0.0, 1.0]
     primR = deepcopy(primL)

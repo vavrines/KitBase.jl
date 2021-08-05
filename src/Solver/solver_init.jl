@@ -251,7 +251,56 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) wher
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
-    if KS.set.space[3:4] == "1f"
+    if KS.set.space[3:4] == "0f"
+
+        ctr = OffsetArray{ControlVolume2D}(
+            undef,
+            axes(KS.pSpace.x, 1),
+            axes(KS.pSpace.y, 2),
+        )
+        a1face = Array{Interface2D}(undef, KS.pSpace.nx + 1, KS.pSpace.ny)
+        a2face = Array{Interface2D}(undef, KS.pSpace.nx, KS.pSpace.ny + 1)
+
+        for j in axes(ctr, 2), i in axes(ctr, 1)
+            if i <= KS.pSpace.nx ÷ 2
+                ctr[i, j] = ControlVolume2D(
+                    KS.pSpace.x[i, j],
+                    KS.pSpace.y[i, j],
+                    KS.pSpace.dx[i, j],
+                    KS.pSpace.dy[i, j],
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                )
+            else
+                ctr[i, j] = ControlVolume2D(
+                    KS.pSpace.x[i, j],
+                    KS.pSpace.y[i, j],
+                    KS.pSpace.dx[i, j],
+                    KS.pSpace.dy[i, j],
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                )
+            end
+        end
+
+        for j = 1:KS.pSpace.ny
+            for i = 1:KS.pSpace.nx
+                a1face[i, j] =
+                    Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL))
+            end
+            a1face[KS.pSpace.nx+1, j] =
+                Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, funcar(KS.ib.wL))
+        end
+        for i = 1:KS.pSpace.nx
+            for j = 1:KS.pSpace.ny
+                a2face[i, j] =
+                    Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL))
+            end
+            a2face[i, KS.pSpace.ny+1] =
+                Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, funcar(KS.ib.wL))
+        end
+
+    elseif KS.set.space[3:4] == "1f"
 
         ctr = OffsetArray{ControlVolume2D1F}(
             undef,
