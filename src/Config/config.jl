@@ -8,13 +8,40 @@ export ib_rh,
        ib_cavity
 
 """
+    1d0f: ib_rh(MaL, gam)
     1d1f1v: ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
     1d2f1v: ib_rh(MaL, gam, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}
     1d1f3v: ib_rh(MaL, gam, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
 
 Initialize Rankine-Hugoniot relation
 """
-function ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}} # 1D1F1V
+function ib_rh(MaL, gam) # 1D0F
+    primL = [1.0, MaL * sqrt(gam / 2.0), 1.0]
+
+    MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
+    ratioT =
+        (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
+        (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
+
+    primR = [
+        primL[1] * (gam + 1.0) * MaL^2 / ((gam - 1.0) * MaL^2 + 2.0),
+        MaR * sqrt(gam / 2.0) * sqrt(ratioT),
+        primL[3] / ratioT,
+    ]
+
+    wL = prim_conserve(primL, gam)
+    wR = prim_conserve(primR, gam)
+
+    bcL = deepcopy(primL)
+    bcR = deepcopy(primR)
+
+    return wL, primL, bcL, wR, primR, bcR
+end
+
+# ------------------------------------------------------------
+# 1D1F1V
+# ------------------------------------------------------------
+function ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
     primL = [1.0, MaL * sqrt(gam / 2.0), 1.0]
 
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))

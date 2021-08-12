@@ -1,5 +1,6 @@
 u = collect(-5:0.1:5)
 
+KitBase.ib_rh(2.0, 5 / 3)
 KitBase.ib_rh(2.0, 5 / 3, u)
 KitBase.ib_rh(2.0, 5 / 3, 2.0, u)
 KitBase.ib_rh(2.0, 5 / 3, rand(21, 21, 21), rand(21, 21, 21), rand(21, 21, 21))
