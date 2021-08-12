@@ -56,7 +56,12 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 2D Physical space with structured mesh
 
 """
-struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractMatrix{<:Real},TB<:AbstractArray{<:Real,4}} <: AbstractPhysicalSpace2D
+struct PSpace2D{
+    TR<:Real,
+    TI<:Integer,
+    TA<:AbstractMatrix{<:Real},
+    TB<:AbstractArray{<:Real,4},
+} <: AbstractPhysicalSpace2D
     x0::TR
     x1::TR
     nx::TI
@@ -111,7 +116,19 @@ function PSpace2D(
         vertices[i, j, 4, 2] = y[i, j] + 0.5 * dy[i, j]
     end
 
-    return PSpace2D{TR,TI,typeof(x),typeof(vertices)}(X0, X1, NX, Y0, Y1, NY, x, y, dx, dy, vertices)
+    return PSpace2D{TR,TI,typeof(x),typeof(vertices)}(
+        X0,
+        X1,
+        NX,
+        Y0,
+        Y1,
+        NY,
+        x,
+        y,
+        dx,
+        dy,
+        vertices,
+    )
 end
 
 PSpace2D() = PSpace2D(0, 1, 45, 0, 1, 45)
@@ -123,7 +140,12 @@ PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45
 2D Circular space in polar coordinates
 
 """
-struct CSpace2D{TR<:Real,TI<:Integer,TA<:AbstractMatrix{<:Real},TB<:AbstractArray{<:Real,4}} <: AbstractPhysicalSpace2D
+struct CSpace2D{
+    TR<:Real,
+    TI<:Integer,
+    TA<:AbstractMatrix{<:Real},
+    TB<:AbstractArray{<:Real,4},
+} <: AbstractPhysicalSpace2D
     r0::TR
     r1::TR
     nr::TI
@@ -180,14 +202,29 @@ function CSpace2D(
         vertices[i, j, 2, 1] = (r[i, j] + 0.5 * dr[i, j]) * cos(θ[i, j] - 0.5 * dθ[i, j])
         vertices[i, j, 3, 1] = (r[i, j] + 0.5 * dr[i, j]) * cos(θ[i, j] + 0.5 * dθ[i, j])
         vertices[i, j, 4, 1] = (r[i, j] - 0.5 * dr[i, j]) * cos(θ[i, j] + 0.5 * dθ[i, j])
-    
+
         vertices[i, j, 1, 2] = (r[i, j] - 0.5 * dr[i, j]) * sin(θ[i, j] - 0.5 * dθ[i, j])
         vertices[i, j, 2, 2] = (r[i, j] + 0.5 * dr[i, j]) * sin(θ[i, j] - 0.5 * dθ[i, j])
         vertices[i, j, 3, 2] = (r[i, j] + 0.5 * dr[i, j]) * sin(θ[i, j] + 0.5 * dθ[i, j])
         vertices[i, j, 4, 2] = (r[i, j] - 0.5 * dr[i, j]) * sin(θ[i, j] + 0.5 * dθ[i, j])
     end
 
-    return CSpace2D{TR,TI,typeof(x),typeof(vertices)}(R0, R1, NR, TX(θ0), TX(θ1), Nθ, r, θ, x, y, dr, dθ, darc, vertices)
+    return CSpace2D{TR,TI,typeof(x),typeof(vertices)}(
+        R0,
+        R1,
+        NR,
+        TX(θ0),
+        TX(θ1),
+        Nθ,
+        r,
+        θ,
+        x,
+        y,
+        dr,
+        dθ,
+        darc,
+        vertices,
+    )
 end
 
 

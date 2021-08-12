@@ -1238,7 +1238,7 @@ function update_boundary!(
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
-            deleteat!(ids, findall(x->x==-1, ids))
+            deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
@@ -1262,7 +1262,7 @@ function update_boundary!(
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
-            deleteat!(ids, findall(x->x==-1, ids))
+            deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].f .= 0.5 .* (ctr[id1].f .+ ctr[id2].f)
@@ -1287,7 +1287,7 @@ function update_boundary!(
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
-            deleteat!(ids, findall(x->x==-1, ids))
+            deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)

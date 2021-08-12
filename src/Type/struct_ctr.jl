@@ -29,12 +29,7 @@ mutable struct ControlVolume1D{F,A,B} <: AbstractControlVolume1D
     sw::A
 end
 
-function ControlVolume1D(
-    X::T1,
-    DX::T1,
-    W::T2,
-    PRIM::T3,
-) where {T1<:Real,T2,T3}
+function ControlVolume1D(X::T1, DX::T1, W::T2, PRIM::T3) where {T1<:Real,T2,T3}
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -86,13 +81,7 @@ mutable struct ControlVolume1D1F{F,A,B} <: AbstractControlVolume1D
     sf::B
 end
 
-function ControlVolume1D1F(
-    X,
-    DX,
-    W::T1,
-    PRIM::T1,
-    F::T2,
-) where {T1,T2}
+function ControlVolume1D1F(X, DX, W::T1, PRIM::T1, F::T2) where {T1,T2}
     x = deepcopy(X)
     dx = deepcopy(DX)
 
@@ -679,14 +668,7 @@ mutable struct ControlVolume2D{F,A,B} <: AbstractControlVolume2D
     sw::B
 end
 
-function ControlVolume2D(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
-    W,
-    PRIM,
-)
+function ControlVolume2D(X::Real, DX::Real, Y::Real, DY::Real, W, PRIM)
     x = deepcopy(X)
     dx = deepcopy(DX)
     y = deepcopy(Y)
@@ -745,15 +727,7 @@ mutable struct ControlVolume2D1F{F,A,B,C,D} <: AbstractControlVolume2D
     sf::D
 end
 
-function ControlVolume2D1F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
-    W,
-    PRIM,
-    F::AbstractArray,
-)
+function ControlVolume2D1F(X::Real, DX::Real, Y::Real, DY::Real, W, PRIM, F::AbstractArray)
 
     x = deepcopy(X)
     dx = deepcopy(DX)
@@ -1143,7 +1117,11 @@ function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractV
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), axes(W)..., length(N[1]))
-    sw = ifelse(length(N[1]) == 2, slope_array(W; reduction=true), slope_array(W; reduction=false))
+    sw = ifelse(
+        length(N[1]) == 2,
+        slope_array(W; reduction = true),
+        slope_array(W; reduction = false),
+    )
 
     return ControlVolumeUS{typeof(n),typeof(x),typeof(w),typeof(prim),typeof(sw)}(
         n,
@@ -1194,11 +1172,19 @@ function ControlVolumeUS1F(N, X, DX, W, PRIM, F::T) where {T<:AbstractArray}
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), axes(W)..., length(N[1]))
-    sw = ifelse(length(N[1]) == 2, slope_array(W; reduction=true), slope_array(W; reduction=false))
+    sw = ifelse(
+        length(N[1]) == 2,
+        slope_array(W; reduction = true),
+        slope_array(W; reduction = false),
+    )
 
     f = deepcopy(F)
     #sf = zeros(eltype(F), axes(F)..., length(N[1]))
-    sf = ifelse(length(N[1]) == 2, slope_array(F; reduction=true), slope_array(F; reduction=false))
+    sf = ifelse(
+        length(N[1]) == 2,
+        slope_array(F; reduction = true),
+        slope_array(F; reduction = false),
+    )
 
     return ControlVolumeUS1F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(
         n,
@@ -1263,14 +1249,26 @@ function ControlVolumeUS2F(
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), axes(W)..., length(N[1]))
-    sw = ifelse(length(N[1]) == 2, slope_array(W; reduction=true), slope_array(W; reduction=false))
+    sw = ifelse(
+        length(N[1]) == 2,
+        slope_array(W; reduction = true),
+        slope_array(W; reduction = false),
+    )
 
     h = deepcopy(H)
     b = deepcopy(B)
     #sh = zeros(eltype(H), axes(H)..., length(N[1]))
     #sb = zeros(eltype(B), axes(B)..., length(N[1]))
-    sh = ifelse(length(N[1]) == 2, slope_array(H; reduction=true), slope_array(H; reduction=false))
-    sb = ifelse(length(N[1]) == 2, slope_array(B; reduction=true), slope_array(B; reduction=false))
+    sh = ifelse(
+        length(N[1]) == 2,
+        slope_array(H; reduction = true),
+        slope_array(H; reduction = false),
+    )
+    sb = ifelse(
+        length(N[1]) == 2,
+        slope_array(B; reduction = true),
+        slope_array(B; reduction = false),
+    )
 
     return ControlVolumeUS2F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
         n,

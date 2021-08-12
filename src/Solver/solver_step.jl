@@ -1080,10 +1080,7 @@ function step!(
     dirc::T2,
     RES,
     AVG,
-) where {
-    T1<:AbstractVector{<:AbstractFloat},
-    T2<:AbstractVector{<:Real},
-}
+) where {T1<:AbstractVector{<:AbstractFloat},T2<:AbstractVector{<:Real}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1111,9 +1108,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-}
+) where {T1<:AbstractArray{<:AbstractFloat,1}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1478,7 +1473,9 @@ function step!(
     boltzmann_fft!(Q, f, Kn_bz, nm, phi, psi, phipsi)
 
     for k in axes(f, 3), j in axes(f, 2), i in axes(f, 1)
-        f[i, j, k] += (ffL[i, j, k] - ffR[i, j, k] + ffD[i, j, k] - ffU[i, j, k]) / Δs + dt * Q[i, j, k]
+        f[i, j, k] +=
+            (ffL[i, j, k] - ffR[i, j, k] + ffD[i, j, k] - ffU[i, j, k]) / Δs +
+            dt * Q[i, j, k]
     end
 
 end

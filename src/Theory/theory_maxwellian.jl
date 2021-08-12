@@ -70,11 +70,8 @@ maxwellian!(
     M::AbstractVector{T1},
     u::AbstractVector{T2},
     prim::AbstractVector{T3},
-) where {
-    T1<:AbstractFloat,
-    T2<:AbstractFloat,
-    T3<:Real,
-} = maxwellian!(M, u, prim[1], prim[2], prim[end])
+) where {T1<:AbstractFloat,T2<:AbstractFloat,T3<:Real} =
+    maxwellian!(M, u, prim[1], prim[2], prim[end])
 
 # Rykov
 function maxwellian!(

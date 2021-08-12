@@ -833,24 +833,8 @@ function reconstruct!(
         dyL = ctr[i].x[2] - ctr[id1].x[2]
         dyR = ctr[id2].x[2] - ctr[i].x[2]
 
-        reconstruct3!(
-            swx,
-            wL,
-            ctr[i].w,
-            wR,
-            dxL,
-            dxR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            swy,
-            wL,
-            ctr[i].w,
-            wR,
-            dyL,
-            dyR,
-            Symbol(KS.set.limiter),
-        )
+        reconstruct3!(swx, wL, ctr[i].w, wR, dxL, dxR, Symbol(KS.set.limiter))
+        reconstruct3!(swy, wL, ctr[i].w, wR, dyL, dyR, Symbol(KS.set.limiter))
     end
 
 end
@@ -884,42 +868,10 @@ function reconstruct!(
         dyL = ctr[i].x[2] - ctr[id1].x[2]
         dyR = ctr[id2].x[2] - ctr[i].x[2]
 
-        reconstruct3!(
-            swx,
-            wL,
-            ctr[i].w,
-            wR,
-            dxL,
-            dxR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            swy,
-            wL,
-            ctr[i].w,
-            wR,
-            dyL,
-            dyR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            sfx,
-            fL,
-            ctr[i].f,
-            fR,
-            dxL,
-            dxR,
-            Symbol(KS.set.limiter),
-        )
-        reconstruct3!(
-            sfy,
-            fL,
-            ctr[i].f,
-            fR,
-            dyL,
-            dyR,
-            Symbol(KS.set.limiter),
-        )
+        reconstruct3!(swx, wL, ctr[i].w, wR, dxL, dxR, Symbol(KS.set.limiter))
+        reconstruct3!(swy, wL, ctr[i].w, wR, dyL, dyR, Symbol(KS.set.limiter))
+        reconstruct3!(sfx, fL, ctr[i].f, fR, dxL, dxR, Symbol(KS.set.limiter))
+        reconstruct3!(sfy, fL, ctr[i].f, fR, dyL, dyR, Symbol(KS.set.limiter))
     end
 
 end
@@ -958,60 +910,12 @@ function reconstruct!(
             dyL = ctr[i].x[2] - ctr[id1].x[2]
             dyR = ctr[id2].x[2] - ctr[i].x[2]
 
-            reconstruct3!(
-                swx,
-                wL,
-                ctr[i].w,
-                wR,
-                dxL,
-                dxR,
-                Symbol(KS.set.limiter),
-            )
-            reconstruct3!(
-                swy,
-                wL,
-                ctr[i].w,
-                wR,
-                dyL,
-                dyR,
-                Symbol(KS.set.limiter),
-            )
-            reconstruct3!(
-                shx,
-                hL,
-                ctr[i].h,
-                hR,
-                dxL,
-                dxR,
-                Symbol(KS.set.limiter),
-            )
-            reconstruct3!(
-                shy,
-                hL,
-                ctr[i].h,
-                hR,
-                dyL,
-                dyR,
-                Symbol(KS.set.limiter),
-            )
-            reconstruct3!(
-                sbx,
-                bL,
-                ctr[i].b,
-                bR,
-                dxL,
-                dxR,
-                Symbol(KS.set.limiter),
-            )
-            reconstruct3!(
-                sby,
-                bL,
-                ctr[i].b,
-                bR,
-                dyL,
-                dyR,
-                Symbol(KS.set.limiter),
-            )
+            reconstruct3!(swx, wL, ctr[i].w, wR, dxL, dxR, Symbol(KS.set.limiter))
+            reconstruct3!(swy, wL, ctr[i].w, wR, dyL, dyR, Symbol(KS.set.limiter))
+            reconstruct3!(shx, hL, ctr[i].h, hR, dxL, dxR, Symbol(KS.set.limiter))
+            reconstruct3!(shy, hL, ctr[i].h, hR, dyL, dyR, Symbol(KS.set.limiter))
+            reconstruct3!(sbx, bL, ctr[i].b, bR, dxL, dxR, Symbol(KS.set.limiter))
+            reconstruct3!(sby, bL, ctr[i].b, bR, dyL, dyR, Symbol(KS.set.limiter))
         else
             id1, id2, id3 = ids
 

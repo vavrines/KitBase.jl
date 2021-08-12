@@ -431,20 +431,7 @@ function Interface2D3F(
     femRU = zeros(eltype(E), 8)
     femRD = zeros(eltype(E), 8)
 
-    return Interface2D3F(
-        len,
-        n,
-        fw,
-        fh0,
-        fh1,
-        fh2,
-        femL,
-        femR,
-        femLU,
-        femLD,
-        femRU,
-        femRD,
-    )
+    return Interface2D3F(len, n, fw, fh0, fh1, fh2, femL, femR, femLU, femLD, femRU, femRD)
 end
 
 function Interface2D3F(
@@ -470,20 +457,7 @@ function Interface2D3F(
     femRU = zeros(eltype(E), 8, axes(E, 2))
     femRD = zeros(eltype(E), 8, axes(E, 2))
 
-    return Interface2D3F(
-        len,
-        n,
-        fw,
-        fh0,
-        fh1,
-        fh2,
-        femL,
-        femR,
-        femLU,
-        femLD,
-        femRU,
-        femRD,
-    )
+    return Interface2D3F(len, n, fw, fh0, fh1, fh2, femL, femR, femLU, femLD, femRU, femRD)
 end
 
 # Rykov
@@ -503,20 +477,7 @@ function Interface2D3F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractA
     femRU = nothing
     femRD = nothing
 
-    return Interface2D3F(
-        len,
-        n,
-        fw,
-        fh0,
-        fh1,
-        fh2,
-        femL,
-        femR,
-        femLU,
-        femLD,
-        femRU,
-        femRD,
-    )
+    return Interface2D3F(len, n, fw, fh0, fh1, fh2, femL, femR, femLU, femLD, femRU, femRD)
 end
 
 function Base.show(io::IO, ctr::Interface2D3F{A,B,C,D,E}) where {A,B,C,D,E}

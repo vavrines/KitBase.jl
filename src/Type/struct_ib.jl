@@ -36,17 +36,8 @@ mutable struct IB{A,B,C} <: AbstractCondition
 end
 
 # works for both 1V/3V and single-/multi-component gases
-function IB(
-    wL,
-    primL,
-    bcL,
-    wR,
-    primR,
-    bcR,
-    bcU = deepcopy(bcR),
-    bcD = deepcopy(bcR),
-)
-    
+function IB(wL, primL, bcL, wR, primR, bcR, bcU = deepcopy(bcR), bcD = deepcopy(bcR))
+
     if ndims(primL) == 0
         vL = primL
         vR = primR
@@ -80,7 +71,7 @@ function IB(
         end
     end
 
-    return IB(wL,primL,bcL,wR,primR,bcR,bcU,bcD,vL,vR)
+    return IB(wL, primL, bcL, wR, primR, bcR, bcU, bcD, vL, vR)
 end
 
 

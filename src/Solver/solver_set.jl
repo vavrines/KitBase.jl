@@ -56,14 +56,7 @@ function SolverSet(
     IB::Union{AbstractCondition,Nothing},
     DIR::AbstractString = @__DIR__,
 )
-    return SolverSet{
-        typeof(SET),
-        typeof(PS),
-        typeof(VS),
-        typeof(GAS),
-        typeof(IB),
-        typeof(DIR),
-    }(
+    return SolverSet{typeof(SET),typeof(PS),typeof(VS),typeof(GAS),typeof(IB),typeof(DIR)}(
         SET,
         PS,
         PS,
@@ -545,17 +538,37 @@ function set_property(dict::T) where {T<:AbstractDict}
     γ = heat_capacity_ratio(dict[:inK], γD)
 
     if matter == "radiation"
-        
+
         gas = Radiation(dict[:knudsen], dict[:sigmaS], dict[:sigmaA])
 
     elseif matter == "gas"
 
         if nSpecies == 1
             μᵣ = ref_vhs_vis(dict[:knudsen], dict[:alphaRef], dict[:omegaRef])
-            gas = Gas(dict[:knudsen], dict[:mach], dict[:prandtl], dict[:inK], γ, dict[:omega], dict[:alphaRef], dict[:omegaRef], μᵣ)
+            gas = Gas(
+                dict[:knudsen],
+                dict[:mach],
+                dict[:prandtl],
+                dict[:inK],
+                γ,
+                dict[:omega],
+                dict[:alphaRef],
+                dict[:omegaRef],
+                μᵣ,
+            )
         elseif nSpecies == 2
             kne = dict[:knudsen] * (dict[:me] / dict[:mi])
-            gas = Mixture([dict[:knudsen], kne], dict[:mach], dict[:prandtl], dict[:inK], γ, dict[:mi], dict[:ni], dict[:me], dict[:ne])
+            gas = Mixture(
+                [dict[:knudsen], kne],
+                dict[:mach],
+                dict[:prandtl],
+                dict[:inK],
+                γ,
+                dict[:mi],
+                dict[:ni],
+                dict[:me],
+                dict[:ne],
+            )
         else
             throw("The gas property only supports up to two species.")
         end
@@ -785,8 +798,7 @@ function set_ib(
     elseif set.case == "cavity"
 
         if set.space[3:4] == "0f"
-            wL, primL, bcL, wR, primR, bcR, bcU, bcD =
-                ib_cavity(gas.γ, uLid, vLid, tLid)
+            wL, primL, bcL, wR, primR, bcR, bcU, bcD = ib_cavity(gas.γ, uLid, vLid, tLid)
             ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)
         elseif set.space[3:end] == "1f2v"
             wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD =

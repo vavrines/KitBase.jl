@@ -20,7 +20,7 @@ prim0 = conserve_prim(w0, property.a)
 ib = IB(w0, prim0, prim0, w0, prim0, prim0)
 ks = SolverSet(set, pSpace, vSpace, property, ib)
 
-ctr, face = init_fvm(ks, ks.ps) 
+ctr, face = init_fvm(ks, ks.ps)
 for i in eachindex(ctr)
     ctr[i].w = sin(2π * ks.pSpace.x[i])
 end

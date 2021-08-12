@@ -68,7 +68,12 @@ end
 Initialize finite volume method
 
 """
-function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
+function init_fvm(
+    KS::T,
+    ps::T1,
+    array = :dynamic_array;
+    structarray = false,
+) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
@@ -79,11 +84,19 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) wher
 
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
-                ctr[i] =
-                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], funcar(KS.ib.wL), funcar(KS.ib.primL))
+                ctr[i] = ControlVolume1D(
+                    KS.pSpace.x[i],
+                    KS.pSpace.dx[i],
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.primL),
+                )
             else
-                ctr[i] =
-                    ControlVolume1D(KS.pSpace.x[i], KS.pSpace.dx[i], funcar(KS.ib.wR), funcar(KS.ib.primR))
+                ctr[i] = ControlVolume1D(
+                    KS.pSpace.x[i],
+                    KS.pSpace.dx[i],
+                    funcar(KS.ib.wR),
+                    funcar(KS.ib.primR),
+                )
             end
         end
 
@@ -247,17 +260,19 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) wher
     return ctr |> funcst, face |> funcst
 end
 
-function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
+function init_fvm(
+    KS::T,
+    ps::T1,
+    array = :dynamic_array;
+    structarray = false,
+) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
     if KS.set.space[3:4] == "0f"
 
-        ctr = OffsetArray{ControlVolume2D}(
-            undef,
-            axes(KS.pSpace.x, 1),
-            axes(KS.pSpace.y, 2),
-        )
+        ctr =
+            OffsetArray{ControlVolume2D}(undef, axes(KS.pSpace.x, 1), axes(KS.pSpace.y, 2))
         a1face = Array{Interface2D}(undef, KS.pSpace.nx + 1, KS.pSpace.ny)
         a2face = Array{Interface2D}(undef, KS.pSpace.nx, KS.pSpace.ny + 1)
 
@@ -285,16 +300,14 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) wher
 
         for j = 1:KS.pSpace.ny
             for i = 1:KS.pSpace.nx
-                a1face[i, j] =
-                    Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL))
+                a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL))
             end
             a1face[KS.pSpace.nx+1, j] =
                 Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, funcar(KS.ib.wL))
         end
         for i = 1:KS.pSpace.nx
             for j = 1:KS.pSpace.ny
-                a2face[i, j] =
-                    Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL))
+                a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL))
             end
             a2face[i, KS.pSpace.ny+1] =
                 Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, funcar(KS.ib.wL))
@@ -336,19 +349,39 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) wher
 
         for j = 1:KS.pSpace.ny
             for i = 1:KS.pSpace.nx
-                a1face[i, j] =
-                    Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
+                a1face[i, j] = Interface2D1F(
+                    KS.pSpace.dy[i, j],
+                    1.0,
+                    0.0,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.fL),
+                )
             end
-            a1face[KS.pSpace.nx+1, j] =
-                Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
+            a1face[KS.pSpace.nx+1, j] = Interface2D1F(
+                KS.pSpace.dy[KS.pSpace.nx, j],
+                1.0,
+                0.0,
+                funcar(KS.ib.wL),
+                funcar(KS.ib.fL),
+            )
         end
         for i = 1:KS.pSpace.nx
             for j = 1:KS.pSpace.ny
-                a2face[i, j] =
-                    Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
+                a2face[i, j] = Interface2D1F(
+                    KS.pSpace.dx[i, j],
+                    0.0,
+                    1.0,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.fL),
+                )
             end
-            a2face[i, KS.pSpace.ny+1] =
-                Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.fL))
+            a2face[i, KS.pSpace.ny+1] = Interface2D1F(
+                KS.pSpace.dx[i, KS.pSpace.ny],
+                0.0,
+                1.0,
+                funcar(KS.ib.wL),
+                funcar(KS.ib.fL),
+            )
         end
 
     elseif KS.set.space[3:4] == "2f"
@@ -389,19 +422,39 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) wher
 
         for j = 1:KS.pSpace.ny
             for i = 1:KS.pSpace.nx
-                a1face[i, j] =
-                    Interface2D2F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
+                a1face[i, j] = Interface2D2F(
+                    KS.pSpace.dy[i, j],
+                    1.0,
+                    0.0,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.hL),
+                )
             end
-            a1face[KS.pSpace.nx+1, j] =
-                Interface2D2F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
+            a1face[KS.pSpace.nx+1, j] = Interface2D2F(
+                KS.pSpace.dy[KS.pSpace.nx, j],
+                1.0,
+                0.0,
+                funcar(KS.ib.wL),
+                funcar(KS.ib.hL),
+            )
         end
         for i = 1:KS.pSpace.nx
             for j = 1:KS.pSpace.ny
-                a2face[i, j] =
-                    Interface2D2F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
+                a2face[i, j] = Interface2D2F(
+                    KS.pSpace.dx[i, j],
+                    0.0,
+                    1.0,
+                    funcar(KS.ib.wL),
+                    funcar(KS.ib.hL),
+                )
             end
-            a2face[i, KS.pSpace.ny+1] =
-                Interface2D2F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, funcar(KS.ib.wL), funcar(KS.ib.hL))
+            a2face[i, KS.pSpace.ny+1] = Interface2D2F(
+                KS.pSpace.dx[i, KS.pSpace.ny],
+                0.0,
+                1.0,
+                funcar(KS.ib.wL),
+                funcar(KS.ib.hL),
+            )
         end
 
     end
@@ -409,12 +462,17 @@ function init_fvm(KS::T, ps::T1, array=:dynamic_array; structarray = false) wher
     return ctr |> funcst, a1face |> funcst, a2face |> funcst
 end
 
-function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray = false) where {T<:AbstractSolverSet}
+function init_fvm(
+    KS::T,
+    ps::UnstructPSpace,
+    array = :dynamic_array;
+    structarray = false,
+) where {T<:AbstractSolverSet}
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
     if KS.set.space[3:4] == "0f"
-        
+
         ctr = Array{KitBase.ControlVolumeUS}(undef, size(ps.cellid, 1))
         for i in eachindex(ctr)
             n = Vector{Float64}[]
@@ -435,23 +493,24 @@ function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray =
                 end
             end
 
-            dx = [
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 1], :],
-                    ps.points[ps.cellid[i, 2], :],
-                ),
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 2], :],
-                    ps.points[ps.cellid[i, 3], :],
-                ),
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 3], :],
-                    ps.points[ps.cellid[i, 1], :],
-                ),
-            ] |> funcar
+            dx =
+                [
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 1], :],
+                        ps.points[ps.cellid[i, 2], :],
+                    ),
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 2], :],
+                        ps.points[ps.cellid[i, 3], :],
+                    ),
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 3], :],
+                        ps.points[ps.cellid[i, 1], :],
+                    ),
+                ] |> funcar
 
             if ps.cellCenter[i, 1] <=
                minimum(ps.cellCenter[:, 1]) +
@@ -500,9 +559,9 @@ function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray =
 
             face[i] = KitBase.Interface2D(len, n[1], n[2], fw)
         end
-    
+
     elseif KS.set.space[3:4] == "1f"
-    
+
         ctr = Array{KitBase.ControlVolumeUS1F}(undef, size(ps.cellid, 1))
         for i in eachindex(ctr)
             n = Vector{Float64}[]
@@ -523,23 +582,24 @@ function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray =
                 end
             end
 
-            dx = [
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 1], :],
-                    ps.points[ps.cellid[i, 2], :],
-                ),
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 2], :],
-                    ps.points[ps.cellid[i, 3], :],
-                ),
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 3], :],
-                    ps.points[ps.cellid[i, 1], :],
-                ),
-            ] |> funcar
+            dx =
+                [
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 1], :],
+                        ps.points[ps.cellid[i, 2], :],
+                    ),
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 2], :],
+                        ps.points[ps.cellid[i, 3], :],
+                    ),
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 3], :],
+                        ps.points[ps.cellid[i, 1], :],
+                    ),
+                ] |> funcar
 
             if ps.cellCenter[i, 1] <=
                minimum(ps.cellCenter[:, 1]) +
@@ -591,7 +651,7 @@ function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray =
 
             face[i] = KitBase.Interface2D1F(len, n[1], n[2], funcar(fw), funcar(ff))
         end
-    
+
     elseif KS.set.space[3:4] == "2f"
 
         ctr = Array{KitBase.ControlVolumeUS2F}(undef, size(ps.cellid, 1))
@@ -614,23 +674,24 @@ function init_fvm(KS::T, ps::UnstructPSpace, array=:dynamic_array; structarray =
                 end
             end
 
-            dx = [
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 1], :],
-                    ps.points[ps.cellid[i, 2], :],
-                ),
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 2], :],
-                    ps.points[ps.cellid[i, 3], :],
-                ),
-                KitBase.point_distance(
-                    ps.cellCenter[i, :],
-                    ps.points[ps.cellid[i, 3], :],
-                    ps.points[ps.cellid[i, 1], :],
-                ),
-            ] |> funcar
+            dx =
+                [
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 1], :],
+                        ps.points[ps.cellid[i, 2], :],
+                    ),
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 2], :],
+                        ps.points[ps.cellid[i, 3], :],
+                    ),
+                    KitBase.point_distance(
+                        ps.cellCenter[i, :],
+                        ps.points[ps.cellid[i, 3], :],
+                        ps.points[ps.cellid[i, 1], :],
+                    ),
+                ] |> funcar
 
             if ps.cellCenter[i, 1] <=
                minimum(ps.cellCenter[:, 1]) +

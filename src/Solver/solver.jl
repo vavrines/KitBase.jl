@@ -4,7 +4,7 @@
 
 export SolverSet,
        set_setup,
-       set_geometry, 
+       set_geometry,
        set_velocity,
        set_property,
        set_ib,
