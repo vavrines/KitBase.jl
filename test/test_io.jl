@@ -10,4 +10,4 @@ KitBase.write_jld(ks, ctr)
 
 using KitBase.Plots
 a = plot(ks, ctr, legend=:none)
-b = plot_line(ks, ctr)
+#b = plot_line(ks, ctr)
