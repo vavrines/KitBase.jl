@@ -143,13 +143,10 @@ Plot solution profiles
 """
 function plot_line(
     KS::X,
-    ctr::Y;
-    backend = :plots::Symbol,
+    ctr::Y,
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
-
     pltx = KS.pSpace.x[1:KS.pSpace.nx]
     plty = zeros(KS.pSpace.nx, 6)
-
     for i in eachindex(pltx)
         for j = 1:2
             plty[i, j] = ctr[i].prim[j]
@@ -158,31 +155,52 @@ function plot_line(
         plty[i, 3] = 1.0 / ctr[i].prim[end]
     end
 
-    if backend == :plots
-        p1 = plot(pltx, plty[:, 1], label = "Density", lw = 2, xlabel = "x")
-        p1 = plot!(pltx, plty[:, 2], label = "Velocity", lw = 2)
-        p1 = plot!(pltx, plty[:, 3], label = "Temperature", lw = 2)
-        display(p1)
-    elseif backend == :gr
-        xlabel("x")
-        ylabel("Density")
-        legend("n")
-        p1 = plot(pltx, plty[:, 1])
-        display(p1)
-        xlabel("x")
-        ylabel("Velocity")
-        legend("U")
-        p2 = plot(pltx, plty[:, 2])
-        display(p2)
-        xlabel("x")
-        ylabel("Temperature")
-        legend("T")
-        p3 = plot(pltx, plty[:, 3])
-        display(p3)
-    else
-        throw("undefined plotting backend")
+    p1 = plot(pltx, plty[:, 1], label = "density", lw = 1.5, xlabel = "x")
+    p1 = plot!(pltx, plty[:, 2], label = "velocity", lw = 1.5)
+    p1 = plot!(pltx, plty[:, 3], label = "temperature", lw = 1.5)
+    display(p1)
+
+    return nothing
+end
+
+
+@recipe function plot_line(
+    KS::X,
+    ctr::Y,
+) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
+    
+    # solution
+    pltx = KS.pSpace.x[1:KS.pSpace.nx]
+    plty = zeros(KS.pSpace.nx, 3)
+    for i in eachindex(pltx)
+        for j = 1:2
+            plty[i, j] = ctr[i].prim[j]
+        end
+
+        plty[i, 3] = 1.0 / ctr[i].prim[end]
     end
 
+    # attributes
+    xguide --> "x"
+    :linewidth --> 1.5
+
+    @series begin
+        label := "ρ"
+        pltx, plty[:, 1]
+    end
+    @series begin
+        label := "u"
+        pltx, plty[:, 2]
+    end
+    @series begin
+        label := "T"
+        pltx, plty[:, 3]
+    end
+
+    # user-defined
+    c = get(plotattributes, :linewidth, :auto)
+
+    nothing
 end
 
 
