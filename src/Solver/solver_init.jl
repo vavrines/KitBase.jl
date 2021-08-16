@@ -269,12 +269,20 @@ function init_fvm(
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
+    nx, ny = begin
+        if ps isa CSpace2D
+            ps.nr, ps.nθ
+        else
+            ps.nx, ps.ny
+        end
+    end
+
     if KS.set.space[3:4] == "0f"
 
         ctr =
             OffsetArray{ControlVolume2D}(undef, axes(KS.pSpace.x, 1), axes(KS.pSpace.y, 2))
-        a1face = Array{Interface2D}(undef, KS.pSpace.nx + 1, KS.pSpace.ny)
-        a2face = Array{Interface2D}(undef, KS.pSpace.nx, KS.pSpace.ny + 1)
+        a1face = Array{Interface2D}(undef, nx + 1, ny)
+        a2face = Array{Interface2D}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
             if i <= KS.pSpace.nx ÷ 2
@@ -298,19 +306,19 @@ function init_fvm(
             end
         end
 
-        for j = 1:KS.pSpace.ny
-            for i = 1:KS.pSpace.nx
+        for j = 1:ny
+            for i = 1:nx
                 a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL))
             end
-            a1face[KS.pSpace.nx+1, j] =
-                Interface2D1F(KS.pSpace.dy[KS.pSpace.nx, j], 1.0, 0.0, funcar(KS.ib.wL))
+            a1face[nx+1, j] =
+                Interface2D1F(KS.pSpace.dy[nx, j], 1.0, 0.0, funcar(KS.ib.wL))
         end
-        for i = 1:KS.pSpace.nx
-            for j = 1:KS.pSpace.ny
+        for i = 1:nx
+            for j = 1:ny
                 a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL))
             end
-            a2face[i, KS.pSpace.ny+1] =
-                Interface2D1F(KS.pSpace.dx[i, KS.pSpace.ny], 0.0, 1.0, funcar(KS.ib.wL))
+            a2face[i, ny+1] =
+                Interface2D1F(KS.pSpace.dx[i, ny], 0.0, 1.0, funcar(KS.ib.wL))
         end
 
     elseif KS.set.space[3:4] == "1f"
@@ -320,11 +328,11 @@ function init_fvm(
             axes(KS.pSpace.x, 1),
             axes(KS.pSpace.y, 2),
         )
-        a1face = Array{Interface2D1F}(undef, KS.pSpace.nx + 1, KS.pSpace.ny)
-        a2face = Array{Interface2D1F}(undef, KS.pSpace.nx, KS.pSpace.ny + 1)
+        a1face = Array{Interface2D1F}(undef, nx + 1, ny)
+        a2face = Array{Interface2D1F}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
-            if i <= KS.pSpace.nx ÷ 2
+            if i <= nx ÷ 2
                 ctr[i, j] = ControlVolume2D1F(
                     KS.pSpace.x[i, j],
                     KS.pSpace.y[i, j],
@@ -347,8 +355,8 @@ function init_fvm(
             end
         end
 
-        for j = 1:KS.pSpace.ny
-            for i = 1:KS.pSpace.nx
+        for j = 1:ny
+            for i = 1:nx
                 a1face[i, j] = Interface2D1F(
                     KS.pSpace.dy[i, j],
                     1.0,
@@ -357,16 +365,16 @@ function init_fvm(
                     funcar(KS.ib.fL),
                 )
             end
-            a1face[KS.pSpace.nx+1, j] = Interface2D1F(
-                KS.pSpace.dy[KS.pSpace.nx, j],
+            a1face[nx+1, j] = Interface2D1F(
+                KS.pSpace.dy[nx, j],
                 1.0,
                 0.0,
                 funcar(KS.ib.wL),
                 funcar(KS.ib.fL),
             )
         end
-        for i = 1:KS.pSpace.nx
-            for j = 1:KS.pSpace.ny
+        for i = 1:nx
+            for j = 1:ny
                 a2face[i, j] = Interface2D1F(
                     KS.pSpace.dx[i, j],
                     0.0,
@@ -375,8 +383,8 @@ function init_fvm(
                     funcar(KS.ib.fL),
                 )
             end
-            a2face[i, KS.pSpace.ny+1] = Interface2D1F(
-                KS.pSpace.dx[i, KS.pSpace.ny],
+            a2face[i, ny+1] = Interface2D1F(
+                KS.pSpace.dx[i, ny],
                 0.0,
                 1.0,
                 funcar(KS.ib.wL),
@@ -391,11 +399,11 @@ function init_fvm(
             axes(KS.pSpace.x, 1),
             axes(KS.pSpace.y, 2),
         )
-        a1face = Array{Interface2D2F}(undef, KS.pSpace.nx + 1, KS.pSpace.ny)
-        a2face = Array{Interface2D2F}(undef, KS.pSpace.nx, KS.pSpace.ny + 1)
+        a1face = Array{Interface2D2F}(undef, nx + 1, ny)
+        a2face = Array{Interface2D2F}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
-            if i <= KS.pSpace.nx ÷ 2
+            if i <= nx ÷ 2
                 ctr[i, j] = ControlVolume2D2F(
                     KS.pSpace.x[i, j],
                     KS.pSpace.y[i, j],
@@ -420,8 +428,8 @@ function init_fvm(
             end
         end
 
-        for j = 1:KS.pSpace.ny
-            for i = 1:KS.pSpace.nx
+        for j = 1:ny
+            for i = 1:nx
                 a1face[i, j] = Interface2D2F(
                     KS.pSpace.dy[i, j],
                     1.0,
@@ -430,16 +438,16 @@ function init_fvm(
                     funcar(KS.ib.hL),
                 )
             end
-            a1face[KS.pSpace.nx+1, j] = Interface2D2F(
-                KS.pSpace.dy[KS.pSpace.nx, j],
+            a1face[nx+1, j] = Interface2D2F(
+                KS.pSpace.dy[nx, j],
                 1.0,
                 0.0,
                 funcar(KS.ib.wL),
                 funcar(KS.ib.hL),
             )
         end
-        for i = 1:KS.pSpace.nx
-            for j = 1:KS.pSpace.ny
+        for i = 1:nx
+            for j = 1:ny
                 a2face[i, j] = Interface2D2F(
                     KS.pSpace.dx[i, j],
                     0.0,
@@ -448,7 +456,7 @@ function init_fvm(
                     funcar(KS.ib.hL),
                 )
             end
-            a2face[i, KS.pSpace.ny+1] = Interface2D2F(
+            a2face[i, ny+1] = Interface2D2F(
                 KS.pSpace.dx[i, KS.pSpace.ny],
                 0.0,
                 1.0,
