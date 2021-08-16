@@ -596,6 +596,7 @@ function step!(
     cell::ControlVolume1D4F,
     faceR::Interface1D4F,
     dt,
+    dx,
     RES,
     AVG,
     collision = :bgk::Symbol,
@@ -608,7 +609,7 @@ function step!(
     prim_old = deepcopy(cell.prim)
 
     # flux -> w^{n+1}
-    @. cell.w += (faceL.fw - faceR.fw) / cell.dx
+    @. cell.w += (faceL.fw - faceR.fw) / dx
     cell.prim .= mixture_conserve_prim(cell.w, KS.gas.γ)
 
     # temperature protection
@@ -669,14 +670,14 @@ function step!(
 
     #--- update electromagnetic variables ---#
     # flux -> E^{n+1} & B^{n+1}
-    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / cell.dx
-    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / cell.dx
-    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / cell.dx
-    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / cell.dx
-    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / cell.dx
-    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / cell.dx
-    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / cell.dx
-    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / cell.dx
+    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / dx
+    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / dx
+    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / dx
+    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / dx
+    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / dx
+    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / dx
+    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / dx
+    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / dx
 
     for i = 1:3
         if 1 ∈ vcat(isnan.(cell.E), isnan.(cell.B))
@@ -746,10 +747,10 @@ function step!(
 
     #--- update particle distribution function ---#
     # flux -> f^{n+1}
-    @. cell.h0 += (faceL.fh0 - faceR.fh0) / cell.dx
-    @. cell.h1 += (faceL.fh1 - faceR.fh1) / cell.dx
-    @. cell.h2 += (faceL.fh2 - faceR.fh2) / cell.dx
-    @. cell.h3 += (faceL.fh3 - faceR.fh3) / cell.dx
+    @. cell.h0 += (faceL.fh0 - faceR.fh0) / dx
+    @. cell.h1 += (faceL.fh1 - faceR.fh1) / dx
+    @. cell.h2 += (faceL.fh2 - faceR.fh2) / dx
+    @. cell.h3 += (faceL.fh3 - faceR.fh3) / dx
 
     # force -> f^{n+1} : step 1
     for j in axes(cell.h0, 2)
@@ -839,7 +840,7 @@ function step!(
     prim_old = deepcopy(cell.prim)
 
     # flux -> w^{n+1}
-    @. cell.w += (faceL.fw - faceR.fw) / cell.dx
+    @. cell.w += (faceL.fw - faceR.fw) / dx
     cell.prim .= mixture_conserve_prim(cell.w, KS.gas.γ)
 
     # temperature protection
@@ -900,14 +901,14 @@ function step!(
 
     #--- update electromagnetic variables ---#
     # flux -> E^{n+1} & B^{n+1}
-    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / cell.dx
-    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / cell.dx
-    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / cell.dx
-    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / cell.dx
-    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / cell.dx
-    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / cell.dx
-    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / cell.dx
-    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / cell.dx
+    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / dx
+    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / dx
+    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / dx
+    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / dx
+    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / dx
+    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / dx
+    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / dx
+    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / dx
 
     for i = 1:3
         if 1 ∈ vcat(isnan.(cell.E), isnan.(cell.B))
@@ -977,9 +978,9 @@ function step!(
 
     #--- update particle distribution function ---#
     # flux -> f^{n+1}
-    @. cell.h0 += (faceL.fh0 - faceR.fh0) / cell.dx
-    @. cell.h1 += (faceL.fh1 - faceR.fh1) / cell.dx
-    @. cell.h2 += (faceL.fh2 - faceR.fh2) / cell.dx
+    @. cell.h0 += (faceL.fh0 - faceR.fh0) / dx
+    @. cell.h1 += (faceL.fh1 - faceR.fh1) / dx
+    @. cell.h2 += (faceL.fh2 - faceR.fh2) / dx
 
     # force -> f^{n+1} : step 1
     for j in axes(cell.h0, 3) # component

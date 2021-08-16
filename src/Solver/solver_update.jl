@@ -99,7 +99,7 @@ function update!(
             ctr[i].prim,
             face[i+1].fw,
             KS.gas.a,
-            ctr[i].dx,
+            KS.ps.dx[i],
             sumRes,
             sumAvg,
         )
@@ -147,7 +147,7 @@ function update!(
                 ctr[i].prim,
                 face[i+1].fw,
                 KS.gas.γ,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 sumRes,
                 sumAvg,
             )
@@ -165,7 +165,7 @@ function update!(
                 KS.gas.me,
                 KS.gas.ne,
                 KS.gas.Kn[1],
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -217,7 +217,7 @@ function update!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -242,7 +242,7 @@ function update!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -298,7 +298,7 @@ function update!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -328,7 +328,7 @@ function update!(
                 KS.gas.ne,
                 KS.gas.Kn[1],
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -366,7 +366,7 @@ function update!(
     sumAvg = zeros(axes(KS.ib.wL))
 
     @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
-        step!(KS, face[i], ctr[i], face[i+1], dt, sumRes, sumAvg, coll, isMHD)
+        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -473,7 +473,7 @@ function update!(
     sumAvg = zeros(axes(KS.ib.wL))
 
     @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
-        step!(KS, face[i], ctr[i], face[i+1], dt, sumRes, sumAvg, coll, isMHD)
+        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)

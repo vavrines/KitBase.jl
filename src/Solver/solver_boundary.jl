@@ -58,7 +58,7 @@ function update_boundary!(
                 ctr[i].prim,
                 face[i+1].fw,
                 KS.gas.γ,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 resL,
                 avgL,
             )
@@ -68,7 +68,7 @@ function update_boundary!(
                 ctr[j].prim,
                 face[j+1].fw,
                 KS.gas.γ,
-                ctr[j].dx,
+                KS.ps.dx[j],
                 resR,
                 avgR,
             )
@@ -84,7 +84,7 @@ function update_boundary!(
                 KS.gas.me,
                 KS.gas.ne,
                 KS.gas.Kn[1],
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 resL,
                 avgL,
@@ -100,7 +100,7 @@ function update_boundary!(
                 KS.gas.me,
                 KS.gas.ne,
                 KS.gas.Kn[1],
-                ctr[j].dx,
+                KS.ps.dx[j],
                 dt,
                 resR,
                 avgR,
@@ -173,7 +173,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 resL,
                 avgL,
@@ -193,7 +193,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[j].dx,
+                KS.ps.dx[j],
                 dt,
                 resR,
                 avgR,
@@ -216,7 +216,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 resL,
                 avgL,
@@ -238,7 +238,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[j].dx,
+                KS.ps.dx[j],
                 dt,
                 resL,
                 avgL,
@@ -324,7 +324,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 resL,
                 avgL,
@@ -348,7 +348,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[j].dx,
+                KS.ps.dx[j],
                 dt,
                 resL,
                 avgL,
@@ -376,7 +376,7 @@ function update_boundary!(
                 KS.gas.ne,
                 KS.gas.Kn[1],
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 resL,
                 avgL,
@@ -403,7 +403,7 @@ function update_boundary!(
                 KS.gas.ne,
                 KS.gas.Kn[1],
                 KS.gas.Pr,
-                ctr[j].dx,
+                KS.ps.dx[j],
                 dt,
                 resL,
                 avgL,
@@ -480,8 +480,8 @@ function update_boundary!(
         i = 1
         j = KS.pSpace.nx
 
-        step!(KS, face[i], ctr[i], face[i+1], dt, resL, avgL, coll, isMHD)
-        step!(KS, face[j], ctr[j], face[j+1], dt, resR, avgR, coll, isMHD)
+        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
+        step!(KS, face[j], ctr[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -592,8 +592,8 @@ function update_boundary!(
         i = 1
         j = KS.pSpace.nx
 
-        step!(KS, face[i], ctr[i], face[i+1], dt, resL, avgL, coll, isMHD)
-        step!(KS, face[j], ctr[j], face[j+1], dt, resR, avgR, coll, isMHD)
+        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
+        step!(KS, face[j], ctr[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
     for i in eachindex(residual)

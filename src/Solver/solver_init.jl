@@ -85,15 +85,11 @@ function init_fvm(
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
                 ctr[i] = ControlVolume1D(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                 )
             else
                 ctr[i] = ControlVolume1D(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                 )
@@ -113,16 +109,12 @@ function init_fvm(
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
                 ctr[i] = ControlVolume1D1F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                     funcar(KS.ib.fL),
                 )
             else
                 ctr[i] = ControlVolume1D1F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                     funcar(KS.ib.fR),
@@ -144,8 +136,6 @@ function init_fvm(
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
                 ctr[i] = ControlVolume1D2F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                     funcar(KS.ib.hL),
@@ -153,8 +143,6 @@ function init_fvm(
                 )
             else
                 ctr[i] = ControlVolume1D2F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                     funcar(KS.ib.hR),
@@ -177,8 +165,6 @@ function init_fvm(
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
                 ctr[i] = ControlVolume1D3F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                     funcar(KS.ib.h0L),
@@ -190,8 +176,6 @@ function init_fvm(
                 )
             else
                 ctr[i] = ControlVolume1D3F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                     funcar(KS.ib.h0R),
@@ -219,8 +203,6 @@ function init_fvm(
         for i in eachindex(ctr)
             if i <= KS.pSpace.nx ÷ 2
                 ctr[i] = ControlVolume1D4F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                     funcar(KS.ib.h0L),
@@ -233,8 +215,6 @@ function init_fvm(
                 )
             else
                 ctr[i] = ControlVolume1D4F(
-                    KS.pSpace.x[i],
-                    KS.pSpace.dx[i],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                     funcar(KS.ib.h0R),
