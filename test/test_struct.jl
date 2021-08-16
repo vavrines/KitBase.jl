@@ -139,12 +139,10 @@ KitBase.IB4F(
 ) |> show
 
 #--- control volume ---#
-KitBase.ControlVolume1D(x, dx, w, prim) |> show
-KitBase.ControlVolume1D1F(x, dx, w, prim, h) |> show
-KitBase.ControlVolume1D2F(x, dx, w, prim, h, b) |> show
+KitBase.ControlVolume1D(w, prim) |> show
+KitBase.ControlVolume1D1F(w, prim, h) |> show
+KitBase.ControlVolume1D2F(w, prim, h, b) |> show
 KitBase.ControlVolume1D3F(
-    x,
-    dx,
     hcat(w, w),
     hcat(prim, prim),
     zeros(nu, nu, 2),
@@ -155,8 +153,6 @@ KitBase.ControlVolume1D3F(
     zeros(3, 2),
 ) |> show
 KitBase.ControlVolume1D3F(
-    x,
-    dx,
     zeros(5, 7, 2), # indexed with [flow entry, uq, species]
     zeros(5, 7, 2),
     zeros(nu, nu, 7, 2),
@@ -167,10 +163,8 @@ KitBase.ControlVolume1D3F(
     zeros(3, 7, 2),
 ) |> show
 # Rykov
-KitBase.ControlVolume1D3F(x, dx, rand(4), rand(5), rand(nu), rand(nu), rand(nu)) |> show
+KitBase.ControlVolume1D3F(rand(4), rand(5), rand(nu), rand(nu), rand(nu)) |> show
 KitBase.ControlVolume1D4F(
-    x,
-    dx,
     hcat(w, w),
     hcat(prim, prim),
     hcat(h, h),
@@ -182,8 +176,6 @@ KitBase.ControlVolume1D4F(
     zeros(3, 2),
 ) |> show
 KitBase.ControlVolume1D4F(
-    x,
-    dx,
     zeros(5, 7, 2), # indexed with [flow entry, uq, species]
     zeros(5, 7, 2),
     zeros(nu, 7, 2),
