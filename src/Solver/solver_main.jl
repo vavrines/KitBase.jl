@@ -171,7 +171,7 @@ function timestep(
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             prim = ctr[i].prim
             vmax = abs(ctr[i].prim[2])
-            tmax = max(tmax, vmax / ctr[i].dx)
+            tmax = max(tmax, vmax / KS.ps.dx[i])
         end
 
     elseif KS.set.nSpecies == 1
@@ -186,7 +186,7 @@ function timestep(
                     max(KS.vSpace.u1, abs(prim[2])) + sos
                 end
             end
-            tmax = max(tmax, vmax / ctr[i].dx)
+            tmax = max(tmax, vmax / KS.ps.dx[i])
         end
 
     elseif KS.set.nSpecies == 2
@@ -203,9 +203,9 @@ function timestep(
             end
 
             if KS.set.space[3:4] in ["3f", "4f"]
-                tmax = max(tmax, vmax / ctr[i].dx, KS.gas.sol / ctr[i].dx)
+                tmax = max(tmax, vmax / KS.ps.dx[i], KS.gas.sol / KS.ps.dx[i])
             else
-                tmax = max(tmax, vmax / ctr[i].dx)
+                tmax = max(tmax, vmax / KS.ps.dx[i])
             end
         end
 

@@ -783,7 +783,7 @@ function init_ptc_aos!(
 
     np = 0
     for i in eachindex(ctr)
-        np += Int(round(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        np += Int(round(ctr[i].w[1] * KS.ps.dx[i] / KS.gas.m))
     end
     KS.gas.np = np
     np *= round(factor) |> Int
@@ -803,10 +803,10 @@ function init_ptc_aos!(
 
     np_tmp = 0
     for i in eachindex(ctr)
-        npl = Int(round(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        npl = Int(round(ctr[i].w[1] * KS.ps.dx[i] / KS.gas.m))
         for j = 1:npl
             np_tmp += 1
-            sample_particle!(ptc[np_tmp], KS, ctr[i], i)
+            sample_particle!(ptc[np_tmp], KS, ctr[i], i, KS.ps.x[i], KS.ps.dx[i])
         end
     end
 
@@ -833,7 +833,7 @@ function init_ptc_soa!(
 
     np = 0
     for i in eachindex(ctr)
-        np += round(ctr[i].prim[1] * ctr[i].dx / KS.gas.m) |> Int
+        np += round(ctr[i].prim[1] * KS.ps.dx[i] / KS.gas.m) |> Int
     end
     KS.gas.np = np
     np *= round(factor) |> Int
@@ -850,12 +850,12 @@ function init_ptc_soa!(
 
     # in-cell particles
     for i in eachindex(ctr)
-        npl = Int(round(ctr[i].w[1] * ctr[i].dx / KS.gas.m))
+        npl = Int(round(ctr[i].w[1] * KS.ps.dx[i] / KS.gas.m))
         for j = 1:npl
             np_tmp += 1
 
             m[np_tmp] = KS.gas.m
-            x[np_tmp] = ctr[i].x + (rand() - 0.5) * ctr[i].dx
+            x[np_tmp] = KS.ps.x[i] + (rand() - 0.5) * KS.ps.dx[i]
             v[np_tmp, :] .= sample_maxwell(ctr[i].prim)
             e[np_tmp] = 0.5 / ctr[i].prim[end]
             idx[np_tmp] = i

@@ -23,8 +23,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
                 ctr[i-1].w,
                 ctr[i].w,
                 ctr[i+1].w,
-                0.5 * (ctr[i-1].dx + ctr[i].dx),
-                0.5 * (ctr[i].dx + ctr[i+1].dx),
+                0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+                0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
                 Symbol(KS.set.limiter),
             )
         end
@@ -35,8 +35,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
                 ctr[i-1].w,
                 ctr[i].w,
                 ctr[i+1].w,
-                0.5 * (ctr[i-1].dx + ctr[i].dx),
-                0.5 * (ctr[i].dx + ctr[i+1].dx),
+                0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+                0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
                 Symbol(KS.set.limiter),
             )
         end
@@ -58,8 +58,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].w,
             ctr[i].w,
             ctr[i+1].w,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
@@ -70,8 +70,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].f,
             ctr[i].f,
             ctr[i+1].f,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
@@ -90,8 +90,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].w,
             ctr[i].w,
             ctr[i+1].w,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
@@ -102,8 +102,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h,
             ctr[i].h,
             ctr[i+1].h,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
         reconstruct3!(
@@ -111,8 +111,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].b,
             ctr[i].b,
             ctr[i+1].b,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
@@ -131,8 +131,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].w,
             ctr[i].w,
             ctr[i+1].w,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
@@ -143,8 +143,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h0,
             ctr[i].h0,
             ctr[i+1].h0,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
         reconstruct3!(
@@ -152,8 +152,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h1,
             ctr[i].h1,
             ctr[i+1].h1,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
         reconstruct3!(
@@ -161,8 +161,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h2,
             ctr[i].h2,
             ctr[i+1].h2,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
@@ -181,8 +181,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].w,
             ctr[i].w,
             ctr[i+1].w,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
@@ -193,8 +193,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h0,
             ctr[i].h0,
             ctr[i+1].h0,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
         reconstruct3!(
@@ -202,8 +202,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h1,
             ctr[i].h1,
             ctr[i+1].h1,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
         reconstruct3!(
@@ -211,8 +211,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h2,
             ctr[i].h2,
             ctr[i+1].h2,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
         reconstruct3!(
@@ -220,8 +220,8 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
             ctr[i-1].h3,
             ctr[i].h3,
             ctr[i+1].h3,
-            0.5 * (ctr[i-1].dx + ctr[i].dx),
-            0.5 * (ctr[i].dx + ctr[i+1].dx),
+            0.5 * (KS.ps.dx[i-1] + KS.ps.dx[i]),
+            0.5 * (KS.ps.dx[i] + KS.ps.dx[i+1]),
             Symbol(KS.set.limiter),
         )
     end
