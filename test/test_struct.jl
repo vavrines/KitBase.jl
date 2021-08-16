@@ -186,14 +186,10 @@ KitBase.ControlVolume1D4F(
     zeros(3, 7),
     zeros(3, 7, 2),
 ) |> show
-KitBase.ControlVolume2D(x, dx, x, dx, w, prim) |> show
-KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h) |> show
-KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b) |> show
+KitBase.ControlVolume2D(w, prim) |> show
+KitBase.ControlVolume2D1F(w, prim, h) |> show
+KitBase.ControlVolume2D2F(w, prim, h, b) |> show
 KitBase.ControlVolume2D3F(
-    x,
-    dx,
-    x,
-    dx,
     w,
     prim,
     h,
@@ -205,10 +201,6 @@ KitBase.ControlVolume2D3F(
 ) |> show
 # Rykov
 KitBase.ControlVolume2D3F(
-    x,
-    dx,
-    x,
-    dx,
     rand(4),
     rand(4),
     rand(8, 8),

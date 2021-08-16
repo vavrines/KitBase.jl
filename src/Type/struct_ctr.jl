@@ -550,12 +550,7 @@ end
 # ------------------------------------------------------------
 
 """
-    mutable struct ControlVolume2D{F,A,B} <: AbstractControlVolume2D
-        x::F
-        y::F
-        dx::F
-        dy::F
-
+    mutable struct ControlVolume2D{A,B} <: AbstractControlVolume2D
         w::A
         prim::A
         sw::B
@@ -564,37 +559,25 @@ end
 2D control volume with no distribution function
 
 """
-mutable struct ControlVolume2D{F,A,B} <: AbstractControlVolume2D
-    x::F
-    y::F
-    dx::F
-    dy::F
-
+mutable struct ControlVolume2D{A,B} <: AbstractControlVolume2D
     w::A
     prim::A
     sw::B
 end
 
-function ControlVolume2D(X::Real, DX::Real, Y::Real, DY::Real, W, PRIM)
-    x = deepcopy(X)
-    dx = deepcopy(DX)
-    y = deepcopy(Y)
-    dy = deepcopy(DY)
-
+function ControlVolume2D(W, PRIM)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
     sw = slope_array(W)
 
-    return ControlVolume2D{typeof(x),typeof(w),typeof(sw)}(x, dx, y, dy, w, prim, sw)
+    return ControlVolume2D{typeof(w),typeof(sw)}(w, prim, sw)
 end
 
-function Base.show(io::IO, ctr::ControlVolume2D{F,A,B}) where {F,A,B}
+function Base.show(io::IO, ctr::ControlVolume2D{A,B}) where {A,B}
     print(
         io,
-        "ControlVolume2D{$F,$A,$B}\n",
-        "center: ($(ctr.x),$(ctr.y))\n",
-        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "ControlVolume2D{$A,$B}\n",
         "conservative vars: $(ctr.w)\n",
         "primitive vars: $(ctr.prim)\n",
         "conservative slopes: $(ctr.sw)\n",
@@ -603,12 +586,7 @@ end
 
 
 """
-    mutable struct ControlVolume2D1F{F,A,B,C,D} <: AbstractControlVolume2D
-        x::F
-        y::F
-        dx::F
-        dy::F
-
+    mutable struct ControlVolume2D1F{A,B,C,D} <: AbstractControlVolume2D
         w::A
         prim::A
         sw::B
@@ -620,12 +598,7 @@ end
 2D control volume with 1 distribution function
 
 """
-mutable struct ControlVolume2D1F{F,A,B,C,D} <: AbstractControlVolume2D
-    x::F
-    y::F
-    dx::F
-    dy::F
-
+mutable struct ControlVolume2D1F{A,B,C,D} <: AbstractControlVolume2D
     w::A
     prim::A
     sw::B
@@ -634,13 +607,7 @@ mutable struct ControlVolume2D1F{F,A,B,C,D} <: AbstractControlVolume2D
     sf::D
 end
 
-function ControlVolume2D1F(X::Real, DX::Real, Y::Real, DY::Real, W, PRIM, F::AbstractArray)
-
-    x = deepcopy(X)
-    dx = deepcopy(DX)
-    y = deepcopy(Y)
-    dy = deepcopy(DY)
-
+function ControlVolume2D1F(W, PRIM, F::AbstractArray)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
@@ -650,26 +617,19 @@ function ControlVolume2D1F(X::Real, DX::Real, Y::Real, DY::Real, W, PRIM, F::Abs
     #sf = zeros(eltype(F), (axes(F)..., Base.OneTo(2)))
     sf = slope_array(F)
 
-    return ControlVolume2D1F{typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(
-        x,
-        dx,
-        y,
-        dy,
+    return ControlVolume2D1F{typeof(w),typeof(sw),typeof(f),typeof(sf)}(
         w,
         prim,
         sw,
         f,
         sf,
     )
-
 end
 
-function Base.show(io::IO, ctr::ControlVolume2D1F{F,A,B,C,D}) where {F,A,B,C,D}
+function Base.show(io::IO, ctr::ControlVolume2D1F{A,B,C,D}) where {A,B,C,D}
     print(
         io,
-        "ControlVolume2D1F{$F,$A,$B,$C,$D}\n",
-        "center: ($(ctr.x),$(ctr.y))\n",
-        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "ControlVolume2D1F{$A,$B,$C,$D}\n",
         "conservative vars: $(ctr.w)\n",
         "primitive vars: $(ctr.prim)\n",
         "conservative slopes: $(ctr.sw)\n",
@@ -680,12 +640,7 @@ end
 
 
 """
-    mutable struct ControlVolume2D2F{F,A,B,C,D} <: AbstractControlVolume2D
-        x::F
-        y::F
-        dx::F
-        dy::F
-
+    mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
         w::A
         prim::A
         sw::B
@@ -699,12 +654,7 @@ end
 2D control volume with 2 distribution functions
 
 """
-mutable struct ControlVolume2D2F{F,A,B,C,D} <: AbstractControlVolume2D
-    x::F
-    y::F
-    dx::F
-    dy::F
-
+mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
     w::A
     prim::A
     sw::B
@@ -716,21 +666,11 @@ mutable struct ControlVolume2D2F{F,A,B,C,D} <: AbstractControlVolume2D
 end
 
 function ControlVolume2D2F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
     W::AbstractArray,
     PRIM::AbstractArray,
     H::AbstractArray,
     B::AbstractArray,
 )
-
-    x = deepcopy(X)
-    dx = deepcopy(DX)
-    y = deepcopy(Y)
-    dy = deepcopy(DY)
-
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
@@ -743,11 +683,7 @@ function ControlVolume2D2F(
     sh = slope_array(H)
     sb = slope_array(B)
 
-    return ControlVolume2D2F{typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(
-        x,
-        dx,
-        y,
-        dy,
+    return ControlVolume2D2F{typeof(w),typeof(sw),typeof(h),typeof(sh)}(
         w,
         prim,
         sw,
@@ -756,15 +692,12 @@ function ControlVolume2D2F(
         sh,
         sb,
     )
-
 end
 
-function Base.show(io::IO, ctr::ControlVolume2D2F{F,A,B,C,D}) where {F,A,B,C,D}
+function Base.show(io::IO, ctr::ControlVolume2D2F{A,B,C,D}) where {A,B,C,D}
     print(
         io,
-        "ControlVolume2D2F{$F,$A,$B,$C,$D}\n",
-        "center: ($(ctr.x),$(ctr.y))\n",
-        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "ControlVolume2D2F{$A,$B,$C,$D}\n",
         "conservative vars: $(ctr.w)\n",
         "primitive vars: $(ctr.prim)\n",
         "conservative slopes: $(ctr.sw)\n",
@@ -775,12 +708,7 @@ end
 
 
 """
-    mutable struct ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
-        x::T1
-        y::T1
-        dx::T1
-        dy::T1
-
+    mutable struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
         w::T2
         prim::T2
         sw::T3
@@ -802,12 +730,7 @@ end
 2D control volume with 3 distribution functions
 
 """
-mutable struct ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
-    x::T1
-    y::T1
-    dx::T1
-    dy::T1
-
+mutable struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
     w::T2
     prim::T2
     sw::T3
@@ -828,10 +751,6 @@ end
 
 #--- deterministic & stochastic ---#
 function ControlVolume2D3F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
     W::AbstractArray,
     PRIM::AbstractArray,
     H0::AbstractArray,
@@ -841,11 +760,6 @@ function ControlVolume2D3F(
     B0::AbstractArray,
     L::AbstractArray,
 )
-    x = deepcopy(X)
-    dx = deepcopy(DX)
-    y = deepcopy(Y)
-    dy = deepcopy(DY)
-
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
@@ -868,7 +782,6 @@ function ControlVolume2D3F(
     lorenz = deepcopy(L)
 
     return ControlVolume2D3F{
-        typeof(x),
         typeof(w),
         typeof(sw),
         typeof(h0),
@@ -877,10 +790,6 @@ function ControlVolume2D3F(
         typeof(ϕ),
         typeof(lorenz),
     }(
-        x,
-        dx,
-        y,
-        dy,
         w,
         prim,
         sw,
@@ -900,21 +809,12 @@ end
 
 #--- Rykov ---#
 function ControlVolume2D3F(
-    X::Real,
-    DX::Real,
-    Y::Real,
-    DY::Real,
     W::AbstractArray{<:Real,1},
     PRIM::AbstractArray{<:Real,1},
     H0::AbstractArray{<:AbstractFloat,2},
     H1::AbstractArray{<:AbstractFloat,2},
     H2::AbstractArray{<:AbstractFloat,2},
 )
-    x = deepcopy(X)
-    dx = deepcopy(DX)
-    y = deepcopy(Y)
-    dy = deepcopy(DY)
-
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
@@ -937,7 +837,6 @@ function ControlVolume2D3F(
     lorenz = nothing
 
     return ControlVolume2D3F{
-        typeof(x),
         typeof(w),
         typeof(sw),
         typeof(h0),
@@ -946,10 +845,6 @@ function ControlVolume2D3F(
         typeof(ϕ),
         typeof(lorenz),
     }(
-        x,
-        dx,
-        y,
-        dy,
         w,
         prim,
         sw,
@@ -969,13 +864,11 @@ end
 
 function Base.show(
     io::IO,
-    ctr::ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7,T8},
-) where {T1,T2,T3,T4,T5,T6,T7,T8}
+    ctr::ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7},
+) where {T1,T2,T3,T4,T5,T6,T7}
     print(
         io,
-        "ControlVolume2D3F{$T1,$T2,$T3,$T4,$T5,$T6,$T7,$T8}\n",
-        "center: ($(ctr.x),$(ctr.y))\n",
-        "interval: ($(ctr.dx),$(ctr.dy))\n",
+        "ControlVolume2D3F{$T1,$T2,$T3,$T4,$T5,$T6,$T7}\n",
         "conservative vars: $(ctr.w)\n",
         "primitive vars: $(ctr.prim)\n",
         "conservative slopes: $(ctr.sw)\n",

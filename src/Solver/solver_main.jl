@@ -242,7 +242,7 @@ function timestep(
                     abs(prim[3]) + sos,
                     max(KS.vSpace.v1, abs(prim[3])) + sos,
                 )
-                tmax = max(tmax, umax / ctr[i, j].dx + vmax / ctr[i, j].dy)
+                tmax = max(tmax, umax / KS.ps.dx[i, j] + vmax / KS.ps.dy[i, j])
             end
         end
 
@@ -258,11 +258,11 @@ function timestep(
                 if KS.set.space[3:4] in ["3f", "4f"]
                     tmax = max(
                         tmax,
-                        umax / ctr[i, j].dx + vmax / ctr[i, j].dy,
-                        KS.gas.sol / ctr[i, j].dx + KS.gas.sol / ctr[i, j].dy,
+                        umax / KS.ps.dx[i, j] + vmax / KS.ps.dy[i, j],
+                        KS.gas.sol / KS.ps.dx[i, j] + KS.gas.sol / KS.ps.dy[i, j],
                     )
                 else
-                    tmax = max(tmax, umax / ctr[i, j].dx + vmax / ctr[i, j].dy)
+                    tmax = max(tmax, umax / KS.ps.dx[i, j] + vmax / KS.ps.dy[i, j])
                 end
             end
         end

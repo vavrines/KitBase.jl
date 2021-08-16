@@ -267,19 +267,11 @@ function init_fvm(
         for j in axes(ctr, 2), i in axes(ctr, 1)
             if i <= KS.pSpace.nx ÷ 2
                 ctr[i, j] = ControlVolume2D(
-                    KS.pSpace.x[i, j],
-                    KS.pSpace.y[i, j],
-                    KS.pSpace.dx[i, j],
-                    KS.pSpace.dy[i, j],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                 )
             else
                 ctr[i, j] = ControlVolume2D(
-                    KS.pSpace.x[i, j],
-                    KS.pSpace.y[i, j],
-                    KS.pSpace.dx[i, j],
-                    KS.pSpace.dy[i, j],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                 )
@@ -314,20 +306,12 @@ function init_fvm(
         for j in axes(ctr, 2), i in axes(ctr, 1)
             if i <= nx ÷ 2
                 ctr[i, j] = ControlVolume2D1F(
-                    KS.pSpace.x[i, j],
-                    KS.pSpace.y[i, j],
-                    KS.pSpace.dx[i, j],
-                    KS.pSpace.dy[i, j],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                     funcar(KS.ib.fL),
                 )
             else
                 ctr[i, j] = ControlVolume2D1F(
-                    KS.pSpace.x[i, j],
-                    KS.pSpace.y[i, j],
-                    KS.pSpace.dx[i, j],
-                    KS.pSpace.dy[i, j],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                     funcar(KS.ib.fR),
@@ -385,10 +369,6 @@ function init_fvm(
         for j in axes(ctr, 2), i in axes(ctr, 1)
             if i <= nx ÷ 2
                 ctr[i, j] = ControlVolume2D2F(
-                    KS.pSpace.x[i, j],
-                    KS.pSpace.y[i, j],
-                    KS.pSpace.dx[i, j],
-                    KS.pSpace.dy[i, j],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.primL),
                     funcar(KS.ib.hL),
@@ -396,10 +376,6 @@ function init_fvm(
                 )
             else
                 ctr[i, j] = ControlVolume2D2F(
-                    KS.pSpace.x[i, j],
-                    KS.pSpace.y[i, j],
-                    KS.pSpace.dx[i, j],
-                    KS.pSpace.dy[i, j],
                     funcar(KS.ib.wR),
                     funcar(KS.ib.primR),
                     funcar(KS.ib.hR),

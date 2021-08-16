@@ -633,12 +633,12 @@ function evolve!(
                 flux_hll!(
                     a1face[i, j].fw,
                     local_frame(
-                        ctr[i-1, j].w .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sw[:, 1],
+                        ctr[i-1, j].w .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sw[:, 1],
+                        ctr[i, j].w .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
@@ -657,12 +657,12 @@ function evolve!(
                 flux_hll!(
                     a2face[i, j].fw,
                     local_frame(
-                        ctr[i, j-1].w .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sw[:, 2],
+                        ctr[i, j-1].w .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sw[:, 2],
+                        ctr[i, j].w .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
@@ -715,8 +715,8 @@ function evolve!(
                 flux_kfvs!(
                     a1face[i, j].fw,
                     a1face[i, j].ff,
-                    ctr[i-1, j].f .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sf[:, :, 1],
-                    ctr[i, j].f .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sf[:, :, 1],
+                    ctr[i-1, j].f .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sf[:, :, 1],
+                    ctr[i, j].f .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sf[:, :, 1],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -739,8 +739,8 @@ function evolve!(
                 flux_kfvs!(
                     a2face[i, j].fw,
                     a2face[i, j].ff,
-                    ctr[i, j-1].f .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sf[:, :, 2],
-                    ctr[i, j].f .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sf[:, :, 2],
+                    ctr[i, j-1].f .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sf[:, :, 2],
+                    ctr[i, j].f .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sf[:, :, 2],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -766,17 +766,17 @@ function evolve!(
                     a1face[i, j].fw,
                     a1face[i, j].ff,
                     local_frame(
-                        ctr[i-1, j].w .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sw[:, 1],
+                        ctr[i-1, j].w .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
-                    ctr[i-1, j].f .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sf[:, :, 1],
+                    ctr[i-1, j].f .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sf[:, :, 1],
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sw[:, 1],
+                        ctr[i, j].w .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
-                    ctr[i, j].f .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sf[:, :, 1],
+                    ctr[i, j].f .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sf[:, :, 1],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -803,17 +803,17 @@ function evolve!(
                     a2face[i, j].fw,
                     a2face[i, j].ff,
                     local_frame(
-                        ctr[i, j-1].w .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sw[:, 2],
+                        ctr[i, j-1].w .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
-                    ctr[i, j-1].f .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sf[:, :, 2],
+                    ctr[i, j-1].f .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sf[:, :, 2],
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sw[:, 2],
+                        ctr[i, j].w .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
-                    ctr[i, j].f .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sf[:, :, 2],
+                    ctr[i, j].f .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sf[:, :, 2],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -847,7 +847,7 @@ function evolve!(
                 vt,
                 KS.vSpace.weights,
                 dt,
-                ctr[1, j].dy,
+                KS.ps.dy[1, j],
                 1,
             )
             a1face[1, j].fw .=
@@ -873,7 +873,7 @@ function evolve!(
                 vt,
                 KS.vSpace.weights,
                 dt,
-                ctr[KS.pSpace.nx, j].dy,
+                KS.ps.dy[KS.pSpace.nx, j],
                 -1,
             )
             a1face[KS.pSpace.nx+1, j].fw .= global_frame(
@@ -896,7 +896,7 @@ function evolve!(
                 vt,
                 KS.vSpace.weights,
                 dt,
-                ctr[i, 1].dx,
+                KS.ps.dx[i, 1],
                 1,
             )
             a2face[i, 1].fw .=
@@ -922,7 +922,7 @@ function evolve!(
                 vt,
                 KS.vSpace.weights,
                 dt,
-                ctr[i, KS.pSpace.ny].dx,
+                KS.ps.dx[i, KS.pSpace.ny],
                 -1,
             )
             a2face[i, KS.pSpace.ny+1].fw .= global_frame(
@@ -973,10 +973,10 @@ function evolve!(
                     a1face[i, j].fw,
                     a1face[i, j].fh,
                     a1face[i, j].fb,
-                    ctr[i-1, j].h .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sh[:, :, 1],
-                    ctr[i-1, j].b .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sb[:, :, 1],
-                    ctr[i, j].h .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sh[:, :, 1],
-                    ctr[i, j].b .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sb[:, :, 1],
+                    ctr[i-1, j].h .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
+                    ctr[i-1, j].b .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
+                    ctr[i, j].h .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sh[:, :, 1],
+                    ctr[i, j].b .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sb[:, :, 1],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -1002,10 +1002,10 @@ function evolve!(
                     a2face[i, j].fw,
                     a2face[i, j].fh,
                     a2face[i, j].fb,
-                    ctr[i, j-1].h .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sh[:, :, 2],
-                    ctr[i, j-1].b .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sb[:, :, 2],
-                    ctr[i, j].h .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sh[:, :, 2],
-                    ctr[i, j].b .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sb[:, :, 2],
+                    ctr[i, j-1].h .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
+                    ctr[i, j-1].b .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
+                    ctr[i, j].h .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sh[:, :, 2],
+                    ctr[i, j].b .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sb[:, :, 2],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -1034,19 +1034,19 @@ function evolve!(
                     a1face[i, j].fh,
                     a1face[i, j].fb,
                     local_frame(
-                        ctr[i-1, j].w .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sw[:, 1],
+                        ctr[i-1, j].w .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
-                    ctr[i-1, j].h .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sh[:, :, 1],
-                    ctr[i-1, j].b .+ 0.5 .* ctr[i-1, j].dx .* ctr[i-1, j].sb[:, :, 1],
+                    ctr[i-1, j].h .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
+                    ctr[i-1, j].b .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sw[:, 1],
+                        ctr[i, j].w .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
-                    ctr[i, j].h .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sh[:, :, 1],
-                    ctr[i, j].b .- 0.5 .* ctr[i, j].dx .* ctr[i, j].sb[:, :, 1],
+                    ctr[i, j].h .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sh[:, :, 1],
+                    ctr[i, j].b .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sb[:, :, 1],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -1074,19 +1074,19 @@ function evolve!(
                     a2face[i, j].fh,
                     a2face[i, j].fb,
                     local_frame(
-                        ctr[i, j-1].w .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sw[:, 2],
+                        ctr[i, j-1].w .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
-                    ctr[i, j-1].h .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sh[:, :, 2],
-                    ctr[i, j-1].b .+ 0.5 .* ctr[i, j-1].dy .* ctr[i, j-1].sb[:, :, 2],
+                    ctr[i, j-1].h .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
+                    ctr[i, j-1].b .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sw[:, 2],
+                        ctr[i, j].w .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
-                    ctr[i, j].h .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sh[:, :, 2],
-                    ctr[i, j].b .- 0.5 .* ctr[i, j].dy .* ctr[i, j].sb[:, :, 2],
+                    ctr[i, j].h .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sh[:, :, 2],
+                    ctr[i, j].b .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sb[:, :, 2],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -1123,7 +1123,7 @@ function evolve!(
                 KS.vSpace.weights,
                 KS.gas.K,
                 dt,
-                ctr[1, j].dy,
+                KS.ps.dy[1, j],
                 1,
             )
             a1face[1, j].fw .=
@@ -1152,7 +1152,7 @@ function evolve!(
                 KS.vSpace.weights,
                 KS.gas.K,
                 dt,
-                ctr[KS.pSpace.nx, j].dy,
+                KS.ps.dy[KS.pSpace.nx, j],
                 -1,
             )
             a1face[KS.pSpace.nx+1, j].fw .= global_frame(
@@ -1178,7 +1178,7 @@ function evolve!(
                 KS.vSpace.weights,
                 KS.gas.K,
                 dt,
-                ctr[i, 1].dx,
+                KS.ps.dx[i, 1],
                 1,
             )
             a2face[i, 1].fw .=
@@ -1207,7 +1207,7 @@ function evolve!(
                 KS.vSpace.weights,
                 KS.gas.K,
                 dt,
-                ctr[i, KS.pSpace.ny].dx,
+                KS.ps.dx[i, KS.pSpace.ny],
                 -1,
             )
             a2face[i, KS.pSpace.ny+1].fw .= global_frame(
