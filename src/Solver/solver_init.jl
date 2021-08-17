@@ -251,9 +251,9 @@ function init_fvm(
 
     nx, ny, dx, dy = begin
         if ps isa CSpace2D
-            ps.nr, ps.nθ, KS.ps.dr, KS.ps.darc
+            ps.nr, ps.nθ, ps.dr, ps.darc
         else
-            ps.nx, ps.ny, KS.ps.dx, KS.ps.dy
+            ps.nx, ps.ny, ps.dx, ps.dy
         end
     end
 
