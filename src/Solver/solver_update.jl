@@ -81,14 +81,15 @@ function update!(
     face::Z,
     dt,
     residual::T; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D,1},
     Z<:AbstractArray{Interface1D,1},
     T<:AbstractFloat,
 }
+
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
@@ -107,13 +108,16 @@ function update!(
 
     residual = sqrt(sumRes * KS.pSpace.nx) / (sumAvg + 1.e-7)
 
-    if bc == :period
+    if bc[1] == :period
         ctr[0].w = ctr[KS.pSpace.nx].w
         ctr[0].sw = ctr[KS.pSpace.nx].sw
         ctr[KS.pSpace.nx+1].w = ctr[1].w
         ctr[KS.pSpace.nx+1].sw = ctr[1].sw
-    elseif bc == :extra
+    elseif bc[1] == :extra
         ctr[0].w = ctr[1].w
+    end
+
+    if bc[2] == :extra
         ctr[KS.pSpace.nx+1].w = ctr[KS.pSpace.nx].w
     end
 
@@ -127,8 +131,8 @@ function update!(
     face::Z,
     dt,
     residual::AbstractArray{T}; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D,1},
@@ -189,8 +193,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D1F,1},
@@ -267,8 +271,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D2F,1},
@@ -353,8 +357,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -460,8 +464,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -493,8 +497,8 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D,2},
@@ -551,8 +555,8 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D1F,2},
@@ -622,8 +626,8 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D2F,2},
@@ -697,8 +701,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolumeUS,1},
@@ -743,8 +747,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolumeUS1F,1},
@@ -802,8 +806,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolumeUS2F,1},

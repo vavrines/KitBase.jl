@@ -10,6 +10,7 @@ if VERSION < v"1.3"
     @warn "Kinetic works better with Julia 1.3 or newer versions."
 end
 
+using Base.Threads: @threads
 using Reexport
 @reexport using FiniteMesh
 using CSV

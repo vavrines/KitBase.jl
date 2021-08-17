@@ -2,11 +2,49 @@
 # I / O Methods
 # ============================================================
 
-export read_dict,
+export read_cfg,
+       read_dict,
        write_jld,
        write_vtk,
        plot_line,
        plot_contour
+
+
+"""
+    read_cfg(filename::T) where {T<:AbstractString}
+
+Read configuration into dictionary
+
+* @arg filename: configuration text file
+* @return vars: dictionary with values of variables
+
+"""
+function read_cfg(filename::T) where {T<:AbstractString}
+    D = read_dict(filename)
+
+    if haskey(D, :boundary)
+        D[:boundary] = begin
+            if parse(Int, D[:space][1]) == 1
+                [D[:boundary], D[:boundary]]
+            elseif  parse(Int, D[:space][1]) == 2
+                [D[:boundary], D[:boundary], D[:boundary], D[:boundary]]
+            end
+        end
+    elseif haskey(D, :boundary4)
+        D[:boundary] = [D[:boundary1], D[:boundary2], D[:boundary3], D[:boundary4]]
+    elseif haskey(D, :boundary2)
+        D[:boundary] = begin
+            if parse(Int, D[:space][1]) == 1
+                [D[:boundary1], D[:boundary2]]
+            elseif parse(Int, D[:space][1]) == 2
+                [D[:boundary1], D[:boundary1], D[:boundary2], D[:boundary2]]
+            end
+        end
+    end
+
+    return D
+end
+
 
 """
     read_dict(filename::T, allowed) where {T<:AbstractString}
