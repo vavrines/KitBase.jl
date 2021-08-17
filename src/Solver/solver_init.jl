@@ -280,17 +280,49 @@ function init_fvm(
 
         for j = 1:ny
             for i = 1:nx
-                a1face[i, j] = Interface2D1F(dy[i, j], 1.0, 0.0, funcar(KS.ib.wL))
+                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
+                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+
+                a1face[i, j] = Interface2D1F(
+                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
+                    n[1],
+                    n[2],
+                    funcar(KS.ib.wL),
+                )
             end
+            n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
+            n .= ifelse(dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0, n, -n)
+
             a1face[nx+1, j] =
-                Interface2D1F(dy[nx, j], 1.0, 0.0, funcar(KS.ib.wL))
+                Interface2D1F(
+                    point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
+                    n[1],
+                    n[2],
+                    funcar(KS.ib.wL),
+                )
         end
         for i = 1:nx
             for j = 1:ny
-                a2face[i, j] = Interface2D1F(dx[i, j], 0.0, 1.0, funcar(KS.ib.wL))
+                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
+                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+
+                a2face[i, j] = Interface2D1F(
+                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
+                    n[1],
+                    n[2],
+                    funcar(KS.ib.wL),
+                )
             end
+            n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
+            n .= ifelse(dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0, n, -n)
+
             a2face[i, ny+1] =
-                Interface2D1F(dx[i, ny], 0.0, 1.0, funcar(KS.ib.wL))
+                Interface2D1F(
+                    point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
+                    n[1],
+                    n[2],
+                    funcar(KS.ib.wL),
+                )
         end
 
     elseif KS.set.space[3:4] == "1f"
@@ -321,36 +353,48 @@ function init_fvm(
 
         for j = 1:ny
             for i = 1:nx
+                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
+                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+
                 a1face[i, j] = Interface2D1F(
-                    dy[i, j],
-                    1.0,
-                    0.0,
+                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
+                    n[1],
+                    n[2],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.fL),
                 )
             end
+            n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
+            n .= ifelse(dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0, n, -n)
+
             a1face[nx+1, j] = Interface2D1F(
-                dy[nx, j],
-                1.0,
-                0.0,
+                point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
+                n[1],
+                n[2],
                 funcar(KS.ib.wL),
                 funcar(KS.ib.fL),
             )
         end
         for i = 1:nx
             for j = 1:ny
+                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
+                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+
                 a2face[i, j] = Interface2D1F(
-                    dx[i, j],
-                    0.0,
-                    1.0,
+                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
+                    n[1],
+                    n[2],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.fL),
                 )
             end
+            n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
+            n .= ifelse(dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0, n, -n)
+
             a2face[i, ny+1] = Interface2D1F(
-                dx[i, ny],
-                0.0,
-                1.0,
+                point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
+                n[1],
+                n[2],
                 funcar(KS.ib.wL),
                 funcar(KS.ib.fL),
             )
@@ -386,36 +430,48 @@ function init_fvm(
 
         for j = 1:ny
             for i = 1:nx
+                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
+                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+
                 a1face[i, j] = Interface2D2F(
-                    dy[i, j],
-                    1.0,
-                    0.0,
+                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
+                    n[1],
+                    n[2],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.hL),
                 )
             end
+            n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
+            n .= ifelse(dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0, n, -n)
+
             a1face[nx+1, j] = Interface2D2F(
-                dy[nx, j],
-                1.0,
-                0.0,
+                point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
+                n[1],
+                n[2],
                 funcar(KS.ib.wL),
                 funcar(KS.ib.hL),
             )
         end
         for i = 1:nx
             for j = 1:ny
+                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
+                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+
                 a2face[i, j] = Interface2D2F(
-                    dx[i, j],
-                    0.0,
-                    1.0,
+                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
+                    n[1],
+                    n[2],
                     funcar(KS.ib.wL),
                     funcar(KS.ib.hL),
                 )
             end
+            n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
+            n .= ifelse(dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0, n, -n)
+
             a2face[i, ny+1] = Interface2D2F(
-                dx[i, ny],
-                0.0,
-                1.0,
+                point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
+                n[1],
+                n[2],
                 funcar(KS.ib.wL),
                 funcar(KS.ib.hL),
             )

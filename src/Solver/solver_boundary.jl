@@ -1017,6 +1017,14 @@ function update_boundary!(
     Z<:AbstractArray{Interface2D2F,2},
 }
 
+    nx, ny, dx, dy = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
+        else
+            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
+        end
+    end
+
     resL = zero(KS.ib.wL)
     avgL = zero(KS.ib.wL)
     resR = zero(KS.ib.wL)
@@ -1027,7 +1035,7 @@ function update_boundary!(
     avgD = zero(KS.ib.wL)
 
     if bc != :fix
-        @inbounds for j = 1:KS.pSpace.ny
+        @inbounds for j = 1:ny
             step!(
                 ctr[1, j].w,
                 ctr[1, j].prim,
@@ -1053,7 +1061,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                KS.ps.dx[1, j] * KS.ps.dy[1, j],
+                dx[1, j] * dy[1, j],
                 dt,
                 resL,
                 avgL,
@@ -1061,22 +1069,22 @@ function update_boundary!(
             )
 
             step!(
-                ctr[KS.pSpace.nx, j].w,
-                ctr[KS.pSpace.nx, j].prim,
-                ctr[KS.pSpace.nx, j].h,
-                ctr[KS.pSpace.nx, j].b,
-                a1face[KS.pSpace.nx, j].fw,
-                a1face[KS.pSpace.nx, j].fh,
-                a1face[KS.pSpace.nx, j].fb,
-                a1face[KS.pSpace.nx+1, j].fw,
-                a1face[KS.pSpace.nx+1, j].fh,
-                a1face[KS.pSpace.nx+1, j].fb,
-                a2face[KS.pSpace.nx, j].fw,
-                a2face[KS.pSpace.nx, j].fh,
-                a2face[KS.pSpace.nx, j].fb,
-                a2face[KS.pSpace.nx, j+1].fw,
-                a2face[KS.pSpace.nx, j+1].fh,
-                a2face[KS.pSpace.nx, j+1].fb,
+                ctr[nx, j].w,
+                ctr[nx, j].prim,
+                ctr[nx, j].h,
+                ctr[nx, j].b,
+                a1face[nx, j].fw,
+                a1face[nx, j].fh,
+                a1face[nx, j].fb,
+                a1face[nx+1, j].fw,
+                a1face[nx+1, j].fh,
+                a1face[nx+1, j].fb,
+                a2face[nx, j].fw,
+                a2face[nx, j].fh,
+                a2face[nx, j].fb,
+                a2face[nx, j+1].fw,
+                a2face[nx, j+1].fh,
+                a2face[nx, j+1].fb,
                 KS.vSpace.u,
                 KS.vSpace.v,
                 KS.vSpace.weights,
@@ -1085,7 +1093,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                KS.ps.dx[KS.pSpace.nx, j] * KS.ps.dy[KS.pSpace.nx, j],
+                dx[nx, j] * dy[nx, j],
                 dt,
                 resR,
                 avgR,
@@ -1093,7 +1101,7 @@ function update_boundary!(
             )
         end
 
-        @inbounds for i = 2:KS.pSpace.nx-1 # skip overlap
+        @inbounds for i = 2:nx-1 # skip overlap
             step!(
                 ctr[i, 1].w,
                 ctr[i, 1].prim,
@@ -1119,7 +1127,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                KS.ps.dx[i, 1] * KS.ps.dy[i, 1],
+                dx[i, 1] * dy[i, 1],
                 dt,
                 resD,
                 avgD,
@@ -1127,22 +1135,22 @@ function update_boundary!(
             )
 
             step!(
-                ctr[i, KS.pSpace.ny].w,
-                ctr[i, KS.pSpace.ny].prim,
-                ctr[i, KS.pSpace.ny].h,
-                ctr[i, KS.pSpace.ny].b,
-                a1face[i, KS.pSpace.ny].fw,
-                a1face[i, KS.pSpace.ny].fh,
-                a1face[i, KS.pSpace.ny].fb,
-                a1face[i+1, KS.pSpace.ny].fw,
-                a1face[i+1, KS.pSpace.ny].fh,
-                a1face[i+1, KS.pSpace.ny].fb,
-                a2face[i, KS.pSpace.ny].fw,
-                a2face[i, KS.pSpace.ny].fh,
-                a2face[i, KS.pSpace.ny].fb,
-                a2face[i, KS.pSpace.ny+1].fw,
-                a2face[i, KS.pSpace.ny+1].fh,
-                a2face[i, KS.pSpace.ny+1].fb,
+                ctr[i, ny].w,
+                ctr[i, ny].prim,
+                ctr[i, ny].h,
+                ctr[i, ny].b,
+                a1face[i, ny].fw,
+                a1face[i, ny].fh,
+                a1face[i, ny].fb,
+                a1face[i+1, ny].fw,
+                a1face[i+1, ny].fh,
+                a1face[i+1, ny].fb,
+                a2face[i, ny].fw,
+                a2face[i, ny].fh,
+                a2face[i, ny].fb,
+                a2face[i, ny+1].fw,
+                a2face[i, ny+1].fh,
+                a2face[i, ny+1].fb,
                 KS.vSpace.u,
                 KS.vSpace.v,
                 KS.vSpace.weights,
@@ -1151,7 +1159,7 @@ function update_boundary!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                KS.ps.dx[i, KS.pSpace.ny] * KS.ps.dy[i, KS.pSpace.ny],
+                dx[i, ny] * dy[i, ny],
                 dt,
                 resU,
                 avgU,
@@ -1169,52 +1177,52 @@ function update_boundary!(
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
     ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc == :extra
-        for i = 1:ngx, j = 1:KS.pSpace.ny
+        for i = 1:ngx, j = 1:ny
             ctr[1-i, j].w .= ctr[1, j].w
             ctr[1-i, j].prim .= ctr[1, j].prim
-            ctr[KS.pSpace.nx+i, j].w .= ctr[KS.pSpace.nx, j].w
-            ctr[KS.pSpace.nx+i, j].prim .= ctr[KS.pSpace.nx, j].prim
+            ctr[nx+i, j].w .= ctr[nx, j].w
+            ctr[nx+i, j].prim .= ctr[nx, j].prim
 
             ctr[1-i, j].h .= ctr[1, j].h
             ctr[1-i, j].b .= ctr[1, j].b
-            ctr[KS.pSpace.nx+i, j].h .= ctr[KS.pSpace.nx, j].h
-            ctr[KS.pSpace.nx+i, j].b .= ctr[KS.pSpace.nx, j].b
+            ctr[nx+i, j].h .= ctr[nx, j].h
+            ctr[nx+i, j].b .= ctr[nx, j].b
         end
 
-        for i = 1:KS.pSpace.nx, j = 1:ngy
+        for i = 1:nx, j = 1:ngy
             ctr[i, 1-j].w .= ctr[i, 1].w
             ctr[i, 1-j].prim .= ctr[i, 1].prim
-            ctr[i, KS.pSpace.ny+j].w .= ctr[i, KS.pSpace.ny].w
-            ctr[i, KS.pSpace.ny+j].prim .= ctr[i, KS.pSpace.ny].prim
+            ctr[i, ny+j].w .= ctr[i, ny].w
+            ctr[i, ny+j].prim .= ctr[i, ny].prim
 
             ctr[i, 1-j].h .= ctr[i, 1].h
             ctr[i, 1-j].b .= ctr[i, 1].b
-            ctr[i, KS.pSpace.ny+j].h .= ctr[i, KS.pSpace.ny].h
-            ctr[i, KS.pSpace.ny+j].b .= ctr[i, KS.pSpace.ny].b
+            ctr[i, ny+j].h .= ctr[i, ny].h
+            ctr[i, ny+j].b .= ctr[i, ny].b
         end
     elseif bc == :period
-        for i = 1:ngx, j = 1:KS.pSpace.ny
-            ctr[1-i, j].w .= ctr[KS.pSpace.nx-i+1, j].w
-            ctr[1-i, j].prim .= ctr[KS.pSpace.nx-i+1, j].prim
-            ctr[KS.pSpace.nx+i, j].w .= ctr[i, j].w
-            ctr[KS.pSpace.nx+i, j].prim .= ctr[i, j].prim
+        for i = 1:ngx, j = 1:ny
+            ctr[1-i, j].w .= ctr[nx-i+1, j].w
+            ctr[1-i, j].prim .= ctr[nx-i+1, j].prim
+            ctr[nx+i, j].w .= ctr[i, j].w
+            ctr[nx+i, j].prim .= ctr[i, j].prim
 
-            ctr[1-i, j].h .= ctr[KS.pSpace.nx-i+1, j].h
-            ctr[1-i, j].b .= ctr[KS.pSpace.nx-i+1, j].b
-            ctr[KS.pSpace.nx+i, j].h .= ctr[i, j].h
-            ctr[KS.pSpace.nx+i, j].b .= ctr[i, j].b
+            ctr[1-i, j].h .= ctr[nx-i+1, j].h
+            ctr[1-i, j].b .= ctr[nx-i+1, j].b
+            ctr[nx+i, j].h .= ctr[i, j].h
+            ctr[nx+i, j].b .= ctr[i, j].b
         end
 
-        for i = 1:KS.pSpace.nx, j = 1:ngy
-            ctr[i, 1-j].w .= ctr[i, KS.pSpace.ny-j+1].w
-            ctr[i, 1-j].prim .= ctr[i, KS.pSpace.ny-j+1].prim
-            ctr[i, KS.pSpace.ny+j].w .= ctr[i, j].w
-            ctr[i, KS.pSpace.ny+j].prim .= ctr[i, j].prim
+        for i = 1:nx, j = 1:ngy
+            ctr[i, 1-j].w .= ctr[i, ny-j+1].w
+            ctr[i, 1-j].prim .= ctr[i, ny-j+1].prim
+            ctr[i, ny+j].w .= ctr[i, j].w
+            ctr[i, ny+j].prim .= ctr[i, j].prim
 
-            ctr[i, 1-j].h .= ctr[i, KS.pSpace.ny-j+1].h
-            ctr[i, 1-j].b .= ctr[i, KS.pSpace.ny-j+1].b
-            ctr[i, KS.pSpace.ny+j].h .= ctr[i, j].h
-            ctr[i, KS.pSpace.ny+j].b .= ctr[i, j].b
+            ctr[i, 1-j].h .= ctr[i, ny-j+1].h
+            ctr[i, 1-j].b .= ctr[i, ny-j+1].b
+            ctr[i, ny+j].h .= ctr[i, j].h
+            ctr[i, ny+j].b .= ctr[i, j].b
         end
     elseif bc == :balance
 

@@ -614,13 +614,21 @@ function update!(
     Z<:AbstractArray{Interface2D2F,2},
 }
 
+    nx, ny, dx, dy = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
+        else
+            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
+        end
+    end
+
     sumRes = zero(KS.ib.wL)
     sumAvg = zero(KS.ib.wL)
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:KS.pSpace.ny-1
-            for i = 2:KS.pSpace.nx-1
+        @inbounds for j = 2:ny-1
+            for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
                     ctr[i, j].prim,
@@ -646,7 +654,7 @@ function update!(
                     KS.gas.μᵣ,
                     KS.gas.ω,
                     KS.gas.Pr,
-                    KS.ps.dx[i, j] * KS.ps.dy[i, j],
+                    dx[i, j] * dy[i, j],
                     dt,
                     sumRes,
                     sumAvg,
@@ -658,7 +666,7 @@ function update!(
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx * KS.pSpace.ny) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
     update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)

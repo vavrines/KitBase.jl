@@ -946,25 +946,33 @@ function evolve!(
     bc = Symbol(KS.set.boundary)::Symbol,
 ) where {T1<:AbstractArray{ControlVolume2D2F,2},T2<:AbstractArray{Interface2D2F,2}}
 
+    nx, ny, dx, dy = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
+        else
+            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
+        end
+    end
+
     if firstindex(KS.pSpace.x[:, 1]) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx + 1
+        idx1 = nx + 1
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx
+        idx1 = nx
     end
     if firstindex(KS.pSpace.y[1, :]) < 1
         idy0 = 1
-        idy1 = KS.pSpace.ny + 1
+        idy1 = ny + 1
     else
         idy0 = 2
-        idy1 = KS.pSpace.ny
+        idy1 = ny
     end
 
     if mode == :kfvs
 
         # x direction
-        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
+        @inbounds Threads.@threads for j = 1:ny
             for i = idx0:idx1
                 vn = KS.vSpace.u .* a1face[i, j].n[1] .+ KS.vSpace.v .* a1face[i, j].n[2]
                 vt = KS.vSpace.v .* a1face[i, j].n[1] .- KS.vSpace.u .* a1face[i, j].n[2]
@@ -973,10 +981,10 @@ function evolve!(
                     a1face[i, j].fw,
                     a1face[i, j].fh,
                     a1face[i, j].fb,
-                    ctr[i-1, j].h .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
-                    ctr[i-1, j].b .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
-                    ctr[i, j].h .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sh[:, :, 1],
-                    ctr[i, j].b .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sb[:, :, 1],
+                    ctr[i-1, j].h .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
+                    ctr[i-1, j].b .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
+                    ctr[i, j].h .- 0.5 .* dx[i, j] .* ctr[i, j].sh[:, :, 1],
+                    ctr[i, j].b .- 0.5 .* dx[i, j] .* ctr[i, j].sb[:, :, 1],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -994,7 +1002,7 @@ function evolve!(
 
         # y direction
         @inbounds Threads.@threads for j = idy0:idy1
-            for i = 1:KS.pSpace.nx
+            for i = 1:nx
                 vn = KS.vSpace.u .* a2face[i, j].n[1] .+ KS.vSpace.v .* a2face[i, j].n[2]
                 vt = KS.vSpace.v .* a2face[i, j].n[1] .- KS.vSpace.u .* a2face[i, j].n[2]
 
@@ -1002,10 +1010,10 @@ function evolve!(
                     a2face[i, j].fw,
                     a2face[i, j].fh,
                     a2face[i, j].fb,
-                    ctr[i, j-1].h .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
-                    ctr[i, j-1].b .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
-                    ctr[i, j].h .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sh[:, :, 2],
-                    ctr[i, j].b .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sb[:, :, 2],
+                    ctr[i, j-1].h .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
+                    ctr[i, j-1].b .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
+                    ctr[i, j].h .- 0.5 .* dy[i, j] .* ctr[i, j].sh[:, :, 2],
+                    ctr[i, j].b .- 0.5 .* dy[i, j] .* ctr[i, j].sb[:, :, 2],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -1024,7 +1032,7 @@ function evolve!(
     elseif mode == :kcu
 
         # x direction
-        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
+        @inbounds Threads.@threads for j = 1:ny
             for i = idx0:idx1
                 vn = KS.vSpace.u .* a1face[i, j].n[1] .+ KS.vSpace.v .* a1face[i, j].n[2]
                 vt = KS.vSpace.v .* a1face[i, j].n[1] .- KS.vSpace.u .* a1face[i, j].n[2]
@@ -1034,19 +1042,19 @@ function evolve!(
                     a1face[i, j].fh,
                     a1face[i, j].fb,
                     local_frame(
-                        ctr[i-1, j].w .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
+                        ctr[i-1, j].w .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
-                    ctr[i-1, j].h .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
-                    ctr[i-1, j].b .+ 0.5 .* KS.ps.dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
+                    ctr[i-1, j].h .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
+                    ctr[i-1, j].b .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sw[:, 1],
+                        ctr[i, j].w .- 0.5 .* dx[i, j] .* ctr[i, j].sw[:, 1],
                         a1face[i, j].n[1],
                         a1face[i, j].n[2],
                     ),
-                    ctr[i, j].h .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sh[:, :, 1],
-                    ctr[i, j].b .- 0.5 .* KS.ps.dx[i, j] .* ctr[i, j].sb[:, :, 1],
+                    ctr[i, j].h .- 0.5 .* dx[i, j] .* ctr[i, j].sh[:, :, 1],
+                    ctr[i, j].b .- 0.5 .* dx[i, j] .* ctr[i, j].sb[:, :, 1],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -1065,7 +1073,7 @@ function evolve!(
 
         # y direction
         @inbounds Threads.@threads for j = idy0:idy1
-            for i = 1:KS.pSpace.nx
+            for i = 1:nx
                 vn = KS.vSpace.u .* a2face[i, j].n[1] .+ KS.vSpace.v .* a2face[i, j].n[2]
                 vt = KS.vSpace.v .* a2face[i, j].n[1] .- KS.vSpace.u .* a2face[i, j].n[2]
 
@@ -1074,19 +1082,19 @@ function evolve!(
                     a2face[i, j].fh,
                     a2face[i, j].fb,
                     local_frame(
-                        ctr[i, j-1].w .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
+                        ctr[i, j-1].w .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
-                    ctr[i, j-1].h .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
-                    ctr[i, j-1].b .+ 0.5 .* KS.ps.dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
+                    ctr[i, j-1].h .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
+                    ctr[i, j-1].b .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
                     local_frame(
-                        ctr[i, j].w .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sw[:, 2],
+                        ctr[i, j].w .- 0.5 .* dy[i, j] .* ctr[i, j].sw[:, 2],
                         a2face[i, j].n[1],
                         a2face[i, j].n[2],
                     ),
-                    ctr[i, j].h .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sh[:, :, 2],
-                    ctr[i, j].b .- 0.5 .* KS.ps.dy[i, j] .* ctr[i, j].sb[:, :, 2],
+                    ctr[i, j].h .- 0.5 .* dy[i, j] .* ctr[i, j].sh[:, :, 2],
+                    ctr[i, j].b .- 0.5 .* dy[i, j] .* ctr[i, j].sb[:, :, 2],
                     vn,
                     vt,
                     KS.vSpace.weights,
@@ -1107,7 +1115,7 @@ function evolve!(
 
     if bc == :maxwell
 
-        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
+        @inbounds Threads.@threads for j = 1:ny
             vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
             vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
             bcL = local_frame(KS.ib.bcL, a1face[1, j].n[1], a1face[1, j].n[2])
@@ -1162,7 +1170,7 @@ function evolve!(
             )
         end
 
-        @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+        @inbounds Threads.@threads for i = 1:nx
             vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
             vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
             bcD = local_frame(KS.ib.bcD, a2face[i, 1].n[1], a2face[i, 1].n[2])
