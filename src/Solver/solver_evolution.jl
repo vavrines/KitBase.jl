@@ -32,8 +32,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractArray{ControlVolume1D,1},T2<:AbstractArray{Interface1D,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -126,8 +126,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractArray{ControlVolume1D1F,1},T2<:AbstractArray{Interface1D1F,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -225,8 +225,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractArray{ControlVolume1D2F,1},T2<:AbstractArray{Interface1D2F,1}}
 
     if firstindex(KS.pSpace.x) < 1
@@ -310,7 +310,8 @@ function evolve!(
 
     end
 
-    if bc[1] == :maxwell
+    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
+    if bcs[1] == :maxwell
         flux_boundary_maxwell!(
             face[1].fw,
             face[1].fh,
@@ -325,7 +326,7 @@ function evolve!(
             1,
         )
     end
-    if bc[2] == :maxwell
+    if bcs[2] == :maxwell
         flux_boundary_maxwell!(
             face[KS.pSpace.nx+1].fw,
             face[KS.pSpace.nx+1].fh,
@@ -850,7 +851,8 @@ function evolve!(
 
     end
 
-    if bc[1] == :maxwell
+    bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
+    if bcs[1] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
             vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
             vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
@@ -871,7 +873,7 @@ function evolve!(
                 global_frame(a1face[1, j].fw, a1face[1, j].n[1], a1face[1, j].n[2])
         end
     end
-    if bc[2] == :maxwell
+    if bcs[2] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
             vn =
                 KS.vSpace.u .* a1face[nx+1, j].n[1] .+
@@ -903,7 +905,7 @@ function evolve!(
             )
         end
     end
-    if bc[3] == :maxwell
+    if bcs[3] == :maxwell
         @inbounds Threads.@threads for i = 1:nx
             vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
             vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
@@ -924,7 +926,7 @@ function evolve!(
                 global_frame(a2face[i, 1].fw, a2face[i, 1].n[1], a2face[i, 1].n[2])
         end
     end
-    if bc[4] == :maxwell
+    if bcs[4] == :maxwell
         @inbounds Threads.@threads for i = 1:nx
             vn =
                 KS.vSpace.u .* a2face[i, ny+1].n[1] .+
@@ -1136,7 +1138,8 @@ function evolve!(
 
     end
 
-    if bc[1] == :maxwell
+    bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
+    if bcs[1] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
             vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
             vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
@@ -1160,7 +1163,7 @@ function evolve!(
                 global_frame(a1face[1, j].fw, a1face[1, j].n[1], a1face[1, j].n[2])
         end
     end
-    if bc[2] == :maxwell
+    if bcs[2] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
             vn =
                 KS.vSpace.u .* a1face[nx+1, j].n[1] .+
@@ -1195,7 +1198,7 @@ function evolve!(
             )
         end
     end
-    if bc[3] == :maxwell
+    if bcs[3] == :maxwell
         @inbounds Threads.@threads for i = 1:nx
             vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
             vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
@@ -1219,7 +1222,7 @@ function evolve!(
                 global_frame(a2face[i, 1].fw, a2face[i, 1].n[1], a2face[i, 1].n[2])
         end
     end
-    if bc[4] == :maxwell
+    if bcs[4] == :maxwell
         @inbounds Threads.@threads for i = 1:nx
             vn =
                 KS.vSpace.u .* a2face[i, ny+1].n[1] .+

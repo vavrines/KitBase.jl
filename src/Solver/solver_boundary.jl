@@ -153,7 +153,7 @@ function update_boundary!(
     face::Z,
     dt,
     residual;
-    coll,
+    coll = symbolize(KS.set.collision),
     bc,
 ) where {
     X<:AbstractSolverSet,
@@ -313,7 +313,7 @@ function update_boundary!(
     face::Z,
     dt,
     residual;
-    coll,
+    coll = symbolize(KS.set.collision),
     bc,
 ) where {
     X<:AbstractSolverSet,
@@ -496,8 +496,8 @@ function update_boundary!(
     face::Z,
     dt,
     residual;
-    coll::Symbol,
-    bc::Symbol,
+    coll = symbolize(KS.set.collision)::Symbol,
+    bc,
     isMHD = false::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -613,8 +613,8 @@ function update_boundary!(
     face::Z,
     dt,
     residual;
-    coll::Symbol,
-    bc::Symbol,
+    coll = symbolize(KS.set.collision)::Symbol,
+    bc,
     isMHD = false::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -736,8 +736,8 @@ function update_boundary!(
     a2face::Z,
     dt,
     residual;
-    coll::Symbol,
-    bc::Symbol,
+    coll = symbolize(KS.set.collision)::Symbol,
+    bc,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D,2},
@@ -890,8 +890,8 @@ function update_boundary!(
     a2face::Z,
     dt,
     residual;
-    coll::Symbol,
-    bc::Symbol,
+    coll = symbolize(KS.set.collision)::Symbol,
+    bc,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D1F,2},
@@ -1107,8 +1107,8 @@ function update_boundary!(
     a2face::Z,
     dt,
     residual;
-    coll::Symbol,
-    bc::Symbol,
+    coll = symbolize(KS.set.collision)::Symbol,
+    bc,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D2F,2},
@@ -1348,7 +1348,7 @@ function update_boundary!(
     dt,
     residual;
     coll::Symbol,
-    bc::Symbol,
+    bc,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractVector{ControlVolumeUS},
@@ -1372,7 +1372,7 @@ function update_boundary!(
     dt,
     residual;
     coll::Symbol,
-    bc::Symbol,
+    bc,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractVector{ControlVolumeUS1F},
@@ -1397,7 +1397,7 @@ function update_boundary!(
     dt,
     residual;
     coll::Symbol,
-    bc::Symbol,
+    bc,
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractVector{ControlVolumeUS2F},
