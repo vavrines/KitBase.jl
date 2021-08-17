@@ -249,11 +249,11 @@ function init_fvm(
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
-    nx, ny = begin
+    nx, ny, dx, dy = begin
         if ps isa CSpace2D
-            ps.nr, ps.nθ
+            ps.nr, ps.nθ, KS.ps.dr, KS.ps.darc
         else
-            ps.nx, ps.ny
+            ps.nx, ps.ny, KS.ps.dx, KS.ps.dy
         end
     end
 
@@ -280,17 +280,17 @@ function init_fvm(
 
         for j = 1:ny
             for i = 1:nx
-                a1face[i, j] = Interface2D1F(KS.pSpace.dy[i, j], 1.0, 0.0, funcar(KS.ib.wL))
+                a1face[i, j] = Interface2D1F(dy[i, j], 1.0, 0.0, funcar(KS.ib.wL))
             end
             a1face[nx+1, j] =
-                Interface2D1F(KS.pSpace.dy[nx, j], 1.0, 0.0, funcar(KS.ib.wL))
+                Interface2D1F(dy[nx, j], 1.0, 0.0, funcar(KS.ib.wL))
         end
         for i = 1:nx
             for j = 1:ny
-                a2face[i, j] = Interface2D1F(KS.pSpace.dx[i, j], 0.0, 1.0, funcar(KS.ib.wL))
+                a2face[i, j] = Interface2D1F(dx[i, j], 0.0, 1.0, funcar(KS.ib.wL))
             end
             a2face[i, ny+1] =
-                Interface2D1F(KS.pSpace.dx[i, ny], 0.0, 1.0, funcar(KS.ib.wL))
+                Interface2D1F(dx[i, ny], 0.0, 1.0, funcar(KS.ib.wL))
         end
 
     elseif KS.set.space[3:4] == "1f"
@@ -322,7 +322,7 @@ function init_fvm(
         for j = 1:ny
             for i = 1:nx
                 a1face[i, j] = Interface2D1F(
-                    KS.pSpace.dy[i, j],
+                    dy[i, j],
                     1.0,
                     0.0,
                     funcar(KS.ib.wL),
@@ -330,7 +330,7 @@ function init_fvm(
                 )
             end
             a1face[nx+1, j] = Interface2D1F(
-                KS.pSpace.dy[nx, j],
+                dy[nx, j],
                 1.0,
                 0.0,
                 funcar(KS.ib.wL),
@@ -340,7 +340,7 @@ function init_fvm(
         for i = 1:nx
             for j = 1:ny
                 a2face[i, j] = Interface2D1F(
-                    KS.pSpace.dx[i, j],
+                    dx[i, j],
                     0.0,
                     1.0,
                     funcar(KS.ib.wL),
@@ -348,7 +348,7 @@ function init_fvm(
                 )
             end
             a2face[i, ny+1] = Interface2D1F(
-                KS.pSpace.dx[i, ny],
+                dx[i, ny],
                 0.0,
                 1.0,
                 funcar(KS.ib.wL),
@@ -387,7 +387,7 @@ function init_fvm(
         for j = 1:ny
             for i = 1:nx
                 a1face[i, j] = Interface2D2F(
-                    KS.pSpace.dy[i, j],
+                    dy[i, j],
                     1.0,
                     0.0,
                     funcar(KS.ib.wL),
@@ -395,7 +395,7 @@ function init_fvm(
                 )
             end
             a1face[nx+1, j] = Interface2D2F(
-                KS.pSpace.dy[nx, j],
+                dy[nx, j],
                 1.0,
                 0.0,
                 funcar(KS.ib.wL),
@@ -405,7 +405,7 @@ function init_fvm(
         for i = 1:nx
             for j = 1:ny
                 a2face[i, j] = Interface2D2F(
-                    KS.pSpace.dx[i, j],
+                    dx[i, j],
                     0.0,
                     1.0,
                     funcar(KS.ib.wL),
@@ -413,7 +413,7 @@ function init_fvm(
                 )
             end
             a2face[i, ny+1] = Interface2D2F(
-                KS.pSpace.dx[i, KS.pSpace.ny],
+                dx[i, ny],
                 0.0,
                 1.0,
                 funcar(KS.ib.wL),
