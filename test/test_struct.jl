@@ -6,7 +6,19 @@ for key in keys(D)
 end
 
 #--- settings ---#
-KitBase.Setup() |> show
+Setup(
+    "gas",
+    "cylinder",
+    "2d2f",
+    "kfvs",
+    "bgk",
+    1, # species
+    2, # order of accuracy
+    "vanleer", # limiter
+    "maxwell",
+    0.5, # cfl
+    10.0, # time
+) |> show
 KitBase.Scalar(1.0, 1e-3)
 KitBase.Radiation(1e-2, 1.0, 0.0, 1e-3, 1000)
 KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01) |> show
