@@ -225,7 +225,7 @@ function timestep(
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
 
     nx, ny, dx, dy = begin
-        if ps isa CSpace2D
+        if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
         else
             KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
