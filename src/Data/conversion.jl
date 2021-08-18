@@ -1,13 +1,17 @@
 slope_array(w::Number; kwargs...) = deepcopy(w)
 
-function slope_array(w::AbstractArray; reduction=true)
+function slope_array(w::AbstractArray; reduction = true)
     nd = ndims(w)
     ids = []
     for i = 1:nd
         push!(ids, [axes(w, i) |> first, axes(w, i) |> last])
     end
 
-    sw = ifelse(reduction==true, cat(zero(w), zero(w), dims=ndims(w)+1), cat(zero(w), zero(w), zero(w), dims=ndims(w)+1))
+    sw = ifelse(
+        reduction == true,
+        cat(zero(w), zero(w), dims = ndims(w) + 1),
+        cat(zero(w), zero(w), zero(w), dims = ndims(w) + 1),
+    )
 
     if w isa MArray
         sw = static_array(sw)
@@ -19,8 +23,14 @@ function slope_array(w::AbstractArray; reduction=true)
             sw = OffsetArray(sw, ids[1][1]:ids[1][2], axes(sw)[end])
         elseif ndims(sw) == 3
             sw = OffsetArray(sw, ids[1][1]:ids[1][2], ids[2][1]:ids[2][2], axes(sw)[end])
-        elseif ndims(sw) ==4
-            sw = OffsetArray(sw, ids[1][1]:ids[1][2], ids[2][1]:ids[2][2], ids[3][1]:ids[3][2], axes(sw)[end])
+        elseif ndims(sw) == 4
+            sw = OffsetArray(
+                sw,
+                ids[1][1]:ids[1][2],
+                ids[2][1]:ids[2][2],
+                ids[3][1]:ids[3][2],
+                axes(sw)[end],
+            )
         end
     end
 
@@ -42,7 +52,7 @@ function static_array(x::AbstractVector)
 end
 
 function static_array(x::AbstractMatrix)
-    y = MMatrix{size(x,1),size(x,2)}(collect(x))
+    y = MMatrix{size(x, 1),size(x, 2)}(collect(x))
 
     if x isa OffsetArray
         idx0 = axes(x, 1) |> first
@@ -57,7 +67,7 @@ function static_array(x::AbstractMatrix)
 end
 
 function static_array(x::AbstractArray{<:Number,3})
-    y = MArray{Tuple{size(x,1),size(x,2),size(x,3)}}(collect(x))
+    y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3)}}(collect(x))
 
     if x isa OffsetArray
         idx0 = axes(x, 1) |> first
@@ -74,7 +84,7 @@ function static_array(x::AbstractArray{<:Number,3})
 end
 
 function static_array(x::AbstractArray{<:Number,4})
-    y = MArray{Tuple{size(x,1),size(x,2),size(x,3),size(x,4)}}(collect(x))
+    y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3),size(x, 4)}}(collect(x))
 
     if x isa OffsetArray
         ida0 = axes(x, 1) |> first
@@ -93,3 +103,4 @@ function static_array(x::AbstractArray{<:Number,4})
 end
 
 dynamic_array(x::AbstractArray) = x
+dynamic_array(x::Number) = x

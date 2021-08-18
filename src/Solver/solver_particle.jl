@@ -73,9 +73,9 @@ function sample_particle!(
     return nothing
 end
 
-function sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx)
+function sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx, x, Δx)
     ptc.m = KS.gas.m
-    ptc.x = ctr.x + (rand() - 0.5) * ctr.dx
+    ptc.x = x + (rand() - 0.5) * Δx
     ptc.v .= sample_maxwell(ctr.prim)
     ptc.e = 0.5 / ctr.prim[end]
     ptc.idx = idx

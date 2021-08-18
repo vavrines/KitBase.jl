@@ -143,10 +143,13 @@ end
 
 
 """
+    point_distance(p1::T, p2::T) where {T<:AbstractVector}
     point_distance(p::T, p1::T, p2::T) where {T<:AbstractVector}
 
 Calculate point-point/line/surface distance
 """
+point_distance(p1::T, p2::T) where {T<:AbstractVector} = norm(p1 .- p2)
+
 function point_distance(p::T, p1::T, p2::T) where {T<:AbstractVector}
     x0, y0 = p
     x1, y1 = p1

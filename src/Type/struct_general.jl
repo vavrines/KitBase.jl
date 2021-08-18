@@ -3,7 +3,8 @@
 # ============================================================
 
 """
-    struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
+    struct Setup{S,I<:Integer,E,F<:Real,G<:Real} <: AbstractSetup
+        matter::S
         case::S
         space::S
         flux::S
@@ -11,15 +12,15 @@
         nSpecies::I
         interpOrder::I
         limiter::S
-        boundary::S
-        cfl::E
-        maxTime::F
+        boundary::E
+        cfl::F
+        maxTime::G
     end
 
 Computational setup
 
 """
-struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
+struct Setup{S,I<:Integer,E<:AbstractVector,F<:Real,G<:Real} <: AbstractSetup
     matter::S
     case::S
     space::S
@@ -28,24 +29,52 @@ struct Setup{S<:AbstractString,I<:Integer,E<:Real,F<:Real} <: AbstractSetup
     nSpecies::I
     interpOrder::I
     limiter::S
-    boundary::S
-    cfl::E
-    maxTime::F
+    boundary::E
+    cfl::F
+    maxTime::G
 end
 
-Setup() = Setup{String,Int,Float64,Float64}(
-    "gas",
-    "sod",
-    "1d1f1v",
-    "kfvs",
-    "bgk",
-    1,
-    1,
-    "vanleer",
-    "fix",
-    0.5,
-    2.0,
-)
+function Setup(
+    matter,
+    case,
+    space,
+    flux,
+    collision,
+    ns,
+    order,
+    limiter,
+    bc::T,
+    cfl,
+    time,
+) where {T<:Union{AbstractString,Symbol}}
+    boundary = begin
+        if parse(Int, space[1]) == 1
+            [bc, bc]
+        elseif parse(Int, space[1]) == 2
+            [bc, bc, bc, bc]
+        end
+    end
+
+    return Setup{
+        typeof(matter),
+        typeof(ns),
+        typeof(boundary),
+        typeof(cfl),
+        typeof(time),
+    }(
+        matter,
+        case,
+        space,
+        flux,
+        collision,
+        ns,
+        order,
+        limiter,
+        boundary,
+        cfl,
+        time,
+    )
+end
 
 
 """

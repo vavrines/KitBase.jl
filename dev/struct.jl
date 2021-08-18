@@ -44,13 +44,7 @@ for i in eachindex(ctr)
     w = prim_conserve(prim, ks.gas.γ)
     g = maxwellian(ks.vs.u, prim)
 
-    ctr[i] = ControlVolume1D1F(
-        ks.pSpace.x[i],
-        ks.pSpace.dx[i],
-        w,
-        prim,
-        g,
-    )
+    ctr[i] = ControlVolume1D1F(ks.pSpace.x[i], ks.pSpace.dx[i], w, prim, g)
 end
 ctr = ctr |> StructArray
 
@@ -70,7 +64,15 @@ res = zero(ks.ib.wL)
 @showprogress for iter = 1:100#nt
     reconstruct!(ks, ctr)
     evolve!(ks, ctr, face, dt; mode = Symbol(ks.set.flux), bc = Symbol(ks.set.boundary))
-    KitBase.update!(ks, ctr, face, dt, res; coll = Symbol(ks.set.collision), bc = Symbol(ks.set.boundary))
+    KitBase.update!(
+        ks,
+        ctr,
+        face,
+        dt,
+        res;
+        coll = Symbol(ks.set.collision),
+        bc = Symbol(ks.set.boundary),
+    )
 
     t += dt
     #if t > ks.set.maxTime || maximum(res) < 5.e-7

@@ -479,17 +479,7 @@ function reconstruct4!(
 
     for j in axes(sw, 2)
         swj = @view sw[:, j]
-        reconstruct4!(
-            swj,
-            wN[:, j],
-            w1[:, j],
-            w2[:, j],
-            w3[:, j],
-            Δx1,
-            Δx2,
-            Δx3,
-            limiter,
-        )
+        reconstruct4!(swj, wN[:, j], w1[:, j], w2[:, j], w3[:, j], Δx1, Δx2, Δx3, limiter)
     end
 
 end

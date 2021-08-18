@@ -247,16 +247,21 @@ KitBase.boltzmann_ode!(zeros(16, 16, 16), rand(16, 16, 16), (1.0, 5, phi, psi, p
 KitBase.bgk_ode!(zeros(16, 16, 16), rand(16, 16, 16), (rand(16, 16, 16), 1e-2), 0.0)
 
 vs = KitBase.VSpace3D(-5.0, 5.0, 16, -5.0, 5.0, 16, -5.0, 5.0, 16, "algebra")
-u, v, w = vs.u[:,1,1], vs.v[1,:,1], vs.w[1,1,:]
+u, v, w = vs.u[:, 1, 1], vs.v[1, :, 1], vs.w[1, 1, :]
 vnu = hcat(vs.u[:], vs.v[:], vs.w[:])
-uuni1d = linspace(vs.u[1,1,1], vs.u[end,1,1], 16)
-vuni1d = linspace(vs.v[1,1,1], vs.v[1,end,1], 16)
-wuni1d = linspace(vs.w[1,1,1], vs.w[1,1,end], 16)
+uuni1d = linspace(vs.u[1, 1, 1], vs.u[end, 1, 1], 16)
+vuni1d = linspace(vs.v[1, 1, 1], vs.v[1, end, 1], 16)
+wuni1d = linspace(vs.w[1, 1, 1], vs.w[1, 1, end], 16)
 u13d = [uuni1d[i] for i = 1:16, j = 1:16, k = 1:16]
 v13d = [vuni1d[j] for i = 1:16, j = 1:16, k = 1:16]
 w13d = [wuni1d[k] for i = 1:16, j = 1:16, k = 1:16]
 vuni = hcat(u13d[:], v13d[:], w13d[:])
-KitBase.boltzmann_nuode!(zeros(16, 16, 16), rand(16, 16, 16), (5.0, 5, phi, psi, phipsi, u, v, w, vnu, uuni1d, vuni1d, wuni1d, vuni), 0.)
+KitBase.boltzmann_nuode!(
+    zeros(16, 16, 16),
+    rand(16, 16, 16),
+    (5.0, 5, phi, psi, phipsi, u, v, w, vnu, uuni1d, vuni1d, wuni1d, vuni),
+    0.0,
+)
 
 τ = KitBase.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)

@@ -155,9 +155,7 @@ end
 """
     timestep(KS, ctr, simTime)
 
-Calculate timestep
-
-@return: Δt
+Calculate timestep based on current solutions
 
 """
 function timestep(
@@ -173,16 +171,7 @@ function timestep(
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             prim = ctr[i].prim
             vmax = abs(ctr[i].prim[2])
-            tmax = max(tmax, vmax / ctr[i].dx)
-        end
-
-    elseif ctr[1] isa ControlVolume1D
-
-        @inbounds Threads.@threads for i = 1:KS.pSpace.nx
-            prim = ctr[i].prim
-            sos = sound_speed(prim, KS.gas.γ)
-            vmax = abs(prim[2]) + sos
-            tmax = max(tmax, vmax / ctr[i].dx)
+            tmax = max(tmax, vmax / KS.ps.dx[i])
         end
 
     elseif KS.set.nSpecies == 1
@@ -190,8 +179,14 @@ function timestep(
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
-            vmax = max(KS.vSpace.u1, abs(prim[2])) + sos
-            tmax = max(tmax, vmax / ctr[i].dx)
+            vmax = begin
+                if KS.vs isa Nothing
+                    abs(prim[2]) + sos
+                else
+                    max(KS.vSpace.u1, abs(prim[2])) + sos
+                end
+            end
+            tmax = max(tmax, vmax / KS.ps.dx[i])
         end
 
     elseif KS.set.nSpecies == 2
@@ -199,12 +194,18 @@ function timestep(
         @inbounds Threads.@threads for i = 1:KS.pSpace.nx
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
-            vmax = max(maximum(KS.vSpace.u1), maximum(abs.(prim[2, :]))) + sos
+            vmax = begin
+                if KS.vs isa Nothing
+                    maximum(abs.(prim[2, :])) + sos
+                else
+                    max(maximum(KS.vSpace.u1), maximum(abs.(prim[2, :]))) + sos
+                end
+            end
 
             if KS.set.space[3:4] in ["3f", "4f"]
-                tmax = max(tmax, vmax / ctr[i].dx, KS.gas.sol / ctr[i].dx)
+                tmax = max(tmax, vmax / KS.ps.dx[i], KS.gas.sol / KS.ps.dx[i])
             else
-                tmax = max(tmax, vmax / ctr[i].dx)
+                tmax = max(tmax, vmax / KS.ps.dx[i])
             end
         end
 
@@ -223,24 +224,40 @@ function timestep(
     simTime,
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
 
+    nx, ny, dx, dy = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
+        else
+            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
+        end
+    end
+
     tmax = 0.0
 
     if KS.set.nSpecies == 1
 
-        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
-            for i = 1:KS.pSpace.nx
+        @inbounds Threads.@threads for j = 1:ny
+            for i = 1:nx
                 prim = ctr[i, j].prim
                 sos = sound_speed(prim, KS.gas.γ)
-                umax = max(KS.vSpace.u1, abs(prim[2])) + sos
-                vmax = max(KS.vSpace.v1, abs(prim[3])) + sos
-                tmax = max(tmax, umax / ctr[i, j].dx + vmax / ctr[i, j].dy)
+                umax = ifelse(
+                    KS.vs isa Nothing,
+                    abs(prim[2]) + sos,
+                    max(KS.vSpace.u1, abs(prim[2])) + sos,
+                )
+                vmax = ifelse(
+                    KS.vs isa Nothing,
+                    abs(prim[3]) + sos,
+                    max(KS.vSpace.v1, abs(prim[3])) + sos,
+                )
+                tmax = max(tmax, umax / dx[i, j] + vmax / dy[i, j])
             end
         end
 
     elseif KS.set.nSpecies == 2
 
-        @inbounds Threads.@threads for j = 1:KS.pSpace.ny
-            for i = 1:KS.pSpace.nx
+        @inbounds Threads.@threads for j = 1:ny
+            for i = 1:nx
                 prim = ctr[i, j].prim
                 sos = sound_speed(prim, KS.gas.γ)
                 umax = max(maximum(KS.vSpace.u1), maximum(abs.(prim[2, :]))) + sos
@@ -249,11 +266,11 @@ function timestep(
                 if KS.set.space[3:4] in ["3f", "4f"]
                     tmax = max(
                         tmax,
-                        umax / ctr[i, j].dx + vmax / ctr[i, j].dy,
-                        KS.gas.sol / ctr[i, j].dx + KS.gas.sol / ctr[i, j].dy,
+                        umax / dx[i, j] + vmax / dy[i, j],
+                        KS.gas.sol / dx[i, j] + KS.gas.sol / dy[i, j],
                     )
                 else
-                    tmax = max(tmax, umax / ctr[i, j].dx + vmax / ctr[i, j].dy)
+                    tmax = max(tmax, umax / dx[i, j] + vmax / dy[i, j])
                 end
             end
         end

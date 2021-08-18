@@ -191,7 +191,7 @@ function VSpace2D(
             elseif i == length(_u)
                 _du[i] = _u[end] - _u[end-1]
             else
-                _du[i] = (_u[i+1] - _u[i-1]) / 2 
+                _du[i] = (_u[i+1] - _u[i-1]) / 2
             end
         end
         _dv = zero(_v)
@@ -201,7 +201,7 @@ function VSpace2D(
             elseif i == length(_v)
                 _dv[i] = _v[end] - _v[end-1]
             else
-                _dv[i] = (_v[i+1] - _v[i-1]) / 2 
+                _dv[i] = (_v[i+1] - _v[i-1]) / 2
             end
         end
         du1, dv1 = meshgrid(_du, _dv)
@@ -337,7 +337,7 @@ function VSpace3D(
         du .= permutedims(du1, [3, 2, 1])
         dv .= permutedims(dv1, [3, 2, 1])
         dw .= permutedims(dw1, [3, 2, 1])
-        
+
         for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             weights[i, j, k] = du[i, j, k] * dv[i, j, k] * dw[i, j, k]
         end

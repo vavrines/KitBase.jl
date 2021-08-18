@@ -64,7 +64,7 @@ function flux_boundary_maxwell!(
 
     @assert length(bc) == 3
 
-    primL, primR = ifelse(rot==1, (bc, conserve_prim(w, γ)), (conserve_prim(w, γ), bc))
+    primL, primR = ifelse(rot == 1, (bc, conserve_prim(w, γ)), (conserve_prim(w, γ), bc))
 
     Mu1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)
     Mu2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
@@ -72,7 +72,7 @@ function flux_boundary_maxwell!(
     Muv_L = moments_conserve(MuL1, Mxi1, 1, 0)
     Muv_R = moments_conserve(MuR2, Mxi2, 1, 0)
 
-    ρ = ifelse(rot==1, -primR[1] * Muv_R[1] / Muv_L[1], -primL[1] * Muv_L[1] / Muv_R[1])
+    ρ = ifelse(rot == 1, -primR[1] * Muv_R[1] / Muv_L[1], -primL[1] * Muv_L[1] / Muv_R[1])
 
     @. fw = ρ * (Muv_L + Muv_R) * dt
 
@@ -147,7 +147,7 @@ function flux_boundary_maxwell!(
 
     @assert length(bc) == 4
 
-    primL, primR = ifelse(rot==1, (bc, conserve_prim(w, γ)), (conserve_prim(w, γ), bc))
+    primL, primR = ifelse(rot == 1, (bc, conserve_prim(w, γ)), (conserve_prim(w, γ), bc))
 
     Mu1, Mv1, Mxi1, MuL1, MuR1 = gauss_moments(primL, inK)
     Mu2, Mv2, Mxi2, MuL2, MuR2 = gauss_moments(primR, inK)
@@ -155,7 +155,7 @@ function flux_boundary_maxwell!(
     Muv_L = moments_conserve(MuL1, Mv1, Mxi1, 1, 0, 0)
     Muv_R = moments_conserve(MuR2, Mv2, Mxi2, 1, 0, 0)
 
-    ρ = ifelse(rot==1, -primR[1] * Muv_R[1] / Muv_L[1], -primL[1] * Muv_L[1] / Muv_R[1])
+    ρ = ifelse(rot == 1, -primR[1] * Muv_R[1] / Muv_L[1], -primL[1] * Muv_L[1] / Muv_R[1])
 
     @. fw = ρ * (Muv_L + Muv_R) * dt * len
 
@@ -297,8 +297,12 @@ function flux_boundary_maxwell!(
     δ = heaviside.(u .* rot)
     SF = sum(ω .* u .* f .* (1.0 .- δ))
     SG =
-        (bc[end] / π)^1.5 *
-        sum(ω .* u .* exp.(-bc[end] .* ((u .- bc[2]) .^ 2 .+ (v .- bc[3]) .^ 2 .+ (w .- bc[4]) .^ 2)) .* δ)
+        (bc[end] / π)^1.5 * sum(
+            ω .* u .*
+            exp.(
+                -bc[end] .* ((u .- bc[2]) .^ 2 .+ (v .- bc[3]) .^ 2 .+ (w .- bc[4]) .^ 2),
+            ) .* δ,
+        )
     prim = [-SF / SG; bc[2:end]]
 
     M = maxwellian(u, v, w, prim)
@@ -309,11 +313,7 @@ function flux_boundary_maxwell!(
     fw[3] = discrete_moments(fWall .* u, v, ω, 1) * area * dt
     fw[4] = discrete_moments(fWall .* u, w, ω, 1) * area * dt
     fw[5] =
-        (
-            0.5 * discrete_moments(fWall .* (u .^ 2 .+ v .^ 2 + w .^2), u, ω, 1)
-        ) *
-        area *
-        dt
+        (0.5 * discrete_moments(fWall .* (u .^ 2 .+ v .^ 2 + w .^ 2), u, ω, 1)) * area * dt
 
     @. ff = u * fWall * area * dt
 

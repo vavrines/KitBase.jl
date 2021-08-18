@@ -60,7 +60,7 @@ function flux_gks(
 
     u = primL[1] * moments_conserve(MuL1, 0) + primR[1] * moments_conserve(MuR2, 0)
     prim = ifelse(a == 0, conserve_prim(u), conserve_prim(u, a))
-    tau = 2.0 * abs(uL - uR) / (abs(uL) + abs(uR)) * dt + 2.0 * μ
+    tau = 2.0 * μ + 1.0 * abs(uL - uR) / (abs(uL) + abs(uR)) * dt
 
     faL = pdf_slope(uL, suL)
     Δ = -primL[1] * moments_conserve_slope(faL, Mu1, 1)
@@ -78,9 +78,9 @@ function flux_gks(
     Δ =
         -prim[1] *
         (moments_conserve_slope(gaL, MuL, 1) + moments_conserve_slope(gaR, MuR, 1))
-    # sw = (uR - uL) / (dxL + dxR)
-    # ga = pdf_slope(u, sw)
-    # Δ = -prim[1] .* moments_conserve_slope(ga, Mu, 1)
+    #sw = (uR - uL) / (dxL + dxR)
+    #ga = pdf_slope(u, sw)
+    #Δ = -prim[1] .* moments_conserve_slope(ga, Mu, 1)
     gaT = pdf_slope(u, Δ)
 
     # time-integration constants
@@ -95,11 +95,11 @@ function flux_gks(
     Muv = moments_conserve(Mu, 1)
     MauL = moments_conserve_slope(gaL, MuL, 2)
     MauR = moments_conserve_slope(gaR, MuR, 2)
-    # Mau = moments_conserve_slope(ga, MuR, 2)
+    #Mau = moments_conserve_slope(ga, MuR, 2)
     MauT = moments_conserve_slope(gaT, Mu, 1)
 
     fw = Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * (MauL + MauR) + Mt[3] * prim[1] * MauT
-    # fw = Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * Mau + Mt[3] * prim[1] * MauT
+    #fw = Mt[1] * prim[1] * Muv + Mt[2] * prim[1] * Mau + Mt[3] * prim[1] * MauT
 
     # flux related to upwind distribution
     MuvL = moments_conserve(MuL1, 1)
@@ -477,10 +477,7 @@ function flux_gks!(
     @. fh =
         Mt[1] * u * H +
         Mt[2] * u^2 * (gaL[1] * H + gaL[2] * u * H + 0.5 * gaL[3] * (u^2 * H)) * δ +
-        Mt[2] *
-        u^2 *
-        (gaR[1] * H + gaR[2] * u * H + 0.5 * gaR[3] * (u^2 * H)) *
-        (1.0 - δ) +
+        Mt[2] * u^2 * (gaR[1] * H + gaR[2] * u * H + 0.5 * gaR[3] * (u^2 * H)) * (1.0 - δ) +
         Mt[3] * u * (gaT[1] * H + gaT[2] * u * H + 0.5 * gaT[3] * (u^2 * H)) +
         Mt[4] * u * HL * δ -
         (Mt[5] + tau * Mt[4]) *
@@ -993,34 +990,59 @@ function flux_gks!(
 
     @. ff =
         Mt[1] * u * H +
-        Mt[2] * u^2 * (gaL[1] * H + gaL[2] * u * H + gaL[3] * v * H + 0.5 * gaL[4] * (u^2 + v^2) * H) * δ +
+        Mt[2] *
+        u^2 *
+        (gaL[1] * H + gaL[2] * u * H + gaL[3] * v * H + 0.5 * gaL[4] * (u^2 + v^2) * H) *
+        δ +
         Mt[2] *
         u^2 *
         (gaR[1] * H + gaR[2] * u * H + gaR[3] * v * H + 0.5 * gaR[4] * (u^2 + v^2) * H) *
         (1.0 - δ) +
-        Mt[3] * u * (gaT[1] * H + gaT[2] * u * H + gaT[3] * v * H + 0.5 * gaT[4] * (u^2 + v^2) * H) +
+        Mt[3] *
+        u *
+        (gaT[1] * H + gaT[2] * u * H + gaT[3] * v * H + 0.5 * gaT[4] * (u^2 + v^2) * H) +
         Mt[4] * u * HL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (faL[1] * HL + faL[2] * u * HL + faL[3] * v * HL + 0.5 * faL[4] * (u^2 + v^2) * HL) *
+        (
+            faL[1] * HL +
+            faL[2] * u * HL +
+            faL[3] * v * HL +
+            0.5 * faL[4] * (u^2 + v^2) * HL
+        ) *
         δ + Mt[4] * u * HR * (1.0 - δ) -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (faR[1] * HR + faR[2] * u * HR + faR[3] * v * HL + 0.5 * faR[4] * (u^2 + v^2) * HR) *
+        (
+            faR[1] * HR +
+            faR[2] * u * HR +
+            faR[3] * v * HL +
+            0.5 * faR[4] * (u^2 + v^2) * HR
+        ) *
         (1.0 - δ) -
         tau *
         Mt[4] *
         u *
-        (faTL[1] * HL + faTL[2] * u * HL + faTL[3] * v * HL + 0.5 * faTL[4] * (u^2 + v^2) * HL) *
+        (
+            faTL[1] * HL +
+            faTL[2] * u * HL +
+            faTL[3] * v * HL +
+            0.5 * faTL[4] * (u^2 + v^2) * HL
+        ) *
         δ -
         tau *
         Mt[4] *
         u *
-        (faTR[1] * HR + faTR[2] * u * HR + faTR[3] * v * HR + 0.5 * faTR[4] * (u^2 + v^2) * HR) *
+        (
+            faTR[1] * HR +
+            faTR[2] * u * HR +
+            faTR[3] * v * HR +
+            0.5 * faTR[4] * (u^2 + v^2) * HR
+        ) *
         (1.0 - δ)
 
     ff .*= dy
-    
+
     return nothing
 
 end
@@ -1136,62 +1158,142 @@ function flux_gks!(
 
     @. fh =
         Mt[1] * u * H +
-        Mt[2] * u^2 * (gaL[1] * H + gaL[2] * u * H + gaL[3] * v * H + 0.5 * gaL[4] * ((u^2 + v^2) * H + B)) * δ +
         Mt[2] *
         u^2 *
-        (gaR[1] * H + gaR[2] * u * H + gaR[3] * v * H + 0.5 * gaR[4] * ((u^2 + v^2) * H + B)) *
+        (
+            gaL[1] * H +
+            gaL[2] * u * H +
+            gaL[3] * v * H +
+            0.5 * gaL[4] * ((u^2 + v^2) * H + B)
+        ) *
+        δ +
+        Mt[2] *
+        u^2 *
+        (
+            gaR[1] * H +
+            gaR[2] * u * H +
+            gaR[3] * v * H +
+            0.5 * gaR[4] * ((u^2 + v^2) * H + B)
+        ) *
         (1.0 - δ) +
-        Mt[3] * u * (gaT[1] * H + gaT[2] * u * H + gaT[3] * v * H + 0.5 * gaT[4] * ((u^2 + v^2) * H + B)) +
+        Mt[3] *
+        u *
+        (
+            gaT[1] * H +
+            gaT[2] * u * H +
+            gaT[3] * v * H +
+            0.5 * gaT[4] * ((u^2 + v^2) * H + B)
+        ) +
         Mt[4] * u * HL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (faL[1] * HL + faL[2] * u * HL + faL[3] * v * HL + 0.5 * faL[4] * ((u^2 + v^2) * HL + BL)) *
+        (
+            faL[1] * HL +
+            faL[2] * u * HL +
+            faL[3] * v * HL +
+            0.5 * faL[4] * ((u^2 + v^2) * HL + BL)
+        ) *
         δ + Mt[4] * u * HR * (1.0 - δ) -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (faR[1] * HR + faR[2] * u * HR + faR[3] * v * HR + 0.5 * faR[4] * ((u^2 + v^2) * HR + BR)) *
+        (
+            faR[1] * HR +
+            faR[2] * u * HR +
+            faR[3] * v * HR +
+            0.5 * faR[4] * ((u^2 + v^2) * HR + BR)
+        ) *
         (1.0 - δ) -
         tau *
         Mt[4] *
         u *
-        (faTL[1] * HL + faTL[2] * u * HL + faTL[3] * v * HL + 0.5 * faTL[4] * ((u^2 + v^2) * HL + BL)) *
+        (
+            faTL[1] * HL +
+            faTL[2] * u * HL +
+            faTL[3] * v * HL +
+            0.5 * faTL[4] * ((u^2 + v^2) * HL + BL)
+        ) *
         δ -
         tau *
         Mt[4] *
         u *
-        (faTR[1] * HR + faTR[2] * u * HR + faTR[3] * v * HR + 0.5 * faTR[4] * ((u^2 + v^2) * HR + BR)) *
+        (
+            faTR[1] * HR +
+            faTR[2] * u * HR +
+            faTR[3] * v * HR +
+            0.5 * faTR[4] * ((u^2 + v^2) * HR + BR)
+        ) *
         (1.0 - δ)
     @. fb =
         Mt[1] * u * B +
-        Mt[2] * u^2 * (gaL[1] * B + gaL[2] * u * B + gaL[3] * v * B + 0.5 * gaL[4] * ((u^2 + v^2) * B + Mxi[2] * H)) * δ +
         Mt[2] *
         u^2 *
-        (gaR[1] * B + gaR[2] * u * B + gaR[3] * v * B + 0.5 * gaR[4] * ((u^2 + v^2) * B + Mxi[2] * H)) *
+        (
+            gaL[1] * B +
+            gaL[2] * u * B +
+            gaL[3] * v * B +
+            0.5 * gaL[4] * ((u^2 + v^2) * B + Mxi[2] * H)
+        ) *
+        δ +
+        Mt[2] *
+        u^2 *
+        (
+            gaR[1] * B +
+            gaR[2] * u * B +
+            gaR[3] * v * B +
+            0.5 * gaR[4] * ((u^2 + v^2) * B + Mxi[2] * H)
+        ) *
         (1.0 - δ) +
-        Mt[3] * u * (gaT[1] * B + gaT[2] * u * B + gaT[3] * v * B + 0.5 * gaT[4] * ((u^2 + v^2) * B + Mxi[2] * H)) +
+        Mt[3] *
+        u *
+        (
+            gaT[1] * B +
+            gaT[2] * u * B +
+            gaT[3] * v * B +
+            0.5 * gaT[4] * ((u^2 + v^2) * B + Mxi[2] * H)
+        ) +
         Mt[4] * u * BL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (faL[1] * BL + faL[2] * u * BL + faL[3] * v * BL + 0.5 * faL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)) *
+        (
+            faL[1] * BL +
+            faL[2] * u * BL +
+            faL[3] * v * BL +
+            0.5 * faL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)
+        ) *
         δ + Mt[4] * u * BR * (1.0 - δ) -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (faR[1] * BR + faR[2] * u * BR + faR[3] * v * BR + 0.5 * faR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)) *
+        (
+            faR[1] * BR +
+            faR[2] * u * BR +
+            faR[3] * v * BR +
+            0.5 * faR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)
+        ) *
         (1.0 - δ) -
         tau *
         Mt[4] *
         u *
-        (faTL[1] * BL + faTL[2] * u * BL + faTL[3] * v * BL + 0.5 * faTL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)) *
+        (
+            faTL[1] * BL +
+            faTL[2] * u * BL +
+            faTL[3] * v * BL +
+            0.5 * faTL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)
+        ) *
         δ -
         tau *
         Mt[4] *
         u *
-        (faTR[1] * BR + faTR[2] * u * BR + faTR[3] * v * BR + 0.5 * faTR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)) *
+        (
+            faTR[1] * BR +
+            faTR[2] * u * BR +
+            faTR[3] * v * BR +
+            0.5 * faTR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)
+        ) *
         (1.0 - δ)
-    
+
     fh .*= dy
     fb .*= dy
-    
+
     return nothing
 
 end
@@ -1240,7 +1342,8 @@ function flux_gks!(
     MauR = moments_conserve_slope(faR, MuR2, Mv2, Mxi2, 2, 0)
     MauRT = moments_conserve_slope(faTR, MuR2, Mv2, Mxi2, 1, 0)
 
-    @. fw = primL[1] * (MuvL - tau * MauL - tau * MauLT) + 
+    @. fw =
+        primL[1] * (MuvL - tau * MauL - tau * MauLT) +
         primR[1] * (MuvR - tau * MauR - tau * MauRT)
 
     return nothing

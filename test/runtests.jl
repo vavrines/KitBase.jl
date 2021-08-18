@@ -1,6 +1,7 @@
 using Test, KitBase
 
 cd(@__DIR__)
+include("test_data.jl")
 include("test_struct.jl")
 include("test_io.jl")
 include("test_math.jl")
@@ -11,6 +12,7 @@ include("test_quadrature.jl")
 include("test_config.jl")
 include("test_flux.jl")
 include("test_reconstruction.jl")
+include("test_solver_scalar.jl")
 include("test_solver_1d.jl")
 include("test_solver_2d.jl")
 include("test_step.jl")

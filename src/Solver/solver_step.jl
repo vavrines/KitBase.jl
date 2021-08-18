@@ -19,6 +19,32 @@ Update flow variables with finite volume formulation
 """
 function step!(
     fwL::X,
+    w::X,
+    prim::AbstractVector{X},
+    fwR::X,
+    a,
+    dx,
+    RES,
+    AVG,
+) where {X<:AbstractFloat} # scalar
+
+    #--- store W^n and calculate H^n,\tau^n ---#
+    w_old = deepcopy(w)
+
+    #--- update W^{n+1} ---#
+    w += (fwL - fwR) / dx
+    prim .= conserve_prim(w, a)
+
+    #--- record residuals ---#
+    RES += (w - w_old)^2
+    AVG += abs(w)
+
+    return w, RES, AVG
+
+end
+
+function step!(
+    fwL::X,
     w::Y,
     prim::Y,
     fwR::X,
@@ -569,6 +595,7 @@ function step!(
     faceL::Interface1D4F,
     cell::ControlVolume1D4F,
     faceR::Interface1D4F,
+    dx,
     dt,
     RES,
     AVG,
@@ -582,7 +609,7 @@ function step!(
     prim_old = deepcopy(cell.prim)
 
     # flux -> w^{n+1}
-    @. cell.w += (faceL.fw - faceR.fw) / cell.dx
+    @. cell.w += (faceL.fw - faceR.fw) / dx
     cell.prim .= mixture_conserve_prim(cell.w, KS.gas.γ)
 
     # temperature protection
@@ -643,14 +670,14 @@ function step!(
 
     #--- update electromagnetic variables ---#
     # flux -> E^{n+1} & B^{n+1}
-    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / cell.dx
-    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / cell.dx
-    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / cell.dx
-    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / cell.dx
-    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / cell.dx
-    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / cell.dx
-    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / cell.dx
-    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / cell.dx
+    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / dx
+    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / dx
+    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / dx
+    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / dx
+    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / dx
+    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / dx
+    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / dx
+    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / dx
 
     for i = 1:3
         if 1 ∈ vcat(isnan.(cell.E), isnan.(cell.B))
@@ -720,10 +747,10 @@ function step!(
 
     #--- update particle distribution function ---#
     # flux -> f^{n+1}
-    @. cell.h0 += (faceL.fh0 - faceR.fh0) / cell.dx
-    @. cell.h1 += (faceL.fh1 - faceR.fh1) / cell.dx
-    @. cell.h2 += (faceL.fh2 - faceR.fh2) / cell.dx
-    @. cell.h3 += (faceL.fh3 - faceR.fh3) / cell.dx
+    @. cell.h0 += (faceL.fh0 - faceR.fh0) / dx
+    @. cell.h1 += (faceL.fh1 - faceR.fh1) / dx
+    @. cell.h2 += (faceL.fh2 - faceR.fh2) / dx
+    @. cell.h3 += (faceL.fh3 - faceR.fh3) / dx
 
     # force -> f^{n+1} : step 1
     for j in axes(cell.h0, 2)
@@ -800,6 +827,7 @@ function step!(
     faceL::Interface1D3F,
     cell::ControlVolume1D3F,
     faceR::Interface1D3F,
+    dx,
     dt,
     RES,
     AVG,
@@ -813,7 +841,7 @@ function step!(
     prim_old = deepcopy(cell.prim)
 
     # flux -> w^{n+1}
-    @. cell.w += (faceL.fw - faceR.fw) / cell.dx
+    @. cell.w += (faceL.fw - faceR.fw) / dx
     cell.prim .= mixture_conserve_prim(cell.w, KS.gas.γ)
 
     # temperature protection
@@ -874,14 +902,14 @@ function step!(
 
     #--- update electromagnetic variables ---#
     # flux -> E^{n+1} & B^{n+1}
-    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / cell.dx
-    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / cell.dx
-    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / cell.dx
-    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / cell.dx
-    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / cell.dx
-    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / cell.dx
-    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / cell.dx
-    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / cell.dx
+    cell.E[1] -= dt * (faceL.femR[1] + faceR.femL[1]) / dx
+    cell.E[2] -= dt * (faceL.femR[2] + faceR.femL[2]) / dx
+    cell.E[3] -= dt * (faceL.femR[3] + faceR.femL[3]) / dx
+    cell.B[1] -= dt * (faceL.femR[4] + faceR.femL[4]) / dx
+    cell.B[2] -= dt * (faceL.femR[5] + faceR.femL[5]) / dx
+    cell.B[3] -= dt * (faceL.femR[6] + faceR.femL[6]) / dx
+    cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / dx
+    cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / dx
 
     for i = 1:3
         if 1 ∈ vcat(isnan.(cell.E), isnan.(cell.B))
@@ -951,9 +979,9 @@ function step!(
 
     #--- update particle distribution function ---#
     # flux -> f^{n+1}
-    @. cell.h0 += (faceL.fh0 - faceR.fh0) / cell.dx
-    @. cell.h1 += (faceL.fh1 - faceR.fh1) / cell.dx
-    @. cell.h2 += (faceL.fh2 - faceR.fh2) / cell.dx
+    @. cell.h0 += (faceL.fh0 - faceR.fh0) / dx
+    @. cell.h1 += (faceL.fh1 - faceR.fh1) / dx
+    @. cell.h2 += (faceL.fh2 - faceR.fh2) / dx
 
     # force -> f^{n+1} : step 1
     for j in axes(cell.h0, 3) # component
@@ -1054,16 +1082,41 @@ function step!(
     dirc::T2,
     RES,
     AVG,
-) where {
-    T1<:AbstractVector{<:AbstractFloat},
-    T2<:AbstractVector{<:Real},
-}
+) where {T1<:AbstractVector{<:AbstractFloat},T2<:AbstractVector{<:Real}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
 
     #--- update W^{n+1} ---#
     @. w -= (fw1 * dirc[1] + fw2 * dirc[2] + fw3 * dirc[3]) / Δs
+    prim .= conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+
+end
+
+#--- quadrilateral ---#
+function step!(
+    w::T1,
+    prim::T1,
+    fwL::T1,
+    fwR::T1,
+    fwD::T1,
+    fwU::T1,
+    γ,
+    Δs,
+    RES,
+    AVG,
+    collision = :bgk,
+) where {T1<:AbstractArray{<:AbstractFloat,1}}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    #--- update W^{n+1} ---#
+    @. w += (fwL - fwR + fwD - fwU) / Δs
     prim .= conserve_prim(w, γ)
 
     #--- record residuals ---#
@@ -1422,7 +1475,9 @@ function step!(
     boltzmann_fft!(Q, f, Kn_bz, nm, phi, psi, phipsi)
 
     for k in axes(f, 3), j in axes(f, 2), i in axes(f, 1)
-        f[i, j, k] += (ffL[i, j, k] - ffR[i, j, k] + ffD[i, j, k] - ffU[i, j, k]) / Δs + dt * Q[i, j, k]
+        f[i, j, k] +=
+            (ffL[i, j, k] - ffR[i, j, k] + ffD[i, j, k] - ffU[i, j, k]) / Δs +
+            dt * Q[i, j, k]
     end
 
 end

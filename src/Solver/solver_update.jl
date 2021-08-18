@@ -80,13 +80,64 @@ function update!(
     ctr::Y,
     face::Z,
     dt,
-    residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    residual::T; # 1D / 2D
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D,1},
     Z<:AbstractArray{Interface1D,1},
+    T<:AbstractFloat,
+}
+
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
+
+    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+        ctr[i].w, sumRes, sumAvg = step!(
+            face[i].fw,
+            ctr[i].w,
+            ctr[i].prim,
+            face[i+1].fw,
+            KS.gas.a,
+            KS.ps.dx[i],
+            sumRes,
+            sumAvg,
+        )
+    end
+
+    residual = sqrt(sumRes * KS.pSpace.nx) / (sumAvg + 1.e-7)
+
+    if bc[1] == :period
+        ctr[0].w = ctr[KS.pSpace.nx].w
+        ctr[0].sw = ctr[KS.pSpace.nx].sw
+        ctr[KS.pSpace.nx+1].w = ctr[1].w
+        ctr[KS.pSpace.nx+1].sw = ctr[1].sw
+    elseif bc[1] == :extra
+        ctr[0].w = ctr[1].w
+    end
+
+    if bc[2] == :extra
+        ctr[KS.pSpace.nx+1].w = ctr[KS.pSpace.nx].w
+    end
+
+    return residual
+
+end
+
+function update!(
+    KS::X,
+    ctr::Y,
+    face::Z,
+    dt,
+    residual::AbstractArray{T}; # 1D / 2D
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolume1D,1},
+    Z<:AbstractArray{Interface1D,1},
+    T<:AbstractFloat,
 }
 
     sumRes = zero(KS.ib.wL)
@@ -100,7 +151,7 @@ function update!(
                 ctr[i].prim,
                 face[i+1].fw,
                 KS.gas.γ,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 sumRes,
                 sumAvg,
             )
@@ -118,7 +169,7 @@ function update!(
                 KS.gas.me,
                 KS.gas.ne,
                 KS.gas.Kn[1],
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -130,7 +181,11 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; bc = bc)
+    if bc isa Symbol
+        update_boundary!(KS, ctr, face, dt, residual; bc = [bc, bc])
+    else
+        update_boundary!(KS, ctr, face, dt, residual; bc = bc)
+    end
 
     return nothing
 
@@ -142,8 +197,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D1F,1},
@@ -170,7 +225,7 @@ function update!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -195,7 +250,7 @@ function update!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -208,7 +263,11 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+    if bc isa Symbol
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc])
+    else
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+    end
 
     return nothing
 
@@ -220,8 +279,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume1D2F,1},
@@ -251,7 +310,7 @@ function update!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -281,7 +340,7 @@ function update!(
                 KS.gas.ne,
                 KS.gas.Kn[1],
                 KS.gas.Pr,
-                ctr[i].dx,
+                KS.ps.dx[i],
                 dt,
                 sumRes,
                 sumAvg,
@@ -294,7 +353,11 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+    if bc isa Symbol
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc])
+    else
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+    end
 
     return nothing
 
@@ -306,8 +369,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -319,14 +382,18 @@ function update!(
     sumAvg = zeros(axes(KS.ib.wL))
 
     @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
-        step!(KS, face[i], ctr[i], face[i+1], dt, sumRes, sumAvg, coll, isMHD)
+        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
+    if bc isa Symbol
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], isMHD = isMHD)
+    else
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
+    end
 
     #=
     ng = 1 - first(eachindex(KS.pSpace.x))
@@ -413,8 +480,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
@@ -426,14 +493,18 @@ function update!(
     sumAvg = zeros(axes(KS.ib.wL))
 
     @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
-        step!(KS, face[i], ctr[i], face[i+1], dt, sumRes, sumAvg, coll, isMHD)
+        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
+    if bc isa Symbol
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], isMHD = isMHD)
+    else
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
+    end
 
     return nothing
 
@@ -446,21 +517,91 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume2D1F,2},
-    Z<:AbstractArray{Interface2D1F,2},
+    Y<:AbstractArray{ControlVolume2D,2},
+    Z<:AbstractArray{Interface2D,2},
 }
+
+    nx, ny, dx, dy = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
+        else
+            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
+        end
+    end
 
     sumRes = zero(KS.ib.wL)
     sumAvg = zero(KS.ib.wL)
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:KS.pSpace.ny-1
-            for i = 2:KS.pSpace.nx-1
+        @inbounds for j = 2:ny-1
+            for i = 2:nx-1
+                step!(
+                    ctr[i, j].w,
+                    ctr[i, j].prim,
+                    a1face[i, j].fw,
+                    a1face[i+1, j].fw,
+                    a2face[i, j].fw,
+                    a2face[i, j+1].fw,
+                    KS.gas.γ,
+                    dx[i, j] * dy[i, j],
+                    sumRes,
+                    sumAvg,
+                    coll,
+                )
+            end
+        end
+
+    end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
+    end
+
+    if bc isa Symbol
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = [bc, bc, bc, bc])
+    else
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+    end
+
+    return nothing
+
+end
+
+function update!(
+    KS::X,
+    ctr::Y,
+    a1face::Z,
+    a2face::Z,
+    dt,
+    residual;
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
+) where {
+    X<:AbstractSolverSet,
+    Y<:AbstractArray{ControlVolume2D1F,2},
+    Z<:AbstractArray{Interface2D1F,2},
+}
+
+    nx, ny, dx, dy = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
+        else
+            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
+        end
+    end
+
+    sumRes = zero(KS.ib.wL)
+    sumAvg = zero(KS.ib.wL)
+
+    if ndims(sumRes) == 1
+
+        @inbounds for j = 2:ny-1
+            for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
                     ctr[i, j].prim,
@@ -480,7 +621,7 @@ function update!(
                     KS.gas.μᵣ,
                     KS.gas.ω,
                     KS.gas.Pr,
-                    ctr[i, j].dx * ctr[i, j].dy,
+                    dx[i, j] * dy[i, j],
                     dt,
                     sumRes,
                     sumAvg,
@@ -492,10 +633,14 @@ function update!(
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx * KS.pSpace.ny) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+    if bc isa Symbol
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = [bc, bc, bc, bc])
+    else
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+    end
 
     return nothing
 
@@ -509,21 +654,29 @@ function update!(
     a2face::Z,
     dt,
     residual;
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolume2D2F,2},
     Z<:AbstractArray{Interface2D2F,2},
 }
 
+    nx, ny, dx, dy = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
+        else
+            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
+        end
+    end
+
     sumRes = zero(KS.ib.wL)
     sumAvg = zero(KS.ib.wL)
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:KS.pSpace.ny-1
-            for i = 2:KS.pSpace.nx-1
+        @inbounds for j = 2:ny-1
+            for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
                     ctr[i, j].prim,
@@ -549,7 +702,7 @@ function update!(
                     KS.gas.μᵣ,
                     KS.gas.ω,
                     KS.gas.Pr,
-                    ctr[i, j].dx * ctr[i, j].dy,
+                    dx[i, j] * dy[i, j],
                     dt,
                     sumRes,
                     sumAvg,
@@ -561,10 +714,14 @@ function update!(
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx * KS.pSpace.ny) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+    if bc isa Symbol
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = [bc, bc, bc, bc])
+    else
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+    end
 
     return nothing
 
@@ -576,8 +733,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolumeUS,1},
@@ -622,8 +779,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolumeUS1F,1},
@@ -681,8 +838,8 @@ function update!(
     face::Z,
     dt,
     residual; # 1D / 2D
-    coll = Symbol(KS.set.collision)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    coll = symbolize(KS.set.collision),
+    bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
     Y<:AbstractArray{ControlVolumeUS2F,1},

@@ -39,7 +39,7 @@ KitBase.sample_particle!(
 cd(@__DIR__)
 ks, ctr, face, simTime = KitBase.initialize("config.txt")
 
-KitBase.sample_particle!(ptc1, ks, ctr[1], 1)
+KitBase.sample_particle!(ptc1, ks, ctr[1], 1, 2.0, 0.05)
 
 KitBase.Particle(
     ones(50) .* 1e-3,

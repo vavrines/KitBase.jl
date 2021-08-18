@@ -56,14 +56,7 @@ function SolverSet(
     IB::Union{AbstractCondition,Nothing},
     DIR::AbstractString = @__DIR__,
 )
-    return SolverSet{
-        typeof(SET),
-        typeof(PS),
-        typeof(VS),
-        typeof(GAS),
-        typeof(IB),
-        typeof(DIR),
-    }(
+    return SolverSet{typeof(SET),typeof(PS),typeof(VS),typeof(GAS),typeof(IB),typeof(DIR)}(
         SET,
         PS,
         PS,
@@ -77,7 +70,7 @@ end
 
 function SolverSet(configfilename::T) where {T<:AbstractString}
     # generate variables from configuration file
-    dict = read_dict(configfilename)
+    dict = read_cfg(configfilename)
 
     # setup
     set = set_setup(dict)
@@ -155,23 +148,18 @@ Generate AbstractPhysicalSpace
 
 """
 function set_setup(dict::T) where {T<:AbstractDict}
-    for key in keys(dict)
-        s = key
-        @eval $s = $(dict[key])
-    end
-
     set = Setup(
-        matter,
-        case,
-        space,
-        flux,
-        collision,
-        nSpecies,
-        interpOrder,
-        limiter,
-        boundary,
-        cfl,
-        maxTime,
+        dict[:matter],
+        dict[:case],
+        dict[:space],
+        dict[:flux],
+        dict[:collision],
+        dict[:nSpecies],
+        dict[:interpOrder],
+        dict[:limiter],
+        dict[:boundary],
+        dict[:cfl],
+        dict[:maxTime],
     )
 
     return set
@@ -228,19 +216,13 @@ Generate AbstractPhysicalSpace
 
 """
 function set_geometry(dict::T) where {T<:AbstractDict}
-    for key in keys(dict)
-        s = key
-        @eval $s = $(dict[key])
-    end
-
     try
         return UnstructPSpace(dict[:mesh])
     catch
-        Dx = parse(Int, space[1])
-        if Dx == 1
-            return PSpace1D(x0, x1, nx, nxg)
-        elseif Dx == 2
-            return PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
+        if parse(Int, dict[:space][1]) == 1
+            return PSpace1D(dict[:x0], dict[:x1], dict[:nx], dict[:nxg])
+        elseif parse(Int, dict[:space][1]) == 2
+            return PSpace2D(dict[:x0], dict[:x1], dict[:nx], dict[:y0], dict[:y1], dict[:ny], dict[:nxg], dict[:nyg])
         else
             throw("No preset available for 3D simulation, please set it up manually.")
         end
@@ -272,6 +254,7 @@ function set_geometry(;
     end
 
     return pSpace
+
 end
 
 
@@ -545,17 +528,37 @@ function set_property(dict::T) where {T<:AbstractDict}
     γ = heat_capacity_ratio(dict[:inK], γD)
 
     if matter == "radiation"
-        
+
         gas = Radiation(dict[:knudsen], dict[:sigmaS], dict[:sigmaA])
 
     elseif matter == "gas"
 
         if nSpecies == 1
             μᵣ = ref_vhs_vis(dict[:knudsen], dict[:alphaRef], dict[:omegaRef])
-            gas = Gas(dict[:knudsen], dict[:mach], dict[:prandtl], dict[:inK], γ, dict[:omega], dict[:alphaRef], dict[:omegaRef], μᵣ)
+            gas = Gas(
+                dict[:knudsen],
+                dict[:mach],
+                dict[:prandtl],
+                dict[:inK],
+                γ,
+                dict[:omega],
+                dict[:alphaRef],
+                dict[:omegaRef],
+                μᵣ,
+            )
         elseif nSpecies == 2
             kne = dict[:knudsen] * (dict[:me] / dict[:mi])
-            gas = Mixture([dict[:knudsen], kne], dict[:mach], dict[:prandtl], dict[:inK], γ, dict[:mi], dict[:ni], dict[:me], dict[:ne])
+            gas = Mixture(
+                [dict[:knudsen], kne],
+                dict[:mach],
+                dict[:prandtl],
+                dict[:inK],
+                γ,
+                dict[:mi],
+                dict[:ni],
+                dict[:me],
+                dict[:ne],
+            )
         else
             throw("The gas property only supports up to two species.")
         end
@@ -784,7 +787,10 @@ function set_ib(
 
     elseif set.case == "cavity"
 
-        if set.space[3:end] == "1f2v"
+        if set.space[3:4] == "0f"
+            wL, primL, bcL, wR, primR, bcR, bcU, bcD = ib_cavity(gas.γ, uLid, vLid, tLid)
+            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)
+        elseif set.space[3:end] == "1f2v"
             wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD =
                 ib_cavity(gas.γ, uLid, vLid, tLid, vSpace.u, vSpace.v)
             ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)

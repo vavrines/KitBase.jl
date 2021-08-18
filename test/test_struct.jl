@@ -6,7 +6,19 @@ for key in keys(D)
 end
 
 #--- settings ---#
-KitBase.Setup() |> show
+Setup(
+    "gas",
+    "cylinder",
+    "2d2f",
+    "kfvs",
+    "bgk",
+    1, # species
+    2, # order of accuracy
+    "vanleer", # limiter
+    "maxwell",
+    0.5, # cfl
+    10.0, # time
+) |> show
 KitBase.Scalar(1.0, 1e-3)
 KitBase.Radiation(1e-2, 1.0, 0.0, 1e-3, 1000)
 KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01) |> show
@@ -139,12 +151,10 @@ KitBase.IB4F(
 ) |> show
 
 #--- control volume ---#
-KitBase.ControlVolume1D(x, dx, w, prim) |> show
-KitBase.ControlVolume1D1F(x, dx, w, prim, h) |> show
-KitBase.ControlVolume1D2F(x, dx, w, prim, h, b) |> show
+KitBase.ControlVolume1D(w, prim) |> show
+KitBase.ControlVolume1D1F(w, prim, h) |> show
+KitBase.ControlVolume1D2F(w, prim, h, b) |> show
 KitBase.ControlVolume1D3F(
-    x,
-    dx,
     hcat(w, w),
     hcat(prim, prim),
     zeros(nu, nu, 2),
@@ -155,8 +165,6 @@ KitBase.ControlVolume1D3F(
     zeros(3, 2),
 ) |> show
 KitBase.ControlVolume1D3F(
-    x,
-    dx,
     zeros(5, 7, 2), # indexed with [flow entry, uq, species]
     zeros(5, 7, 2),
     zeros(nu, nu, 7, 2),
@@ -167,10 +175,8 @@ KitBase.ControlVolume1D3F(
     zeros(3, 7, 2),
 ) |> show
 # Rykov
-KitBase.ControlVolume1D3F(x, dx, rand(4), rand(5), rand(nu), rand(nu), rand(nu)) |> show
+KitBase.ControlVolume1D3F(rand(4), rand(5), rand(nu), rand(nu), rand(nu)) |> show
 KitBase.ControlVolume1D4F(
-    x,
-    dx,
     hcat(w, w),
     hcat(prim, prim),
     hcat(h, h),
@@ -182,8 +188,6 @@ KitBase.ControlVolume1D4F(
     zeros(3, 2),
 ) |> show
 KitBase.ControlVolume1D4F(
-    x,
-    dx,
     zeros(5, 7, 2), # indexed with [flow entry, uq, species]
     zeros(5, 7, 2),
     zeros(nu, 7, 2),
@@ -194,14 +198,10 @@ KitBase.ControlVolume1D4F(
     zeros(3, 7),
     zeros(3, 7, 2),
 ) |> show
-KitBase.ControlVolume2D(x, dx, x, dx, w, prim) |> show
-KitBase.ControlVolume2D1F(x, dx, x, dx, w, prim, h) |> show
-KitBase.ControlVolume2D2F(x, dx, x, dx, w, prim, h, b) |> show
+KitBase.ControlVolume2D(w, prim) |> show
+KitBase.ControlVolume2D1F(w, prim, h) |> show
+KitBase.ControlVolume2D2F(w, prim, h, b) |> show
 KitBase.ControlVolume2D3F(
-    x,
-    dx,
-    x,
-    dx,
     w,
     prim,
     h,
@@ -213,10 +213,6 @@ KitBase.ControlVolume2D3F(
 ) |> show
 # Rykov
 KitBase.ControlVolume2D3F(
-    x,
-    dx,
-    x,
-    dx,
     rand(4),
     rand(4),
     rand(8, 8),
