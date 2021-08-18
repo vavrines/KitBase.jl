@@ -76,16 +76,16 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     set = set_setup(dict)
 
     # physical space
-    pSpace = set_geometry(dict)
+    ps = set_geometry(dict)
 
     # velocity space
-    vSpace = set_velocity(dict)
+    vs = set_velocity(dict)
 
     # gas property
     gas = set_property(dict)
 
     # initial & boundary condition
-    ib = set_ib(dict, set, vSpace, gas)
+    ib = set_ib(dict, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -96,7 +96,7 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     cp(configfilename, string(outputFolder, "config.txt"))
 
     # create new struct
-    return SolverSet(set, pSpace, vSpace, gas, ib, outputFolder)
+    return SolverSet(set, ps, vs, gas, ib, outputFolder)
 end
 
 function SolverSet(dict::T) where {T<:AbstractDict}
@@ -104,16 +104,16 @@ function SolverSet(dict::T) where {T<:AbstractDict}
     set = set_setup(; dict...)
 
     # physical space
-    pSpace = set_geometry(; dict...)
+    ps = set_geometry(; dict...)
 
     # velocity space
-    vSpace = set_velocity(; dict...)
+    vs = set_velocity(; dict...)
 
     # gas property
     gas = set_property(dict)
 
     # initial & boundary condition
-    ib = set_ib(dict, set, vSpace, gas)
+    ib = set_ib(dict, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -123,7 +123,7 @@ function SolverSet(dict::T) where {T<:AbstractDict}
     CSV.write(string(outputFolder, "config.csv"), dict)
 
     # create new struct
-    return SolverSet(set, pSpace, vSpace, gas, ib, outputFolder)
+    return SolverSet(set, ps, vs, gas, ib, outputFolder)
 end
 
 
@@ -625,16 +625,16 @@ end
 Generate AbstractIB
 
 """
-function set_ib(dict::T, set, vSpace, gas) where {T<:AbstractDict}
+function set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
     for key in keys(dict)
         s = key
         @eval $s = $(dict[key])
     end
 
     if @isdefined uLid
-        ib = set_ib(set, vSpace, gas, uLid, vLid, tLid)
+        ib = set_ib(set, ps, vs, gas, uLid, vLid, tLid)
     else
-        ib = set_ib(set, vSpace, gas)
+        ib = set_ib(set, ps, vs, gas)
     end
 
     return ib
@@ -642,6 +642,7 @@ end
 
 function set_ib(
     set::T,
+    pSpace,
     vSpace,
     gas,
     uLid = 0.15,
@@ -651,25 +652,15 @@ function set_ib(
 
     if set.case == "shock"
 
-        if set.nSpecies == 1
-            if set.space[3:end] == "1f1v"
-                wL, primL, fL, bcL, wR, primR, fR, bcR = ib_rh(gas.Ma, gas.γ, vSpace.u)
-                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-            elseif set.space[3:end] == "1f3v"
-                wL, primL, fL, bcL, wR, primR, fR, bcR =
-                    ib_rh(gas.Ma, gas.γ, vSpace.u, vSpace.v, vSpace.w)
-                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-            elseif set.space[3:end] == "2f1v"
-                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                    ib_rh(gas.Ma, gas.γ, gas.K, vSpace.u)
-                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
-            end
-        elseif set.nSpecies == 2
-            if set.space[3:end] == "2f1v"
-                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                    ib_rh(gas.Ma, gas.γ, gas.K, gas.mi, gas.me, gas.ni, gas.ne, vSpace.u)
-                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
-            end
+        if set.space[3:end] == "1f1v"
+            fw, ff, bcL, bcR = ib_rh(set, pSpace, vSpace, gas)
+            ib = IB1F(fw, ff, bcL, bcR)
+        elseif set.space[3:end] == "1f3v"
+            fw, ff, bcL, bcR = ib_rh(set, pSpace, vSpace, gas)
+            ib = IB3F(fw, ff, bcL, bcR)
+        elseif set.space[3:end] == "2f1v"
+            fw, fh, fb, bcL, bcR = ib_rh(set, pSpace, vSpace, gas)
+            ib = IB2F(fw, fh, fb, bcL, bcR)
         end
 
     elseif set.case == "sod"

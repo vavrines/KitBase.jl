@@ -94,33 +94,23 @@ end
 Initial & boundary condition with 1 distribution function
 
 """
-mutable struct IB1F{A,B} <: AbstractCondition
-    wL::A
-    primL::A
-    fL::B
-    bcL::A
-    wR::A
-    primR::A
-    fR::B
-    bcR::A
-    bcU::A
-    bcD::A
+mutable struct IB1F{A<:Function,B} <: AbstractCondition
+    fw::A
+    ff::A
+    bcL::B
+    bcR::B
+    bcU::B
+    bcD::B
+end
 
-    # works for both 1V/3V and single-/multi-component gases
-    function IB1F(
-        wL,
-        primL,
-        fL,
-        bcL,
-        wR,
-        primR,
-        fR,
-        bcR,
-        bcU = deepcopy(bcR),
-        bcD = deepcopy(bcR),
-    )
-        new{typeof(wL),typeof(fL)}(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)
-    end
+# works for both 1V/3V and single-/multi-component gases
+function IB1F(
+    fw::Function,
+    ff::Function,
+    bcL,
+    bcR,
+)
+    return IB1F{Function,typeof(bcL)}(fw, ff, bcL, bcR, bcR, bcR)
 end
 
 

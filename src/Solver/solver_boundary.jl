@@ -43,10 +43,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -161,10 +161,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D1F,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -321,10 +321,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D2F,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -505,10 +505,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D3F,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -622,10 +622,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D4F,1},
 }
 
-    resL = zeros(axes(KS.ib.wL))
-    avgL = zeros(axes(KS.ib.wL))
-    resR = zeros(axes(KS.ib.wL))
-    avgR = zeros(axes(KS.ib.wL))
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -752,14 +752,14 @@ function update_boundary!(
         end
     end
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
-    resU = zero(KS.ib.wL)
-    avgU = zero(KS.ib.wL)
-    resD = zero(KS.ib.wL)
-    avgD = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
+    resU = zero(ctr[1].w)
+    avgU = zero(ctr[1].w)
+    resD = zero(ctr[1].w)
+    avgD = zero(ctr[1].w)
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
@@ -906,14 +906,14 @@ function update_boundary!(
         end
     end
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
-    resU = zero(KS.ib.wL)
-    avgU = zero(KS.ib.wL)
-    resD = zero(KS.ib.wL)
-    avgD = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
+    resU = zero(ctr[1].w)
+    avgU = zero(ctr[1].w)
+    resD = zero(ctr[1].w)
+    avgD = zero(ctr[1].w)
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
@@ -1123,14 +1123,14 @@ function update_boundary!(
         end
     end
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
-    resU = zero(KS.ib.wL)
-    avgU = zero(KS.ib.wL)
-    resD = zero(KS.ib.wL)
-    avgD = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
+    resU = zero(ctr[1].w)
+    avgU = zero(ctr[1].w)
+    resD = zero(ctr[1].w)
+    avgD = zero(ctr[1].w)
 
     if bc[1] != :fix
         @inbounds for j = 1:ny

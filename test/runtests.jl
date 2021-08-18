@@ -18,3 +18,17 @@ include("test_solver_2d.jl")
 include("test_step.jl")
 include("test_particle.jl")
 include("test_unstructure.jl")
+
+ks = SolverSet("config_1d1f1v.txt")
+ctr, face = init_fvm(ks, ks.ps)
+
+ks.ib.fw[ks.ps.x[1]]
+
+
+
+ks.ib.fw(0.0)
+ks.ib.fw(1.0)
+
+ks.ib.bcL
+
+ks.ib.bcR
