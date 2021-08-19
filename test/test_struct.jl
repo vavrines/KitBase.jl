@@ -21,7 +21,8 @@ Setup(
 ) |> show
 KitBase.Scalar(1.0, 1e-3)
 KitBase.Radiation(1e-2, 1.0, 0.0, 1e-3, 1000)
-KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01) |> show
+gas = KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01)
+show(gas)
 KitBase.Gas(
     knudsen,
     mach,
@@ -96,59 +97,8 @@ begin
     dx = x0 / nx
 end
 
-KitBase.IB(w, prim, prim, w, prim, prim) |> show
-KitBase.IB(
-    hcat(w, w),
-    hcat(prim, prim),
-    hcat(prim, prim),
-    hcat(w, w),
-    hcat(prim, prim),
-    hcat(prim, prim),
-) |> show
-KitBase.IB1F(w, prim, h, prim, w, prim, h, prim) |> show
-KitBase.IB2F(w, prim, h, h, prim, w, prim, h, h, prim) |> show
-KitBase.IB3F(
-    w,
-    prim,
-    h,
-    h,
-    h,
-    prim,
-    zeros(3),
-    zeros(3),
-    zeros(3, 2),
-    w,
-    prim,
-    h,
-    h,
-    h,
-    prim,
-    zeros(3),
-    zeros(3),
-    zeros(3, 2),
-) |> show
-KitBase.IB4F(
-    w,
-    prim,
-    h,
-    h,
-    h,
-    h,
-    prim,
-    zeros(3),
-    zeros(3),
-    zeros(3, 2),
-    w,
-    prim,
-    h,
-    h,
-    h,
-    h,
-    prim,
-    zeros(3),
-    zeros(3),
-    zeros(3, 2),
-) |> show
+fw = (args...) -> [1.0, 0.0, rand()]
+KitBase.IB(fw, gas) |> show
 
 #--- control volume ---#
 KitBase.ControlVolume1D(w, prim) |> show

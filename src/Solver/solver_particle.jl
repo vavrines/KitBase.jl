@@ -303,14 +303,14 @@ function maxwell_boundary!(x, v, p)
 
     if flag == 1
         xw = xwall[1]
-        primB = ib.primL
+        primB = ib.bc(xw)
         bound = [0.0, Inf]
-        vw = ib.vL
+        vw = [primB[2]; zeros(2)]#ib.vL
     elseif flag == 2
         xw = xwall[2]
-        primB = ib.primR
+        primB = ib.bc(xw)
         bound = [-Inf, 0.0]
-        vw = ib.vR
+        vw = [primB[2]; zeros(2)]#ib.vR
     end
 
     #v[1] = sqrt(-log(1.0-rand()))

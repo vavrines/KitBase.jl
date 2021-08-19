@@ -142,7 +142,7 @@ end
 Gas property
 
 """
-mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
+mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractGas
 
     Kn::A
     Ma::B
@@ -233,7 +233,7 @@ end
 Diatomic gas property
 
 """
-struct DiatomicGas{TA,TI,TF} <: AbstractProperty
+struct DiatomicGas{TA,TI,TF} <: AbstractGas
 
     Kn::TA
     Ma::TA
@@ -321,7 +321,7 @@ end
 Multi-component gas property
 
 """
-struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractProperty
+struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractGas
 
     Kn::A
     Ma::B
@@ -399,7 +399,7 @@ end
 1D plasma property
 
 """
-struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
+struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractPlasma
 
     Kn::A
     Ma::B
@@ -551,7 +551,7 @@ end
 2D plasma property
 
 """
-struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
+struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractPlasma
 
     Kn::A
     Ma::B

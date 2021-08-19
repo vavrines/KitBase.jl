@@ -14,6 +14,8 @@ abstract type AbstractVelocitySpace2D <: AbstractVelocitySpace end
 abstract type AbstractVelocitySpace3D <: AbstractVelocitySpace end
 abstract type AbstractSetup end
 abstract type AbstractProperty end
+abstract type AbstractGas <: AbstractProperty end
+abstract type AbstractPlasma <: AbstractProperty end
 abstract type AbstractCondition end
 abstract type AbstractSolverSet end
 

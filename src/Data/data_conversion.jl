@@ -1,41 +1,5 @@
-slope_array(w::Number; kwargs...) = deepcopy(w)
-
-function slope_array(w::AbstractArray; reduction = true)
-    nd = ndims(w)
-    ids = []
-    for i = 1:nd
-        push!(ids, [axes(w, i) |> first, axes(w, i) |> last])
-    end
-
-    sw = ifelse(
-        reduction == true,
-        cat(zero(w), zero(w), dims = ndims(w) + 1),
-        cat(zero(w), zero(w), zero(w), dims = ndims(w) + 1),
-    )
-
-    if w isa MArray
-        sw = static_array(sw)
-    end
-
-    if w isa OffsetArray && typeof(w).types[1] <: MArray
-        sw = static_array(sw)
-        if ndims(sw) == 2
-            sw = OffsetArray(sw, ids[1][1]:ids[1][2], axes(sw)[end])
-        elseif ndims(sw) == 3
-            sw = OffsetArray(sw, ids[1][1]:ids[1][2], ids[2][1]:ids[2][2], axes(sw)[end])
-        elseif ndims(sw) == 4
-            sw = OffsetArray(
-                sw,
-                ids[1][1]:ids[1][2],
-                ids[2][1]:ids[2][2],
-                ids[3][1]:ids[3][2],
-                axes(sw)[end],
-            )
-        end
-    end
-
-    return sw
-end
+symbolize(x::AbstractString) = Symbol(x)
+symbolize(x::AbstractArray{T}) where {T<:AbstractString} = [symbolize(y) for y in x]
 
 
 function static_array(x::AbstractVector)
@@ -101,6 +65,7 @@ function static_array(x::AbstractArray{<:Number,4})
 
     return y
 end
+
 
 dynamic_array(x::AbstractArray) = x
 dynamic_array(x::Number) = x
