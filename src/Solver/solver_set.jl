@@ -85,7 +85,7 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     gas = set_property(dict)
 
     # initial & boundary condition
-    ib = set_ib(set, ps, vs, gas)
+    ib = set_ib(dict, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -113,7 +113,7 @@ function SolverSet(dict::T) where {T<:AbstractDict}
     gas = set_property(dict)
 
     # initial & boundary condition
-    ib = set_ib(set, ps, vs, gas)
+    ib = set_ib(dict, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -611,12 +611,23 @@ end
 
 
 """
-    set_ib(set, pSpace, vSpace, gas)
+    set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
+    set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
 
 Generate AbstractIB
 
 """
-function set_ib(set, pSpace, vSpace, gas)
+function set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
+    if haskey(dict, :uLid)
+        ib = set_ib(set, ps, vs, gas, uLid, vLid, tLid)
+    else
+        ib = set_ib(set, ps, vs, gas)
+    end
+
+    return ib
+end
+
+function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
     fname = begin
         if set.case == "shock"
             "ib_rh"
@@ -635,6 +646,10 @@ function set_ib(set, pSpace, vSpace, gas)
             fw, ff, fE, fB, fL, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
             eval(Symbol(iname))(fw, ff, fE, fB, fL, bc)
+        elseif set.case == "cavity"
+            fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas, Um, Vm, Tm)
+            iname = "IB" * set.space[3] * "F"
+            eval(Symbol(iname))(fw, ff, bc)
         else
             fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"

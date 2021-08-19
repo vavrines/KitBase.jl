@@ -22,8 +22,12 @@ nxg = 2
 umin = -5
 umax = 5
 nu = 16
-vMeshType = rectangle
 nug = 0
+vmin = -5
+vmax = 5
+nv = 16
+nvg = 0
+vMeshType = rectangle
 
 # gas
 knudsen = 0.0001

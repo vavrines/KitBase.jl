@@ -316,7 +316,7 @@ function evolve!(
             face[1].fw,
             face[1].fh,
             face[1].fb,
-            KS.ib.bcL,
+            KS.ib.bc(KS.ps.x0),
             ctr[1].h,
             ctr[1].b,
             KS.vSpace.u,
@@ -331,7 +331,7 @@ function evolve!(
             face[KS.pSpace.nx+1].fw,
             face[KS.pSpace.nx+1].fh,
             face[KS.pSpace.nx+1].fb,
-            KS.ib.bcR,
+            KS.ib.bc(KS.ps.x1),
             ctr[KS.pSpace.nx].h,
             ctr[KS.pSpace.nx].b,
             KS.vSpace.u,
@@ -856,7 +856,7 @@ function evolve!(
         @inbounds Threads.@threads for j = 1:ny
             vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
             vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
-            bcL = local_frame(KS.ib.bcL, a1face[1, j].n[1], a1face[1, j].n[2])
+            bcL = local_frame(KS.ib.bc(KS.ps.x0, KS.ps.y[1, j]), a1face[1, j].n[1], a1face[1, j].n[2])
             flux_boundary_maxwell!(
                 a1face[1, j].fw,
                 a1face[1, j].ff,
@@ -882,7 +882,7 @@ function evolve!(
                 KS.vSpace.v .* a1face[nx+1, j].n[1] .-
                 KS.vSpace.u .* a1face[nx+1, j].n[2]
             bcR = local_frame(
-                KS.ib.bcR,
+                KS.ib.bc(KS.ps.x1, KS.ps.y[nx, j]),
                 a1face[nx+1, j].n[1],
                 a1face[nx+1, j].n[2],
             )
@@ -909,7 +909,7 @@ function evolve!(
         @inbounds Threads.@threads for i = 1:nx
             vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
             vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
-            bcD = local_frame(KS.ib.bcD, a2face[i, 1].n[1], a2face[i, 1].n[2])
+            bcD = local_frame(KS.ib.bc(KS.ps.x[i, 1], KS.ps.y0), a2face[i, 1].n[1], a2face[i, 1].n[2])
             flux_boundary_maxwell!(
                 a2face[i, 1].fw,
                 a2face[i, 1].ff,
@@ -935,7 +935,7 @@ function evolve!(
                 KS.vSpace.v .* a2face[i, ny+1].n[1] .-
                 KS.vSpace.u .* a2face[i, ny+1].n[2]
             bcU = local_frame(
-                KS.ib.bcU,
+                KS.ib.bc(KS.ps.x[i, ny], KS.ps.y1),
                 a2face[i, ny+1].n[1],
                 a2face[i, ny+1].n[2],
             )
@@ -1143,7 +1143,7 @@ function evolve!(
         @inbounds Threads.@threads for j = 1:ny
             vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
             vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
-            bcL = local_frame(KS.ib.bcL, a1face[1, j].n[1], a1face[1, j].n[2])
+            bcL = local_frame(KS.ib.bc(KS.ps.x0, KS.ps.y[1, j]), a1face[1, j].n[1], a1face[1, j].n[2])
             flux_boundary_maxwell!(
                 a1face[1, j].fw,
                 a1face[1, j].fh,
@@ -1172,7 +1172,7 @@ function evolve!(
                 KS.vSpace.v .* a1face[nx+1, j].n[1] .-
                 KS.vSpace.u .* a1face[nx+1, j].n[2]
             bcR = local_frame(
-                KS.ib.bcR,
+                KS.ib.bc(KS.ps.x1, KS.ps.y[nx, j]),
                 a1face[nx+1, j].n[1],
                 a1face[nx+1, j].n[2],
             )
@@ -1202,7 +1202,7 @@ function evolve!(
         @inbounds Threads.@threads for i = 1:nx
             vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
             vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
-            bcD = local_frame(KS.ib.bcD, a2face[i, 1].n[1], a2face[i, 1].n[2])
+            bcD = local_frame(KS.ib.bc(KS.ps.x[i, 1], KS.ps.y0), a2face[i, 1].n[1], a2face[i, 1].n[2])
             flux_boundary_maxwell!(
                 a2face[i, 1].fw,
                 a2face[i, 1].fh,
@@ -1231,7 +1231,7 @@ function evolve!(
                 KS.vSpace.v .* a2face[i, ny+1].n[1] .-
                 KS.vSpace.u .* a2face[i, ny+1].n[2]
             bcU = local_frame(
-                KS.ib.bcU,
+                KS.ib.bc(KS.ps.x[i, ny], KS.ps.y1),
                 a2face[i, ny+1].n[1],
                 a2face[i, ny+1].n[2],
             )
@@ -1303,11 +1303,13 @@ function evolve!(
                         face[i].n[1],
                         face[i].n[2],
                     )
-                    bc = copy(KS.ib.bcR)
+                    #bc = copy(KS.ib.bcR)
+                    bc0 = KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2])
+                    bc = zero(bc)
                     bc[2] = -prim[2]
                     bc[3] = -prim[3]
-                    bc[4] = 2.0 * KS.ib.bcR[4] - prim[4]
-                    bc[1] = (2.0 * KS.ib.bcR[4] - prim[4]) / prim[4] * prim[1]
+                    bc[4] = 2.0 * bc0[4] - prim[4]
+                    bc[1] = (2.0 * bc0[4] - prim[4]) / prim[4] * prim[1]
                     bc_w = KitBase.prim_conserve(bc, KS.gas.γ)
 
                     if idx == 1
@@ -1379,7 +1381,7 @@ function evolve!(
                 idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
 
                 if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
-                    bc = KitBase.local_frame(KS.ib.bcR, face[i].n[1], face[i].n[2])
+                    bc = KitBase.local_frame(KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2]), face[i].n[1], face[i].n[2])
 
                     KitBase.flux_boundary_maxwell!(
                         face[i].fw,
@@ -1463,7 +1465,7 @@ function evolve!(
                 idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
 
                 if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
-                    bc = KitBase.local_frame(KS.ib.bcR, face[i].n[1], face[i].n[2])
+                    bc = KitBase.local_frame(KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2]), face[i].n[1], face[i].n[2])
 
                     KitBase.flux_boundary_maxwell!(
                         face[i].fw,

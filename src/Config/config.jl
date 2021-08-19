@@ -573,12 +573,15 @@ function ib_cavity(
     ps::AbstractPhysicalSpace,
     vs::Union{AbstractVelocitySpace,Nothing},
     gas::AbstractProperty,
+    Um = 0.15,
+    Vm = 0.0,
+    Tm = 1.0,
 )
 
     if set.nSpecies == 1
 
         prim = [1.0, 0.0, 0.0, 1.0]
-        w = prim_conserve(primL, gas.γ)
+        w = prim_conserve(prim, gas.γ)
         h = maxwellian(vs.u, prim)
         b = h .* gas.K / 2.0 / prim[end]
 

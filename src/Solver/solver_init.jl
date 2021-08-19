@@ -199,7 +199,7 @@ function init_fvm(
             B = KS.ib.fB(KS.ps.x[i])
             L = KS.ib.fL(KS.ps.x[i])
 
-            ctr[i] = ControlVolume1D3F(
+            ctr[i] = ControlVolume1D4F(
                 funcar(w),
                 funcar(prim),
                 funcar(h0),
@@ -269,7 +269,7 @@ function init_fvm(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                 )
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
@@ -280,7 +280,7 @@ function init_fvm(
                     point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                 )
         end
         for i = 1:nx
@@ -292,7 +292,7 @@ function init_fvm(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                 )
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
@@ -303,7 +303,7 @@ function init_fvm(
                     point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                 )
         end
 
@@ -338,8 +338,8 @@ function init_fvm(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
                 )
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
@@ -349,8 +349,8 @@ function init_fvm(
                 point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
                 n[1],
                 n[2],
-                funcar(KS.ib.fw(KS.ps.x[1])),
-                funcar(KS.ib.ff(KS.ps.x[1])),
+                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
             )
         end
         for i = 1:nx
@@ -362,8 +362,8 @@ function init_fvm(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
                 )
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
@@ -373,8 +373,8 @@ function init_fvm(
                 point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
                 n[1],
                 n[2],
-                funcar(KS.ib.fw(KS.ps.x[1])),
-                funcar(KS.ib.ff(KS.ps.x[1])),
+                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
             )
         end
 
@@ -410,8 +410,8 @@ function init_fvm(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
                 )
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
@@ -421,8 +421,8 @@ function init_fvm(
                 point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
                 n[1],
                 n[2],
-                funcar(KS.ib.fw(KS.ps.x[1])),
-                funcar(KS.ib.ff(KS.ps.x[1])),
+                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
             )
         end
         for i = 1:nx
@@ -434,8 +434,8 @@ function init_fvm(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
                     n[1],
                     n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
                 )
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
@@ -445,8 +445,8 @@ function init_fvm(
                 point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
                 n[1],
                 n[2],
-                funcar(KS.ib.fw(KS.ps.x[1])),
-                funcar(KS.ib.ff(KS.ps.x[1])),
+                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
             )
         end
 
@@ -508,7 +508,7 @@ function init_fvm(
                     ),
                 ] |> funcar
 
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
             prim = funcprim(w, KS.gas.γ)
 
             ctr[i] = KitBase.ControlVolumeUS(
@@ -542,7 +542,7 @@ function init_fvm(
                 n .= -n
             end
 
-            fw = zero(KS.ib.fw(ctr[1].x)) |> funcar
+            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2])) |> funcar
 
             face[i] = KitBase.Interface2D(len, n[1], n[2], fw)
         end
@@ -588,9 +588,9 @@ function init_fvm(
                     ),
                 ] |> funcar
 
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
             prim = funcprim(w, KS.gas.γ)
-            h = KS.ib.ff(KS.ps.x[i])
+            h = KS.ib.ff(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
 
             ctr[i] = KitBase.ControlVolumeUS1F(
                 n,
@@ -625,8 +625,8 @@ function init_fvm(
                 n .= -n
             end
 
-            fw = zero(KS.ib.fw(ctr[1].x))
-            ff = zero(KS.ib.ff(ctr[1].x))
+            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2]))
+            ff = zero(KS.ib.ff(ctr[1].x[1], ctr[1].x[2]))
 
             face[i] = KitBase.Interface2D1F(len, n[1], n[2], funcar(fw), funcar(ff))
         end
@@ -672,9 +672,9 @@ function init_fvm(
                     ),
                 ] |> funcar
 
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
             prim = funcprim(w, KS.gas.γ)
-            h, b = KS.ib.ff(KS.ps.x[i])
+            h, b = KS.ib.ff(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
 
             ctr[i] = KitBase.ControlVolumeUS2F(
                 n,
@@ -709,8 +709,8 @@ function init_fvm(
                 n .= -n
             end
 
-            fw = zero(KS.ib.fw(ctr[1].x))
-            ff = zero(KS.ib.ff(ctr[1].x))
+            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2]))
+            fh = zero(KS.ib.ff(ctr[1].x[1], ctr[1].x[2])[1])
 
             face[i] = KitBase.Interface2D2F(len, n[1], n[2], funcar(fw), funcar(fh))
         end

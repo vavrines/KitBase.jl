@@ -16,18 +16,29 @@ mutable struct IB{T<:Union{Function,AbstractArray}} <: AbstractCondition
     bc::T
 end
 
-function IB(fw, gas::T) where {T<:AbstractProperty}
-    γ = begin
-        if gas isa Scalar
-            gas.a
-        else
-            gas.γ
-        end
-    end
+function IB(fw, gas::Scalar)
+    γ = gas.a
 
     bc = function(args...)
         w = fw(args...)
         return ifelse(γ == 0, conserve_prim(w), conserve_prim(w, γ))
+    end
+
+    return IB{typeof(bc)}(fw, bc)
+end
+
+function IB(fw, gas::AbstractGas)
+    bc = function(args...)
+        w = fw(args...)
+        prim = begin
+            if ndims(w) == 1
+                conserve_prim(w, gas.γ)
+            else
+                mixture_conserve_prim(w, gas.γ)
+            end
+        end
+
+        return prim
     end
 
     return IB{typeof(bc)}(fw, bc)
@@ -53,7 +64,15 @@ end
 function IB1F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
     bc = function(args...)
         w = fw(args...)
-        return ifelse(ndims(w) == 1, conserve_prim(w, gas.γ), mixture_conserve_prim(w, gas.γ))
+        prim = begin
+            if ndims(w) == 1
+                conserve_prim(w, gas.γ)
+            else
+                mixture_conserve_prim(w, gas.γ)
+            end
+        end
+
+        return prim
     end
 
     ff = function(args...)
@@ -107,7 +126,15 @@ end
 function IB2F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
     bc = function(args...)
         w = fw(args...)
-        return ifelse(ndims(w) == 1, conserve_prim(w, gas.γ), mixture_conserve_prim(w, gas.γ))
+        prim = begin
+            if ndims(w) == 1
+                conserve_prim(w, gas.γ)
+            else
+                mixture_conserve_prim(w, gas.γ)
+            end
+        end
+
+        return prim
     end
 
     ff = function(args...)
