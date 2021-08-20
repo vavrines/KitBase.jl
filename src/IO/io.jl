@@ -226,13 +226,16 @@ end
         label := "ρ"
         pltx, plty[:, 1]
     end
-    @series begin
-        label := "u"
-        pltx, plty[:, 2]
-    end
-    @series begin
-        label := "T"
-        pltx, plty[:, 3]
+    
+    if ctr[1].w isa AbstractArray
+        @series begin
+            label := "u"
+            pltx, plty[:, 2]
+        end
+        @series begin
+            label := "T"
+            pltx, plty[:, 3]
+        end
     end
 
     # user-defined

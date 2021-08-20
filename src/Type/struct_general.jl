@@ -161,10 +161,10 @@ mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractGas
         _Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
         _Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
         _K::Union{Real,AbstractArray},
-        _γ::Union{Real,AbstractArray},
-        _ω::Union{Real,AbstractArray},
-        _αᵣ::Union{Real,AbstractArray},
-        _ωᵣ::Union{Real,AbstractArray},
+        _γ = 5 / 3::Union{Real,AbstractArray},
+        _ω = 0.81::Union{Real,AbstractArray},
+        _αᵣ = 1.0::Union{Real,AbstractArray},
+        _ωᵣ = 0.5::Union{Real,AbstractArray},
         _μᵣ = ref_vhs_vis(_Kn, _αᵣ, _ωᵣ)::Union{Real,AbstractArray},
         _m = 1e-3::Union{Real,AbstractArray},
         _np = 1000::Union{Integer,AbstractArray},

@@ -21,24 +21,19 @@ pSpace = PSpace1D(0.0, 1.0, 100, 1)
 vSpace = nothing
 property = Scalar(1.0, 1e-6)
 ib = IB(x -> sin(2π * x), property)
-ks = SolverSet(set, pSpace, vSpace, property, ib)
 
+ks = SolverSet(set, pSpace, vSpace, property, ib)
 ctr, face = init_fvm(ks, ks.ps)
 
 t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
 nt = ks.set.maxTime ÷ dt |> Int
-
 anim = @animate for iter = 1:nt
     reconstruct!(ks, ctr)
     evolve!(ks, ctr, face, dt)
     update!(ks, ctr, face, dt, 0.0)
 
-    sol = zeros(ks.pSpace.nx)
-    for i in 1:ks.pSpace.nx
-        sol[i] = ctr[i].w
-    end
-    plot(ks.pSpace.x[1:ks.pSpace.nx], sol, xlabel="x", label="u", ylims=[-1, 1])
+    plot(ks, ctr)
 end
 
 gif(anim, "advection.gif", fps = 45)
