@@ -32,3 +32,4 @@ for iter = 1:nt
 end
 
 plot(ks, ctr)
+plot_line(ks, ctr)

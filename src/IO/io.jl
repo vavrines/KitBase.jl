@@ -183,24 +183,8 @@ function plot_line(
     KS::X,
     ctr::Y,
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
-    pltx = KS.pSpace.x[1:KS.pSpace.nx]
-    plty = zeros(KS.pSpace.nx, 6)
-    for i in eachindex(pltx)
-        for j = 1:2
-            plty[i, j] = ctr[i].prim[j]
-        end
-
-        plty[i, 3] = 1.0 / ctr[i].prim[end]
-    end
-
-    p1 = plot(pltx, plty[:, 1], label = "density", lw = 1.5, xlabel = "x")
-    p1 = plot!(pltx, plty[:, 2], label = "velocity", lw = 1.5)
-    p1 = plot!(pltx, plty[:, 3], label = "temperature", lw = 1.5)
-    display(p1)
-
-    return nothing
+    plot(KS, ctr)
 end
-
 
 @recipe function plot_line(
     KS::X,
