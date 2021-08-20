@@ -23,7 +23,7 @@ mutable struct ControlVolume1D{A,B} <: AbstractControlVolume1D
     sw::A
 end
 
-function ControlVolume1D(W::T2, PRIM::T3) where {T1<:Real,T2,T3}
+function ControlVolume1D(W::T1, PRIM::T2) where {T1,T2}
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = zero(W)
