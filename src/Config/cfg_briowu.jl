@@ -219,8 +219,6 @@ function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFlo
 
     lorenzL = zeros(3, 2)
     lorenzR = zeros(3, 2)
-    bcL = zeros(5, 2)
-    bcR = zeros(5, 2)
 
     return wL,
     primL,
@@ -228,7 +226,6 @@ function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFlo
     h1L,
     h2L,
     h3L,
-    bcL,
     EL,
     BL,
     lorenzL,
@@ -238,7 +235,6 @@ function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFlo
     h1R,
     h2R,
     h3R,
-    bcR,
     ER,
     BR,
     lorenzR
@@ -311,15 +307,12 @@ function ib_briowu(
 
     lorenzL = zeros(3, 2)
     lorenzR = zeros(3, 2)
-    bcL = deepcopy(primL)
-    bcR = deepcopy(primR)
 
     return wL,
     primL,
     h0L,
     h1L,
     h2L,
-    bcL,
     EL,
     BL,
     lorenzL,
@@ -328,7 +321,6 @@ function ib_briowu(
     h0R,
     h1R,
     h2R,
-    bcR,
     ER,
     BR,
     lorenzR
