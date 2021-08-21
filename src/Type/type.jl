@@ -38,3 +38,73 @@ include("struct_face.jl")
 include("struct_sol.jl")
 include("struct_flux.jl")
 include("struct_ptc.jl")
+
+function copy_ctr!(
+    ctr::T,
+    ctr0::T,
+) where {T<:Union{ControlVolume1D,ControlVolume2D,ControlVolumeUS}}
+    ctr.w = ctr0.w
+    ctr.prim .= ctr0.prim
+
+    return nothing
+end
+
+function copy_ctr!(
+    ctr::T,
+    ctr0::T,
+) where {T<:Union{ControlVolume1D1F,ControlVolume2D1F,ControlVolumeUS1F}}
+    ctr.w .= ctr0.w
+    ctr.prim .= ctr0.prim
+    ctr.f .= ctr0.f
+
+    return nothing
+end
+
+function copy_ctr!(
+    ctr::T,
+    ctr0::T,
+) where {T<:Union{ControlVolume1D2F,ControlVolume2D2F,ControlVolumeUS2F}}
+    ctr.w .= ctr0.w
+    ctr.prim .= ctr0.prim
+    ctr.h .= ctr0.h
+    ctr.b .= ctr0.b
+
+    return nothing
+end
+
+function copy_ctr!(
+    ctr::T,
+    ctr0::T,
+) where {T<:Union{ControlVolume1D3F,ControlVolume2D3F}}
+    ctr.w .= ctr0.w
+    ctr.prim .= ctr0.prim
+    ctr.h0 .= ctr0.h0
+    ctr.h1 .= ctr0.h1
+    ctr.h2 .= ctr0.h2
+    ctr.E .= ctr0.E
+    ctr.B .= ctr0.B
+    ctr.ϕ = ctr0.ϕ
+    ctr.ψ = ctr0.ψ
+    ctr.lorenz .= ctr0.lorenz
+
+    return nothing
+end
+
+function copy_ctr!(
+    ctr::T,
+    ctr0::T,
+) where {T<:ControlVolume1D4F}
+    ctr.w .= ctr0.w
+    ctr.prim .= ctr0.prim
+    ctr.h0 .= ctr0.h0
+    ctr.h1 .= ctr0.h1
+    ctr.h2 .= ctr0.h2
+    ctr.h3 .= ctr0.h3
+    ctr.E .= ctr0.E
+    ctr.B .= ctr0.B
+    ctr.ϕ = ctr0.ϕ
+    ctr.ψ = ctr0.ψ
+    ctr.lorenz .= ctr0.lorenz
+
+    return nothing
+end

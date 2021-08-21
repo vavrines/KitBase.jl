@@ -12,30 +12,31 @@ begin
         1, # species
         2, # order of accuracy
         "vanleer", # limiter
-        "maxwell",
+        ["maxwell", "fix", "slip", "slip"],
         0.5, # cfl
         10.0, # time
     )
-
     ps = CSpace2D(1.0, 6.0, 30, 0.0, π, 50, 0, 1)
     vs = VSpace2D(-8.0, 8.0, 48, -8.0, 8.0, 48)
-
-    gas = Gas(
-        5e-2,
-        2.0, # Mach
-        1.0,
-        1.0, # K
-        5 / 3,
-        0.81,
-        1.0,
-        0.5,
-    )
+    gas = Gas(5e-2, 2.0, 1.0, 1.0)
     
-    prim0 = [1.0, gas.Ma * sound_speed(1.0, gas.γ), 0.0, 1.0]
-    w0 = prim_conserve(prim0, gas.γ)
-    h0 = maxwellian(vs.u, vs.v, prim0)
-    b0 = h0 * gas.K / 2 / prim0[end]
-    ib = IB2F(w0, prim0, h0, b0, prim0, w0, prim0, h0, b0, prim0)
+    prim0 = [1.0, 0.0, 0.0, 1.0]
+    prim1 = [1.0, gas.Ma * sound_speed(1.0, gas.γ), 0.0, 1.0]
+    fw = (args...) -> prim_conserve(prim1, gas.γ)
+    ff = function(args...)
+        prim = conserve_prim(fw(args...), gas.γ)
+        h = maxwellian(vs.u, vs.v, prim)
+        b = h .* gas.K / 2 / prim[end]
+        return h, b
+    end
+    bc = function(x, y)
+        if abs(x^2 + y^2 - 1) < 1e-3
+            return prim0
+        else
+            return prim1
+        end
+    end
+    ib = IB2F(fw, ff, bc)
 
     ks = SolverSet(set, ps, vs, gas, ib)
 end
@@ -61,14 +62,14 @@ function boundary!(
         end
     end
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
-    resU = zero(KS.ib.wL)
-    avgU = zero(KS.ib.wL)
-    resD = zero(KS.ib.wL)
-    avgD = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
+    resU = zero(ctr[1].w)
+    avgU = zero(ctr[1].w)
+    resD = zero(ctr[1].w)
+    avgD = zero(ctr[1].w)
 
     @inbounds for j = 1:ny
         KitBase.step!(
@@ -189,23 +190,23 @@ function boundary!(
     end
 end
 
-ctr, a1face, a2face = init_fvm(ks, ks.pSpace; structarray = true)
+ctr, a1face, a2face = init_fvm(ks, ks.pSpace)
 
 t = 0.0
-
 dt = timestep(ks, ctr, 0.0)
-
-
 @showprogress for iter = 1:50#nt
     evolve!(ks, ctr, a1face, a2face, dt; bc = :maxwell)
     update!(ks, ctr, a1face, a2face, dt, zeros(4))
     boundary!(ks, ctr, a1face, a2face, dt, Symbol(ks.set.collision))
+
+    global t += dt
 end
 
 begin
     sol = zeros(axes(ps.x)..., 4)
     for i in axes(sol, 1), j in axes(sol, 2)
         sol[i, j, :] .= ctr[i, j].prim
+        sol[i, j, end] = 1 / sol[i, j, end]
     end
-    contourf(ps.x, ps.y, sol[:, :, 2], ratio=1)
+    contourf(ps.x, ps.y, sol[:, :, 4], ratio=1)
 end
