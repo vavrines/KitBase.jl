@@ -195,9 +195,9 @@ ctr, a1face, a2face = init_fvm(ks, ks.pSpace)
 t = 0.0
 dt = timestep(ks, ctr, 0.0)
 @showprogress for iter = 1:50#nt
-    evolve!(ks, ctr, a1face, a2face, dt; bc = [:maxwell, :fix, :slip, :slip])
-    update!(ks, ctr, a1face, a2face, dt, zeros(4))
-    boundary!(ks, ctr, a1face, a2face, dt, Symbol(ks.set.collision))
+    evolve!(ks, ctr, a1face, a2face, dt; bc = [:maxwell, :fix, :mirror, :mirror])
+    update!(ks, ctr, a1face, a2face, dt, zeros(4); bc = [:maxwell, :fix, :mirror, :mirror])
+    #boundary!(ks, ctr, a1face, a2face, dt, Symbol(ks.set.collision))
 
     global t += dt
 end
