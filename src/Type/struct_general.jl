@@ -142,7 +142,7 @@ end
 Gas property
 
 """
-mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
+mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractGas
 
     Kn::A
     Ma::B
@@ -161,10 +161,10 @@ mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
         _Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
         _Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
         _K::Union{Real,AbstractArray},
-        _γ::Union{Real,AbstractArray},
-        _ω::Union{Real,AbstractArray},
-        _αᵣ::Union{Real,AbstractArray},
-        _ωᵣ::Union{Real,AbstractArray},
+        _γ = 5 / 3::Union{Real,AbstractArray},
+        _ω = 0.81::Union{Real,AbstractArray},
+        _αᵣ = 1.0::Union{Real,AbstractArray},
+        _ωᵣ = 0.5::Union{Real,AbstractArray},
         _μᵣ = ref_vhs_vis(_Kn, _αᵣ, _ωᵣ)::Union{Real,AbstractArray},
         _m = 1e-3::Union{Real,AbstractArray},
         _np = 1000::Union{Integer,AbstractArray},
@@ -233,7 +233,7 @@ end
 Diatomic gas property
 
 """
-struct DiatomicGas{TA,TI,TF} <: AbstractProperty
+struct DiatomicGas{TA,TI,TF} <: AbstractGas
 
     Kn::TA
     Ma::TA
@@ -321,7 +321,7 @@ end
 Multi-component gas property
 
 """
-struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractProperty
+struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractGas
 
     Kn::A
     Ma::B
@@ -399,7 +399,7 @@ end
 1D plasma property
 
 """
-struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
+struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractPlasma
 
     Kn::A
     Ma::B
@@ -551,7 +551,7 @@ end
 2D plasma property
 
 """
-struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
+struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractPlasma
 
     Kn::A
     Ma::B

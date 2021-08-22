@@ -49,7 +49,7 @@ function solve!(
     t = deepcopy(simTime)
     dt = timestep(KS, ctr, simTime)
     nt = Int(floor(KS.set.maxTime / dt)) + 1
-    res = zero(KS.ib.wL)
+    res = zero(ctr[1].w)
 
     #--- main loop ---#
     #while true
@@ -110,7 +110,7 @@ function solve!(
     t = deepcopy(simTime)
     dt = timestep(KS, ctr, simTime)
     nt = Int(floor(KS.set.maxTime / dt)) + 1
-    res = zeros(axes(KS.ib.wL))
+    res = zero(ctr[1].w)
 
     #--- main loop ---#
     @showprogress for iter = 1:nt

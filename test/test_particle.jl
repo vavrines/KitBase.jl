@@ -99,7 +99,15 @@ begin
     primR = [1.0, 0.0, 1.0, 1.0] # right wall
     wL = KitBase.prim_conserve(primL, γ)
     wR = KitBase.prim_conserve(primR, γ)
-    ib = KitBase.IB(wL, primL, primL, wR, primR, primR)
+
+    fw = function(x)
+        if x <= (pSpace.x0 + pSpace.x1) / 2
+            wL
+        else
+            wR
+        end
+    end
+    ib = KitBase.IB(fw, gas)
 
     ks = KitBase.SolverSet(set, pSpace, vSpace, gas, ib, pwd())
 end
@@ -120,7 +128,7 @@ begin
     end
 
     for i = 1:ks.pSpace.nx+1
-        face[i] = KitBase.Interface1D(ks.ib.wL)
+        face[i] = KitBase.Interface1D(ctr[1].w)
     end
 
     t = 0.0

@@ -10,7 +10,11 @@ begin
     wL = KitBase.prim_conserve(primL, gas.γ)
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
     bL = @. hL * gas.K / 2 / primL[end]
-    ib = KitBase.IB2F(wL, primL, hL, bL, primL, wL, primL, hL, bL, primL)
+
+    fw = function(x, y)
+        return wL
+    end
+    ib = KitBase.IB2F(fw, vs, gas)
 end
 ks = KitBase.SolverSet(set, ps, vs, gas, ib)
 ctr, face = KitBase.init_fvm(ks, ks.pSpace)
@@ -128,7 +132,10 @@ begin
     primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, 0.0, 1.0]
     wL = KitBase.prim_conserve(primL, gas.γ)
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
-    ib = KitBase.IB1F(wL, primL, hL, primL, wL, primL, hL, primL)
+    fw = function(x, y)
+        return wL
+    end
+    ib = KitBase.IB1F(fw, vs, gas)
 end
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
 ctr, face = KitBase.init_fvm(ks, ks.pSpace)

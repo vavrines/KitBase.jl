@@ -316,7 +316,7 @@ function evolve!(
             face[1].fw,
             face[1].fh,
             face[1].fb,
-            KS.ib.bcL,
+            KS.ib.bc(KS.ps.x0),
             ctr[1].h,
             ctr[1].b,
             KS.vSpace.u,
@@ -331,7 +331,7 @@ function evolve!(
             face[KS.pSpace.nx+1].fw,
             face[KS.pSpace.nx+1].fh,
             face[KS.pSpace.nx+1].fb,
-            KS.ib.bcR,
+            KS.ib.bc(KS.ps.x1),
             ctr[KS.pSpace.nx].h,
             ctr[KS.pSpace.nx].b,
             KS.vSpace.u,
@@ -349,8 +349,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
     isPlasma = false::Bool,
     isMHD = false::Bool,
 ) where {T1<:AbstractArray{ControlVolume1D4F,1},T2<:AbstractArray{Interface1D4F,1}}
@@ -462,8 +462,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
     isPlasma = false::Bool,
     isMHD = false::Bool,
 ) where {T1<:AbstractArray{ControlVolume1D3F,1},T2<:AbstractArray{Interface1D3F,1}}
@@ -609,8 +609,8 @@ function evolve!(
     a1face::T2,
     a2face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractArray{ControlVolume2D,2},T2<:AbstractArray{Interface2D,2}}
 
     nx, ny, dx, dy = begin
@@ -696,8 +696,8 @@ function evolve!(
     a1face::T2,
     a2face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractArray{ControlVolume2D1F,2},T2<:AbstractArray{Interface2D1F,2}}
 
     nx, ny, dx, dy = begin
@@ -856,7 +856,14 @@ function evolve!(
         @inbounds Threads.@threads for j = 1:ny
             vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
             vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
-            bcL = local_frame(KS.ib.bcL, a1face[1, j].n[1], a1face[1, j].n[2])
+            xc = (KS.ps.vertices[1, j, 1, 1] + KS.ps.vertices[1, j, 4, 1]) / 2
+            yc = (KS.ps.vertices[1, j, 1, 2] + KS.ps.vertices[1, j, 4, 2]) / 2
+            bcL = local_frame(
+                KS.ib.bc(xc, yc),
+                a1face[1, j].n[1],
+                a1face[1, j].n[2],
+            )
+
             flux_boundary_maxwell!(
                 a1face[1, j].fw,
                 a1face[1, j].ff,
@@ -881,11 +888,14 @@ function evolve!(
             vt =
                 KS.vSpace.v .* a1face[nx+1, j].n[1] .-
                 KS.vSpace.u .* a1face[nx+1, j].n[2]
+            xc = (KS.ps.vertices[nx, j, 2, 1] + KS.ps.vertices[nx, j, 3, 1]) / 2
+            yc = (KS.ps.vertices[nx, j, 2, 2] + KS.ps.vertices[nx, j, 3, 2]) / 2
             bcR = local_frame(
-                KS.ib.bcR,
+                KS.ib.bc(xc, yc),
                 a1face[nx+1, j].n[1],
                 a1face[nx+1, j].n[2],
             )
+
             flux_boundary_maxwell!(
                 a1face[nx+1, j].fw,
                 a1face[nx+1, j].ff,
@@ -909,7 +919,14 @@ function evolve!(
         @inbounds Threads.@threads for i = 1:nx
             vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
             vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
-            bcD = local_frame(KS.ib.bcD, a2face[i, 1].n[1], a2face[i, 1].n[2])
+            xc = (KS.ps.vertices[i, 1, 1, 1] + KS.ps.vertices[i, 1, 2, 1]) / 2
+            yc = (KS.ps.vertices[i, 1, 1, 2] + KS.ps.vertices[i, 1, 2, 2]) / 2
+            bcD = local_frame(
+                KS.ib.bc(xc, yc),
+                a2face[i, 1].n[1],
+                a2face[i, 1].n[2],
+            )
+
             flux_boundary_maxwell!(
                 a2face[i, 1].fw,
                 a2face[i, 1].ff,
@@ -934,11 +951,14 @@ function evolve!(
             vt =
                 KS.vSpace.v .* a2face[i, ny+1].n[1] .-
                 KS.vSpace.u .* a2face[i, ny+1].n[2]
+            xc = (KS.ps.vertices[i, ny, 3, 1] + KS.ps.vertices[i, ny, 4, 1]) / 2
+            yc = (KS.ps.vertices[i, ny, 3, 2] + KS.ps.vertices[i, ny, 4, 2]) / 2
             bcU = local_frame(
-                KS.ib.bcU,
+                KS.ib.bc(xc, yc),
                 a2face[i, ny+1].n[1],
                 a2face[i, ny+1].n[2],
             )
+
             flux_boundary_maxwell!(
                 a2face[i, ny+1].fw,
                 a2face[i, ny+1].ff,
@@ -967,8 +987,8 @@ function evolve!(
     a1face::T2,
     a2face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractArray{ControlVolume2D2F,2},T2<:AbstractArray{Interface2D2F,2}}
 
     nx, ny, dx, dy = begin
@@ -1138,125 +1158,9 @@ function evolve!(
 
     end
 
-    bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
-    if bcs[1] == :maxwell
-        @inbounds Threads.@threads for j = 1:ny
-            vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
-            vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
-            bcL = local_frame(KS.ib.bcL, a1face[1, j].n[1], a1face[1, j].n[2])
-            flux_boundary_maxwell!(
-                a1face[1, j].fw,
-                a1face[1, j].fh,
-                a1face[1, j].fb,
-                bcL, # left
-                ctr[1, j].h,
-                ctr[1, j].b,
-                vn,
-                vt,
-                KS.vSpace.weights,
-                KS.gas.K,
-                dt,
-                dy[1, j],
-                1,
-            )
-            a1face[1, j].fw .=
-                global_frame(a1face[1, j].fw, a1face[1, j].n[1], a1face[1, j].n[2])
-        end
-    end
-    if bcs[2] == :maxwell
-        @inbounds Threads.@threads for j = 1:ny
-            vn =
-                KS.vSpace.u .* a1face[nx+1, j].n[1] .+
-                KS.vSpace.v .* a1face[nx+1, j].n[2]
-            vt =
-                KS.vSpace.v .* a1face[nx+1, j].n[1] .-
-                KS.vSpace.u .* a1face[nx+1, j].n[2]
-            bcR = local_frame(
-                KS.ib.bcR,
-                a1face[nx+1, j].n[1],
-                a1face[nx+1, j].n[2],
-            )
-            flux_boundary_maxwell!(
-                a1face[nx+1, j].fw,
-                a1face[nx+1, j].fh,
-                a1face[nx+1, j].fb,
-                bcR, # right
-                ctr[nx, j].h,
-                ctr[nx, j].b,
-                vn,
-                vt,
-                KS.vSpace.weights,
-                KS.gas.K,
-                dt,
-                dy[nx, j],
-                -1,
-            )
-            a1face[nx+1, j].fw .= global_frame(
-                a1face[nx+1, j].fw,
-                a1face[nx+1, j].n[1],
-                a1face[nx+1, j].n[2],
-            )
-        end
-    end
-    if bcs[3] == :maxwell
-        @inbounds Threads.@threads for i = 1:nx
-            vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
-            vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
-            bcD = local_frame(KS.ib.bcD, a2face[i, 1].n[1], a2face[i, 1].n[2])
-            flux_boundary_maxwell!(
-                a2face[i, 1].fw,
-                a2face[i, 1].fh,
-                a2face[i, 1].fb,
-                bcD, # left
-                ctr[i, 1].h,
-                ctr[i, 1].b,
-                vn,
-                vt,
-                KS.vSpace.weights,
-                KS.gas.K,
-                dt,
-                dx[i, 1],
-                1,
-            )
-            a2face[i, 1].fw .=
-                global_frame(a2face[i, 1].fw, a2face[i, 1].n[1], a2face[i, 1].n[2])
-        end
-    end
-    if bcs[4] == :maxwell
-        @inbounds Threads.@threads for i = 1:nx
-            vn =
-                KS.vSpace.u .* a2face[i, ny+1].n[1] .+
-                KS.vSpace.v .* a2face[i, ny+1].n[2]
-            vt =
-                KS.vSpace.v .* a2face[i, ny+1].n[1] .-
-                KS.vSpace.u .* a2face[i, ny+1].n[2]
-            bcU = local_frame(
-                KS.ib.bcU,
-                a2face[i, ny+1].n[1],
-                a2face[i, ny+1].n[2],
-            )
-            flux_boundary_maxwell!(
-                a2face[i, ny+1].fw,
-                a2face[i, ny+1].fh,
-                a2face[i, ny+1].fb,
-                bcU, # right
-                ctr[i, ny].h,
-                ctr[i, ny].b,
-                vn,
-                vt,
-                KS.vSpace.weights,
-                KS.gas.K,
-                dt,
-                dx[i, ny],
-                -1,
-            )
-            a2face[i, ny+1].fw .= global_frame(
-                a2face[i, ny+1].fw,
-                a2face[i, ny+1].n[1],
-                a2face[i, ny+1].n[2],
-            )
-        end
-    end
+    evolve_boundary!(KS, ctr, a1face, a2face, dt, mode, bc)
+
+    return nothing
 
 end
 
@@ -1265,8 +1169,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractVector{ControlVolumeUS},T2<:AbstractVector{Interface2D}}
 
     if mode == :hll
@@ -1303,11 +1207,13 @@ function evolve!(
                         face[i].n[1],
                         face[i].n[2],
                     )
-                    bc = copy(KS.ib.bcR)
+                    #bc = copy(KS.ib.bcR)
+                    bc0 = KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2])
+                    bc = zero(bc)
                     bc[2] = -prim[2]
                     bc[3] = -prim[3]
-                    bc[4] = 2.0 * KS.ib.bcR[4] - prim[4]
-                    bc[1] = (2.0 * KS.ib.bcR[4] - prim[4]) / prim[4] * prim[1]
+                    bc[4] = 2.0 * bc0[4] - prim[4]
+                    bc[1] = (2.0 * bc0[4] - prim[4]) / prim[4] * prim[1]
                     bc_w = KitBase.prim_conserve(bc, KS.gas.γ)
 
                     if idx == 1
@@ -1344,8 +1250,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractVector{ControlVolumeUS1F},T2<:AbstractVector{Interface2D1F}}
 
     if mode == :kfvs
@@ -1379,7 +1285,7 @@ function evolve!(
                 idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
 
                 if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
-                    bc = KitBase.local_frame(KS.ib.bcR, face[i].n[1], face[i].n[2])
+                    bc = KitBase.local_frame(KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2]), face[i].n[1], face[i].n[2])
 
                     KitBase.flux_boundary_maxwell!(
                         face[i].fw,
@@ -1417,8 +1323,8 @@ function evolve!(
     ctr::T1,
     face::T2,
     dt;
-    mode = Symbol(KS.set.flux)::Symbol,
-    bc = Symbol(KS.set.boundary)::Symbol,
+    mode = symbolize(KS.set.flux)::Symbol,
+    bc = symbolize(KS.set.boundary),
 ) where {T1<:AbstractVector{ControlVolumeUS2F},T2<:AbstractVector{Interface2D2F}}
 
     if mode == :kfvs
@@ -1463,7 +1369,7 @@ function evolve!(
                 idx = ifelse(KS.ps.faceCells[i, 1] != -1, 1, 2)
 
                 if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
-                    bc = KitBase.local_frame(KS.ib.bcR, face[i].n[1], face[i].n[2])
+                    bc = KitBase.local_frame(KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2]), face[i].n[1], face[i].n[2])
 
                     KitBase.flux_boundary_maxwell!(
                         face[i].fw,

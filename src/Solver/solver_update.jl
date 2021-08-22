@@ -140,8 +140,8 @@ function update!(
     T<:AbstractFloat,
 }
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
         @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
@@ -205,8 +205,8 @@ function update!(
     Z<:AbstractArray{Interface1D1F,1},
 }
 
-    sumRes = zeros(axes(KS.ib.wL))
-    sumAvg = zeros(axes(KS.ib.wL))
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     phase = KS.set.space[3:end]
     if phase == "1f1v"
@@ -287,8 +287,8 @@ function update!(
     Z<:AbstractArray{Interface1D2F,1},
 }
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
         @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
@@ -378,8 +378,8 @@ function update!(
     Z<:AbstractArray{Interface1D3F,1},
 }
 
-    sumRes = zeros(axes(KS.ib.wL))
-    sumAvg = zeros(axes(KS.ib.wL))
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
@@ -489,8 +489,8 @@ function update!(
     Z<:AbstractArray{Interface1D4F,1},
 }
 
-    sumRes = zeros(axes(KS.ib.wL))
-    sumAvg = zeros(axes(KS.ib.wL))
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
@@ -533,8 +533,8 @@ function update!(
         end
     end
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
 
@@ -595,8 +595,8 @@ function update!(
         end
     end
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
 
@@ -670,8 +670,8 @@ function update!(
         end
     end
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
 
@@ -741,8 +741,8 @@ function update!(
     Z<:AbstractArray{Interface2D,1},
 }
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     @inbounds Threads.@threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
@@ -787,8 +787,8 @@ function update!(
     Z<:AbstractArray{Interface2D1F,1},
 }
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     @inbounds Threads.@threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
@@ -846,8 +846,8 @@ function update!(
     Z<:AbstractArray{Interface2D2F,1},
 }
 
-    sumRes = zero(KS.ib.wL)
-    sumAvg = zero(KS.ib.wL)
+    sumRes = zero(ctr[1].w)
+    sumAvg = zero(ctr[1].w)
 
     @inbounds Threads.@threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)

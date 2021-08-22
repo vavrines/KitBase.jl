@@ -48,6 +48,7 @@ include("Phase/phase.jl")
 include("Reconstruction/reconstruction.jl")
 include("Flux/flux.jl")
 include("Config/config.jl")
+include("Boundary/boundary.jl")
 include("Solver/solver.jl")
 
 function __init__()

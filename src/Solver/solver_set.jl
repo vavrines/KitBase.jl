@@ -76,16 +76,16 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     set = set_setup(dict)
 
     # physical space
-    pSpace = set_geometry(dict)
+    ps = set_geometry(dict)
 
     # velocity space
-    vSpace = set_velocity(dict)
+    vs = set_velocity(dict)
 
     # gas property
     gas = set_property(dict)
 
     # initial & boundary condition
-    ib = set_ib(dict, set, vSpace, gas)
+    ib = set_ib(dict, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -96,7 +96,7 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     cp(configfilename, string(outputFolder, "config.txt"))
 
     # create new struct
-    return SolverSet(set, pSpace, vSpace, gas, ib, outputFolder)
+    return SolverSet(set, ps, vs, gas, ib, outputFolder)
 end
 
 function SolverSet(dict::T) where {T<:AbstractDict}
@@ -104,16 +104,16 @@ function SolverSet(dict::T) where {T<:AbstractDict}
     set = set_setup(; dict...)
 
     # physical space
-    pSpace = set_geometry(; dict...)
+    ps = set_geometry(; dict...)
 
     # velocity space
-    vSpace = set_velocity(; dict...)
+    vs = set_velocity(; dict...)
 
     # gas property
     gas = set_property(dict)
 
     # initial & boundary condition
-    ib = set_ib(dict, set, vSpace, gas)
+    ib = set_ib(dict, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -123,7 +123,7 @@ function SolverSet(dict::T) where {T<:AbstractDict}
     CSV.write(string(outputFolder, "config.csv"), dict)
 
     # create new struct
-    return SolverSet(set, pSpace, vSpace, gas, ib, outputFolder)
+    return SolverSet(set, ps, vs, gas, ib, outputFolder)
 end
 
 
@@ -611,201 +611,51 @@ end
 
 
 """
-    set_ib(dict::T, set, vSpace, gas) where {T<:AbstractDict}
-
-    set_ib(
-        set::T,
-        vSpace,
-        gas,
-        uLid = 0.15,
-        vLid = 0.0,
-        tLid = 1.0,
-    ) where {T<:AbstractSetup}
+    set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
+    set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
 
 Generate AbstractIB
 
 """
-function set_ib(dict::T, set, vSpace, gas) where {T<:AbstractDict}
-    for key in keys(dict)
-        s = key
-        @eval $s = $(dict[key])
-    end
-
-    if @isdefined uLid
-        ib = set_ib(set, vSpace, gas, uLid, vLid, tLid)
+function set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
+    if haskey(dict, :uLid)
+        ib = set_ib(set, ps, vs, gas, uLid, vLid, tLid)
     else
-        ib = set_ib(set, vSpace, gas)
+        ib = set_ib(set, ps, vs, gas)
     end
 
     return ib
 end
 
-function set_ib(
-    set::T,
-    vSpace,
-    gas,
-    uLid = 0.15,
-    vLid = 0.0,
-    tLid = 1.0,
-) where {T<:AbstractSetup}
-
-    if set.case == "shock"
-
-        if set.nSpecies == 1
-            if set.space[3:end] == "1f1v"
-                wL, primL, fL, bcL, wR, primR, fR, bcR = ib_rh(gas.Ma, gas.γ, vSpace.u)
-                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-            elseif set.space[3:end] == "1f3v"
-                wL, primL, fL, bcL, wR, primR, fR, bcR =
-                    ib_rh(gas.Ma, gas.γ, vSpace.u, vSpace.v, vSpace.w)
-                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-            elseif set.space[3:end] == "2f1v"
-                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                    ib_rh(gas.Ma, gas.γ, gas.K, vSpace.u)
-                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
-            end
-        elseif set.nSpecies == 2
-            if set.space[3:end] == "2f1v"
-                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                    ib_rh(gas.Ma, gas.γ, gas.K, gas.mi, gas.me, gas.ni, gas.ne, vSpace.u)
-                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
-            end
+function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
+    fname = begin
+        if set.case == "shock"
+            "ib_rh"
+        elseif set.case == "brio-wu"
+            "ib_briowu"
+        else
+            "ib_" * string(set.case)
         end
-
-    elseif set.case == "sod"
-
-        if set.nSpecies == 1
-            if set.space[3:end] == "0f0v"
-                wL, primL, bcL, wR, primR, bcR = ib_sod(gas.γ)
-                ib = IB(wL, primL, bcL, wR, primR, bcR)
-            elseif set.space[3:end] == "1f1v"
-                wL, primL, fL, bcL, wR, primR, fR, bcR = ib_sod(gas.γ, vSpace.u)
-                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-            elseif set.space[3:end] == "1f3v"
-                wL, primL, fL, bcL, wR, primR, fR, bcR =
-                    ib_sod(gas.γ, vSpace.u, vSpace.v, vSpace.w)
-                ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR)
-            elseif set.space[3:end] == "2f1v"
-                wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR =
-                    ib_sod(gas.γ, gas.K, vSpace.u)
-                ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR)
-            end
-        elseif set.nSpecies == 2
-            if set.space[3:end] == "0f0v"
-                wL, primL, bcL, wR, primR, bcR = ib_sod(gas.γ, gas.mi, gas.me)
-                ib = IB(wL, primL, bcL, wR, primR, bcR)
-            end
+    end
+    
+    ib = begin
+        if parse(Int, set.space[3]) == 0
+            fw, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            IB(fw, bc)
+        elseif parse(Int, set.space[3]) in [3, 4] && gas isa AbstractPlasma
+            fw, ff, fE, fB, fL, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            iname = "IB" * set.space[3] * "F"
+            eval(Symbol(iname))(fw, ff, fE, fB, fL, bc)
+        elseif set.case == "cavity"
+            fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas, Um, Vm, Tm)
+            iname = "IB" * set.space[3] * "F"
+            eval(Symbol(iname))(fw, ff, bc)
+        else
+            fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            iname = "IB" * set.space[3] * "F"
+            eval(Symbol(iname))(fw, ff, bc)
         end
-
-    elseif set.case == "brio-wu"
-
-        if set.space[3:end] == "4f1v"
-            wL,
-            primL,
-            h0L,
-            h1L,
-            h2L,
-            h3L,
-            bcL,
-            EL,
-            BL,
-            lorenzL,
-            wR,
-            primR,
-            h0R,
-            h1R,
-            h2R,
-            h3R,
-            bcR,
-            ER,
-            BR,
-            lorenzR = ib_briowu(gas.γ, gas.mi, gas.me, vSpace.u)
-
-            ib = IB4F(
-                wL,
-                primL,
-                h0L,
-                h1L,
-                h2L,
-                h3L,
-                bcL,
-                EL,
-                BL,
-                lorenzL,
-                wR,
-                primR,
-                h0R,
-                h1R,
-                h2R,
-                h3R,
-                bcR,
-                ER,
-                BR,
-                lorenzR,
-            )
-        elseif set.space[3:end] == "3f2v"
-            wL,
-            primL,
-            h0L,
-            h1L,
-            h2L,
-            bcL,
-            EL,
-            BL,
-            lorenzL,
-            wR,
-            primR,
-            h0R,
-            h1R,
-            h2R,
-            bcR,
-            ER,
-            BR,
-            lorenzR = ib_briowu(gas.γ, gas.mi, gas.me, vSpace.u, vSpace.v)
-
-            ib = IB3F(
-                wL,
-                primL,
-                h0L,
-                h1L,
-                h2L,
-                bcL,
-                EL,
-                BL,
-                lorenzL,
-                wR,
-                primR,
-                h0R,
-                h1R,
-                h2R,
-                bcR,
-                ER,
-                BR,
-                lorenzR,
-            )
-        end
-
-    elseif set.case == "cavity"
-
-        if set.space[3:4] == "0f"
-            wL, primL, bcL, wR, primR, bcR, bcU, bcD = ib_cavity(gas.γ, uLid, vLid, tLid)
-            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)
-        elseif set.space[3:end] == "1f2v"
-            wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD =
-                ib_cavity(gas.γ, uLid, vLid, tLid, vSpace.u, vSpace.v)
-            ib = IB1F(wL, primL, fL, bcL, wR, primR, fR, bcR, bcU, bcD)
-        elseif set.space[3:end] == "2f2v"
-            wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR, bcU, bcD =
-                ib_cavity(gas.γ, gas.K, uLid, vLid, tLid, vSpace.u, vSpace.v)
-            ib = IB2F(wL, primL, hL, bL, bcL, wR, primR, hR, bR, bcR, bcU, bcD)
-        end
-
-    else
-
-        throw("No default ib available, please set it up manually.")
-
     end
 
     return ib
-
 end

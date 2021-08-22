@@ -43,10 +43,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -119,30 +119,16 @@ function update_boundary!(
 
     ng = 1 - first(eachindex(KS.pSpace.x))
     if bc[1] == :period
-        for i = 1:ng
-            ctr[1-i].w .= ctr[KS.pSpace.nx+1-i].w
-            ctr[1-i].prim .= ctr[KS.pSpace.nx+1-i].prim
-            ctr[KS.pSpace.nx+i].w .= ctr[i].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[i].prim
-        end
+        bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            ctr[1-i].w .= ctr[1].w
-            ctr[1-i].prim .= ctr[1].prim
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
-        @. ctr[0].w = 0.5 * (ctr[-1].w + ctr[1].w)
-        @. ctr[0].prim = 0.5 * (ctr[-1].prim + ctr[1].prim)
+        bc_balance!(ctr[0], ctr[1], ctr[2])
     end
     if bc[2] == :extra
-        for i = 1:ng
-            ctr[KS.pSpace.nx+i].w .= ctr[KS.pSpace.nx].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[KS.pSpace.nx].prim
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
-        @. ctr[KS.pSpace.nx+1].w = 0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
-        @. ctr[KS.pSpace.nx+1].prim =
-            0.5 * (ctr[KS.pSpace.nx].prim + ctr[KS.pSpace.nx+2].prim)
+        bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
 end
@@ -161,10 +147,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D1F,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -272,37 +258,16 @@ function update_boundary!(
 
     ng = 1 - first(eachindex(KS.pSpace.x))
     if bc[1] == :period
-        for i = 1:ng
-            ctr[1-i].w .= ctr[KS.pSpace.nx+1-i].w
-            ctr[1-i].prim .= ctr[KS.pSpace.nx+1-i].prim
-            ctr[KS.pSpace.nx+i].w .= ctr[i].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[i].prim
-            ctr[1-i].f .= ctr[KS.pSpace.nx+1-i].f
-            ctr[KS.pSpace.nx+i].f .= ctr[i].f
-        end
+        bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            ctr[1-i].w .= ctr[1].w
-            ctr[1-i].prim .= ctr[1].prim
-            ctr[1-i].f .= ctr[1].f
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
-        @. ctr[0].w = 0.5 * (ctr[-1].w + ctr[1].w)
-        @. ctr[0].prim = 0.5 * (ctr[-1].prim + ctr[1].prim)
-        @. ctr[0].f = 0.5 * (ctr[-1].f + ctr[1].f)
+        bc_balance!(ctr[0], ctr[1], ctr[2])
     end
-
     if bc[2] == :extra
-        for i = 1:ng
-            ctr[KS.pSpace.nx+i].w .= ctr[KS.pSpace.nx].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[KS.pSpace.nx].prim
-            ctr[KS.pSpace.nx+i].f .= ctr[KS.pSpace.nx].f
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
-        @. ctr[KS.pSpace.nx+1].w = 0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
-        @. ctr[KS.pSpace.nx+1].prim =
-            0.5 * (ctr[KS.pSpace.nx].prim + ctr[KS.pSpace.nx+2].prim)
-        @. ctr[KS.pSpace.nx+1].f = 0.5 * (ctr[KS.pSpace.nx].f + ctr[KS.pSpace.nx+2].f)
+        bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
 end
@@ -321,10 +286,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D2F,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -448,44 +413,16 @@ function update_boundary!(
 
     ng = 1 - first(eachindex(KS.pSpace.x))
     if bc[1] == :period
-        for i = 1:ng
-            ctr[1-i].w .= ctr[KS.pSpace.nx+1-i].w
-            ctr[1-i].prim .= ctr[KS.pSpace.nx+1-i].prim
-            ctr[KS.pSpace.nx+i].w .= ctr[i].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[i].prim
-
-            ctr[1-i].h .= ctr[KS.pSpace.nx+1-i].h
-            ctr[1-i].b .= ctr[KS.pSpace.nx+1-i].b
-            ctr[KS.pSpace.nx+i].h .= ctr[i].h
-            ctr[KS.pSpace.nx+i].b .= ctr[i].b
-        end
+        bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            ctr[1-i].w .= ctr[1].w
-            ctr[1-i].prim .= ctr[1].prim
-            ctr[1-i].h .= ctr[1].h
-            ctr[1-i].b .= ctr[1].b
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
-        @. ctr[0].w = 0.5 * (ctr[-1].w + ctr[1].w)
-        @. ctr[0].prim = 0.5 * (ctr[-1].prim + ctr[1].prim)
-        @. ctr[0].h = 0.5 * (ctr[-1].h + ctr[1].h)
-        @. ctr[0].b = 0.5 * (ctr[-1].b + ctr[1].b)
+        bc_balance!(ctr[0], ctr[1], ctr[2])
     end
-
     if bc[2] == :extra
-        for i = 1:ng
-            ctr[KS.pSpace.nx+i].w .= ctr[KS.pSpace.nx].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[KS.pSpace.nx].prim
-            ctr[KS.pSpace.nx+i].h .= ctr[KS.pSpace.nx].h
-            ctr[KS.pSpace.nx+i].b .= ctr[KS.pSpace.nx].b
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
-        @. ctr[KS.pSpace.nx+1].w = 0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
-        @. ctr[KS.pSpace.nx+1].prim =
-            0.5 * (ctr[KS.pSpace.nx].prim + ctr[KS.pSpace.nx+2].prim)
-        @. ctr[KS.pSpace.nx+1].h = 0.5 * (ctr[KS.pSpace.nx].h + ctr[KS.pSpace.nx+2].h)
-        @. ctr[KS.pSpace.nx+1].b = 0.5 * (ctr[KS.pSpace.nx].b + ctr[KS.pSpace.nx+2].b)
+        bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
 end
@@ -505,10 +442,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D3F,1},
 }
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -525,84 +462,17 @@ function update_boundary!(
     end
 
     ng = 1 - first(eachindex(KS.pSpace.x))
-    
     if bc[1] == :period
-        for i = 1:ng
-            ctr[1-i].w .= ctr[KS.pSpace.nx+1-i].w
-            ctr[1-i].prim .= ctr[KS.pSpace.nx+1-i].prim
-            ctr[KS.pSpace.nx+i].w .= ctr[i].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[i].prim
-
-            ctr[1-i].h0 .= ctr[KS.pSpace.nx+1-i].h0
-            ctr[1-i].h1 .= ctr[KS.pSpace.nx+1-i].h1
-            ctr[1-i].h2 .= ctr[KS.pSpace.nx+1-i].h2
-            ctr[1-i].E .= ctr[KS.pSpace.nx+1-i].E
-            ctr[1-i].B .= ctr[KS.pSpace.nx+1-i].B
-            ctr[1-i].ϕ = deepcopy(ctr[KS.pSpace.nx+1-i].ϕ)
-            ctr[1-i].ψ = deepcopy(ctr[KS.pSpace.nx+1-i].ψ)
-            ctr[1-i].lorenz .= ctr[KS.pSpace.nx+1-i].lorenz
-
-            ctr[KS.pSpace.nx+i].h0 .= ctr[i].h0
-            ctr[KS.pSpace.nx+i].h1 .= ctr[i].h1
-            ctr[KS.pSpace.nx+i].h2 .= ctr[i].h2
-            ctr[KS.pSpace.nx+i].E .= ctr[i].E
-            ctr[KS.pSpace.nx+i].B .= ctr[i].B
-            ctr[KS.pSpace.nx+i].ϕ = deepcopy(ctr[i].ϕ)
-            ctr[KS.pSpace.nx+i].ψ = deepcopy(ctr[i].ψ)
-            ctr[KS.pSpace.nx+i].lorenz .= ctr[i].lorenz
-        end
+        bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            ctr[1-i].w .= ctr[1].w
-            ctr[1-i].prim .= ctr[1].prim
-            ctr[1-i].h0 .= ctr[1].h0
-            ctr[1-i].h1 .= ctr[1].h1
-            ctr[1-i].h2 .= ctr[1].h2
-            ctr[1-i].E .= ctr[1].E
-            ctr[1-i].B .= ctr[1].B
-            ctr[1-i].ϕ = deepcopy(ctr[1].ϕ)
-            ctr[1-i].ψ = deepcopy(ctr[1].ψ)
-            ctr[1-i].lorenz .= ctr[1].lorenz
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
-        @. ctr[0].w = 0.5 * (ctr[-1].w + ctr[1].w)
-        @. ctr[0].prim = 0.5 * (ctr[-1].prim + ctr[1].prim)
-        @. ctr[0].h0 = 0.5 * (ctr[-1].h0 + ctr[1].h0)
-        @. ctr[0].h1 = 0.5 * (ctr[-1].h1 + ctr[1].h1)
-        @. ctr[0].h2 = 0.5 * (ctr[-1].h2 + ctr[1].h2)
-        @. ctr[0].E = 0.5 * (ctr[-1].E + ctr[1].E)
-        @. ctr[0].B = 0.5 * (ctr[-1].B + ctr[1].B)
-        ctr[0].ϕ = 0.5 * (ctr[-1].ϕ + ctr[1].ϕ)
-        ctr[0].ψ = 0.5 * (ctr[-1].ψ + ctr[1].ψ)
-        @. ctr[0].lorenz = 0.5 * (ctr[-1].lorenz + ctr[1].lorenz)
+        bc_balance!(ctr[0], ctr[1], ctr[2])
     end
-
     if bc[2] == :extra
-        for i = 1:ng
-            ctr[KS.pSpace.nx+i].w .= ctr[KS.pSpace.nx].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[KS.pSpace.nx].prim
-            ctr[KS.pSpace.nx+i].h0 .= ctr[KS.pSpace.nx].h0
-            ctr[KS.pSpace.nx+i].h1 .= ctr[KS.pSpace.nx].h1
-            ctr[KS.pSpace.nx+i].h2 .= ctr[KS.pSpace.nx].h2
-            ctr[KS.pSpace.nx+i].E .= ctr[KS.pSpace.nx].E
-            ctr[KS.pSpace.nx+i].B .= ctr[KS.pSpace.nx].B
-            ctr[KS.pSpace.nx+i].ϕ = deepcopy(ctr[KS.pSpace.nx].ϕ)
-            ctr[KS.pSpace.nx+i].ψ = deepcopy(ctr[KS.pSpace.nx].ψ)
-            ctr[KS.pSpace.nx+i].lorenz .= ctr[KS.pSpace.nx].lorenz
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
-        @. ctr[KS.pSpace.nx+1].w = 0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
-        @. ctr[KS.pSpace.nx+1].prim =
-            0.5 * (ctr[KS.pSpace.nx].prim + ctr[KS.pSpace.nx+2].prim)
-        @. ctr[KS.pSpace.nx+1].h0 = 0.5 * (ctr[KS.pSpace.nx].h0 + ctr[KS.pSpace.nx+2].h0)
-        @. ctr[KS.pSpace.nx+1].h1 = 0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
-        @. ctr[KS.pSpace.nx+1].h2 = 0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
-        @. ctr[KS.pSpace.nx+1].E = 0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
-        @. ctr[KS.pSpace.nx+1].B = 0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
-        ctr[KS.pSpace.nx+1].ϕ = 0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
-        ctr[KS.pSpace.nx+1].ψ = 0.5 * (ctr[KS.pSpace.nx].ψ + ctr[KS.pSpace.nx+2].ψ)
-        @. ctr[KS.pSpace.nx+1].lorenz =
-            0.5 * (ctr[KS.pSpace.nx].lorenz + ctr[KS.pSpace.nx+2].lorenz)
+        bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
 end
@@ -622,10 +492,10 @@ function update_boundary!(
     Z<:AbstractArray{Interface1D4F,1},
 }
 
-    resL = zeros(axes(KS.ib.wL))
-    avgL = zeros(axes(KS.ib.wL))
-    resR = zeros(axes(KS.ib.wL))
-    avgR = zeros(axes(KS.ib.wL))
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
 
     if bc[1] != :fix
         i = 1
@@ -643,88 +513,16 @@ function update_boundary!(
 
     ng = 1 - first(eachindex(KS.pSpace.x))
     if bc[1] == :period
-        for i = 1:ng
-            ctr[1-i].w .= ctr[KS.pSpace.nx+1-i].w
-            ctr[1-i].prim .= ctr[KS.pSpace.nx+1-i].prim
-            ctr[KS.pSpace.nx+i].w .= ctr[i].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[i].prim
-
-            ctr[1-i].h0 .= ctr[KS.pSpace.nx+1-i].h0
-            ctr[1-i].h1 .= ctr[KS.pSpace.nx+1-i].h1
-            ctr[1-i].h2 .= ctr[KS.pSpace.nx+1-i].h2
-            ctr[1-i].h3 .= ctr[KS.pSpace.nx+1-i].h3
-            ctr[1-i].E .= ctr[KS.pSpace.nx+1-i].E
-            ctr[1-i].B .= ctr[KS.pSpace.nx+1-i].B
-            ctr[1-i].ϕ = deepcopy(ctr[KS.pSpace.nx+1-i].ϕ)
-            ctr[1-i].ψ = deepcopy(ctr[KS.pSpace.nx+1-i].ψ)
-            ctr[1-i].lorenz .= ctr[KS.pSpace.nx+1-i].lorenz
-
-            ctr[KS.pSpace.nx+i].h0 .= ctr[i].h0
-            ctr[KS.pSpace.nx+i].h1 .= ctr[i].h1
-            ctr[KS.pSpace.nx+i].h2 .= ctr[i].h2
-            ctr[KS.pSpace.nx+i].h3 .= ctr[i].h3
-            ctr[KS.pSpace.nx+i].E .= ctr[i].E
-            ctr[KS.pSpace.nx+i].B .= ctr[i].B
-            ctr[KS.pSpace.nx+i].ϕ = deepcopy(ctr[i].ϕ)
-            ctr[KS.pSpace.nx+i].ψ = deepcopy(ctr[i].ψ)
-            ctr[KS.pSpace.nx+i].lorenz .= ctr[i].lorenz
-        end
+        bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            ctr[1-i].w .= ctr[1].w
-            ctr[1-i].prim .= ctr[1].prim
-            ctr[1-i].h0 .= ctr[1].h0
-            ctr[1-i].h1 .= ctr[1].h1
-            ctr[1-i].h2 .= ctr[1].h2
-            ctr[1-i].h3 .= ctr[1].h3
-            ctr[1-i].E .= ctr[1].E
-            ctr[1-i].B .= ctr[1].B
-            ctr[1-i].ϕ = deepcopy(ctr[1].ϕ)
-            ctr[1-i].ψ = deepcopy(ctr[1].ψ)
-            ctr[1-i].lorenz .= ctr[1].lorenz
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
-        @. ctr[0].w = 0.5 * (ctr[-1].w + ctr[1].w)
-        @. ctr[0].prim = 0.5 * (ctr[-1].prim + ctr[1].prim)
-        @. ctr[0].h0 = 0.5 * (ctr[-1].h0 + ctr[1].h0)
-        @. ctr[0].h1 = 0.5 * (ctr[-1].h1 + ctr[1].h1)
-        @. ctr[0].h2 = 0.5 * (ctr[-1].h2 + ctr[1].h2)
-        @. ctr[0].h3 = 0.5 * (ctr[-1].h3 + ctr[1].h3)
-        @. ctr[0].E = 0.5 * (ctr[-1].E + ctr[1].E)
-        @. ctr[0].B = 0.5 * (ctr[-1].B + ctr[1].B)
-        ctr[0].ϕ = 0.5 * (ctr[-1].ϕ + ctr[1].ϕ)
-        ctr[0].ψ = 0.5 * (ctr[-1].ψ + ctr[1].ψ)
-        @. ctr[0].lorenz = 0.5 * (ctr[-1].lorenz + ctr[1].lorenz)
+        bc_balance!(ctr[0], ctr[1], ctr[2])
     end
-
     if bc[2] == :extra
-        for i = 1:ng
-            ctr[KS.pSpace.nx+i].w .= ctr[KS.pSpace.nx].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[KS.pSpace.nx].prim
-            ctr[KS.pSpace.nx+i].h0 .= ctr[KS.pSpace.nx].h0
-            ctr[KS.pSpace.nx+i].h1 .= ctr[KS.pSpace.nx].h1
-            ctr[KS.pSpace.nx+i].h2 .= ctr[KS.pSpace.nx].h2
-            ctr[KS.pSpace.nx+i].h3 .= ctr[KS.pSpace.nx].h3
-            ctr[KS.pSpace.nx+i].E .= ctr[KS.pSpace.nx].E
-            ctr[KS.pSpace.nx+i].B .= ctr[KS.pSpace.nx].B
-            ctr[KS.pSpace.nx+i].ϕ = deepcopy(ctr[KS.pSpace.nx].ϕ)
-            ctr[KS.pSpace.nx+i].ψ = deepcopy(ctr[KS.pSpace.nx].ψ)
-            ctr[KS.pSpace.nx+i].lorenz .= ctr[KS.pSpace.nx].lorenz
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
-        @. ctr[KS.pSpace.nx+1].w = 0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
-        @. ctr[KS.pSpace.nx+1].prim =
-            0.5 * (ctr[KS.pSpace.nx].prim + ctr[KS.pSpace.nx+2].prim)
-        @. ctr[KS.pSpace.nx+1].h0 = 0.5 * (ctr[KS.pSpace.nx].h0 + ctr[KS.pSpace.nx+2].h0)
-        @. ctr[KS.pSpace.nx+1].h1 = 0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
-        @. ctr[KS.pSpace.nx+1].h2 = 0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
-        @. ctr[KS.pSpace.nx+1].h3 = 0.5 * (ctr[KS.pSpace.nx].h3 + ctr[KS.pSpace.nx+2].h3)
-        @. ctr[KS.pSpace.nx+1].E = 0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
-        @. ctr[KS.pSpace.nx+1].B = 0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
-        ctr[KS.pSpace.nx+1].ϕ = 0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
-        ctr[KS.pSpace.nx+1].ψ = 0.5 * (ctr[KS.pSpace.nx].ψ + ctr[KS.pSpace.nx+2].ψ)
-        @. ctr[KS.pSpace.nx+1].lorenz =
-            0.5 * (ctr[KS.pSpace.nx].lorenz + ctr[KS.pSpace.nx+2].lorenz)
+        bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
 end
@@ -752,14 +550,14 @@ function update_boundary!(
         end
     end
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
-    resU = zero(KS.ib.wL)
-    avgU = zero(KS.ib.wL)
-    resD = zero(KS.ib.wL)
-    avgD = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
+    resU = zero(ctr[1].w)
+    avgU = zero(ctr[1].w)
+    resD = zero(ctr[1].w)
+    avgD = zero(ctr[1].w)
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
@@ -840,45 +638,27 @@ function update_boundary!(
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[1] == :period
-        for i = 1:ngx, j = 1:ny
-            ctr[1-i, j].w .= ctr[nx-i+1, j].w
-            ctr[1-i, j].prim .= ctr[nx-i+1, j].prim
-            ctr[nx+i, j].w .= ctr[i, j].w
-            ctr[nx+i, j].prim .= ctr[i, j].prim
-        end
-
-        for i = 1:nx, j = 1:ngy
-            ctr[i, 1-j].w .= ctr[i, ny-j+1].w
-            ctr[i, 1-j].prim .= ctr[i, ny-j+1].prim
-            ctr[i, ny+j].w .= ctr[i, j].w
-            ctr[i, ny+j].prim .= ctr[i, j].prim
-        end
-    elseif bc[1] == :extra
-        for i = 1:ngx, j = 1:ny
-            ctr[1-i, j].w .= ctr[1, j].w
-            ctr[1-i, j].prim .= ctr[1, j].prim
-        end
+        bc_period!(ctr, ngx; dirc = :x)
+    elseif bc[1] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[1]) * "!"))
+        bcfun(ctr, ngx; dirc = :xl)
+    end
+    if bc[2] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[2]) * "!"))
+        bcfun(ctr, ngx; dirc = :xr)
     end
 
-    if bc[2] == :extra
-        for i = 1:ngx, j = 1:ny
-            ctr[nx+i, j].w .= ctr[nx, j].w
-            ctr[nx+i, j].prim .= ctr[nx, j].prim
-        end
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    if bc[3] == :period
+        bc_period!(ctr, ngy; dirc = :y)
+    elseif bc[3] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[3]) * "!"))
+        bcfun(ctr, ngy; dirc = :yl)
     end
-    if bc[3] == :extra
-        for i = 1:nx, j = 1:ngy
-            ctr[i, 1-j].w .= ctr[i, 1].w
-            ctr[i, 1-j].prim .= ctr[i, 1].prim
-        end
-    end
-    if bc[4] == :extra
-        for i = 1:nx, j = 1:ngy
-            ctr[i, ny+j].w .= ctr[i, ny].w
-            ctr[i, ny+j].prim .= ctr[i, ny].prim
-        end
+    if bc[4] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
+        bcfun(ctr, ngy; dirc = :yr)
     end
 
 end
@@ -906,14 +686,14 @@ function update_boundary!(
         end
     end
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
-    resU = zero(KS.ib.wL)
-    avgU = zero(KS.ib.wL)
-    resD = zero(KS.ib.wL)
-    avgD = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
+    resU = zero(ctr[1].w)
+    avgU = zero(ctr[1].w)
+    resD = zero(ctr[1].w)
+    avgD = zero(ctr[1].w)
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
@@ -1039,63 +819,27 @@ function update_boundary!(
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[1] == :period
-        for i = 1:ngx, j = 1:ny
-            ctr[1-i, j].w .= ctr[nx-i+1, j].w
-            ctr[1-i, j].prim .= ctr[nx-i+1, j].prim
-            ctr[nx+i, j].w .= ctr[i, j].w
-            ctr[nx+i, j].prim .= ctr[i, j].prim
-
-            ctr[1-i, j].f .= ctr[nx-i+1, j].f
-            ctr[nx+i, j].f .= ctr[i, j].f
-        end
-
-        for i = 1:nx, j = 1:ngy
-            ctr[i, 1-j].w .= ctr[i, ny-j+1].w
-            ctr[i, 1-j].prim .= ctr[i, ny-j+1].prim
-            ctr[i, ny+j].w .= ctr[i, j].w
-            ctr[i, ny+j].prim .= ctr[i, j].prim
-
-            ctr[i, 1-j].f .= ctr[i, KS.pSpace.ny-j+1].f
-            ctr[i, KS.pSpace.ny+j].f .= ctr[i, j].f
-        end
-    elseif bc[1] == :extra
-        @inbounds for j = 1:ny
-            for i = 1:ngx
-                ctr[1-i, j].w .= ctr[1, j].w
-                ctr[1-i, j].prim .= ctr[1, j].prim
-                ctr[1-i, j].f .= ctr[1, j].f
-            end
-        end
+        bc_period!(ctr, ngx; dirc = :x)
+    elseif bc[1] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[1]) * "!"))
+        bcfun(ctr, ngx; dirc = :xl)
+    end
+    if bc[2] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[2]) * "!"))
+        bcfun(ctr, ngx; dirc = :xr)
     end
 
-    if bc[2] == :extra
-        @inbounds for j = 1:ny
-            for i = 1:ngx
-                ctr[nx+i, j].w .= ctr[nx, j].w
-                ctr[nx+i, j].prim .= ctr[nx, j].prim
-                ctr[nx+i, j].f .= ctr[nx, j].f
-            end
-        end
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    if bc[3] == :period
+        bc_period!(ctr, ngy; dirc = :y)
+    elseif bc[3] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[3]) * "!"))
+        bcfun(ctr, ngy; dirc = :yl)
     end
-    if bc[3] == :extra
-        @inbounds for j = 1:ngy
-            for i = 1:nx
-                ctr[i, 1-j].w .= ctr[i, 1].w
-                ctr[i, 1-j].prim .= ctr[i, 1].prim
-                ctr[i, 1-j].f .= ctr[i, 1].f
-            end
-        end
-    end
-    if bc[4] == :extra
-        @inbounds for j = 1:ngy
-            for i = 1:nx
-                ctr[i, ny+j].w .= ctr[i, ny].w
-                ctr[i, ny+j].prim .= ctr[i, ny].prim
-                ctr[i, ny+j].f .= ctr[i, ny].f
-            end
-        end
+    if bc[4] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
+        bcfun(ctr, ngy; dirc = :yr)
     end
 
 end
@@ -1123,14 +867,14 @@ function update_boundary!(
         end
     end
 
-    resL = zero(KS.ib.wL)
-    avgL = zero(KS.ib.wL)
-    resR = zero(KS.ib.wL)
-    avgR = zero(KS.ib.wL)
-    resU = zero(KS.ib.wL)
-    avgU = zero(KS.ib.wL)
-    resD = zero(KS.ib.wL)
-    avgD = zero(KS.ib.wL)
+    resL = zero(ctr[1].w)
+    avgL = zero(ctr[1].w)
+    resR = zero(ctr[1].w)
+    avgR = zero(ctr[1].w)
+    resU = zero(ctr[1].w)
+    avgU = zero(ctr[1].w)
+    resD = zero(ctr[1].w)
+    avgD = zero(ctr[1].w)
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
@@ -1280,63 +1024,27 @@ function update_boundary!(
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[1] == :period
-        for i = 1:ngx, j = 1:ny
-            ctr[1-i, j].w .= ctr[nx-i+1, j].w
-            ctr[1-i, j].prim .= ctr[nx-i+1, j].prim
-            ctr[nx+i, j].w .= ctr[i, j].w
-            ctr[nx+i, j].prim .= ctr[i, j].prim
-
-            ctr[1-i, j].h .= ctr[nx-i+1, j].h
-            ctr[1-i, j].b .= ctr[nx-i+1, j].b
-            ctr[nx+i, j].h .= ctr[i, j].h
-            ctr[nx+i, j].b .= ctr[i, j].b
-        end
-
-        for i = 1:nx, j = 1:ngy
-            ctr[i, 1-j].w .= ctr[i, ny-j+1].w
-            ctr[i, 1-j].prim .= ctr[i, ny-j+1].prim
-            ctr[i, ny+j].w .= ctr[i, j].w
-            ctr[i, ny+j].prim .= ctr[i, j].prim
-
-            ctr[i, 1-j].h .= ctr[i, ny-j+1].h
-            ctr[i, 1-j].b .= ctr[i, ny-j+1].b
-            ctr[i, ny+j].h .= ctr[i, j].h
-            ctr[i, ny+j].b .= ctr[i, j].b
-        end    
-    elseif bc[1] == :extra
-        @inbounds for i = 1:ngx, j = 1:ny
-            ctr[1-i, j].w .= ctr[1, j].w
-            ctr[1-i, j].prim .= ctr[1, j].prim
-            ctr[1-i, j].h .= ctr[1, j].h
-            ctr[1-i, j].b .= ctr[1, j].b
-        end
+        bc_period!(ctr, ngx; dirc = :x)
+    elseif bc[1] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[1]) * "!"))
+        bcfun(ctr, ngx; dirc = :xl)
+    end
+    if bc[2] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[2]) * "!"))
+        bcfun(ctr, ngx; dirc = :xr)
     end
 
-    if bc[2] == :extra
-        @inbounds for i = 1:ngx, j = 1:ny
-            ctr[nx+i, j].w .= ctr[nx, j].w
-            ctr[nx+i, j].prim .= ctr[nx, j].prim
-            ctr[nx+i, j].h .= ctr[nx, j].h
-            ctr[nx+i, j].b .= ctr[nx, j].b
-        end
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    if bc[3] == :period
+        bc_period!(ctr, ngy; dirc = :y)
+    elseif bc[3] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[3]) * "!"))
+        bcfun(ctr, ngy; dirc = :yl)
     end
-    if bc[3] == :extra
-        @inbounds for i = 1:nx, j = 1:ngy
-            ctr[i, 1-j].w .= ctr[i, 1].w
-            ctr[i, 1-j].prim .= ctr[i, 1].prim
-            ctr[i, 1-j].h .= ctr[i, 1].h
-            ctr[i, 1-j].b .= ctr[i, 1].b
-        end
-    end
-    if bc[4] == :extra
-        @inbounds for i = 1:nx, j = 1:ngy
-            ctr[i, ny+j].w .= ctr[i, ny].w
-            ctr[i, ny+j].prim .= ctr[i, ny].prim
-            ctr[i, ny+j].h .= ctr[i, ny].h
-            ctr[i, ny+j].b .= ctr[i, ny].b
-        end
+    if bc[4] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
+        bcfun(ctr, ngy; dirc = :yr)
     end
 
 end
