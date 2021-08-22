@@ -638,7 +638,6 @@ function update_boundary!(
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] in (:extra, :mirror)
@@ -650,6 +649,7 @@ function update_boundary!(
         bcfun(ctr, ngx; dirc = :xr)
     end
 
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] in (:extra, :mirror)
@@ -658,7 +658,7 @@ function update_boundary!(
     end
     if bc[4] in (:extra, :mirror)
         bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
-        bc_extra!(ctr, ngy; dirc = :yr)
+        bcfun(ctr, ngy; dirc = :yr)
     end
 
 end
@@ -819,7 +819,6 @@ function update_boundary!(
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] in (:extra, :mirror)
@@ -831,6 +830,7 @@ function update_boundary!(
         bcfun(ctr, ngx; dirc = :xr)
     end
 
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] in (:extra, :mirror)
@@ -839,7 +839,7 @@ function update_boundary!(
     end
     if bc[4] in (:extra, :mirror)
         bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
-        bc_extra!(ctr, ngy; dirc = :yr)
+        bcfun(ctr, ngy; dirc = :yr)
     end
 
 end
@@ -1024,7 +1024,6 @@ function update_boundary!(
     end
 
     ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] in (:extra, :mirror)
@@ -1036,6 +1035,7 @@ function update_boundary!(
         bcfun(ctr, ngx; dirc = :xr)
     end
 
+    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] in (:extra, :mirror)
@@ -1044,7 +1044,7 @@ function update_boundary!(
     end
     if bc[4] in (:extra, :mirror)
         bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
-        bc_extra!(ctr, ngy; dirc = :yr)
+        bcfun(ctr, ngy; dirc = :yr)
     end
 
 end
