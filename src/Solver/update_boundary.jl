@@ -121,16 +121,12 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[1-i], ctr[1])
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
     if bc[2] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[KS.pSpace.nx+i], ctr[KS.pSpace.nx])
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
@@ -264,16 +260,12 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[1-i], ctr[1])
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
     if bc[2] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[KS.pSpace.nx+i], ctr[KS.pSpace.nx])
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
@@ -423,16 +415,12 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[1-i], ctr[1])
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
     if bc[2] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[KS.pSpace.nx+i], ctr[KS.pSpace.nx])
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
@@ -477,16 +465,12 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[1-i], ctr[1])
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
     if bc[2] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[KS.pSpace.nx+i], ctr[KS.pSpace.nx])
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
@@ -531,16 +515,12 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[1-i], ctr[1])
-        end
+        bc_extra!(ctr, ng; dirc = :xl)
     elseif bc[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
     if bc[2] == :extra
-        for i = 1:ng
-            copy_ctr!(ctr[KS.pSpace.nx+i], ctr[KS.pSpace.nx])
-        end
+        bc_extra!(ctr, ng; dirc = :xr)
     elseif bc[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
@@ -662,27 +642,19 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] == :extra
-        for j = 1:ny, i = 1:ngx
-            copy_ctr!(ctr[1-i, j], ctr[1, j])
-        end
+        bc_extra!(ctr, ngx; dirc = :xl)
     end
     if bc[2] == :extra
-        for i = 1:ngx, j = 1:ny
-            copy_ctr!(ctr[nx+i, j], ctr[nx, j])
-        end
+        bc_extra!(ctr, ngx; dirc = :xr)
     end
 
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] == :extra
-        for i = 1:nx, j = 1:ngy
-            copy_ctr!(ctr[i, 1-j], ctr[i, 1])
-        end
+        bc_extra!(ctr, ngy; dirc = :yl)
     end
     if bc[4] == :extra
-        for i = 1:nx, j = 1:ngy
-            copy_ctr!(ctr[i, ny+j], ctr[i, ny])
-        end
+        bc_extra!(ctr, ngy; dirc = :yr)
     end
 
 end
@@ -847,27 +819,19 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] == :extra
-        for j = 1:ny, i = 1:ngx
-            copy_ctr!(ctr[1-i, j], ctr[1, j])
-        end
+        bc_extra!(ctr, ngx; dirc = :xl)
     end
     if bc[2] == :extra
-        for i = 1:ngx, j = 1:ny
-            copy_ctr!(ctr[nx+i, j], ctr[nx, j])
-        end
+        bc_extra!(ctr, ngx; dirc = :xr)
     end
 
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] == :extra
-        for i = 1:nx, j = 1:ngy
-            copy_ctr!(ctr[i, 1-j], ctr[i, 1])
-        end
+        bc_extra!(ctr, ngy; dirc = :yl)
     end
     if bc[4] == :extra
-        for i = 1:nx, j = 1:ngy
-            copy_ctr!(ctr[i, ny+j], ctr[i, ny])
-        end
+        bc_extra!(ctr, ngy; dirc = :yr)
     end
 
 end
@@ -1056,27 +1020,19 @@ function update_boundary!(
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] == :extra
-        for j = 1:ny, i = 1:ngx
-            copy_ctr!(ctr[1-i, j], ctr[1, j])
-        end
+        bc_extra!(ctr, ngx; dirc = :xl)
     end
     if bc[2] == :extra
-        for i = 1:ngx, j = 1:ny
-            copy_ctr!(ctr[nx+i, j], ctr[nx, j])
-        end
+        bc_extra!(ctr, ngx; dirc = :xr)
     end
 
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] == :extra
-        for i = 1:nx, j = 1:ngy
-            copy_ctr!(ctr[i, 1-j], ctr[i, 1])
-        end
+        bc_extra!(ctr, ngy; dirc = :yl)
     end
     if bc[4] == :extra
-        for i = 1:nx, j = 1:ngy
-            copy_ctr!(ctr[i, ny+j], ctr[i, ny])
-        end
+        bc_extra!(ctr, ngy; dirc = :yr)
     end
 
 end
