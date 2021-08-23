@@ -15,7 +15,7 @@ Maxwellian in discrete form
 """
 maxwellian(u, ρ, U, λ) = @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
 
-maxwellian(u, prim::AbstractVector{T}) where {T<:Real} =
+maxwellian(u::Union{Real,AbstractVector{T}}, prim) where {T<:Real} =
     maxwellian(u, prim[1], prim[2], prim[end]) # in case of input with length 4/5
 
 #--- 2V ---#
