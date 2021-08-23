@@ -55,8 +55,8 @@ function bc_mirror!(
 )
     copy_ctr!(ctr, ctr0)
 
-    nu = size(ctr.h, 1)
-    nv = size(ctr.h, 2)
+    nu = size(ctr.f, 1)
+    nv = size(ctr.f, 2)
 
     if Symbol(dirc) == :x
         ctr.w[2] *= -1.0

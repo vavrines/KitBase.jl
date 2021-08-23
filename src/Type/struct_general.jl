@@ -140,18 +140,18 @@ end
 Gas property
 
 """
-@with_kw mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractGas
-    Kn::A = 1e-2
-    Ma::B = 0.0
-    Pr::C = 1.0
-    K::D = 2.0
-    γ::E = 5 / 3
-    ω::F = 0.81
-    αᵣ::G = 1.0
-    ωᵣ::H = 0.5
-    μᵣ::I = ref_vhs_vis(Kn, αᵣ, ωᵣ)
-    m::J = 1e-3
-    np::K = 1000
+@with_kw mutable struct Gas{T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11<:Integer} <: AbstractGas
+    Kn::T1 = 1e-2
+    Ma::T2 = 0.0
+    Pr::T3 = 1.0
+    K::T4 = 2.0
+    γ::T5 = 5 / 3
+    ω::T6 = 0.81
+    αᵣ::T7 = 1.0
+    ωᵣ::T8 = 0.5
+    μᵣ::T9 = ref_vhs_vis(Kn, αᵣ, ωᵣ)
+    m::T10 = 1e-3
+    np::T11 = 1000
 end
 
 function Gas(
@@ -159,16 +159,21 @@ function Gas(
     _Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
     _Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
     _K::Union{Real,AbstractArray},
+    _γ = 5 / 3::Union{Real,AbstractArray},
+    _ω = 0.81::Union{Real,AbstractArray},
+    _αᵣ = 1.0::Union{Real,AbstractArray},
+    _ωᵣ = 0.5::Union{Real,AbstractArray},
+    _μᵣ = ref_vhs_vis(_Kn, _αᵣ, _ωᵣ)::Union{Real,AbstractArray},
 )
     Kn = deepcopy(_Kn)
     Ma = deepcopy(_Ma)
     Pr = deepcopy(_Pr)
     K = deepcopy(_K)
-    γ = 5 / 3
-    ω = 0.81
-    αᵣ = 1.0
-    ωᵣ = 0.5
-    μᵣ = ref_vhs_vis(Kn, αᵣ, ωᵣ)
+    γ = deepcopy(_γ)
+    ω = deepcopy(_ω)
+    αᵣ = deepcopy(_αᵣ)
+    ωᵣ = deepcopy(_ωᵣ)
+    μᵣ = deepcopy(_μᵣ)
     m = 1e-3
     np = 1000
 
@@ -271,37 +276,34 @@ end
 
 
 """
-    struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
-
-        Kn::A
-        Ma::B
-        Pr::C
-        K::D
-        γ::E
-
-        mi::F
-        ni::G
-        me::H
-        ne::I
-        lD::J
-        rL::K
-
-        sol::L
-        χ::M
-        ν::N
-        Ap::O
-        An::O
-        D::P
+    struct Plasma1D <: AbstractPlasma
+        Kn
+        Ma
+        Pr
+        K
+        γ
+        mi
+        ni
+        me
+        ne
+        lD
+        rL
+        sol
+        χ
+        ν
+        Ap
+        An
+        D
     end
 
 1D plasma property
 
 """
-@with_kw struct Plasma1D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractPlasma
+@with_kw struct Plasma1D{A,B,C,TD,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
-    K::D = 2.0
+    K::TD = 2.0
     γ::E = 5 / 3
 
     mi::F = 1.0
@@ -309,7 +311,7 @@ end
     me::H = 0.5
     ne::I = 0.5
     lD::J = 0.01
-    rL::K = 0.01
+    rL::TK = 0.01
 
     sol::L = 100
     χ::M = 1
@@ -419,35 +421,33 @@ end
 
 
 """
-    struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractProperty
-        Kn::A
-        Ma::B
-        Pr::C
-        K::D
-        γ::E
-
-        mi::F
-        ni::G
-        me::H
-        ne::I
-        lD::J
-        rL::K
-
-        sol::L
-        χ::M
-        ν::N
-        A1p::O
-        A1n::O
-        A2p::O
-        A2n::O
-        D1::P
-        D2::P
+    struct Plasma2D <: AbstractPlasma
+        Kn
+        Ma
+        Pr
+        K
+        γ
+        mi
+        ni
+        me
+        ne
+        lD
+        rL
+        sol
+        χ
+        ν
+        A1p
+        A1n
+        A2p
+        A2n
+        D1
+        D2
     end
 
 2D plasma property
 
 """
-@with_kw struct Plasma2D{A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P} <: AbstractPlasma
+@with_kw struct Plasma2D{A,B,C,D,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
@@ -459,7 +459,7 @@ end
     me::H = 0.5
     ne::I = 0.5
     lD::J = 0.01
-    rL::K = 0.01
+    rL::TK = 0.01
 
     sol::L = 100
     χ::M = 1
