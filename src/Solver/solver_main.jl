@@ -64,8 +64,8 @@ function solve!(
             face,
             dt,
             res;
-            coll = Symbol(KS.set.collision),
-            bc = Symbol(KS.set.boundary),
+            coll = symbolize(KS.set.collision),
+            bc = symbolize(KS.set.boundary),
         )
 
         #iter += 1
@@ -121,8 +121,8 @@ function solve!(
             a1face,
             a2face,
             dt;
-            mode = Symbol(KS.set.flux),
-            bc = Symbol(KS.set.boundary),
+            mode = symbolize(KS.set.flux),
+            bc = symbolize(KS.set.boundary),
         )
         update!(
             KS,
@@ -131,8 +131,8 @@ function solve!(
             a2face,
             dt,
             res;
-            coll = Symbol(KS.set.collision),
-            bc = Symbol(KS.set.boundary),
+            coll = symbolize(KS.set.collision),
+            bc = symbolize(KS.set.boundary),
         )
 
         t += dt
