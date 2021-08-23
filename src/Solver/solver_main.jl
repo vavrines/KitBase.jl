@@ -57,7 +57,7 @@ function solve!(
 
         #dt = timestep(KS, ctr, simTime)
         reconstruct!(KS, ctr)
-        evolve!(KS, ctr, face, dt; mode = Symbol(KS.set.flux), bc = Symbol(KS.set.boundary))
+        evolve!(KS, ctr, face, dt; mode = symbolize(KS.set.flux), bc = symbolize(KS.set.boundary))
         update!(
             KS,
             ctr,
