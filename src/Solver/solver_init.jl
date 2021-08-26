@@ -87,7 +87,13 @@ function init_fvm(
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i])
-            prim = ifelse(γ == 0, funcprim(w), funcprim(w, γ))
+            prim = begin
+                if γ == 0
+                    funcprim(w)
+                else
+                    funcprim(w, γ)
+                end
+            end
 
             ctr[i] = ControlVolume1D(
                 funcar(w),
