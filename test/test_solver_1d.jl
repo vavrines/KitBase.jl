@@ -1,7 +1,12 @@
+ks, ctr, face, simTime = KitBase.initialize("config_1d0f.txt")
+
+using KitBase.JLD2
+set = ks
+t = 0.0
 cd(@__DIR__)
+@save "restart.jld2" set ctr t
 ks, ctr, face, simTime = KitBase.initialize("restart.jld2")
 
-ks, ctr, face, simTime = KitBase.initialize("config_1d0f.txt")
 dt = KitBase.timestep(ks, ctr, 0.0)
 KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :period)
 KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :extra)
