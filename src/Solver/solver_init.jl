@@ -24,20 +24,14 @@ function initialize(configfilename::T) where {T<:AbstractString}
         ks = D["set"]
         ctr = D["ctr"]
         t = D["t"]
-
         face = init_fvm(ks, ks.pSpace)[2]
 
         return ks, ctr, face, t
     else
         ks = SolverSet(configfilename)
-
-        if ks.set.space[1:2] == "1d"
-            ctr, face = init_fvm(ks, ks.pSpace)
-            return ks, ctr, face, 0.0
-        elseif ks.set.space[1:2] == "2d"
-            ctr, a1face, a2face = init_fvm(ks, ks.pSpace)
-            return ks, ctr, a1face, a2face, 0.0
-        end
+        cftuple = init_fvm(ks)
+        
+        return (ks, cftuple..., 0.0)
     end
 end
 
@@ -51,14 +45,9 @@ function initialize(config::T) where {T<:AbstractDict}
     println("")
 
     ks = SolverSet(config)
+    cftuple = init_fvm(ks)
 
-    if ks.set.space[1:2] == "1d"
-        ctr, face = init_fvm(ks, ks.pSpace)
-        return ks, ctr, face, 0.0
-    elseif ks.set.space[1:2] == "2d"
-        ctr, a1face, a2face = init_fvm(ks, ks.pSpace)
-        return ks, ctr, a1face, a2face, 0.0
-    end
+    return (ks, cftuple..., 0.0)
 end
 
 
@@ -68,6 +57,10 @@ end
 Initialize finite volume method
 
 """
+function init_fvm(KS::T, array = :dynamic_array; structarray = false) where {T<:AbstractSolverSet}
+    return init_fvm(KS, KS.ps, array; structarray = structarray)
+end
+
 function init_fvm(
     KS::T,
     ps::T1,
