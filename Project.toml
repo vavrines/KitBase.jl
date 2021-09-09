@@ -32,7 +32,7 @@ TypedPolynomials = "afbbf031-7a57-5f58-a1b9-b774a0fad08d"
 WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 
 [compat]
-CSV = "0.8"
+CSV = "0.8, 0.9"
 CUDA = "^2, ^3"
 Conda = "^1"
 Distributions = "0.21, 0.22, 0.23, 0.24, 0.25"
