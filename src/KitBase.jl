@@ -26,6 +26,7 @@ using LinearAlgebra
 using MultivariatePolynomials
 using OffsetArrays
 using Optim
+using Parameters
 using Plots
 using ProgressMeter
 using PyCall

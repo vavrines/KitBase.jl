@@ -141,3 +141,20 @@ function ib_rh(
     return nothing
 
 end
+
+function ib_rh(Ma::Real, gam::Real)
+    MaL = Ma
+    MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
+    ratioT =
+        (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
+        (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
+
+    primL = [1.0, MaL * sqrt(gam / 2.0), 1.0]
+    primR = [
+        primL[1] * (gam + 1.0) * MaL^2 / ((gam - 1.0) * MaL^2 + 2.0),
+        MaR * sqrt(gam / 2.0) * sqrt(ratioT),
+        primL[3] / ratioT,
+    ]
+
+    return primL, primR
+end
