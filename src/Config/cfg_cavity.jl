@@ -27,11 +27,11 @@ function ib_cavity(
         primL = deepcopy(prim)
         primR = deepcopy(prim)
 
-        fw = function(args...)
+        fw = function (args...)
             return w
         end
 
-        bc = function(x, y)
+        bc = function (x, y)
             if y == ps.y1
                 return primU
             else
@@ -42,13 +42,13 @@ function ib_cavity(
         if set.space[1:4] == "2d0f"
             return fw, bc
         elseif set.space == "2d1f2v"
-            ff = function(args...)
+            ff = function (args...)
                 return h
             end
 
             return fw, ff, bc
         elseif set.space == "2d2f2v"
-            ff = function(args...)
+            ff = function (args...)
                 return h, b
             end
 

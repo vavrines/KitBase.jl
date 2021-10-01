@@ -247,11 +247,7 @@ function mixture_maxwellian!(
     M::AbstractMatrix{T1},
     u::T2,
     prim::AbstractMatrix{T3},
-) where {
-    T1<:Real,
-    T2<:AbstractArray{<:Real,2},
-    T3<:Real,
-}
+) where {T1<:Real,T2<:AbstractArray{<:Real,2},T3<:Real}
 
     for j in axes(M, 2)
         _M = @view M[:, j]
@@ -267,11 +263,7 @@ function mixture_maxwellian!(
     u::T2,
     v::T2,
     prim::AbstractMatrix{T3},
-) where {
-    T1<:Real,
-    T2<:AbstractArray{<:Real,3},
-    T3<:Real,
-}
+) where {T1<:Real,T2<:AbstractArray{<:Real,3},T3<:Real}
 
     for k in axes(M, 3)
         _M = @view M[:, :, k]
@@ -288,11 +280,7 @@ function mixture_maxwellian!(
     v::T2,
     w::T2,
     prim::AbstractMatrix{T3},
-) where {
-    T1<:Real,
-    T2<:AbstractArray{<:Real,4},
-    T3<:Real,
-}
+) where {T1<:Real,T2<:AbstractArray{<:Real,4},T3<:Real}
 
     for l in axes(M, 4)
         _M = @view M[:, :, :, l]

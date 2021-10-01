@@ -11,7 +11,7 @@ begin
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
     bL = @. hL * gas.K / 2 / primL[end]
 
-    fw = function(x, y)
+    fw = function (x, y)
         return wL
     end
     ib = KitBase.IB2F(fw, vs, gas)
@@ -132,7 +132,7 @@ begin
     primL = [1.0, KitBase.sound_speed(1.0, gas.γ) * gas.Ma, 0.0, 1.0]
     wL = KitBase.prim_conserve(primL, gas.γ)
     hL = KitBase.maxwellian(vs.u, vs.v, primL)
-    fw = function(x, y)
+    fw = function (x, y)
         return wL
     end
     ib = KitBase.IB1F(fw, vs, gas)

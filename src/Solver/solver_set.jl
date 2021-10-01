@@ -222,7 +222,16 @@ function set_geometry(dict::T) where {T<:AbstractDict}
         if parse(Int, dict[:space][1]) == 1
             return PSpace1D(dict[:x0], dict[:x1], dict[:nx], dict[:nxg])
         elseif parse(Int, dict[:space][1]) == 2
-            return PSpace2D(dict[:x0], dict[:x1], dict[:nx], dict[:y0], dict[:y1], dict[:ny], dict[:nxg], dict[:nyg])
+            return PSpace2D(
+                dict[:x0],
+                dict[:x1],
+                dict[:nx],
+                dict[:y0],
+                dict[:y1],
+                dict[:ny],
+                dict[:nxg],
+                dict[:nyg],
+            )
         else
             throw("No preset available for 3D simulation, please set it up manually.")
         end
@@ -637,7 +646,7 @@ function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
             "ib_" * string(set.case)
         end
     end
-    
+
     ib = begin
         if parse(Int, set.space[3]) == 0
             fw, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)

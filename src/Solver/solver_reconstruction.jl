@@ -297,12 +297,7 @@ function reconstruct!(
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
         swR = extract_last(ctr[nx, j].sw, 1, mode = :view)
-        reconstruct2!(
-            swR,
-            ctr[nx-1, j].w,
-            ctr[nx, j].w,
-            0.5 * (dx[nx-1, j] + dy[nx, j]),
-        )
+        reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dy[nx, j]))
     end
 
     @inbounds Threads.@threads for i = 1:nx
@@ -310,12 +305,7 @@ function reconstruct!(
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
         swU = extract_last(ctr[i, ny].sw, 2, mode = :view)
-        reconstruct2!(
-            swU,
-            ctr[i, ny-1].w,
-            ctr[i, ny].w,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(swU, ctr[i, ny-1].w, ctr[i, ny].w, 0.5 * (dy[i, ny-1] + dy[i, ny]))
     end
 
     # inner
@@ -375,12 +365,7 @@ function reconstruct!(
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
         swR = extract_last(ctr[nx, j].sw, 1, mode = :view)
-        reconstruct2!(
-            swR,
-            ctr[nx-1, j].w,
-            ctr[nx, j].w,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
     @inbounds Threads.@threads for i = 1:nx
@@ -388,12 +373,7 @@ function reconstruct!(
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
         swU = extract_last(ctr[i, ny].sw, 2, mode = :view)
-        reconstruct2!(
-            swU,
-            ctr[i, ny-1].w,
-            ctr[i, ny].w,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(swU, ctr[i, ny-1].w, ctr[i, ny].w, 0.5 * (dy[i, ny-1] + dy[i, ny]))
     end
 
     # inner
@@ -434,12 +414,7 @@ function reconstruct!(
         reconstruct2!(sfL, ctr[1, j].f, ctr[2, j].f, 0.5 * (dx[1, j] + dx[2, j]))
 
         sfR = extract_last(ctr[nx, j].sf, 1, mode = :view)
-        reconstruct2!(
-            sfR,
-            ctr[nx-1, j].f,
-            ctr[nx, j].f,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(sfR, ctr[nx-1, j].f, ctr[nx, j].f, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
     @inbounds Threads.@threads for i = 1:nx
@@ -447,12 +422,7 @@ function reconstruct!(
         reconstruct2!(sfD, ctr[i, 1].f, ctr[i, 2].f, 0.5 * (dy[i, 1] + dy[i, 2]))
 
         sfU = extract_last(ctr[i, ny].sf, 2, mode = :view)
-        reconstruct2!(
-            sfU,
-            ctr[i, ny-1].f,
-            ctr[i, ny].f,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(sfU, ctr[i, ny-1].f, ctr[i, ny].f, 0.5 * (dy[i, ny-1] + dy[i, ny]))
     end
 
     # inner
@@ -512,12 +482,7 @@ function reconstruct!(
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
         swR = extract_last(ctr[nx, j].sw, 1, mode = :view)
-        reconstruct2!(
-            swR,
-            ctr[nx-1, j].w,
-            ctr[nx, j].w,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
     @inbounds Threads.@threads for i = 1:nx
@@ -525,12 +490,7 @@ function reconstruct!(
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
         swU = extract_last(ctr[i, ny].sw, 2, mode = :view)
-        reconstruct2!(
-            swU,
-            ctr[i, ny-1].w,
-            ctr[i, ny].w,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(swU, ctr[i, ny-1].w, ctr[i, ny].w, 0.5 * (dy[i, ny-1] + dy[i, ny]))
     end
 
     # inner
@@ -573,19 +533,9 @@ function reconstruct!(
         reconstruct2!(sbL, ctr[1, j].b, ctr[2, j].b, 0.5 * (dx[1, j] + dx[2, j]))
 
         shR = extract_last(ctr[nx, j].sh, 1, mode = :view)
-        reconstruct2!(
-            shR,
-            ctr[nx-1, j].h,
-            ctr[nx, j].h,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(shR, ctr[nx-1, j].h, ctr[nx, j].h, 0.5 * (dx[nx-1, j] + dx[nx, j]))
         sbR = extract_last(ctr[nx, j].sb, 1, mode = :view)
-        reconstruct2!(
-            sbR,
-            ctr[nx-1, j].b,
-            ctr[nx, j].b,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(sbR, ctr[nx-1, j].b, ctr[nx, j].b, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
     @inbounds Threads.@threads for i = 1:nx
@@ -595,19 +545,9 @@ function reconstruct!(
         reconstruct2!(sbD, ctr[i, 1].b, ctr[i, 2].b, 0.5 * (dy[i, 1] + dy[i, 2]))
 
         shU = extract_last(ctr[i, ny].sh, 2, mode = :view)
-        reconstruct2!(
-            shU,
-            ctr[i, ny-1].h,
-            ctr[i, ny].h,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(shU, ctr[i, ny-1].h, ctr[i, ny].h, 0.5 * (dy[i, ny-1] + dy[i, ny]))
         sbU = extract_last(ctr[i, ny].sb, 2, mode = :view)
-        reconstruct2!(
-            sbU,
-            ctr[i, ny-1].b,
-            ctr[i, ny].b,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(sbU, ctr[i, ny-1].b, ctr[i, ny].b, 0.5 * (dy[i, ny-1] + dy[i, ny]))
     end
 
     # inner
@@ -689,12 +629,7 @@ function reconstruct!(
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
         swR = extract_last(ctr[nx, j].sw, 1, mode = :view)
-        reconstruct2!(
-            swR,
-            ctr[nx-1, j].w,
-            ctr[nx, j].w,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
     @inbounds Threads.@threads for i = 1:nx
@@ -702,12 +637,7 @@ function reconstruct!(
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
         swU = extract_last(ctr[i, ny].sw, 2, mode = :view)
-        reconstruct2!(
-            swU,
-            ctr[i, ny-1].w,
-            ctr[i, ny].w,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(swU, ctr[i, ny-1].w, ctr[i, ny].w, 0.5 * (dy[i, ny-1] + dy[i, ny]))
     end
 
     # inner
@@ -752,26 +682,11 @@ function reconstruct!(
         reconstruct2!(s2L, ctr[1, j].h2, ctr[2, j].h2, 0.5 * (dx[1, j] + dx[2, j]))
 
         s0R = extract_last(ctr[nx, j].sh0, 1, mode = :view)
-        reconstruct2!(
-            s0R,
-            ctr[nx-1, j].h0,
-            ctr[nx, j].h0,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(s0R, ctr[nx-1, j].h0, ctr[nx, j].h0, 0.5 * (dx[nx-1, j] + dx[nx, j]))
         s1R = extract_last(ctr[nx, j].sh1, 1, mode = :view)
-        reconstruct2!(
-            s1R,
-            ctr[nx-1, j].h1,
-            ctr[nx, j].h1,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(s1R, ctr[nx-1, j].h1, ctr[nx, j].h1, 0.5 * (dx[nx-1, j] + dx[nx, j]))
         s2R = extract_last(ctr[nx, j].sh2, 1, mode = :view)
-        reconstruct2!(
-            s2R,
-            ctr[nx-1, j].h2,
-            ctr[nx, j].h2,
-            0.5 * (dx[nx-1, j] + dx[nx, j]),
-        )
+        reconstruct2!(s2R, ctr[nx-1, j].h2, ctr[nx, j].h2, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
     @inbounds Threads.@threads for i = 1:nx
@@ -783,12 +698,7 @@ function reconstruct!(
         reconstruct2!(s2D, ctr[i, 1].h2, ctr[i, 2].h2, 0.5 * (dy[i, 1] + dy[i, 2]))
 
         s0U = extract_last(ctr[i, ny].sh0, 2, mode = :view)
-        reconstruct2!(
-            s0U,
-            ctr[i, ny-1].h0,
-            ctr[i, ny].h0,
-            0.5 * (dy[i, ny-1] + dy[i, ny]),
-        )
+        reconstruct2!(s0U, ctr[i, ny-1].h0, ctr[i, ny].h0, 0.5 * (dy[i, ny-1] + dy[i, ny]))
         s1U = extract_last(ctr[i, KS.pSpace.ny].sh1, 2, mode = :view)
         reconstruct2!(
             s1U,

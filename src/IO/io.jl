@@ -26,7 +26,7 @@ function read_cfg(filename::T) where {T<:AbstractString}
         D[:boundary] = begin
             if parse(Int, D[:space][1]) == 1
                 [D[:boundary], D[:boundary]]
-            elseif  parse(Int, D[:space][1]) == 2
+            elseif parse(Int, D[:space][1]) == 2
                 [D[:boundary], D[:boundary], D[:boundary], D[:boundary]]
             end
         end
@@ -190,7 +190,7 @@ end
     KS::X,
     ctr::Y,
 ) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
-    
+
     # solution
     pltx = KS.pSpace.x[1:KS.pSpace.nx]
     plty = zeros(KS.pSpace.nx, 3)
@@ -210,7 +210,7 @@ end
         label := "ρ"
         pltx, plty[:, 1]
     end
-    
+
     if ctr[1].w isa AbstractArray
         @series begin
             label := "u"
@@ -226,6 +226,7 @@ end
     c = get(plotattributes, :linewidth, :auto)
 
     nothing
+    
 end
 
 

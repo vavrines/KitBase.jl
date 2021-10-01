@@ -130,15 +130,7 @@ function ControlVolume1D2F(
     sh = zero(h)
     sb = zero(b)
 
-    return ControlVolume1D2F{typeof(w),typeof(h)}(
-        w,
-        prim,
-        sw,
-        h,
-        b,
-        sh,
-        sb,
-    )
+    return ControlVolume1D2F{typeof(w),typeof(h)}(w, prim, sw, h, b, sh, sb)
 
 end
 
@@ -225,13 +217,7 @@ function ControlVolume1D3F(
     ψ = 0.0
     lorenz = deepcopy(L)
 
-    return ControlVolume1D3F{
-        typeof(w),
-        typeof(h0),
-        typeof(E),
-        typeof(ϕ),
-        typeof(lorenz),
-    }(
+    return ControlVolume1D3F{typeof(w),typeof(h0),typeof(E),typeof(ϕ),typeof(lorenz)}(
         w,
         prim,
         sw,
@@ -274,13 +260,7 @@ function ControlVolume1D3F(
     ψ = nothing
     lorenz = nothing
 
-    return ControlVolume1D3F{
-        typeof(w),
-        typeof(h0),
-        typeof(E),
-        typeof(ϕ),
-        typeof(lorenz),
-    }(
+    return ControlVolume1D3F{typeof(w),typeof(h0),typeof(E),typeof(ϕ),typeof(lorenz)}(
         w,
         prim,
         sw,
@@ -326,13 +306,7 @@ function ControlVolume1D3F(
     ψ = zero(B[1, :])
     lorenz = deepcopy(L)
 
-    return ControlVolume1D3F{
-        typeof(w),
-        typeof(h0),
-        typeof(E),
-        typeof(ϕ),
-        typeof(lorenz),
-    }(
+    return ControlVolume1D3F{typeof(w),typeof(h0),typeof(E),typeof(ϕ),typeof(lorenz)}(
         w,
         prim,
         sw,
@@ -444,13 +418,7 @@ function ControlVolume1D4F(
     ψ = 0.0
     lorenz = deepcopy(L)
 
-    return ControlVolume1D4F{
-        typeof(w),
-        typeof(h0),
-        typeof(E),
-        typeof(ϕ),
-        typeof(lorenz),
-    }(
+    return ControlVolume1D4F{typeof(w),typeof(h0),typeof(E),typeof(ϕ),typeof(lorenz)}(
         w,
         prim,
         sw,
@@ -503,13 +471,7 @@ function ControlVolume1D4F(
     ψ = zero(B[1, :])
     lorenz = deepcopy(L)
 
-    return ControlVolume1D4F{
-        typeof(w),
-        typeof(h0),
-        typeof(E),
-        typeof(ϕ),
-        typeof(lorenz),
-    }(
+    return ControlVolume1D4F{typeof(w),typeof(h0),typeof(E),typeof(ϕ),typeof(lorenz)}(
         w,
         prim,
         sw,
@@ -617,13 +579,7 @@ function ControlVolume2D1F(W, PRIM, F::AbstractArray)
     #sf = zeros(eltype(F), (axes(F)..., Base.OneTo(2)))
     sf = slope_array(F)
 
-    return ControlVolume2D1F{typeof(w),typeof(sw),typeof(f),typeof(sf)}(
-        w,
-        prim,
-        sw,
-        f,
-        sf,
-    )
+    return ControlVolume2D1F{typeof(w),typeof(sw),typeof(f),typeof(sf)}(w, prim, sw, f, sf)
 end
 
 function Base.show(io::IO, ctr::ControlVolume2D1F{A,B,C,D}) where {A,B,C,D}

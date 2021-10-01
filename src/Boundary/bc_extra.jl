@@ -1,7 +1,7 @@
 function bc_extra!(
     ctr::AbstractVector{T},
     ng = 1::Integer;
-    dirc
+    dirc,
 ) where {T<:AbstractControlVolume1D}
 
     if Symbol(dirc) in (:xl, :xL)
@@ -16,13 +16,13 @@ function bc_extra!(
     end
 
     return nothing
-    
+
 end
 
 function bc_extra!(
     ctr::AbstractMatrix{T},
     ng = 1::Integer;
-    dirc
+    dirc,
 ) where {T<:AbstractControlVolume2D}
 
     if Symbol(dirc) in (:xl, :xL)
@@ -46,5 +46,5 @@ function bc_extra!(
     end
 
     return nothing
-    
+
 end

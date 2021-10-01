@@ -1,7 +1,7 @@
 function bc_mirror!(
     ctr::AbstractMatrix{T},
     ng = 1::Integer;
-    dirc
+    dirc,
 ) where {T<:AbstractControlVolume2D}
 
     if Symbol(dirc) in (:xl, :xL)
@@ -28,11 +28,7 @@ function bc_mirror!(
 
 end
 
-function bc_mirror!(
-    ctr::ControlVolume2D,
-    ctr0::ControlVolume2D,
-    dirc
-)
+function bc_mirror!(ctr::ControlVolume2D, ctr0::ControlVolume2D, dirc)
     copy_ctr!(ctr, ctr0)
 
     if Symbol(dirc) == :x
@@ -48,11 +44,7 @@ function bc_mirror!(
     return nothing
 end
 
-function bc_mirror!(
-    ctr::ControlVolume2D1F,
-    ctr0::ControlVolume2D1F,
-    dirc
-)
+function bc_mirror!(ctr::ControlVolume2D1F, ctr0::ControlVolume2D1F, dirc)
     copy_ctr!(ctr, ctr0)
 
     nu = size(ctr.f, 1)
@@ -79,11 +71,7 @@ function bc_mirror!(
     return nothing
 end
 
-function bc_mirror!(
-    ctr::ControlVolume2D2F,
-    ctr0::ControlVolume2D2F,
-    dirc
-)
+function bc_mirror!(ctr::ControlVolume2D2F, ctr0::ControlVolume2D2F, dirc)
     copy_ctr!(ctr, ctr0)
 
     nu = size(ctr.h, 1)

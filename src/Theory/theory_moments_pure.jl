@@ -479,7 +479,7 @@ Discrete moments of particle distribution
 """
 discrete_moments(f, ω) = sum(@. ω * f)
 
-discrete_moments(f, u, ω, n) =  sum(@. ω * u^n * f)
+discrete_moments(f, u, ω, n) = sum(@. ω * u^n * f)
 
 
 """
@@ -492,9 +492,11 @@ Calculate pressure from particle distribution function
 """
 pressure(f, prim, u, ω) = sum(@. ω * (u - prim[2])^2 * f)
 
-pressure(h, b, prim, u, ω, K) = (sum(@. ω * (u - prim[2])^2 * h) + sum(@. ω * b)) / (K + 1.0)
+pressure(h, b, prim, u, ω, K) =
+    (sum(@. ω * (u - prim[2])^2 * h) + sum(@. ω * b)) / (K + 1.0)
 
-pressure(h, b, prim, u, v, ω, K) = (sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2) * h) + sum(@. ω * b)) / (K + 2.0)
+pressure(h, b, prim, u, v, ω, K) =
+    (sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2) * h) + sum(@. ω * b)) / (K + 2.0)
 
 
 """

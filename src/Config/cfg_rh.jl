@@ -35,7 +35,7 @@ function ib_rh(
         wL = prim_conserve(primL, gam)
         wR = prim_conserve(primR, gam)
 
-        fw = function(x)
+        fw = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return wL
             else
@@ -43,7 +43,7 @@ function ib_rh(
             end
         end
 
-        bc = function(x)
+        bc = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return primL
             else
@@ -54,7 +54,7 @@ function ib_rh(
         if set.space[1:4] == "1d0f"
             return fw, bc
         elseif set.space == "1d1f1v"
-            ff = function(x)
+            ff = function (x)
                 w = fw(x)
                 prim = conserve_prim(w, gas.γ)
                 h = maxwellian(vs.u, prim)
@@ -63,7 +63,7 @@ function ib_rh(
 
             return fw, ff, bc
         elseif set.space == "1d2f1v"
-            ff = function(x)
+            ff = function (x)
                 w = fw(x)
                 prim = conserve_prim(w, gas.γ)
                 h = maxwellian(vs.u, prim)
@@ -73,7 +73,7 @@ function ib_rh(
 
             return fw, ff, bc
         elseif set.space == "1d1f3v"
-            ff = function(x)
+            ff = function (x)
                 w = fw(x)
                 prim = conserve_prim(w, gas.γ)
                 h = maxwellian(vs.u, vs.v, vs.w, prim)
@@ -99,7 +99,7 @@ function ib_rh(
         wL = mixture_prim_conserve(primL, gam)
         wR = mixture_prim_conserve(primR, gam)
 
-        fw = function(x)
+        fw = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return wL
             else
@@ -107,7 +107,7 @@ function ib_rh(
             end
         end
 
-        bc = function(x)
+        bc = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return primL
             else
@@ -125,7 +125,7 @@ function ib_rh(
                 bR[:, j] .= hR[:, j] .* gas.K ./ (2.0 .* primR[end, j])
             end
 
-            ff = function(x)
+            ff = function (x)
                 if x <= (ps.x0 + ps.x1) / 2
                     return hL, bL
                 else

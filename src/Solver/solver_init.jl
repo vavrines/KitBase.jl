@@ -30,7 +30,7 @@ function initialize(configfilename::T) where {T<:AbstractString}
     else
         ks = SolverSet(configfilename)
         cftuple = init_fvm(ks)
-        
+
         return (ks, cftuple..., 0.0)
     end
 end
@@ -57,7 +57,11 @@ end
 Initialize finite volume method
 
 """
-function init_fvm(KS::T, array = :dynamic_array; structarray = false) where {T<:AbstractSolverSet}
+function init_fvm(
+    KS::T,
+    array = :dynamic_array;
+    structarray = false,
+) where {T<:AbstractSolverSet}
     return init_fvm(KS, KS.ps, array; structarray = structarray)
 end
 
@@ -95,10 +99,7 @@ function init_fvm(
                 end
             end
 
-            ctr[i] = ControlVolume1D(
-                funcar(w),
-                funcar(prim),
-            )
+            ctr[i] = ControlVolume1D(funcar(w), funcar(prim))
         end
 
         for i = 1:KS.pSpace.nx+1
@@ -116,11 +117,7 @@ function init_fvm(
             prim = funcprim(w, γ)
             f = KS.ib.ff(KS.ps.x[i])
 
-            ctr[i] = ControlVolume1D1F(
-                funcar(w),
-                funcar(prim),
-                funcar(f),
-            )
+            ctr[i] = ControlVolume1D1F(funcar(w), funcar(prim), funcar(f))
         end
 
         for i = 1:KS.pSpace.nx+1
@@ -139,12 +136,7 @@ function init_fvm(
             prim = funcprim(w, γ)
             h, b = KS.ib.ff(KS.ps.x[i])
 
-            ctr[i] = ControlVolume1D2F(
-                funcar(w),
-                funcar(prim),
-                funcar(h),
-                funcar(b),
-            )
+            ctr[i] = ControlVolume1D2F(funcar(w), funcar(prim), funcar(h), funcar(b))
         end
 
         for i = 1:KS.pSpace.nx+1
@@ -229,7 +221,7 @@ function init_fvm(
     array = :dynamic_array;
     structarray = false,
 ) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
-    
+
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
     funcprim = ifelse(KS.set.nSpecies == 1, conserve_prim, mixture_conserve_prim)
@@ -253,16 +245,17 @@ function init_fvm(
             w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j])
             prim = funcprim(w, KS.gas.γ)
 
-            ctr[i, j] = ControlVolume2D(
-                funcar(w),
-                funcar(prim),
-            )
+            ctr[i, j] = ControlVolume2D(funcar(w), funcar(prim))
         end
 
         for j = 1:ny
             for i = 1:nx
                 n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
-                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+                n .= ifelse(
+                    dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0,
+                    n,
+                    -n,
+                )
 
                 a1face[i, j] = Interface2D1F(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
@@ -272,20 +265,27 @@ function init_fvm(
                 )
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
-            n .= ifelse(dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0, n, -n)
+            n .= ifelse(
+                dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0,
+                n,
+                -n,
+            )
 
-            a1face[nx+1, j] =
-                Interface2D1F(
-                    point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
-                    n[1],
-                    n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                )
+            a1face[nx+1, j] = Interface2D1F(
+                point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
+                n[1],
+                n[2],
+                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+            )
         end
         for i = 1:nx
             for j = 1:ny
                 n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
-                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+                n .= ifelse(
+                    dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0,
+                    n,
+                    -n,
+                )
 
                 a2face[i, j] = Interface2D1F(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
@@ -295,15 +295,18 @@ function init_fvm(
                 )
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
-            n .= ifelse(dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0, n, -n)
+            n .= ifelse(
+                dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0,
+                n,
+                -n,
+            )
 
-            a2face[i, ny+1] =
-                Interface2D1F(
-                    point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
-                    n[1],
-                    n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                )
+            a2face[i, ny+1] = Interface2D1F(
+                point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
+                n[1],
+                n[2],
+                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
+            )
         end
 
     elseif KS.set.space[3:4] == "1f"
@@ -321,17 +324,17 @@ function init_fvm(
             prim = funcprim(w, KS.gas.γ)
             h = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j])
 
-            ctr[i, j] = ControlVolume2D1F(
-                funcar(w),
-                funcar(prim),
-                funcar(h),
-            )
+            ctr[i, j] = ControlVolume2D1F(funcar(w), funcar(prim), funcar(h))
         end
 
         for j = 1:ny
             for i = 1:nx
                 n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
-                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+                n .= ifelse(
+                    dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0,
+                    n,
+                    -n,
+                )
 
                 a1face[i, j] = Interface2D1F(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
@@ -342,7 +345,11 @@ function init_fvm(
                 )
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
-            n .= ifelse(dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0, n, -n)
+            n .= ifelse(
+                dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0,
+                n,
+                -n,
+            )
 
             a1face[nx+1, j] = Interface2D1F(
                 point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
@@ -355,7 +362,11 @@ function init_fvm(
         for i = 1:nx
             for j = 1:ny
                 n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
-                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+                n .= ifelse(
+                    dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0,
+                    n,
+                    -n,
+                )
 
                 a2face[i, j] = Interface2D1F(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
@@ -366,7 +377,11 @@ function init_fvm(
                 )
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
-            n .= ifelse(dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0, n, -n)
+            n .= ifelse(
+                dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0,
+                n,
+                -n,
+            )
 
             a2face[i, ny+1] = Interface2D1F(
                 point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
@@ -392,18 +407,17 @@ function init_fvm(
             prim = funcprim(w, KS.gas.γ)
             h, b = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j])
 
-            ctr[i, j] = ControlVolume2D2F(
-                funcar(w),
-                funcar(prim),
-                funcar(h),
-                funcar(b),
-            )
+            ctr[i, j] = ControlVolume2D2F(funcar(w), funcar(prim), funcar(h), funcar(b))
         end
 
         for j = 1:ny
             for i = 1:nx
                 n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
-                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+                n .= ifelse(
+                    dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0,
+                    n,
+                    -n,
+                )
 
                 a1face[i, j] = Interface2D2F(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
@@ -414,7 +428,11 @@ function init_fvm(
                 )
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
-            n .= ifelse(dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0, n, -n)
+            n .= ifelse(
+                dot(n, ps.vertices[nx, j, 2, :] .- [ps.x[nx, j], ps.y[nx, j]]) >= 0,
+                n,
+                -n,
+            )
 
             a1face[nx+1, j] = Interface2D2F(
                 point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
@@ -427,7 +445,11 @@ function init_fvm(
         for i = 1:nx
             for j = 1:ny
                 n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
-                n .= ifelse(dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0, n, -n)
+                n .= ifelse(
+                    dot(n, [ps.x[i, j], ps.y[i, j]] .- ps.vertices[i, j, 1, :]) >= 0,
+                    n,
+                    -n,
+                )
 
                 a2face[i, j] = Interface2D2F(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
@@ -438,7 +460,11 @@ function init_fvm(
                 )
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
-            n .= ifelse(dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0, n, -n)
+            n .= ifelse(
+                dot(n, ps.vertices[i, ny, 3, :] .- [ps.x[i, ny], ps.y[i, ny]]) >= 0,
+                n,
+                -n,
+            )
 
             a2face[i, ny+1] = Interface2D2F(
                 point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
@@ -461,7 +487,7 @@ function init_fvm(
     array = :dynamic_array;
     structarray = false,
 ) where {T<:AbstractSolverSet}
-    
+
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
     funcprim = ifelse(KS.set.nSpecies == 1, conserve_prim, mixture_conserve_prim)
@@ -717,7 +743,7 @@ function init_fvm(
     end
 
     return ctr |> funcst, face |> funcst
-    
+
 end
 
 

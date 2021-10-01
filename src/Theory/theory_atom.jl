@@ -34,14 +34,7 @@ vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real} =
 
 Calculate mixture collision time from AAP model
 """
-function aap_hs_collision_time(
-    prim::AbstractMatrix{T},
-    mi,
-    ni,
-    me,
-    ne,
-    kn,
-) where {T<:Real}
+function aap_hs_collision_time(prim::AbstractMatrix{T}, mi, ni, me, ne, kn) where {T<:Real}
 
     ν = similar(prim, 2)
 
