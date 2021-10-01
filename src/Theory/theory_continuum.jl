@@ -3,19 +3,15 @@
 # ============================================================
 
 """
-    prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,1}}
-
+    prim_conserve(prim::AbstractVector{T}, γ) where {T<:Real}
     prim_conserve(ρ, U, λ, γ)
-
     prim_conserve(ρ, U, V, λ, γ)
-
     prim_conserve(ρ, U, V, W, λ, γ)
 
 Transform primitive -> conservative variables
 """
-function prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,1}}
-
-    if eltype(prim) <: Int
+function prim_conserve(prim::AbstractVector{T}, γ) where {T<:Real}
+    if eltype(prim) <: Integer
         W = similar(prim, Float64)
     else
         W = similar(prim)
@@ -43,7 +39,6 @@ function prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,1}}
     end
 
     return W
-
 end
 
 prim_conserve(ρ, U, λ, γ) = prim_conserve([ρ, U, λ], γ)
@@ -53,9 +48,8 @@ prim_conserve(ρ, U, V, λ, γ) = prim_conserve([ρ, U, V, λ], γ)
 prim_conserve(ρ, U, V, W, λ, γ) = prim_conserve([ρ, U, V, W, λ], γ)
 
 #--- Rykov ---#
-function prim_conserve(prim::T, γ, Kr) where {T<:AbstractArray{<:Real,1}}
-
-    if eltype(prim) <: Int
+function prim_conserve(prim::AbstractVector{T}, γ, Kr) where {T<:Real}
+    if eltype(prim) <: Integer
         W = similar(prim, Float64, length(prim) - 1)
     else
         W = similar(prim, length(prim) - 1)
@@ -77,18 +71,16 @@ function prim_conserve(prim::T, γ, Kr) where {T<:AbstractArray{<:Real,1}}
     end
 
     return W
-
 end
 
 
 """
-    mixture_prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,2}}
+    mixture_prim_conserve(prim::AbstractMatrix{T}, γ) where {T<:Real}
 
 Transform multi-component primitive -> conservative variables
 """
-function mixture_prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,2}}
-
-    if eltype(prim) <: Int
+function mixture_prim_conserve(prim::AbstractMatrix{T}, γ) where {T<:Real}
+    if eltype(prim) <: Integer
         w = similar(prim, Float64)
     else
         w = similar(prim)
@@ -99,7 +91,6 @@ function mixture_prim_conserve(prim::T, γ) where {T<:AbstractArray{<:Real,2}}
     end
 
     return w
-
 end
 
 
@@ -124,9 +115,8 @@ conserve_prim(u) = [u, 0.5 * u, 1.0]
 
 conserve_prim(u, a) = [u, a, 1.0]
 
-function conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,1}}
-
-    if eltype(W) <: Int
+function conserve_prim(W::AbstractVector{T}, γ) where {T<:Real}
+    if eltype(W) <: Integer
         prim = similar(W, Float64)
     else
         prim = similar(W)
@@ -152,7 +142,6 @@ function conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,1}}
     end
 
     return prim
-
 end
 
 conserve_prim(ρ, M, E, γ) = conserve_prim([ρ, M, E], γ)
@@ -162,9 +151,8 @@ conserve_prim(ρ, MX, MY, E, γ) = conserve_prim([ρ, MX, MY, E], γ)
 conserve_prim(ρ, MX, MY, MZ, E, γ) = conserve_prim([ρ, MX, MY, MZ, E], γ)
 
 #--- Rykov ---#
-function conserve_prim(w::T, K, Kr) where {T<:AbstractArray{<:Real,1}}
-
-    if eltype(w) <: Int
+function conserve_prim(w::AbstractVector{T}, K, Kr) where {T<:Real}
+    if eltype(w) <: Integer
         prim = similar(w, Float64, length(w) + 1)
     else
         prim = similar(w, length(w) + 1)
@@ -188,7 +176,6 @@ function conserve_prim(w::T, K, Kr) where {T<:AbstractArray{<:Real,1}}
     end
 
     return prim
-
 end
 
 
@@ -197,9 +184,8 @@ end
 
 Transform multi-component conservative -> primitive variables
 """
-function mixture_conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,2}}
-
-    if eltype(W) <: Int
+function mixture_conserve_prim(W::AbstractMatrix{T}, γ) where {T<:Real}
+    if eltype(W) <: Integer
         prim = similar(W, Float64)
     else
         prim = similar(W)
@@ -210,7 +196,6 @@ function mixture_conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,2}}
     end
 
     return prim
-
 end
 
 
@@ -228,14 +213,14 @@ end
 Calculate mixture primitive variables from AAP model
 """
 function aap_hs_prim(
-    prim::X,
-    tau::Y,
+    prim::AbstractMatrix{T1},
+    tau::AbstractVector{T2},
     mi,
     ni,
     me,
     ne,
     kn,
-) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,1}}
+) where {T1<:Real,T2<:Real}
 
     mixprim = similar(prim)
 
@@ -465,19 +450,18 @@ burgers_flux(u) = 0.5 * u^2
 
 
 """
-    euler_flux(w::A, γ; frame = :cartesian::Symbol) where {A<:AbstractArray{<:Real,1}}
+    euler_flux(w::AbstractVector{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
 
 Theoretical fluxes of Euler Equations
 
 * @return: flux tuple
 
 """
-function euler_flux(w::T, γ; frame = :cartesian::Symbol) where {T<:AbstractArray{<:Real,1}}
-
+function euler_flux(w::AbstractVector{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
     prim = conserve_prim(w, γ)
     p = 0.5 * prim[1] / prim[end]
 
-    if eltype(w) <: Int
+    if eltype(w) <: Integer
         F = similar(w, Float64)
         G = similar(w, Float64)
         H = similar(w, Float64)
@@ -526,21 +510,19 @@ function euler_flux(w::T, γ; frame = :cartesian::Symbol) where {T<:AbstractArra
 
         return F, G, H
     end
-
 end
 
 
 """
-    euler_jacobi(w::T, γ) where {T<:AbstractArray{<:Real,1}}
+    euler_jacobi(w::AbstractVector{T}, γ) where {T<:Real}
 
 Flux Jacobian of Euler Equations
 
 * @return: Jacobian matrix A
 
 """
-function euler_jacobi(w::T, γ) where {T<:AbstractArray{<:Real,1}}
-
-    if eltype(w) <: Int
+function euler_jacobi(w::AbstractVector{T}, γ) where {T<:Real}
+    if eltype(w) <: Integer
         A = similar(w, Float64, 3, 3)
     else
         A = similar(w, 3, 3)
@@ -559,5 +541,4 @@ function euler_jacobi(w::T, γ) where {T<:AbstractArray{<:Real,1}}
     A[3, 3] = γ * w[2] / w[1]
 
     return A
-
 end

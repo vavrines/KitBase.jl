@@ -33,20 +33,17 @@ maxwellian(u, v, w, prim::AbstractVector{T}) where {T<:Real} =
 
 
 """
+    * Maxwellian
     maxwellian!(M, u, ρ, U, λ)
+    maxwellian!(M, u, ρ, U, V, λ)
+    maxwellian!(M, u, ρ, U, V, W, λ)
     maxwellian!(M, u, prim)
-
-    # Rykov
-    maxwellian!(Ht, Bt, Rt, Hr, Br, Rr, u, prim, K, Kr)
-
-    maxwellian!(M, u, v, ρ, U, V, λ)
     maxwellian!(M, u, v, prim)
-
-    # Rykov
-    maxwellian!(Ht, Bt, Rt, Hr, Br, Rr, u, v, prim, K, Kr)
-
-    maxwellian!(M, u, v, ρ, U, V, W, λ)
     maxwellian!(M, u, v, w, prim)
+
+    * Rykov
+    maxwellian!(Ht, Bt, Rt, Hr, Br, Rr, u, prim, K, Kr)
+    maxwellian!(Ht, Bt, Rt, Hr, Br, Rr, u, v, prim, K, Kr)
 
 In-place Maxwellian
 
@@ -185,27 +182,16 @@ maxwellian!(
 
 
 """
-    mixture_maxwellian(u::X, prim::Y) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
-
-    mixture_maxwellian(
-        u::X,
-        v::X,
-        prim::Y,
-    ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,2}}
-
-    mixture_maxwellian(
-        u::X,
-        v::X,
-        w::X,
-        prim::Y,
-    ) where {X<:AbstractArray{<:AbstractFloat,4},Y<:AbstractArray{<:Real,2}}
+    mixture_maxwellian(u, prim)
+    mixture_maxwellian(u, v, prim)
+    mixture_maxwellian(u, v, w, prim)
 
 Multi-component Maxwellian in discrete form
 """
 function mixture_maxwellian(
-    u::X,
-    prim::Y,
-) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+    u::AbstractMatrix{T1},
+    prim::AbstractMatrix{T2},
+) where {T1<:Real,T2<:Real}
 
     mixM = similar(u)
     for j in axes(mixM, 2)
@@ -219,8 +205,8 @@ end
 function mixture_maxwellian(
     u::X,
     v::X,
-    prim::Y,
-) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:Real,2}}
+    prim::AbstractMatrix{Y},
+) where {X<:AbstractArray{<:AbstractFloat,3},Y<:Real}
 
     mixM = similar(u)
     for k in axes(mixM, 3)
@@ -235,8 +221,8 @@ function mixture_maxwellian(
     u::X,
     v::X,
     w::X,
-    prim::Y,
-) where {X<:AbstractArray{<:AbstractFloat,4},Y<:AbstractArray{<:Real,2}}
+    prim::AbstractMatrix{Y},
+) where {X<:AbstractArray{<:AbstractFloat,4},Y<:Real}
 
     mixM = similar(u)
     for l in axes(mixM, 4)
@@ -250,50 +236,21 @@ end
 
 
 """
-    mixture_maxwellian!(
-        M::T1,
-        u::T2,
-        prim::T3,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,2},
-        T2<:AbstractArray{<:AbstractFloat,2},
-        T3<:AbstractArray{<:Real,2},
-    }
-
-    mixture_maxwellian!(
-        M::T1,
-        u::T2,
-        v::T2,
-        prim::T3,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,3},
-        T2<:AbstractArray{<:AbstractFloat,3},
-        T3<:AbstractArray{<:Real,2},
-    }
-
-    mixture_maxwellian!(
-        M::T1,
-        u::T2,
-        v::T2,
-        w::T2,
-        prim::T3,
-    ) where {
-        T1<:AbstractArray{<:AbstractFloat,4},
-        T2<:AbstractArray{<:AbstractFloat,4},
-        T3<:AbstractArray{<:Real,2},
-    }
+    mixture_maxwellian!(M, u, prim)
+    mixture_maxwellian!(M, u, v, prim)
+    mixture_maxwellian!(M, u, v, w, prim)
 
 In-place multi-component Maxwellian
 
 """
 function mixture_maxwellian!(
-    M::T1,
+    M::AbstractMatrix{T1},
     u::T2,
-    prim::T3,
+    prim::AbstractMatrix{T3},
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:Real,2},
+    T1<:Real,
+    T2<:AbstractArray{<:Real,2},
+    T3<:Real,
 }
 
     for j in axes(M, 2)
@@ -306,14 +263,14 @@ function mixture_maxwellian!(
 end
 
 function mixture_maxwellian!(
-    M::T1,
+    M::AbstractArray{T1,3},
     u::T2,
     v::T2,
-    prim::T3,
+    prim::AbstractMatrix{T3},
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,3},
-    T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:AbstractArray{<:Real,2},
+    T1<:Real,
+    T2<:AbstractArray{<:Real,3},
+    T3<:Real,
 }
 
     for k in axes(M, 3)
@@ -326,15 +283,15 @@ function mixture_maxwellian!(
 end
 
 function mixture_maxwellian!(
-    M::T1,
+    M::AbstractArray{T1,4},
     u::T2,
     v::T2,
     w::T2,
-    prim::T3,
+    prim::AbstractMatrix{T3},
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,4},
-    T2<:AbstractArray{<:AbstractFloat,4},
-    T3<:AbstractArray{<:Real,2},
+    T1<:Real,
+    T2<:AbstractArray{<:Real,4},
+    T3<:Real,
 }
 
     for l in axes(M, 4)

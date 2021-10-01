@@ -1,11 +1,10 @@
 """
-    mixture_gauss_moments(prim::T, inK) where {T<:AbstractArray{<:Real,2}}
+    mixture_gauss_moments(prim::AbstractMatrix{T}, inK) where {T<:Real}
 
 Calculate moments of Gaussian distribution in multi-component gas
 """
-function mixture_gauss_moments(prim::T, inK) where {T<:AbstractArray{<:Real,2}}
-
-    if eltype(prim) <: Int
+function mixture_gauss_moments(prim::AbstractMatrix{T}, inK) where {T<:Real}
+    if eltype(prim) <: Integer
         Mu = OffsetArray(similar(prim, Float64, 7, axes(prim, 2)), 0:6, axes(prim, 2))
     else
         Mu = OffsetArray(similar(prim, 7, axes(prim, 2)), 0:6, axes(prim, 2))
@@ -62,7 +61,6 @@ function mixture_gauss_moments(prim::T, inK) where {T<:AbstractArray{<:Real,2}}
         return Mu, Mv, Mw, MuL, MuR
 
     end
-
 end
 
 
@@ -72,7 +70,7 @@ end
         Mxi::T,
         alpha::I,
         delta::I,
-    ) where {T<:OffsetArray{<:AbstractFloat,2},I<:Int}
+    ) where {T<:OffsetArray{<:Real,2},I<:Int}
 
     function mixture_moments_conserve(
         Mu::T,
@@ -81,7 +79,7 @@ end
         alpha::I,
         beta::I,
         delta::I,
-    ) where {T<:OffsetArray{<:AbstractFloat,2},I<:Int}
+    ) where {T<:OffsetArray{<:Real,2},I<:Int}
 
 Calculate conservative moments of particle distribution in multi-component gas
 """
@@ -90,7 +88,7 @@ function mixture_moments_conserve(
     Mxi::T,
     alpha::I,
     delta::I,
-) where {T<:OffsetArray{<:AbstractFloat,2},I<:Int}
+) where {T<:OffsetArray{<:Real,2},I<:Integer}
 
     Muv = similar(Mu, 3, size(Mu, 2))
     for j in axes(Muv, 2)
@@ -108,7 +106,7 @@ function mixture_moments_conserve(
     alpha::I,
     beta::I,
     delta::I,
-) where {T<:OffsetArray{<:AbstractFloat,2},I<:Int}
+) where {T<:OffsetArray{<:Real,2},I<:Integer}
 
     Muv = ifelse(size(Mw, 1) == 3, similar(Mu, 4, size(Mu, 2)), similar(Mu, 5, size(Mu, 2)))
     for j in axes(Muv, 2)
