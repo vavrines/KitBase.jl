@@ -1,25 +1,17 @@
 """
-    em_coefficients(
-        prim::X,
-        E::Y,
-        B::Z,
-        mr,
-        lD,
-        rL,
-        dt,
-    ) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:Real,1}}
+    em_coefficients(prim, E, B, mr, ld, rL, dt)
 
 Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
 """
 function em_coefficients(
-    prim::X,
-    E::Y,
-    B::Z,
+    prim::AbstractMatrix{X},
+    E::AbstractVector{Y},
+    B::AbstractVector{Z},
     mr,
     lD,
     rL,
     dt,
-) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:Real,1}}
+) where {X<:Real,Y<:Real,Z<:Real}
 
     if eltype(prim) <: Int
         A = zeros(9, 9)
