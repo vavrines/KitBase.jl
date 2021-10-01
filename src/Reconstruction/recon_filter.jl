@@ -1,3 +1,16 @@
+# ------------------------------------------------------------
+# Filter functions
+# ------------------------------------------------------------
+
+"""
+    modal_filter!(u, args...; filter)
+
+Filter of modal solutions
+
+- @arg u: 1D modal solution
+- @arg args...: filter parameters including strength, norm, etc.
+- @arg filter: symbolic filter options including :l2, l2opt, :l1, :lasso, :exp, :houli
+"""
 function modal_filter!(
     u::AbstractArray{T},
     args...;
