@@ -1,3 +1,8 @@
+"""
+    slope_array(w; reduction = true)
+
+Generate array to store spatial slopes of solutions
+"""
 slope_array(w::Number; kwargs...) = deepcopy(w)
 
 function slope_array(w::AbstractArray; reduction = true)

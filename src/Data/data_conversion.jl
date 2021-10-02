@@ -1,7 +1,17 @@
+"""
+    symbolize(x)
+
+Generalized surrogate function of `Symbol`
+"""
 symbolize(x::AbstractString) = Symbol(x)
 symbolize(x::AbstractArray{T}) where {T<:AbstractString} = [symbolize(y) for y in x]
 
 
+"""
+    static_array(x)
+
+Transform to static array
+"""
 function static_array(x::AbstractVector)
     y = MVector{length(x)}(collect(x))
 
@@ -30,7 +40,7 @@ function static_array(x::AbstractMatrix)
     return y
 end
 
-function static_array(x::AbstractArray{<:Number,3})
+function static_array(x::AbstractArray{T,3}) where {T<:Number}
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3)}}(collect(x))
 
     if x isa OffsetArray
@@ -47,7 +57,7 @@ function static_array(x::AbstractArray{<:Number,3})
     return y
 end
 
-function static_array(x::AbstractArray{<:Number,4})
+function static_array(x::AbstractArray{T,4}) where {T<:Number}
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3),size(x, 4)}}(collect(x))
 
     if x isa OffsetArray
@@ -67,5 +77,10 @@ function static_array(x::AbstractArray{<:Number,4})
 end
 
 
-dynamic_array(x::AbstractArray) = x
-dynamic_array(x::Number) = x
+"""
+    dynamic_array(x)
+
+Transform to dynamic array
+"""
+dynamic_array(x) = x
+dynamic_array(x::StaticArray) = Array(x)
