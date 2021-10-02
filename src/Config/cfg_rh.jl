@@ -1,8 +1,6 @@
 """
-    1d0f: ib_rh(MaL, gam)
-    1d1f1v: ib_rh(MaL, gam, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
-    1d2f1v: ib_rh(MaL, gam, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}
-    1d1f3v: ib_rh(MaL, gam, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
+    ib_rh(set, ps, vs, gas)
+    ib_rh(Ma, gam)
 
 Initialize Rankine-Hugoniot relation
 """

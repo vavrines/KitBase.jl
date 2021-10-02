@@ -1,7 +1,5 @@
 """
-    2d0f0v: ib_cavity(gam, Um, Vm, Tm) where {T<:AbstractArray{<:AbstractFloat,2}}
-    2d1f2v: ib_cavity(gam, Um, Vm, Tm, u::T, v::T) where {T<:AbstractArray{<:AbstractFloat,2}}
-    2d2f2v: ib_cavity(gam, Um, Vm, Tm, u::T, v::T, K) where {T<:AbstractArray{<:AbstractFloat,2}}
+    ib_cavity(set, ps, vs, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
 
 Initialize lid-driven cavity
 """

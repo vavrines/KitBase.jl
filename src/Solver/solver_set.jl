@@ -649,18 +649,18 @@ function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
 
     ib = begin
         if parse(Int, set.space[3]) == 0
-            fw, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            fw, bc = config_ib(set, pSpace, vSpace, gas)
             IB(fw, bc)
         elseif parse(Int, set.space[3]) in [3, 4] && gas isa AbstractPlasma
-            fw, ff, fE, fB, fL, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            fw, ff, fE, fB, fL, bc = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
             eval(Symbol(iname))(fw, ff, fE, fB, fL, bc)
         elseif set.case == "cavity"
-            fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas, Um, Vm, Tm)
+            fw, ff, bc = config_ib(set, pSpace, vSpace, gas, Um, Vm, Tm)
             iname = "IB" * set.space[3] * "F"
             eval(Symbol(iname))(fw, ff, bc)
         else
-            fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            fw, ff, bc = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
             eval(Symbol(iname))(fw, ff, bc)
         end

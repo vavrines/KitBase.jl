@@ -1,5 +1,7 @@
 """
-    ib_briowu(gam, uspace::T, mi, me) where {T<:AbstractArray{<:AbstractFloat,2}}
+    ib_briowu(set, ps, vs, gas)
+    ib_briowu(gam, mi, me, uspace)
+    ib_briowu(gam, mi, me, uspace, vspace)
 
 Initialize Brio-Wu MHD shock tube
 
@@ -153,7 +155,7 @@ function ib_briowu(
 
 end
 
-function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFloat,2}}
+function ib_briowu(gam, mi, me, uspace::AbstractMatrix{T}) where {T<:AbstractFloat}
 
     # upstream
     primL = zeros(5, 2)

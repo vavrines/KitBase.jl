@@ -16,7 +16,7 @@ set = Setup(
 ps = PSpace1D(0.0, 1.0, 100, 1)
 vs = VSpace1D(-5.0, 5.0, 72)
 gas = Gas(1e-4, 0.0, 1.0, 2.0)
-fw, ff, bc = ib_sod(set, ps, vs, gas)
+fw, ff, bc = config_ib(set, ps, vs, gas)
 ib = IB1F(fw, ff, bc)
 
 ks = SolverSet(set, ps, vs, gas, ib)

@@ -1,5 +1,5 @@
 # ============================================================
-# Period Boundary Operations
+# Period Functions
 # ============================================================
 
 function bc_period!(ctr::AbstractVector, ng = 1)

@@ -1,8 +1,5 @@
 """
-    1d0f0v: ib_sod(γ)
-    1d1f1v: ib_sod(γ, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
-    1d1f3v: ib_sod(γ, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
-    1d2f1v: ib_sod(γ, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}
+    ib_sod(set, ps, vs, gas)
 
 Initialize Sod shock tube
 """
