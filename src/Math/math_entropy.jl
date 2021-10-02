@@ -3,7 +3,7 @@
 
 Maxwell Boltzmann entropy
 """
-maxwell_boltzmann(f::T) where {T<:Real} = f * log(f) - f
+maxwell_boltzmann(f) = f * log(f) - f
 
 
 """
@@ -31,7 +31,7 @@ maxwell_boltzmann_dual_prime(f) = exp(f)
 
 
 """
-    kinetic_entropy(α::AbstractArray, m::AbstractArray, weights::AbstractVector)
+    kinetic_entropy(α, m, weights)
 
 Reconstruct mathematical entropy from Legendre dual
 """

@@ -7,6 +7,7 @@ function ylmKCoefficient(l::Integer, m::Integer)
     return sqrt((2.0 * l + 1) / k / π)
 end
 
+
 function ylmCosSinPolynomial(m::Integer, x::Variable, y::Variable)
     sum = 0.0 * (x + y)
     for j = 0:m÷2
@@ -15,6 +16,7 @@ function ylmCosSinPolynomial(m::Integer, x::Variable, y::Variable)
 
     return sum
 end
+
 
 function ylmSinSinPolynomial(m::Integer, x::Variable, y::Variable)
     sum = 0.0 * (x + y)
@@ -25,8 +27,9 @@ function ylmSinSinPolynomial(m::Integer, x::Variable, y::Variable)
     return sum
 end
 
+
 """
-    ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
+    ylm(l, m, x, y, z)
 
 Calculation of the spherical harmonic for a given order (l,m) in Cartesian coordinates
 
@@ -57,10 +60,11 @@ function ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
     end
 end
 
-"""
-    rlylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
 
-Calculate r^l * Ylm(x,y,z)
+"""
+    rlylm(l, m, x, y, z)
+
+Calculate `r^l * Ylm(x,y,z)``
 """
 function rlylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
     p = ylm(l, m, x, y, z)
@@ -77,11 +81,11 @@ end
 
 
 """
-    eval_spherharmonic(points::T, L) where {T<:AbstractArray{<:Real,2}}
+    eval_spherharmonic(points, L)
 
 Evaluate spherical harmonics basis at given quadrature points
 """
-function eval_spherharmonic(points::T, L) where {T<:AbstractArray{<:Real,2}}
+function eval_spherharmonic(points::AbstractMatrix{T}, L) where {T<:Real}
     ne = (L + 1)^2
     nq = size(points, 1)
     m = zeros(ne, nq)
