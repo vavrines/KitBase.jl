@@ -40,7 +40,7 @@ function static_array(x::AbstractMatrix)
     return y
 end
 
-function static_array(x::AbstractArray{T,3}) where {T<:Number}
+function static_array(x::AbstractArray{T,3}) where T
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3)}}(collect(x))
 
     if x isa OffsetArray
@@ -57,7 +57,7 @@ function static_array(x::AbstractArray{T,3}) where {T<:Number}
     return y
 end
 
-function static_array(x::AbstractArray{T,4}) where {T<:Number}
+function static_array(x::AbstractArray{T,4}) where T
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3),size(x, 4)}}(collect(x))
 
     if x isa OffsetArray
