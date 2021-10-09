@@ -1,74 +1,9 @@
 """
-    shakhov(
-        u::X,
-        M::Y,
-        q,
-        prim::Z,
-        Pr,
-    ) where {
-        X<:AbstractArray{<:AbstractFloat,1},
-        Y<:AbstractArray{<:AbstractFloat,1},
-        Z<:AbstractArray{<:Real,1},
-    }
-
-    shakhov(
-        u::T,
-        H::X,
-        B::X,
-        q,
-        prim::Y,
-        Pr,
-        K,
-    ) where {
-        T<:AbstractArray{<:AbstractFloat,1},
-        X<:AbstractArray{<:AbstractFloat,1},
-        Y<:AbstractArray{<:Real,1},
-    }
-
-    shakhov(
-        u::T,
-        v::T,
-        M::X,
-        q::Y,
-        prim::Z,
-        Pr,
-    ) where {
-        T<:AbstractArray{<:AbstractFloat,2},
-        X<:AbstractArray{<:AbstractFloat,2},
-        Y<:AbstractArray{<:AbstractFloat,1},
-        Z<:AbstractArray{<:Real,1},
-    }
-
-    shakhov(
-        u::T,
-        v::T,
-        H::X,
-        B::X,
-        q::Y,
-        prim::Z,
-        Pr,
-        K,
-    ) where {
-        T<:AbstractArray{<:AbstractFloat,2},
-        X<:AbstractArray{<:AbstractFloat,2},
-        Y<:AbstractArray{<:Real,1},
-        Z<:AbstractArray{<:Real,1},
-    }
-
-    shakhov(
-        u::T,
-        v::T,
-        w::T,
-        M::X,
-        q::Y,
-        prim::Z,
-        Pr,
-    ) where {
-        T<:AbstractArray{<:AbstractFloat,3},
-        X<:AbstractArray{<:AbstractFloat,3},
-        Y<:AbstractArray{<:Real,1},
-        Z<:AbstractArray{<:Real,1},
-    }
+    shakhov(u, M, q, prim, Pr)
+    shakhov(u, H, B, q, prim, Pr, K)
+    shakhov(u, v, M, q, prim, Pr)
+    shakhov(u, v, H, B, q, prim, Pr, K)
+    shakhov(u, v, w, M, q, prim, Pr)
 
 Shakhov non-equilibrium part
 
@@ -78,16 +13,12 @@ Shakhov non-equilibrium part
 
 """
 function shakhov(
-    u::X,
-    M::Y,
+    u::AbstractVector{X},
+    M::AbstractVector{Y},
     q,
-    prim::Z,
+    prim::AbstractVector{Z},
     Pr,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:Real,1},
-} # 1F1V
+) where {X<:AbstractFloat,Y<:AbstractFloat,Z<:Real} # 1F1V
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
@@ -101,17 +32,17 @@ end
 
 #--- 2F1V ---#
 function shakhov(
-    u::T,
-    H::X,
-    B::X,
+    u::AbstractVector{X},
+    H::Y,
+    B::Y,
     q,
-    prim::Y,
+    prim::AbstractVector{Z},
     Pr,
     K,
 ) where {
-    T<:AbstractArray{<:AbstractFloat,1},
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:Real,1},
+    X<:AbstractFloat,
+    Y<:AbstractVector{<:AbstractFloat},
+    Z<:Real,
 }
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -133,15 +64,15 @@ end
 function shakhov(
     u::T,
     v::T,
-    M::X,
-    q::Y,
-    prim::Z,
+    M::AbstractMatrix{X},
+    q::AbstractVector{Y},
+    prim::AbstractVector{Z},
     Pr,
 ) where {
     T<:AbstractArray{<:AbstractFloat,2},
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:Real,1},
+    X<:AbstractFloat,
+    Y<:AbstractFloat,
+    Z<:Real,
 }
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -159,15 +90,15 @@ function shakhov(
     v::T,
     H::X,
     B::X,
-    q::Y,
-    prim::Z,
+    q::AbstractVector{Y},
+    prim::AbstractVector{Z},
     Pr,
     K,
 ) where {
     T<:AbstractArray{<:AbstractFloat,2},
     X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:Real,1},
+    Y<:Real,
+    Z<:Real,
 }
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -188,15 +119,15 @@ function shakhov(
     u::T,
     v::T,
     w::T,
-    M::X,
-    q::Y,
-    prim::Z,
+    M::AbstractArray{X,3},
+    q::AbstractVector{Y},
+    prim::AbstractVector{Z},
     Pr,
 ) where {
     T<:AbstractArray{<:AbstractFloat,3},
-    X<:AbstractArray{<:AbstractFloat,3},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:Real,1},
+    X<:AbstractFloat,
+    Y<:Real,
+    Z<:Real,
 }
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -210,72 +141,11 @@ end
 
 
 """
-shakhov!(
-    S::T1,
-    u::T2,
-    M::T1,
-    q,
-    prim,
-    Pr,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
-
-shakhov!(
-    SH::T1,
-    SB::T1,
-    u::T2,
-    H::T1,
-    B::T1,
-    q,
-    prim,
-    Pr,
-    K,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
-
-shakhov!(
-    S::T1,
-    u::T2,
-    v::T2,
-    M::T1,
-    q::T3,
-    prim,
-    Pr,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:Real,1},
-}
-
-shakhov!(
-    SH::T1,
-    SB::T1,
-    u::T2,
-    v::T2,
-    H::T1,
-    B::T1,
-    q::T3,
-    prim,
-    Pr,
-    K,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:Real,1},
-}
-
-shakhov!(
-    S::T1,
-    u::T2,
-    v::T2,
-    w::T2,
-    M::T1,
-    q::T3,
-    prim,
-    Pr,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,3},
-    T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:AbstractArray{<:Real,1},
-}
+    shakhov!(S, u, M, q, prim, Pr)
+    shakhov!(SH, SB, u, H, B, q, prim, Pr, K)
+    shakhov!(S, u, v, M, q, prim, Pr)
+    shakhov!(SH, SB, u, v, H, B, q, prim, Pr, K)
+    shakhov!(S, u, v, w, M, q, prim, Pr)
 
 In-place Shakhov non-equilibrium part
 
@@ -286,12 +156,12 @@ In-place Shakhov non-equilibrium part
 """
 function shakhov!(
     S::T1,
-    u::T2,
+    u::AbstractVector{T2},
     M::T1,
     q,
     prim,
     Pr,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}} # 1F1V
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractFloat} # 1F1V
 
     @. S = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
@@ -307,14 +177,14 @@ end
 function shakhov!(
     SH::T1,
     SB::T1,
-    u::T2,
+    u::AbstractVector{T2},
     H::T1,
     B::T1,
     q,
     prim,
     Pr,
     K,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:AbstractFloat,1}}
+) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractFloat}
 
     @. SH =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -339,13 +209,13 @@ function shakhov!(
     u::T2,
     v::T2,
     M::T1,
-    q::T3,
+    q::AbstractVector{T3},
     prim,
     Pr,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,2},
     T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:Real,1},
+    T3<:Real,
 }
 
     @. S =
@@ -366,14 +236,14 @@ function shakhov!(
     v::T2,
     H::T1,
     B::T1,
-    q::T3,
+    q::AbstractVector{T3},
     prim,
     Pr,
     K,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,2},
     T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:Real,1},
+    T3<:Real,
 }
 
     @. SH =
@@ -398,13 +268,13 @@ function shakhov!(
     v::T2,
     w::T2,
     M::T1,
-    q::T3,
+    q::AbstractVector{T3},
     prim,
     Pr,
 ) where {
     T1<:AbstractArray{<:AbstractFloat,3},
     T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:AbstractArray{<:Real,1},
+    T3<:Real,
 }
 
     @. S =

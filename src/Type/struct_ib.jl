@@ -19,7 +19,7 @@ end
 function IB(fw, gas::Scalar)
     γ = gas.a
 
-    bc = function(args...)
+    bc = function (args...)
         w = fw(args...)
         return ifelse(γ == 0, conserve_prim(w), conserve_prim(w, γ))
     end
@@ -28,7 +28,7 @@ function IB(fw, gas::Scalar)
 end
 
 function IB(fw, gas::AbstractGas)
-    bc = function(args...)
+    bc = function (args...)
         w = fw(args...)
         prim = begin
             if ndims(w) == 1
@@ -62,7 +62,7 @@ mutable struct IB1F{T} <: AbstractCondition
 end
 
 function IB1F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
-    bc = function(args...)
+    bc = function (args...)
         w = fw(args...)
         prim = begin
             if ndims(w) == 1
@@ -75,7 +75,7 @@ function IB1F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
         return prim
     end
 
-    ff = function(args...)
+    ff = function (args...)
         prim = bc(args...)
 
         M = begin
@@ -124,7 +124,7 @@ mutable struct IB2F{T} <: AbstractCondition
 end
 
 function IB2F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
-    bc = function(args...)
+    bc = function (args...)
         w = fw(args...)
         prim = begin
             if ndims(w) == 1
@@ -137,7 +137,7 @@ function IB2F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
         return prim
     end
 
-    ff = function(args...)
+    ff = function (args...)
         prim = bc(args...)
 
         if !isdefined(vs, :v)

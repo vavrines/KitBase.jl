@@ -1,5 +1,5 @@
 """
-    linspace(start, stop, n::T) where {T<:Integer}
+    linspace(start, stop, n)
 
 Python linspace function
 """
@@ -8,7 +8,7 @@ linspace(start, stop, n::T) where {T<:Integer} =
 
 
 """
-    heaviside(x::Real)
+    heaviside(x)
 
 Heaviside step function
 """
@@ -16,19 +16,19 @@ heaviside(x::T) where {T<:Real} = ifelse(x >= 0, one(x), zero(x))
 
 
 """
-    fortsign(x::Real, y::Real)
+    fortsign(x, y)
 
 Fortran sign function
 """
-fortsign(x::T, y) where {T<:Real} = abs(x) * sign(y)
+fortsign(x, y) = abs(x) * sign(y)
 
 
 """
-    mat_split(m::AbstractArray)
+    mat_split(m)
 
 Split matrix into row vectors
 """
-function mat_split(m::T) where {T<:AbstractArray{<:Number,2}}
+function mat_split(m::AbstractMatrix{T}) where {T<:Number}
 
     if length(m[1, :]) == 2
         nx = eltype(m).([1.0 0.0])
@@ -47,12 +47,12 @@ end
 
 
 """
-    central_diff(y::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1})
-    central_diff(y::AbstractArray{<:Any,1}, dx::Any)
+    central_diff(y, x)
+    central_diff(y, dx)
 
 Central difference
 """
-function central_diff(y::T, x::T) where {T<:AbstractVector}
+function central_diff(y::T, x::T) where {T<:AbstractVector{<:Number}}
 
     dy = zeros(eltype(y), axes(y))
 
@@ -70,7 +70,7 @@ function central_diff(y::T, x::T) where {T<:AbstractVector}
 
 end
 
-function central_diff(y::T, dx) where {T<:AbstractVector}
+function central_diff(y::AbstractVector{T}, dx) where T
     x = ones(eltype(y), axes(y)) .* dx
     dy = central_diff(y, x)
 
@@ -79,11 +79,12 @@ end
 
 
 """
-    central_diff2(y::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1})
+    central_diff2(y, x)
+    central_diff2(y, dx)
 
 Central difference for second-order derivatives
 """
-function central_diff2(y::T, x::T) where {T<:AbstractVector}
+function central_diff2(y::T, x::T) where {T<:AbstractVector{<:Number}}
     dy = zeros(eltype(y), axes(y))
 
     i0 = eachindex(y) |> first
@@ -96,7 +97,7 @@ function central_diff2(y::T, x::T) where {T<:AbstractVector}
     return dy
 end
 
-function central_diff2(y::T, dx) where {T<:AbstractVector}
+function central_diff2(y::AbstractVector{T}, dx) where T
     x = ones(eltype(y), axes(y)) .* dx
     dy = central_diff2(y, x)
 
@@ -105,12 +106,12 @@ end
 
 
 """
-    central_diff!(dy::AbstractArray{<:Any,1}, y::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1})
-    central_diff!(dy::AbstractArray{<:Any,1}, y::AbstractArray{<:Any,1}, dx::Any)
+    central_diff!(dy, y, x)
+    central_diff!(dy, y, dx)
 
 Central difference
 """
-function central_diff!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:AbstractVector}
+function central_diff!(dy::AbstractVector{T1}, y::T2, x::T2) where {T1,T2<:AbstractVector{<:Number}}
 
     @assert axes(dy) == axes(y) == axes(x)
 
@@ -126,19 +127,19 @@ function central_diff!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:Abstr
 
 end
 
-function central_diff!(dy::T1, y::T2, dx) where {T1<:AbstractVector,T2<:AbstractVector}
+function central_diff!(dy::AbstractVector{T1}, y::AbstractVector{T2}, dx) where {T1,T2}
     x = ones(eltype(y), axes(y)) .* dx
     central_diff!(dy, y, x)
 end
 
 
 """
-    central_diff2!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:AbstractVector}
-    central_diff2!(dy::T1, y::T2, dx) where {T1<:AbstractVector,T2<:AbstractVector}
+    central_diff2!(dy, y, x)
+    central_diff2!(dy, y, dx)
     
 Central difference
 """
-function central_diff2!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:AbstractVector}
+function central_diff2!(dy::AbstractVector{T1}, y::T2, x::T2) where {T1,T2<:AbstractVector{<:Number}}
 
     @assert axes(dy) == axes(y) == axes(x)
 
@@ -153,28 +154,23 @@ function central_diff2!(dy::T1, y::T2, x::T2) where {T1<:AbstractVector,T2<:Abst
 
 end
 
-function central_diff2!(dy::T1, y::T2, dx) where {T1<:AbstractVector,T2<:AbstractVector}
+function central_diff2!(dy::AbstractVector{T1}, y::AbstractVector{T2}, dx) where {T1,T2}
     x = ones(eltype(y), axes(y)) .* dx
     central_diff2!(dy, y, x)
 end
 
 
 """
-    upwind_diff(
-        y::AbstractArray{<:Any,1},
-        x::AbstractArray{<:Any,1};
-        stream = :right::Symbol,
-    )
-
-    upwind_diff(y::AbstractArray{<:Any,1}, dx::Any; stream = :right::Symbol)
+    upwind_diff(y, x; stream)
+    upwind_diff(y, dx; stream)
 
 Upwind difference
 """
 function upwind_diff(
-    y::AbstractArray{<:Any,1},
-    x::AbstractArray{<:Any,1};
+    y::AbstractVector{T1},
+    x::AbstractVector{T2};
     stream = :right::Symbol,
-)
+) where {T1,T2}
 
     dy = zeros(eltype(y), axes(y))
 
@@ -200,7 +196,7 @@ function upwind_diff(
 
 end
 
-function upwind_diff(y::AbstractArray{<:Any,1}, dx::Any; stream = :right::Symbol)
+function upwind_diff(y::AbstractVector{T}, dx; stream = :right::Symbol) where T
     x = ones(eltype(y), axes(y)) .* dx
     dy = upwind_diff(y, x, stream = stream)
 
@@ -209,28 +205,17 @@ end
 
 
 """
-    upwind_diff!(
-        dy::AbstractArray{<:Any,1},
-        y::AbstractArray{<:Any,1},
-        x::AbstractArray{<:Any,1};
-        stream = :right::Symbol,
-    )
-
-    upwind_diff!(
-        dy::AbstractArray{<:Any,1},
-        y::AbstractArray{<:Any,1},
-        dx::Any;
-        stream = :right::Symbol,
-    )
+    upwind_diff!(dy, y, x; stream)
+    upwind_diff!(dy, y, dx; stream)
 
 Upwind difference
 """
 function upwind_diff!(
-    dy::AbstractArray{<:Any,1},
-    y::AbstractArray{<:Any,1},
-    x::AbstractArray{<:Any,1};
+    dy::AbstractVector{T1},
+    y::AbstractVector{T2},
+    x::AbstractVector{T3};
     stream = :right::Symbol,
-)
+) where {T1,T2,T3}
 
     @assert axes(dy) == axes(y) == axes(x)
 
@@ -257,28 +242,31 @@ function upwind_diff!(
 end
 
 function upwind_diff!(
-    dy::AbstractArray{<:Any,1},
-    y::AbstractArray{<:Any,1},
-    dx::Any;
+    dy::AbstractVector{T1},
+    y::AbstractVector{T2},
+    dx;
     stream = :right::Symbol,
-)
+) where {T1,T2}
+
     x = ones(eltype(y), axes(y)) .* dx
     upwind_diff!(dy, y, x, stream = stream)
+
 end
 
 
 """
-    unstruct_diff(u::AbstractArray{<:Any,1}, x::AbstractArray{<:Any,1}, nx::Integer; mode = :central::Symbol)
-    unstruct_diff(u::Function, x::AbstractArray{<:Any,2}, nx::Integer, dim::Integer; mode = :central::Symbol)
+    unstruct_diff(u, x, nx; mode)
+    unstruct_diff(u, x, nx, dim; mode)
 
 Finite difference for pseudo-unstructured mesh
 """
 function unstruct_diff(
-    u::AbstractArray{<:Any,1},
-    x::AbstractArray{<:Any,1},
+    u::AbstractVector{T1},
+    x::AbstractVector{T2},
     nx::Integer;
     mode = :central::Symbol,
-)
+) where {T1,T2}
+
     uu = reshape(u, (nx, :))
     xx = reshape(x, (nx, :))
 
@@ -294,15 +282,17 @@ function unstruct_diff(
     end
 
     return reshape(dux, (1, :))
+
 end
 
 function unstruct_diff(
     u::Function,
-    x::AbstractArray{<:Any,1},
+    x::AbstractVector{T},
     nx::Integer,
     dim::Integer;
     mode = :central::Symbol,
-)
+) where T
+
     uu = reshape(u.(x), (nx, :))
     xx = reshape(x, (nx, :))
     dux = zeros(eltype(x), axes(xx))
@@ -326,11 +316,12 @@ function unstruct_diff(
     end
 
     return dux[:]
+
 end
 
 
 """
-    lgwt(N::Integer, a::Real, b::Real)
+    lgwt(, a, b)
 
 Gauss Legendre integral for fast spectral method
 
@@ -381,11 +372,11 @@ end
 
 
 """
-    extract_last(a::AbstractArray, idx::Integer; mode=:view::Symbol)
+    extract_last(a, idx; mode)
 
 Extract subarray except the last column
 """
-function extract_last(a::AbstractArray, idx::Integer; mode = :view::Symbol)
+function extract_last(a::AbstractArray{T}, idx::Integer; mode = :view::Symbol) where T
     if mode == :copy
 
         if ndims(a) == 2

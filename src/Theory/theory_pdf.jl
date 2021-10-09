@@ -1,17 +1,16 @@
 """
     pdf_slope(u, Δ)
-
-    pdf_slope(prim::A, sw::B, inK) where {A<:AbstractArray{<:Real,1},B<:AbstractArray{<:Real,1}}
+    pdf_slope(prim, sw, inK)
 
 Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 """
-pdf_slope(u, Δ::T) where {T<:Real} = Δ / (u + 1e-7)
+pdf_slope(u, Δ) = Δ / (u + 1e-7)
 
 function pdf_slope(
-    prim::X,
-    sw::Y,
+    prim::AbstractVector{T1},
+    sw::AbstractVector{T2},
     inK,
-) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1}}
+) where {T1<:Real,T2<:Real}
 
     sl = similar(sw, axes(prim))
 
@@ -63,16 +62,16 @@ end
 
 
 """
-    mixture_pdf_slope(prim::X, sw::Y, inK) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,2}}
+    mixture_pdf_slope(prim, sw, inK)
 
 Calculate slope of multi-component particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
 """
 function mixture_pdf_slope(
-    prim::X,
-    sw::Y,
+    prim::AbstractMatrix{T1},
+    sw::AbstractMatrix{T2},
     inK,
-) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Real,2}}
+) where {T1<:Real,T2<:Real}
 
     sl = similar(sw, axes(prim))
 
@@ -86,17 +85,8 @@ end
 
 
 """
-    reduce_distribution(
-        f::X,
-        weights::Y,
-        dim = 1,
-    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:AbstractFloat,1}}
-
-    reduce_distribution(
-        f::X,
-        weights::Y,
-        dim = 1,
-    ) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:AbstractFloat,2}}
+    reduce_distribution(f, weights, dim)
+    reduce_distribution(f, v, w, weights, dim)
 
 Reduced distribution function
 
@@ -105,10 +95,10 @@ Reduced distribution function
 
 """
 function reduce_distribution(
-    f::X,
-    weights::Y,
+    f::AbstractMatrix{T1},
+    weights::AbstractVector{T2},
     dim = 1,
-) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:AbstractFloat,1}}
+) where {T1<:Real,T2<:Real}
 
     if dim == 1
         h = similar(f, axes(f, 1))
@@ -129,10 +119,10 @@ function reduce_distribution(
 end
 
 function reduce_distribution(
-    f::X,
-    weights::Y,
+    f::AbstractArray{T1,3},
+    weights::AbstractMatrix{T2},
     dim = 1,
-) where {X<:AbstractArray{<:AbstractFloat,3},Y<:AbstractArray{<:AbstractFloat,2}}
+) where {T1<:Real,T2<:Real}
 
     if dim == 1
         h = similar(f, axes(f, 1))
@@ -157,15 +147,15 @@ function reduce_distribution(
 end
 
 function reduce_distribution(
-    f::X,
+    f::AbstractArray{X,3},
     v::Y,
     w::Y,
-    weights::Z,
+    weights::AbstractMatrix{Z},
     dim = 1,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,3},
-    Y<:AbstractArray{<:AbstractFloat,3},
-    Z<:AbstractArray{<:AbstractFloat,2},
+    X<:Real,
+    Y<:AbstractArray{<:Real,3},
+    Z<:Real,
 }
 
     if dim == 1
@@ -189,7 +179,6 @@ function reduce_distribution(
             h[k] = sum(@. weights * f[:, :, k])
             b[k] = sum(@. weights * (v[:, :, k]^2 + w[:, :, k]^2) * f[:, :, k])
         end
-    else
     end
 
     return h, b
@@ -198,36 +187,8 @@ end
 
 
 """
-    full_distribution(
-        h::X,
-        b::X,
-        u::Y,
-        weights::Y,
-        v::Z,
-        w::Z,
-        ρ,
-        γ = 5 / 3,
-    ) where {
-        X<:AbstractArray{<:AbstractFloat,1},
-        Y<:AbstractArray{<:AbstractFloat,1},
-        Z<:AbstractArray{<:AbstractFloat,3},
-    }
-
-    full_distribution(
-        h::X,
-        b::X,
-        u::Y,
-        weights::Y,
-        v::Z,
-        w::Z,
-        prim::A,
-        γ = 5 / 3,
-    ) where {
-        X<:AbstractArray{<:AbstractFloat,1},
-        Y<:AbstractArray{<:AbstractFloat,1},
-        Z<:AbstractArray{<:AbstractFloat,3},
-        A<:AbstractArray{<:Real,1},
-    }
+    full_distribution(h, b, u, weights, v, w, ρ, γ)
+    full_distribution(h, b, u, weights, v, w, prim, γ)
 
 Recover full distribution function from reduced ones
 
@@ -287,23 +248,11 @@ full_distribution(
 
 
 """
-    shift_pdf!(
-        f::T,
-        a,
-        du,
-        dt,
-    ) where {T<:AbstractArray{<:AbstractFloat,1}}
-
-    shift_pdf!(
-        f::X,
-        a::Y,
-        du::Z,
-        dt,
-    ) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,1},Z<:AbstractArray{<:AbstractFloat,1}}
+    shift_pdf!(f, a, du, dt)
 
 Shift distribution function by external force
 """
-function shift_pdf!(f::T, a, du, dt) where {T<:AbstractArray{<:AbstractFloat,1}}
+function shift_pdf!(f::AbstractVector{T}, a, du, dt) where {T<:Real}
 
     q0 = eachindex(f) |> first # for OffsetArray
     q1 = eachindex(f) |> last
@@ -343,42 +292,25 @@ end
 
 #--- multi-component gas ---#
 function shift_pdf!(
-    f::X,
-    a::Y,
-    du::Z,
+    f::AbstractMatrix{X},
+    a::AbstractVector{Y},
+    du::AbstractVector{Z},
     dt,
-) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-}
+) where {X<:Real,Y<:Real,Z<:Real}
+
     for j in axes(f, 2)
         _f = @view f[:, j]
         shift_pdf!(_f, a[j], du[j], dt)
     end
 
     return nothing
+
 end
 
 
 """
-    function chapman_enskog(
-        u::AbstractVector{T1},
-        prim::AbstractVector{T2},
-        a::AbstractVector{T3},
-        A::AbstractVector{T3},
-        τ::Real,
-    ) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
-
-    function chapman_enskog(
-        u::AbstractMatrix{T1},
-        v::AbstractMatrix{T1},
-        prim::AbstractVector{T2},
-        a::AbstractVector{T3},
-        b::AbstractVector{T3},
-        A::AbstractVector{T3},
-        τ::Real,
-    ) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
+    chapman_enskog(u, prim, a, A, τ)
+    chapman_enskog(u, v, prim, a, b, A, τ)
 
 Recover discrete Chapman-Enskog expansion
 """
@@ -389,6 +321,7 @@ function chapman_enskog(
     A::AbstractVector{T3},
     τ::Real,
 ) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
+
     M = maxwellian(u, prim)
     f = @. M * (
         1 -
@@ -396,6 +329,7 @@ function chapman_enskog(
     )
 
     return f
+
 end
 
 function chapman_enskog(
@@ -407,6 +341,7 @@ function chapman_enskog(
     A::AbstractVector{T3},
     τ::Real,
 ) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
+
     M = maxwellian(u, v, prim)
     f = @. M * (
         1.0 - τ * (a[1] * u + a[2] * u^2 + a[3] * u * v + 0.5 * a[4] * u * (u^2 + v^2)) -
@@ -415,4 +350,5 @@ function chapman_enskog(
     )
 
     return f
+
 end

@@ -1,3 +1,16 @@
+# ------------------------------------------------------------
+# Filter functions
+# ------------------------------------------------------------
+
+"""
+    modal_filter!(u, args...; filter)
+
+Filter of modal solutions
+
+- @arg u: 1D modal solution
+- @arg args...: filter parameters including strength, norm, etc.
+- @arg filter: symbolic filter options including :l2, l2opt, :l1, :lasso, :exp, :houli
+"""
 function modal_filter!(
     u::AbstractArray{T},
     args...;
@@ -31,7 +44,8 @@ function filter_l2!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
 
     λx, λξ = args[1:2]
     for j in axes(u, 2), i in axes(u, 1)
-        u[i, j] /= (1.0 + λx * (i - p0 + 1)^2 * (i - p0)^2 + λξ * (j - q0 + 1)^2 * (j - q0)^2)
+        u[i, j] /=
+            (1.0 + λx * (i - p0 + 1)^2 * (i - p0)^2 + λξ * (j - q0 + 1)^2 * (j - q0)^2)
     end
 
     return nothing
@@ -71,7 +85,9 @@ function filter_l2opt!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
                 η = η0
             end
 
-            u[i, j] /= (1.0 + λx * (i - p0 + 1)^2 * (i - p0)^2 + λξ * (j - q0 + 1)^2 * (j - q0)^2 - η)
+            u[i, j] /= (
+                1.0 + λx * (i - p0 + 1)^2 * (i - p0)^2 + λξ * (j - q0 + 1)^2 * (j - q0)^2 - η
+            )
         end
     end
 
@@ -105,7 +121,7 @@ function filter_l1!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
     λ1, λ2 = args[1:2]
     ℓ = args[3]
     for j in axes(u, 2), i in axes(u, 1)
-        sc = 1.0 - (λ1 * i * (i - 1) + λ2 * j * (j - 1)) * ℓ[i, j] / (abs(u[i,j]) + 1e-8)
+        sc = 1.0 - (λ1 * i * (i - 1) + λ2 * j * (j - 1)) * ℓ[i, j] / (abs(u[i, j]) + 1e-8)
         if sc < 0.0
             sc = 0.0
         end

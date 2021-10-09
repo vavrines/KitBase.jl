@@ -70,7 +70,7 @@ let deg = 2, u = rand(deg + 1)
     modal_filter!(u, 10; filter = :houli)
 end
 
-let deg = 2, u = rand(deg+1, deg+1)
+let deg = 2, u = rand(deg + 1, deg + 1)
     modal_filter!(u, 1e-6, 1e-6; filter = :l2)
     modal_filter!(u, 1e-6, 1e-6; filter = :l2opt)
 end

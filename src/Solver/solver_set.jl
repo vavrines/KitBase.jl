@@ -222,7 +222,16 @@ function set_geometry(dict::T) where {T<:AbstractDict}
         if parse(Int, dict[:space][1]) == 1
             return PSpace1D(dict[:x0], dict[:x1], dict[:nx], dict[:nxg])
         elseif parse(Int, dict[:space][1]) == 2
-            return PSpace2D(dict[:x0], dict[:x1], dict[:nx], dict[:y0], dict[:y1], dict[:ny], dict[:nxg], dict[:nyg])
+            return PSpace2D(
+                dict[:x0],
+                dict[:x1],
+                dict[:nx],
+                dict[:y0],
+                dict[:y1],
+                dict[:ny],
+                dict[:nxg],
+                dict[:nyg],
+            )
         else
             throw("No preset available for 3D simulation, please set it up manually.")
         end
@@ -637,21 +646,21 @@ function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
             "ib_" * string(set.case)
         end
     end
-    
+
     ib = begin
         if parse(Int, set.space[3]) == 0
-            fw, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            fw, bc = config_ib(set, pSpace, vSpace, gas)
             IB(fw, bc)
         elseif parse(Int, set.space[3]) in [3, 4] && gas isa AbstractPlasma
-            fw, ff, fE, fB, fL, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            fw, ff, fE, fB, fL, bc = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
             eval(Symbol(iname))(fw, ff, fE, fB, fL, bc)
         elseif set.case == "cavity"
-            fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas, Um, Vm, Tm)
+            fw, ff, bc = config_ib(set, pSpace, vSpace, gas, Um, Vm, Tm)
             iname = "IB" * set.space[3] * "F"
             eval(Symbol(iname))(fw, ff, bc)
         else
-            fw, ff, bc = eval(Symbol(fname))(set, pSpace, vSpace, gas)
+            fw, ff, bc = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
             eval(Symbol(iname))(fw, ff, bc)
         end

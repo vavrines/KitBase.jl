@@ -1,5 +1,7 @@
 """
-    ib_briowu(gam, uspace::T, mi, me) where {T<:AbstractArray{<:AbstractFloat,2}}
+    ib_briowu(set, ps, vs, gas)
+    ib_briowu(gam, mi, me, uspace)
+    ib_briowu(gam, mi, me, uspace, vspace)
 
 Initialize Brio-Wu MHD shock tube
 
@@ -52,28 +54,28 @@ function ib_briowu(
     BR[2] = -1.0
     lorenzR = zeros(3, 2)
 
-    fw = function(x)
+    fw = function (x)
         if x <= (ps.x0 + ps.x1) / 2
             return wL
         else
             return wR
         end
     end
-    fE = function(x)
+    fE = function (x)
         if x <= (ps.x0 + ps.x1) / 2
             return EL
         else
             return ER
         end
     end
-    fB = function(x)
+    fB = function (x)
         if x <= (ps.x0 + ps.x1) / 2
             return BL
         else
             return BR
         end
     end
-    fL = function(x)
+    fL = function (x)
         if x <= (ps.x0 + ps.x1) / 2
             return lorenzL
         else
@@ -81,7 +83,7 @@ function ib_briowu(
         end
     end
 
-    bc = function(x)
+    bc = function (x)
         if x <= (ps.x0 + ps.x1) / 2
             return primL
         else
@@ -112,7 +114,7 @@ function ib_briowu(
                 (primR[3, j]^2 + primR[4, j]^2 + 2.0 / (2.0 * primR[end, j])) .* h0R[:, j]
         end
 
-        ff = function(x)
+        ff = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return h0L, h1L, h2L, h3L
             else
@@ -138,7 +140,7 @@ function ib_briowu(
             h2R[:, :, j] .= (primR[4, j]^2 + 1.0 / (2.0 * primR[end, j])) .* h0R[:, :, j]
         end
 
-        ff = function(x)
+        ff = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return h0L, h1L, h2L
             else
@@ -153,7 +155,7 @@ function ib_briowu(
 
 end
 
-function ib_briowu(gam, mi, me, uspace::T) where {T<:AbstractArray{<:AbstractFloat,2}}
+function ib_briowu(gam, mi, me, uspace::AbstractMatrix{T}) where {T<:AbstractFloat}
 
     # upstream
     primL = zeros(5, 2)

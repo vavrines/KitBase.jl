@@ -390,7 +390,16 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], isMHD = isMHD)
+        update_boundary!(
+            KS,
+            ctr,
+            face,
+            dt,
+            residual;
+            coll = coll,
+            bc = [bc, bc],
+            isMHD = isMHD,
+        )
     else
         update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
     end
@@ -501,7 +510,16 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], isMHD = isMHD)
+        update_boundary!(
+            KS,
+            ctr,
+            face,
+            dt,
+            residual;
+            coll = coll,
+            bc = [bc, bc],
+            isMHD = isMHD,
+        )
     else
         update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
     end
@@ -563,7 +581,16 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = [bc, bc, bc, bc])
+        update_boundary!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            dt,
+            residual;
+            coll = coll,
+            bc = [bc, bc, bc, bc],
+        )
     else
         update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
     end
@@ -637,7 +664,16 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = [bc, bc, bc, bc])
+        update_boundary!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            dt,
+            residual;
+            coll = coll,
+            bc = [bc, bc, bc, bc],
+        )
     else
         update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
     end
@@ -718,7 +754,16 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = [bc, bc, bc, bc])
+        update_boundary!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            dt,
+            residual;
+            coll = coll,
+            bc = [bc, bc, bc, bc],
+        )
     else
         update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
     end

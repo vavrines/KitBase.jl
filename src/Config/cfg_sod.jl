@@ -1,8 +1,5 @@
 """
-    1d0f0v: ib_sod(γ)
-    1d1f1v: ib_sod(γ, u::T) where {T<:AbstractArray{<:AbstractFloat,1}}
-    1d1f3v: ib_sod(γ, u::T, v::T, w::T) where {T<:AbstractArray{<:AbstractFloat,3}}
-    1d2f1v: ib_sod(γ, u::T, K) where {T<:AbstractArray{<:AbstractFloat,1}}
+    ib_sod(set, ps, vs, gas)
 
 Initialize Sod shock tube
 """
@@ -21,7 +18,7 @@ function ib_sod(
         wL = prim_conserve(primL, gas.γ)
         wR = prim_conserve(primR, gas.γ)
 
-        fw = function(x)
+        fw = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return wL
             else
@@ -29,7 +26,7 @@ function ib_sod(
             end
         end
 
-        bc = function(x)
+        bc = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return primL
             else
@@ -40,7 +37,7 @@ function ib_sod(
         if set.space[1:4] == "1d0f"
             return fw, bc
         elseif set.space == "1d1f1v"
-            ff = function(x)
+            ff = function (x)
                 w = fw(x)
                 prim = conserve_prim(w, gas.γ)
                 h = maxwellian(vs.u, prim)
@@ -49,7 +46,7 @@ function ib_sod(
 
             return fw, ff, bc
         elseif set.space == "1d2f1v"
-            ff = function(x)
+            ff = function (x)
                 w = fw(x)
                 prim = conserve_prim(w, gas.γ)
                 h = maxwellian(vs.u, prim)
@@ -59,7 +56,7 @@ function ib_sod(
 
             return fw, ff, bc
         elseif set.space == "1d1f3v"
-            ff = function(x)
+            ff = function (x)
                 w = fw(x)
                 prim = conserve_prim(w, gas.γ)
                 h = maxwellian(vs.u, vs.v, vs.w, prim)
@@ -82,7 +79,7 @@ function ib_sod(
         wL = mixture_prim_conserve(primL, gas.γ)
         wR = mixture_prim_conserve(primR, gas.γ)
 
-        fw = function(x)
+        fw = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return wL
             else
@@ -90,7 +87,7 @@ function ib_sod(
             end
         end
 
-        bc = function(x)
+        bc = function (x)
             if x <= (ps.x0 + ps.x1) / 2
                 return primL
             else
@@ -104,7 +101,7 @@ function ib_sod(
             hL = mixture_maxwellian(vs.u, primL)
             hR = mixture_maxwellian(vs.u, primR)
 
-            ff = function(x)
+            ff = function (x)
                 if x <= (ps.x0 + ps.x1) / 2
                     return hL
                 else
@@ -123,7 +120,7 @@ function ib_sod(
                 bR[:, j] .= hR[:, j] .* K ./ (2.0 .* primR[end, j])
             end
 
-            ff = function(x)
+            ff = function (x)
                 if x <= (ps.x0 + ps.x1) / 2
                     return hL, bL
                 else

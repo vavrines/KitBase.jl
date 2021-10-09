@@ -57,11 +57,7 @@ function bc_balance!(
     return nothing
 end
 
-function bc_balance!(
-    ctr::T,
-    ctr0::T,
-    ctr1::T,
-) where {T<:ControlVolume1D4F}
+function bc_balance!(ctr::T, ctr0::T, ctr1::T) where {T<:ControlVolume1D4F}
     @. ctr.w = 2.0 * ctr0.w - ctr1.w
     @. ctr.prim = 2.0 * ctr0.prim - ctr1.prim
     @. ctr.h0 = 2.0 * ctr0.h0 - ctr1.h0

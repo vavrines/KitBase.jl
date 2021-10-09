@@ -87,10 +87,10 @@ function rykov!(
     ω0,
     ω1,
 ) where {
-    T1<:AbstractArray{<:Real,1},
-    T2<:AbstractArray{<:Real,1},
-    T3<:AbstractArray{<:Real,1},
-    T4<:AbstractArray{<:Real,1},
+    T1<:AbstractVector{<:Real},
+    T2<:AbstractVector{<:Real},
+    T3<:AbstractVector{<:Real},
+    T4<:AbstractVector{<:Real},
 }
 
     @. Ht_plus =

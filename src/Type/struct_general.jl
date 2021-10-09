@@ -55,13 +55,7 @@ function Setup(
         end
     end
 
-    return Setup{
-        typeof(matter),
-        typeof(ns),
-        typeof(boundary),
-        typeof(cfl),
-        typeof(time),
-    }(
+    return Setup{typeof(matter),typeof(ns),typeof(boundary),typeof(cfl),typeof(time)}(
         matter,
         case,
         space,

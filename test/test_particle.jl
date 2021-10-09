@@ -100,7 +100,7 @@ begin
     wL = KitBase.prim_conserve(primL, γ)
     wR = KitBase.prim_conserve(primR, γ)
 
-    fw = function(x)
+    fw = function (x)
         if x <= (pSpace.x0 + pSpace.x1) / 2
             wL
         else

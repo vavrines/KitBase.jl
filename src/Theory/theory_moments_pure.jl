@@ -468,116 +468,44 @@ end
 
 
 """
+    * direct quadrature
+    discrete_moments(f, ω)
+
+    * velocity moments
+    discrete_moments(f, u, ω, n)
+
 Discrete moments of particle distribution
 
-* `discrete_moments(f, ω)`: direct quadrature
-* `discrete_moments(f, u, ω, n)`: velocity moments
-
 """
-discrete_moments(
-    f::X,
-    ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,1},T<:AbstractArray{<:AbstractFloat,1}} =
-    sum(@. ω * f)
+discrete_moments(f, ω) = sum(@. ω * f)
 
-#--- 1V ---#
-discrete_moments(
-    f::X,
-    u::T,
-    ω::T,
-    n,
-) where {X<:AbstractArray{<:AbstractFloat,1},T<:AbstractArray{<:AbstractFloat,1}} =
-    sum(@. ω * u^n * f)
-
-#--- 2V ---#
-discrete_moments(
-    f::X,
-    u::T,
-    ω::T,
-    n,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}} =
-    sum(@. ω * u^n * f)
-
-#--- 3V ---#
-discrete_moments(
-    f::X,
-    u::T,
-    ω::T,
-    n,
-) where {X<:AbstractArray{<:AbstractFloat,3},T<:AbstractArray{<:AbstractFloat,3}} =
-    sum(@. ω * u^n * f)
+discrete_moments(f, u, ω, n) = sum(@. ω * u^n * f)
 
 
 """
+    pressure(f, prim, u, ω)
+    pressure(h, b, prim, u, ω, K)
+    pressure(h, b, prim, u, v, ω, K)
+
 Calculate pressure from particle distribution function
 
 """
-pressure(
-    f::X,
-    prim::Y,
-    u::Z,
-    ω::Z,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-} = sum(@. ω * (u - prim[2])^2 * f)
+pressure(f, prim, u, ω) = sum(@. ω * (u - prim[2])^2 * f)
 
-pressure(
-    h::X,
-    b::X,
-    prim::Y,
-    u::Z,
-    ω::Z,
-    K,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-} = (sum(@. ω * (u - prim[2])^2 * h) + sum(@. ω * b)) / (K + 1.0)
+pressure(h, b, prim, u, ω, K) =
+    (sum(@. ω * (u - prim[2])^2 * h) + sum(@. ω * b)) / (K + 1.0)
 
-pressure(
-    h::X,
-    b::X,
-    prim::Y,
-    u::Z,
-    v::Z,
-    ω::Z,
-    K,
-) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,2},
-} = (sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2) * h) + sum(@. ω * b)) / (K + 2.0)
+pressure(h, b, prim, u, v, ω, K) =
+    (sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2) * h) + sum(@. ω * b)) / (K + 2.0)
 
 
 """
 Calculate stress tensor from particle distribution function
 
 """
-stress(
-    f::X,
-    prim::Y,
-    u::Z,
-    ω::Z,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-} = sum(@. ω * (u - prim[2]) * (u - prim[2]) * f)
+stress(f, prim, u, ω) = sum(@. ω * (u - prim[2]) * (u - prim[2]) * f)
 
-function stress(
-    f::X,
-    prim::Y,
-    u::Z,
-    v::Z,
-    ω::Z,
-) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,2},
-}
-
+function stress(f, prim, u, v, ω)
     P = similar(prim, 2, 2)
 
     P[1, 1] = sum(@. ω * (u - prim[2]) * (u - prim[2]) * f)
@@ -586,24 +514,25 @@ function stress(
     P[1, 2] = sum(@. ω * (v - prim[3]) * (v - prim[3]) * f)
 
     return P
-
 end
 
 
 """
+    heat_flux(f, prim, u, ω)
+    heat_flux(h, b, prim, u, ω)
+    heat_flux(h, b, r, prim, u, ω)
+    heat_flux(f, prim, u, v, ω)
+    heat_flux(h, b, prim, u, v, ω)
+    heat_flux(h, b, r, prim, u, v, ω)
+    heat_flux(f, prim, u, v, w, ω)
+
 Calculate heat flux from particle distribution function
 
+Multiple dispatch doesn't consider unstructured multi-dimensional velocity space.
+In that case a new method needs to be defined.
+
 """
-heat_flux(
-    h::X,
-    prim::Y,
-    u::Z,
-    ω::Z,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-} = 0.5 * sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) # 1F1V
+heat_flux(f, prim, u, ω) = 0.5 * sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * f) # 1F1V
 
 #--- 2F1V ---#
 heat_flux(
@@ -618,7 +547,7 @@ heat_flux(
     Z<:AbstractArray{<:AbstractFloat,1},
 } = 0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
 
-#--- 3F1V (Rykov) ---#
+#--- 3F1V Rykov ---#
 function heat_flux(
     h::X,
     b::X,
@@ -695,7 +624,7 @@ function heat_flux(
 
 end
 
-#--- 3F2V (Rykov) ---#
+#--- 3F2V Rykov ---#
 function heat_flux(
     h::X,
     b::X,

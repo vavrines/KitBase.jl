@@ -151,24 +151,9 @@ KitBase.ControlVolume1D4F(
 KitBase.ControlVolume2D(w, prim) |> show
 KitBase.ControlVolume2D1F(w, prim, h) |> show
 KitBase.ControlVolume2D2F(w, prim, h, b) |> show
-KitBase.ControlVolume2D3F(
-    w,
-    prim,
-    h,
-    b,
-    b,
-    zeros(3),
-    zeros(3),
-    zeros(3, 2),
-) |> show
+KitBase.ControlVolume2D3F(w, prim, h, b, b, zeros(3), zeros(3), zeros(3, 2)) |> show
 # Rykov
-KitBase.ControlVolume2D3F(
-    rand(4),
-    rand(4),
-    rand(8, 8),
-    rand(8, 8),
-    rand(8, 8),
-) |> show
+KitBase.ControlVolume2D3F(rand(4), rand(4), rand(8, 8), rand(8, 8), rand(8, 8)) |> show
 # unstructured
 KitBase.ControlVolumeUS([1, 0], x, dx, w, prim)
 KitBase.ControlVolumeUS1F([1, 0], x, dx, w, prim, h)

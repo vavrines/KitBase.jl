@@ -4,21 +4,22 @@
 Calculate reference viscosity with variable hard sphere (VHS) model
 
 """
-ref_vhs_vis(Kn::T, alpha, omega) where {T<:Real} =
+ref_vhs_vis(Kn, alpha, omega) =
     5.0 * (alpha + 1.0) * (alpha + 2.0) * √π /
     (4.0 * alpha * (5.0 - 2.0 * omega) * (7.0 - 2.0 * omega)) * Kn
 
 
 """
-    vhs_collision_time(prim::T, muRef, omega) where {T<:AbstractArray{<:Real,1}}
+    vhs_collision_time(ρ, λ, μᵣ, ω)
+    vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real}
 
 Calculate collision time with variable hard sphere (VHS) model
 
 """
-vhs_collision_time(ρ::T, λ, μᵣ, ω) where {T<:Real} = μᵣ * 2.0 * λ^(1.0 - ω) / ρ
+vhs_collision_time(ρ, λ, μᵣ, ω) = μᵣ * 2.0 * λ^(1.0 - ω) / ρ
 
-vhs_collision_time(prim::T, muRef, omega) where {T<:AbstractArray{<:Real,1}} =
-    muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov prim[end] should be λₜ
+vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real} =
+    muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov model prim[end] should be λₜ
 
 
 """
@@ -33,14 +34,7 @@ vhs_collision_time(prim::T, muRef, omega) where {T<:AbstractArray{<:Real,1}} =
 
 Calculate mixture collision time from AAP model
 """
-function aap_hs_collision_time(
-    prim::T,
-    mi,
-    ni,
-    me,
-    ne,
-    kn,
-) where {T<:AbstractArray{<:Real,2}}
+function aap_hs_collision_time(prim::AbstractMatrix{T}, mi, ni, me, ne, kn) where {T<:Real}
 
     ν = similar(prim, 2)
 
@@ -137,22 +131,22 @@ end
 
 
 """
-    boltzmann_ode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+    boltzmann_ode!(df, f, p, t)
 
 RHS-ODE of Boltzmann equation
 """
-function boltzmann_ode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+function boltzmann_ode!(df, f::AbstractArray{T,3}, p, t) where {T<:Real}
     Kn, M, phi, psi, phipsi = p
     df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
 end
 
 
 """
-    boltzmann_nuode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+    boltzmann_nuode!(df, f, p, t)
 
 RHS-ODE of Boltzmann equation with non-uniform velocity
 """
-function boltzmann_nuode!(df, f::T, p, t) where {T<:AbstractArray{<:Real,3}}
+function boltzmann_nuode!(df, f::AbstractArray{T,3}, p, t) where {T<:Real}
     Kn, M, phi, psi, phipsi, u, v, w, vnu, u1, v1, w1, vuni = p
 
     nu = length(u)
@@ -172,11 +166,11 @@ end
 
 
 """
-    bgk_ode!(df, f::T, p, t) where {T<:AbstractArray}
+    bgk_ode!(df, f, p, t)
     
 RHS-ODE of BGK equation
 """
-function bgk_ode!(df, f::T, p, t) where {T<:AbstractArray}
+function bgk_ode!(df, f::AbstractArray{T}, p, t) where {T<:Real}
     g, τ = p
     df .= (g .- f) ./ τ
 end
