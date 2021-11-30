@@ -16,6 +16,7 @@ using Reexport
 using CSV
 using CUDA
 using Dates
+using DiffEqOperators
 using Distributed
 using Distributions
 using FastGaussQuadrature
