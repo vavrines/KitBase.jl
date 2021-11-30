@@ -10,9 +10,8 @@ if VERSION < v"1.3"
     @warn "Kinetic works better with Julia 1.3 or newer versions."
 end
 
+import Base: *
 using Base.Threads: @threads
-using Reexport
-@reexport using FiniteMesh
 using CSV
 using CUDA
 using Dates
@@ -31,13 +30,13 @@ using Parameters
 using Plots
 using ProgressMeter
 using PyCall
+using Reexport
 using SpecialFunctions
 using StaticArrays
 using StructArrays
 using TypedPolynomials
 using WriteVTK
-
-const itp = PyNULL()
+@reexport using FiniteMesh
 
 include("Data/data.jl")
 include("Macro/macro.jl")
@@ -52,6 +51,8 @@ include("Flux/flux.jl")
 include("Config/config.jl")
 include("Boundary/boundary.jl")
 include("Solver/solver.jl")
+
+const itp = PyNULL()
 
 function __init__()
     np = nworkers()

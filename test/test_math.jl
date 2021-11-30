@@ -9,6 +9,12 @@ KitBase.fortsign(x0, x1)
 KitBase.mat_split(randn(2, 2))
 KitBase.mat_split(randn(3, 3))
 
+u = Float64[0, 1, 2, 3, 2, 1, 0]
+dx = 1.0
+KitBase.finite_difference(u, dx; method = :central, bc = :period)
+KitBase.finite_difference(u, dx; method = :central, bc = :none)
+KitBase.finite_difference(u, dx, -1; method = :upwind, bc = :none)
+
 x = randn(16)
 y = randn(16)
 KitBase.@nametuple x y # NamedTuple constructor
