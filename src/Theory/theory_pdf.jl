@@ -333,8 +333,8 @@ function chapman_enskog(
 end
 
 function chapman_enskog(
-    u::AbstractMatrix{T1},
-    v::AbstractMatrix{T1},
+    u::AbstractArray{T1},
+    v::AbstractArray{T1},
     prim::AbstractVector{T2},
     a::AbstractVector{T3},
     b::AbstractVector{T3},

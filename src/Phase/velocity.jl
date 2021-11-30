@@ -3,7 +3,7 @@
 # ============================================================
 
 """
-    struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <: AbstractVelocitySpace
+    struct VSpace1D
         u0::TR
         u1::TR
         nu::TI
@@ -15,7 +15,7 @@
 1D velocity space
 
 """
-struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <:
+struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real},TB<:AbstractVector{<:Real}} <:
        AbstractVelocitySpace1D
     u0::TR
     u1::TR
@@ -70,7 +70,7 @@ VSpace1D(U0::T, U1::T) where {T<:Real} = VSpace1D(U0, U1, 50)
 
 
 """
-    struct VSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace
+    struct VSpace2D
         u0::TR
         u1::TR
         nu::TI
@@ -87,7 +87,7 @@ VSpace1D(U0::T, U1::T) where {T<:Real} = VSpace1D(U0, U1, 50)
 2D velocity space
 
 """
-struct VSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace2D
+struct VSpace2D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real}} <: AbstractVelocitySpace2D
     u0::TR
     u1::TR
     nu::TI
@@ -220,7 +220,7 @@ VSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = VSpace2D(U0, U1, 28, V0, 
 
 
 """
-    struct VSpace3D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,3}} <: AbstractVelocitySpace
+    struct VSpace3D
         u0::TR
         u1::TR
         nu::TI
@@ -242,7 +242,7 @@ VSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = VSpace2D(U0, U1, 28, V0, 
 3D velocity space
 
 """
-struct VSpace3D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real,3}} <: AbstractVelocitySpace3D
+struct VSpace3D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real}} <: AbstractVelocitySpace3D
     u0::TR
     u1::TR
     nu::TI
@@ -372,7 +372,7 @@ VSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 
 
 """
-    struct MVSpace1D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,2}} <: AbstractVelocitySpace
+    struct MVSpace1D
         u0::TR
         u1::TR
         nu::TI
@@ -437,7 +437,7 @@ MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1
 
 
 """
-    struct MVSpace2D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{Float64,3}} <: AbstractVelocitySpace
+    struct MVSpace2D
         u0::TR
         u1::TR
         nu::TI
@@ -532,7 +532,7 @@ MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
 
 
 """
-    struct MVSpace3D{TR<:AbstractArray{<:Real,1},TI<:Integer,TA<:AbstractArray{<:Real,4}} <: AbstractVelocitySpace
+    struct MVSpace3D
         u0::TR
         u1::TR
         nu::TI
@@ -672,7 +672,7 @@ MVSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 
 
 """
-    struct UnstructVSpace{TR<:Real,TI<:Integer,TA<:AbstractArray,TB<:AbstractArray{<:Real,1}} <: AbstractVelocitySpace
+    struct UnstructVSpace
         u0::TR
         u1::TR
         nu::TI
