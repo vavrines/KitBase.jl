@@ -38,7 +38,7 @@ end
 function initialize(config::T) where {T<:AbstractDict}
     println("==============================================================")
     println("Kinetic.jl")
-    println("A Lightweight Toolbox for Kinetic Modeling and Simulation")
+    println("A Lightweight Toolbox for Scientific and Neural Computing")
     println("==============================================================")
     println("")
     @info "initializing solver"
