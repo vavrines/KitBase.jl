@@ -179,7 +179,7 @@ end
 
 Plot solution profiles
 """
-#=function plot_line(args...; kwargs...)
+function plot_line(args...; kwargs...)
     @info "plot_line is deprecated, use Plots.plot instead."
     plot(args...; kwargs...)
 end
@@ -225,7 +225,7 @@ end
 
     return nothing
     
-end=#
+end
 
 
 """
