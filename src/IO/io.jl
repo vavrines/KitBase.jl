@@ -181,7 +181,6 @@ Plot solution profiles
 """
 function plot_line(args...; kwargs...)
     @info "plot_line is deprecated, use Plots.plot instead."
-    plot(args...; kwargs...)
 end
 
 @recipe function plot_line_backend(
@@ -235,7 +234,6 @@ Plot solution profiles
 """
 function plot_contour(args...; kwargs...)
     @info "plot_line is deprecated, use Plots.plot instead."
-    plot(args...; kwargs...)
 end
 
 @recipe function plot_contour_backend(
