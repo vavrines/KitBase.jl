@@ -29,6 +29,7 @@ using Optim
 using Parameters
 using ProgressMeter
 using PyCall
+using RecipesBase
 using Reexport
 using SpecialFunctions
 using StaticArrays
