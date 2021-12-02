@@ -102,7 +102,7 @@ end
 
 Extract subarray except the last column
 """
-function extract_last(a::AbstractArray{T}, idx::Integer; mode = :view::Symbol) where T
+function extract_last(a::AbstractArray{T}, idx::Integer; mode = :view::Symbol) where {T}
     if mode == :copy
 
         if ndims(a) == 2

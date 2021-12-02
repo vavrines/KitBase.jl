@@ -41,7 +41,7 @@ function vanleer(sL, s, sR, connect = 2)
             )
         end
     end
-    
+
     id = findmin(abs.(δ))[2]
 
     return δ[id]

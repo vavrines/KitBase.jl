@@ -15,8 +15,12 @@
 1D velocity space
 
 """
-struct VSpace1D{TR<:Real,TI<:Integer,TA<:AbstractArray{<:Real},TB<:AbstractVector{<:Real}} <:
-       AbstractVelocitySpace1D
+struct VSpace1D{
+    TR<:Real,
+    TI<:Integer,
+    TA<:AbstractArray{<:Real},
+    TB<:AbstractVector{<:Real},
+} <: AbstractVelocitySpace1D
     u0::TR
     u1::TR
     nu::TI

@@ -65,7 +65,7 @@ function finite_difference(
 
     if bc in (nothing, :none)
         dx = x[i0+1:i1] .- x[i0:i1-1]
-        Δ = oprtfn{dimension}(derivative, truncation, dx, length(y)-2, coeff)
+        Δ = oprtfn{dimension}(derivative, truncation, dx, length(y) - 2, coeff)
         B = nothing
     else
         dx = [x[i0+1] - x[i0]; x[i0+1:i1] .- x[i0:i1-1]; x[i1] - x[i1-1]]
@@ -86,7 +86,7 @@ function finite_difference(
 end
 
 function finite_difference(y, dx::Real, args...; kwargs...)
-    x = linspace(0, length(y)-1, length(y)) .* dx
+    x = linspace(0, length(y) - 1, length(y)) .* dx
     return finite_difference(y, x, args...; kwargs...)
 end
 
@@ -113,8 +113,8 @@ function central_diff(y::T, x::T) where {T<:AbstractVector{<:Number}}
     return dy
 end
 
-function central_diff(y::AbstractVector{T}, dx) where T
-    x = linspace(0, length(y)-1, length(y)) .* dx
+function central_diff(y::AbstractVector{T}, dx) where {T}
+    x = linspace(0, length(y) - 1, length(y)) .* dx
     dy = central_diff(y, x)
 
     return dy
@@ -140,8 +140,8 @@ function central_diff2(y::T, x::T) where {T<:AbstractVector{<:Number}}
     return dy
 end
 
-function central_diff2(y::AbstractVector{T}, dx) where T
-    x = linspace(0, length(y)-1, length(y)) .* dx
+function central_diff2(y::AbstractVector{T}, dx) where {T}
+    x = linspace(0, length(y) - 1, length(y)) .* dx
     dy = central_diff2(y, x)
 
     return dy
@@ -154,7 +154,11 @@ end
 
 Central difference
 """
-function central_diff!(dy::AbstractVector{T1}, y::T2, x::T2) where {T1,T2<:AbstractVector{<:Number}}
+function central_diff!(
+    dy::AbstractVector{T1},
+    y::T2,
+    x::T2,
+) where {T1,T2<:AbstractVector{<:Number}}
     @assert axes(dy) == axes(y) == axes(x)
 
     idx = eachindex(y) |> collect
@@ -171,7 +175,7 @@ function central_diff!(dy::AbstractVector{T1}, y::T2, x::T2) where {T1,T2<:Abstr
 end
 
 function central_diff!(dy::AbstractVector{T1}, y::AbstractVector{T2}, dx) where {T1,T2}
-    x = linspace(0, length(y)-1, length(y)) .* dx
+    x = linspace(0, length(y) - 1, length(y)) .* dx
     central_diff!(dy, y, x)
 
     return nothing
@@ -184,7 +188,11 @@ end
     
 Central difference
 """
-function central_diff2!(dy::AbstractVector{T1}, y::T2, x::T2) where {T1,T2<:AbstractVector{<:Number}}
+function central_diff2!(
+    dy::AbstractVector{T1},
+    y::T2,
+    x::T2,
+) where {T1,T2<:AbstractVector{<:Number}}
     @assert axes(dy) == axes(y) == axes(x)
 
     i0 = eachindex(y) |> first
@@ -243,8 +251,8 @@ function upwind_diff(
 
 end
 
-function upwind_diff(y::AbstractVector{T}, dx; stream = :right::Symbol) where T
-    x = linspace(0, length(y)-1, length(y)) .* dx
+function upwind_diff(y::AbstractVector{T}, dx; stream = :right::Symbol) where {T}
+    x = linspace(0, length(y) - 1, length(y)) .* dx
     dy = upwind_diff(y, x, stream = stream)
 
     return dy
@@ -295,7 +303,7 @@ function upwind_diff!(
     stream = :right::Symbol,
 ) where {T1,T2}
 
-    x = linspace(0, length(y)-1, length(y)) .* dx
+    x = linspace(0, length(y) - 1, length(y)) .* dx
     upwind_diff!(dy, y, x, stream = stream)
 
     return nothing
@@ -340,7 +348,7 @@ function unstruct_diff(
     nx::Integer,
     dim::Integer;
     mode = :central::Symbol,
-) where T
+) where {T}
 
     uu = reshape(u.(x), (nx, :))
     xx = reshape(x, (nx, :))

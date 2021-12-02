@@ -39,11 +39,7 @@ function shakhov(
     prim::AbstractVector{Z},
     Pr,
     K,
-) where {
-    X<:AbstractFloat,
-    Y<:AbstractVector{<:AbstractFloat},
-    Z<:Real,
-}
+) where {X<:AbstractFloat,Y<:AbstractVector{<:AbstractFloat},Z<:Real}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
@@ -68,12 +64,7 @@ function shakhov(
     q::AbstractVector{Y},
     prim::AbstractVector{Z},
     Pr,
-) where {
-    T<:AbstractArray{<:AbstractFloat,2},
-    X<:AbstractFloat,
-    Y<:AbstractFloat,
-    Z<:Real,
-}
+) where {T<:AbstractArray{<:AbstractFloat,2},X<:AbstractFloat,Y<:AbstractFloat,Z<:Real}
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -123,12 +114,7 @@ function shakhov(
     q::AbstractVector{Y},
     prim::AbstractVector{Z},
     Pr,
-) where {
-    T<:AbstractArray{<:AbstractFloat,3},
-    X<:AbstractFloat,
-    Y<:Real,
-    Z<:Real,
-}
+) where {T<:AbstractArray{<:AbstractFloat,3},X<:AbstractFloat,Y<:Real,Z<:Real}
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2] + (w - prim[4]) * q[3]) *
@@ -212,11 +198,7 @@ function shakhov!(
     q::AbstractVector{T3},
     prim,
     Pr,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:Real,
-}
+) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2},T3<:Real}
 
     @. S =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -240,11 +222,7 @@ function shakhov!(
     prim,
     Pr,
     K,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:Real,
-}
+) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2},T3<:Real}
 
     @. SH =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -271,11 +249,7 @@ function shakhov!(
     q::AbstractVector{T3},
     prim,
     Pr,
-) where {
-    T1<:AbstractArray{<:AbstractFloat,3},
-    T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:Real,
-}
+) where {T1<:AbstractArray{<:AbstractFloat,3},T2<:AbstractArray{<:AbstractFloat,3},T3<:Real}
 
     @. S =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *

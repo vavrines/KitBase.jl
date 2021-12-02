@@ -152,11 +152,7 @@ function reduce_distribution(
     w::Y,
     weights::AbstractMatrix{Z},
     dim = 1,
-) where {
-    X<:Real,
-    Y<:AbstractArray{<:Real,3},
-    Z<:Real,
-}
+) where {X<:Real,Y<:AbstractArray{<:Real,3},Z<:Real}
 
     if dim == 1
         h = similar(f, axes(f, 1))

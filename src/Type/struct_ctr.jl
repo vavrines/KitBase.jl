@@ -64,7 +64,7 @@ mutable struct ControlVolume1D1F{A,B} <: AbstractControlVolume1D
     sf::B
 end
 
-function ControlVolume1D1F(W::T, PRIM::T, F) where T
+function ControlVolume1D1F(W::T, PRIM::T, F) where {T}
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = zero(W)
@@ -926,7 +926,7 @@ mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     sf::D
 end
 
-function ControlVolumeUS1F(N, X, DX, W, PRIM, F::AbstractArray{T}) where T
+function ControlVolumeUS1F(N, X, DX, W, PRIM, F::AbstractArray{T}) where {T}
     n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)

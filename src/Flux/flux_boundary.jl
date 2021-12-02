@@ -21,11 +21,7 @@ function flux_boundary_maxwell!(
     γ,
     dt,
     rot, # 1 / -1
-) where {
-    T1<:AbstractFloat,
-    T2<:Real,
-    T3<:Real,
-} # 1D continuum
+) where {T1<:AbstractFloat,T2<:Real,T3<:Real} # 1D continuum
 
     @assert length(bc) == 3
 
@@ -104,11 +100,7 @@ function flux_boundary_maxwell!(
     dt,
     len,
     rot,
-) where {
-    T1<:Real,
-    T2<:Real,
-    T3<:Real,
-}
+) where {T1<:Real,T2<:Real,T3<:Real}
 
     @assert length(bc) == 4
 
@@ -306,12 +298,7 @@ function flux_boundary_specular!(
     u::T4,
     ω::T4,
     dt,
-) where {
-    T1<:Real,
-    T2<:AbstractFloat,
-    T3<:AbstractFloat,
-    T4<:AbstractVector{<:AbstractFloat},
-} # 1D1F1V
+) where {T1<:Real,T2<:AbstractFloat,T3<:AbstractFloat,T4<:AbstractVector{<:AbstractFloat}} # 1D1F1V
 
     fWall = similar(f)
     for i in eachindex(f)

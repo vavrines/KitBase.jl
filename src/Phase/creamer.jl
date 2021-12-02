@@ -121,12 +121,7 @@ function unique(
 end
 
 
-function area(
-    A::T,
-    B::T,
-    C::T,
-    geometry = :plane::Symbol,
-) where {T<:AbstractVector{<:Real}}
+function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AbstractVector{<:Real}}
 
     if geometry == :plane
         alpha = angle(B, A, C)
@@ -184,11 +179,7 @@ function angle(
 end
 
 
-function distance(
-    v1::T,
-    v2::T,
-    geometry = :plane::Symbol,
-) where {T<:AbstractVector{<:Real}}
+function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AbstractVector{<:Real}}
 
     if geometry == :plane
         return norm(v1 - v2)
