@@ -5,9 +5,7 @@
 export read_cfg,
        read_dict,
        write_jld,
-       write_vtk,
-       plot_line,
-       plot_contour
+       write_vtk
 
 
 """
@@ -179,9 +177,7 @@ end
 
 Plot solution profiles
 """
-function plot_line(args...; kwargs...)
-    @info "plot_line is deprecated, use Plots.plot instead."
-end
+plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot instead."
 
 @recipe function plot_line_backend(
     KS::X,
@@ -232,9 +228,7 @@ end
 
 Plot solution profiles
 """
-function plot_contour(args...; kwargs...)
-    @info "plot_line is deprecated, use Plots.plot instead."
-end
+plot_contour(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot instead."
 
 @recipe function plot_contour_backend(
     KS::X,

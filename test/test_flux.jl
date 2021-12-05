@@ -196,6 +196,7 @@ KitBase.flux_ugks!(
 )
 
 #--- kfvs flux ---#
+KitBase.flux_kfvs(hL, hR, u, dt)
 KitBase.flux_kfvs!(fh, hL, hR, u, dt)
 KitBase.flux_kfvs!(fw, fh, hL, hR, u, ω, dt)
 KitBase.flux_kfvs!(

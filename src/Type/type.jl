@@ -31,6 +31,7 @@ export Particle, Particle1D, Particle2D
 export ControlVolumeParticle1D, ControlVolumeParticle2D
 
 include("abstract.jl")
+include("alias.jl")
 include("struct_general.jl")
 include("struct_ib.jl")
 include("struct_ctr.jl")

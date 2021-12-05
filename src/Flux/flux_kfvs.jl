@@ -15,18 +15,14 @@ Kinetic flux vector splitting (KFVS) flux
 
 """
 function flux_kfvs!(
-    ff::X,
+    ff::AV{<:FN},
     fL::Y,
     fR::Y,
-    u::Z,
+    u::AV{<:FN},
     dt,
     sfL = zero(fL)::Y,
     sfR = zero(fR)::Y,
-) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-} # 1F1V flux for pure DOM
+) where {Y<:AV{<:FN}} # 1F1V flux for pure DOM
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -41,12 +37,28 @@ function flux_kfvs!(
 
 end
 
+function flux_kfvs(
+    fL::Y,
+    fR::Y,
+    u::AV{<:FN},
+    dt,
+    sfL = zero(fL)::Y,
+    sfR = zero(fR)::Y,
+) where {Y<:AV{<:FN}}
+
+    ff = similar(fL)
+    flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)
+
+    return ff
+
+end
+
 # ------------------------------------------------------------
 # 1F1V flux
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
-    ff::Y,
+    fw::AV{<:FN},
+    ff::AV{<:FN},
     fL::Z,
     fR::Z,
     u::A,
@@ -55,10 +67,8 @@ function flux_kfvs!(
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-    A<:AbstractArray{<:AbstractFloat,1},
+    Z<:AV{<:FN},
+    A<:AV{<:FN},
 }
 
     # upwind reconstruction
@@ -80,8 +90,8 @@ end
 
 #--- mixture ---#
 function flux_kfvs!(
-    fw::X,
-    ff::Y,
+    fw::AM{<:FN},
+    ff::AM{<:FN},
     fL::Z,
     fR::Z,
     u::A,
@@ -90,10 +100,8 @@ function flux_kfvs!(
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:AbstractFloat,2},
-    Z<:AbstractArray{<:AbstractFloat,2},
-    A<:AbstractArray{<:AbstractFloat,2},
+    Z<:AM{<:FN},
+    A<:AM{<:FN},
 }
 
     for j in axes(fw, 2)
@@ -117,7 +125,7 @@ end
 # 2F1V flux
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
+    fw::AV{<:FN},
     fh::Y,
     fb::Y,
     hL::Z,
@@ -132,10 +140,9 @@ function flux_kfvs!(
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-    A<:AbstractArray{<:AbstractFloat,1},
+    Y<:AV{<:FN},
+    Z<:AV{<:FN},
+    A<:AV{<:FN},
 }
 
     # upwind reconstruction
@@ -163,7 +170,7 @@ end
 
 #--- mixture ---#
 function flux_kfvs!(
-    fw::X,
+    fw::AM{<:FN},
     fh::Y,
     fb::Y,
     hL::Z,
@@ -178,10 +185,9 @@ function flux_kfvs!(
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:AbstractFloat,2},
-    Z<:AbstractArray{<:AbstractFloat,2},
-    A<:AbstractArray{<:AbstractFloat,2},
+    Y<:AM{<:FN},
+    Z<:AM{<:FN},
+    A<:AM{<:FN},
 }
 
     for j in axes(fw, 2)
@@ -210,7 +216,7 @@ end
 # 3F1V flux (Rykov)
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
+    fw::AV{<:FN},
     fh::Y,
     fb::Y,
     fr::Y,
@@ -230,10 +236,9 @@ function flux_kfvs!(
     sbR = zero(bR)::Z,
     srR = zero(rR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-    A<:AbstractArray{<:AbstractFloat,1},
+    Y<:AV{<:FN},
+    Z<:AV{<:FN},
+    A<:AV{<:FN},
 }
 
     # upwind reconstruction
@@ -268,8 +273,8 @@ end
 # 1F3V flux
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
-    ff::Y,
+    fw::AV{<:FN},
+    ff::AA{<:FN,3},
     fL::Z,
     fR::Z,
     u::A,
@@ -280,10 +285,8 @@ function flux_kfvs!(
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,3},
-    Z<:AbstractArray{<:AbstractFloat,3},
-    A<:AbstractArray{<:AbstractFloat,3},
+    Z<:AA{<:FN,3},
+    A<:AA{<:FN,3},
 }
 
     # upwind reconstruction
@@ -308,8 +311,8 @@ function flux_kfvs!(
 end
 
 function flux_kfvs!(
-    fw::X,
-    ff::Y,
+    fw::AV{<:FN},
+    ff::AA{<:FN,3},
     fL::Z,
     fR::Z,
     u::A,
@@ -321,10 +324,8 @@ function flux_kfvs!(
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,3},
-    Z<:AbstractArray{<:AbstractFloat,3},
-    A<:AbstractArray{<:AbstractFloat,3},
+    Z<:AA{<:FN,3},
+    A<:AA{<:FN,3},
 }
 
     # upwind reconstruction
@@ -353,7 +354,7 @@ end
 # 4F1V flux
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
+    fw::AV{<:FN},
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -378,10 +379,9 @@ function flux_kfvs!(
     sh2R = zero(h2R)::Z,
     sh3R = zero(h3R)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
-    A<:AbstractArray{<:AbstractFloat,1},
+    Y<:AV{<:FN},
+    Z<:AV{<:FN},
+    A<:AV{<:FN},
 }
 
     # upwind reconstruction
@@ -417,7 +417,7 @@ end
 
 #--- mixture ---#
 function flux_kfvs!(
-    fw::X,
+    fw::AM{<:FN},
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -442,10 +442,9 @@ function flux_kfvs!(
     sh2R = zero(h2R)::Z,
     sh3R = zero(h3R)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:AbstractFloat,2},
-    Z<:AbstractArray{<:AbstractFloat,2},
-    A<:AbstractArray{<:AbstractFloat,2},
+    Y<:AM{<:FN},
+    Z<:AM{<:FN},
+    A<:AM{<:FN},
 }
 
     for j in axes(fw, 2)
@@ -491,8 +490,8 @@ end
 # 1F2V flux
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
-    ff::Y,
+    fw::AV{<:FN},
+    ff::Union{AV{<:FN},AM{<:FN}},
     fL::Z,
     fR::Z,
     u::A,
@@ -503,10 +502,8 @@ function flux_kfvs!(
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
 ) where {
-    X<:AbstractVector{<:AbstractFloat},
-    Y<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
-    Z<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
-    A<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
+    Z<:Union{AV{<:FN},AM{<:FN}},
+    A<:Union{AV{<:FN},AM{<:FN}},
 }
 
     # --- upwind reconstruction ---#
@@ -534,7 +531,7 @@ end
 # 2F2V flux
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
+    fw::AV{<:FN},
     fh::Y,
     fb::Y,
     hL::Z,
@@ -551,10 +548,9 @@ function flux_kfvs!(
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
 ) where {
-    X<:AbstractVector{<:AbstractFloat},
-    Y<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
-    Z<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
-    A<:Union{AbstractVector{<:AbstractFloat},AbstractMatrix{<:AbstractFloat}},
+    Y<:Union{AV{<:FN},AM{<:FN}},
+    Z<:Union{AV{<:FN},AM{<:FN}},
+    A<:Union{AV{<:FN},AM{<:FN}},
 }
 
     # --- upwind reconstruction ---#
@@ -588,7 +584,7 @@ end
 # 3F2V flux
 # ------------------------------------------------------------
 function flux_kfvs!(
-    fw::X,
+    fw::AV{<:FN},
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -610,10 +606,9 @@ function flux_kfvs!(
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,2},
-    Z<:AbstractArray{<:AbstractFloat,2},
-    A<:AbstractArray{<:AbstractFloat,2},
+    Y<:AM{<:FN},
+    Z<:AM{<:FN},
+    A<:AM{<:FN},
 }
 
     #--- upwind reconstruction ---#
@@ -649,7 +644,7 @@ end
 
 #--- mixture ---#
 function flux_kfvs!(
-    fw::X,
+    fw::AM{<:FN},
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -671,10 +666,9 @@ function flux_kfvs!(
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:AbstractFloat,3},
-    Z<:AbstractArray{<:AbstractFloat,3},
-    A<:AbstractArray{<:AbstractFloat,3},
+    Y<:AA{<:FN,3},
+    Z<:AA{<:FN,3},
+    A<:AA{<:FN,3},
 }
 
     #--- reconstruct initial distribution ---#
