@@ -13,7 +13,7 @@
         dxR::Real,
         swL = zeros(eltype(fw), axes(wL))::T1,
         swR = zeros(eltype(fw), axes(wR))::T1,
-    ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}}
+    ) where {T1<:AA{<:AbstractFloat,1},T2<:AA{<:Real,1}}
 
     flux_equilibrium!(
         fw::T1,
@@ -30,7 +30,7 @@
         dy::Real,
         swL = zeros(eltype(fw), axes(wL))::T1,
         swR = zeros(eltype(fw), axes(wR))::T1,
-    ) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}}
+    ) where {T1<:AA{<:AbstractFloat,1},T2<:AA{<:Real,1}}
 
 Equilibrium part of gas kinetic flux which works with fluid-particle simulations
 
@@ -49,7 +49,7 @@ function flux_equilibrium!(
     dxR::Real,
     swL = zeros(eltype(fw), axes(wL))::T1,
     swR = zeros(eltype(fw), axes(wR))::T1,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}} # 1D
+) where {T1<:AA{<:AbstractFloat,1},T2<:AA{<:Real,1}} # 1D
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -152,7 +152,7 @@ function flux_equilibrium!(
     dy::Real,
     swL = zeros(eltype(fw), axes(wL))::T1,
     swR = zeros(eltype(fw), axes(wR))::T1,
-) where {T1<:AbstractArray{<:AbstractFloat,1},T2<:AbstractArray{<:Real,1}}
+) where {T1<:AA{<:AbstractFloat,1},T2<:AA{<:Real,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)

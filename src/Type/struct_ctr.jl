@@ -119,7 +119,7 @@ function ControlVolume1D2F(
     PRIM::T1,
     H::T2,
     B::T2,
-) where {T1<:AbstractArray,T2<:AbstractArray}
+) where {T1<:AA,T2<:AA}
 
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -191,14 +191,14 @@ end
 
 # deterministic
 function ControlVolume1D3F(
-    W::AbstractArray{<:Real,2},
-    PRIM::AbstractArray{<:Real,2},
-    H0::AbstractArray{<:AbstractFloat,3},
-    H1::AbstractArray{<:AbstractFloat,3},
-    H2::AbstractArray{<:AbstractFloat,3},
-    E0::AbstractArray{<:AbstractFloat,1},
-    B0::AbstractArray{<:AbstractFloat,1},
-    L::AbstractArray{<:AbstractFloat,2},
+    W::AA{<:Real,2},
+    PRIM::AA{<:Real,2},
+    H0::AA{<:AbstractFloat,3},
+    H1::AA{<:AbstractFloat,3},
+    H2::AA{<:AbstractFloat,3},
+    E0::AA{<:AbstractFloat,1},
+    B0::AA{<:AbstractFloat,1},
+    L::AA{<:AbstractFloat,2},
 )
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -237,11 +237,11 @@ end
 
 # Rykov
 function ControlVolume1D3F(
-    W::AbstractArray{<:Real,1},
-    PRIM::AbstractArray{<:Real,1},
-    H0::AbstractArray{<:AbstractFloat,1},
-    H1::AbstractArray{<:AbstractFloat,1},
-    H2::AbstractArray{<:AbstractFloat,1},
+    W::AA{<:Real,1},
+    PRIM::AA{<:Real,1},
+    H0::AA{<:AbstractFloat,1},
+    H1::AA{<:AbstractFloat,1},
+    H2::AA{<:AbstractFloat,1},
 )
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -280,14 +280,14 @@ end
 
 # stochastic
 function ControlVolume1D3F(
-    W::AbstractArray{<:Real,3},
-    PRIM::AbstractArray{<:Real,3},
-    H0::AbstractArray{<:AbstractFloat,4},
-    H1::AbstractArray{<:AbstractFloat,4},
-    H2::AbstractArray{<:AbstractFloat,4},
-    E0::AbstractArray{<:AbstractFloat,2},
-    B0::AbstractArray{<:AbstractFloat,2},
-    L::AbstractArray{<:AbstractFloat,3},
+    W::AA{<:Real,3},
+    PRIM::AA{<:Real,3},
+    H0::AA{<:AbstractFloat,4},
+    H1::AA{<:AbstractFloat,4},
+    H2::AA{<:AbstractFloat,4},
+    E0::AA{<:AbstractFloat,2},
+    B0::AA{<:AbstractFloat,2},
+    L::AA{<:AbstractFloat,3},
 )
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -388,15 +388,15 @@ end
 
 #--- deterministic ---#
 function ControlVolume1D4F(
-    W::AbstractArray{<:Real,2},
-    PRIM::AbstractArray{<:Real,2},
-    H0::AbstractArray{<:AbstractFloat,2},
-    H1::AbstractArray{Float64,2},
-    H2::AbstractArray{Float64,2},
-    H3::AbstractArray{Float64,2},
-    E0::AbstractArray{Float64,1},
-    B0::AbstractArray{Float64,1},
-    L::AbstractArray{Float64,2},
+    W::AA{<:Real,2},
+    PRIM::AA{<:Real,2},
+    H0::AA{<:AbstractFloat,2},
+    H1::AA{Float64,2},
+    H2::AA{Float64,2},
+    H3::AA{Float64,2},
+    E0::AA{Float64,1},
+    B0::AA{Float64,1},
+    L::AA{Float64,2},
 )
 
     w = deepcopy(W)
@@ -441,15 +441,15 @@ end
 
 #--- uncertainty quantification ---#
 function ControlVolume1D4F(
-    W::AbstractArray{<:Real,3},
-    PRIM::AbstractArray{<:Real,3},
-    H0::AbstractArray{<:AbstractFloat,3},
-    H1::AbstractArray{Float64,3},
-    H2::AbstractArray{Float64,3},
-    H3::AbstractArray{Float64,3},
-    E0::AbstractArray{Float64,2},
-    B0::AbstractArray{Float64,2},
-    L::AbstractArray{Float64,3},
+    W::AA{<:Real,3},
+    PRIM::AA{<:Real,3},
+    H0::AA{<:AbstractFloat,3},
+    H1::AA{Float64,3},
+    H2::AA{Float64,3},
+    H3::AA{Float64,3},
+    E0::AA{Float64,2},
+    B0::AA{Float64,2},
+    L::AA{Float64,3},
 )
 
     w = deepcopy(W)
@@ -569,7 +569,7 @@ mutable struct ControlVolume2D1F{A,B,C,D} <: AbstractControlVolume2D
     sf::D
 end
 
-function ControlVolume2D1F(W, PRIM, F::AbstractArray)
+function ControlVolume2D1F(W, PRIM, F::AA)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
@@ -622,10 +622,10 @@ mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
 end
 
 function ControlVolume2D2F(
-    W::AbstractArray,
-    PRIM::AbstractArray,
-    H::AbstractArray,
-    B::AbstractArray,
+    W::AA,
+    PRIM::AA,
+    H::AA,
+    B::AA,
 )
 
     w = deepcopy(W)
@@ -709,14 +709,14 @@ end
 
 #--- deterministic & stochastic ---#
 function ControlVolume2D3F(
-    W::AbstractArray,
-    PRIM::AbstractArray,
-    H0::AbstractArray,
-    H1::AbstractArray,
-    H2::AbstractArray,
-    E0::AbstractArray,
-    B0::AbstractArray,
-    L::AbstractArray,
+    W::AA,
+    PRIM::AA,
+    H0::AA,
+    H1::AA,
+    H2::AA,
+    E0::AA,
+    B0::AA,
+    L::AA,
 )
 
     w = deepcopy(W)
@@ -769,11 +769,11 @@ end
 
 #--- Rykov ---#
 function ControlVolume2D3F(
-    W::AbstractArray{<:Real,1},
-    PRIM::AbstractArray{<:Real,1},
-    H0::AbstractArray{<:AbstractFloat,2},
-    H1::AbstractArray{<:AbstractFloat,2},
-    H2::AbstractArray{<:AbstractFloat,2},
+    W::AA{<:Real,1},
+    PRIM::AA{<:Real,1},
+    H0::AA{<:AbstractFloat,2},
+    H1::AA{<:AbstractFloat,2},
+    H2::AA{<:AbstractFloat,2},
 )
 
     w = deepcopy(W)
@@ -926,7 +926,7 @@ mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     sf::D
 end
 
-function ControlVolumeUS1F(N, X, DX, W, PRIM, F::AbstractArray{T}) where {T}
+function ControlVolumeUS1F(N, X, DX, W, PRIM, F::AA{T}) where {T}
     n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)
@@ -1003,7 +1003,7 @@ function ControlVolumeUS2F(
     PRIM::T1,
     H::T2,
     B::T2,
-) where {T1<:AbstractArray,T2<:AbstractArray}
+) where {T1<:AA,T2<:AA}
 
     n = deepcopy(N)
     x = deepcopy(X)

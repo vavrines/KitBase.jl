@@ -753,7 +753,7 @@ end
         ctr::T;
         mode = :soa::Symbol,
         factor = 1::Real,
-    ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+    ) where {T<:AA{<:AbstractControlVolume1D,1}}
 
 Initialize particles based on flow conditions
 
@@ -763,7 +763,7 @@ function init_ptc!(
     ctr::T;
     mode = :soa::Symbol,
     factor = 1::Real,
-) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+) where {T<:AA{<:AbstractControlVolume1D,1}}
     if mode == :soa
         init_ptc_soa!(KS, ctr, factor)
     elseif mode == :aos
@@ -777,7 +777,7 @@ end
         KS::SolverSet,
         ctr::T,
         factor = 1,
-    ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+    ) where {T<:AA{<:AbstractControlVolume1D,1}}
 
 Initialize particles with array of structs
 
@@ -786,7 +786,7 @@ function init_ptc_aos!(
     KS::SolverSet,
     ctr::T,
     factor = 1,
-) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+) where {T<:AA{<:AbstractControlVolume1D,1}}
 
     np = 0
     for i in eachindex(ctr)
@@ -827,7 +827,7 @@ end
         KS::SolverSet,
         ctr::T,
         factor = 1,
-    ) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+    ) where {T<:AA{<:AbstractControlVolume1D,1}}
 
 Initialize particles with struct of arrays
 
@@ -836,7 +836,7 @@ function init_ptc_soa!(
     KS::SolverSet,
     ctr::T,
     factor = 1,
-) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+) where {T<:AA{<:AbstractControlVolume1D,1}}
 
     np = 0
     for i in eachindex(ctr)

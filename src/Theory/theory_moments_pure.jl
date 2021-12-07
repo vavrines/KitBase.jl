@@ -1,11 +1,11 @@
 """
 Calculate moments of Gaussian distribution `G = (λ / π)^(D / 2) * exp[-λ(c^2 + ξ^2)]`
 
-* internality: `gauss_moments(prim::T) where {T<:AbstractArray{<:Real,1}}`
-* no internality: `gauss_moments(prim::T, inK) where {T<:AbstractArray{<:Real,1}}`
+* internality: `gauss_moments(prim::T) where {T<:AA{<:Real,1}}`
+* no internality: `gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}`
 
 """
-function gauss_moments(prim::T) where {T<:AbstractArray{<:Real,1}}
+function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
 
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
@@ -66,7 +66,7 @@ end
 # A more general function
 # deal with absent internality by setting inK = 0
 # ------------------------------------------------------------
-function gauss_moments(prim::T, inK) where {T<:AbstractArray{<:Real,1}}
+function gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}
 
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
@@ -211,7 +211,7 @@ function moments_conserve(
     f::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,1},T<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
     w = similar(f, 3)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -226,7 +226,7 @@ function moments_conserve(
     b::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,1},T<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
     w = similar(h, 3)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -241,7 +241,7 @@ function moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}
+) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
     w = similar(f, 4)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -258,7 +258,7 @@ function moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}
+) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -281,7 +281,7 @@ function moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}
+) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
     w = similar(h0, 5)
     w[1] = discrete_moments(h0, u, ω, 0)
     w[2] = discrete_moments(h0, u, ω, 1)
@@ -304,7 +304,7 @@ function moments_conserve(
     v::T,
     w::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,3},T<:AbstractArray{<:AbstractFloat,3}}
+) where {X<:AA{<:AbstractFloat,3},T<:AA{<:AbstractFloat,3}}
     moments = similar(f, 5)
 
     moments[1] = discrete_moments(f, u, ω, 0)
@@ -329,7 +329,7 @@ function moments_conserve(
     h3::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,1},T<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
     moments = similar(h0, 5)
 
     moments[1] = discrete_moments(h0, u, ω, 0)
@@ -351,7 +351,7 @@ Calculate conservative moments of diatomic particle distribution
     r::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,1},T<:AbstractArray{<:AbstractFloat,1}}`
+) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}`
 - 2D: `diatomic_moments_conserve(
     h0::X,
     h1::X,
@@ -359,7 +359,7 @@ Calculate conservative moments of diatomic particle distribution
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}`
+) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}`
 
 """
 function diatomic_moments_conserve(
@@ -368,7 +368,7 @@ function diatomic_moments_conserve(
     r::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,1},T<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -391,7 +391,7 @@ function diatomic_moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}
+) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
     w = similar(h0, 5)
     w[1] = discrete_moments(h0, u, ω, 0)
     w[2] = discrete_moments(h0, u, ω, 1)
@@ -422,7 +422,7 @@ moments_conserve_slope(
     Mu::Y,
     Mxi::Y,
     alpha::I,
-) where {X<:AbstractArray{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Int} =
+) where {X<:AA{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Int} =
     a[1] .* moments_conserve(Mu, Mxi, alpha + 0, 0) .+
     a[2] .* moments_conserve(Mu, Mxi, alpha + 1, 0) .+
     0.5 * a[3] .* moments_conserve(Mu, Mxi, alpha + 2, 0) .+
@@ -435,7 +435,7 @@ function moments_conserve_slope(
     Mxi::Y,
     alpha::I,
     beta::I,
-) where {X<:AbstractArray{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Int}
+) where {X<:AA{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Int}
 
     return a[1] .* moments_conserve(Mu, Mv, Mxi, alpha + 0, beta + 0, 0) .+
            a[2] .* moments_conserve(Mu, Mv, Mxi, alpha + 1, beta + 0, 0) .+
@@ -454,7 +454,7 @@ function moments_conserve_slope(
     alpha::I,
     beta::I,
     delta::I,
-) where {X<:AbstractArray{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Int}
+) where {X<:AA{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Int}
 
     return a[1] .* moments_conserve(Mu, Mv, Mw, alpha + 0, beta + 0, delta + 0) .+
            a[2] .* moments_conserve(Mu, Mv, Mw, alpha + 1, beta + 0, delta + 0) .+
@@ -542,9 +542,9 @@ heat_flux(
     u::Z,
     ω::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
+    X<:AA{<:AbstractFloat,1},
+    Y<:AA{<:Real,1},
+    Z<:AA{<:AbstractFloat,1},
 } = 0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
 
 #--- 3F1V Rykov ---#
@@ -556,9 +556,9 @@ function heat_flux(
     u::Z,
     ω::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,1},
+    X<:AA{<:AbstractFloat,1},
+    Y<:AA{<:Real,1},
+    Z<:AA{<:AbstractFloat,1},
 }
 
     q = similar(h, 2)
@@ -580,9 +580,9 @@ function heat_flux(
     v::Z,
     ω::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,2},
+    X<:AA{<:AbstractFloat,2},
+    Y<:AA{<:Real,1},
+    Z<:AA{<:AbstractFloat,2},
 }
 
     q = similar(h, 2)
@@ -602,9 +602,9 @@ function heat_flux(
     v::Z,
     ω::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,2},
+    X<:AA{<:AbstractFloat,2},
+    Y<:AA{<:Real,1},
+    Z<:AA{<:AbstractFloat,2},
 }
 
     q = similar(h, 2)
@@ -634,9 +634,9 @@ function heat_flux(
     v::Z,
     ω::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,2},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,2},
+    X<:AA{<:AbstractFloat,2},
+    Y<:AA{<:Real,1},
+    Z<:AA{<:AbstractFloat,2},
 }
 
     q = similar(h, 4)
@@ -667,9 +667,9 @@ function heat_flux(
     w::Z,
     ω::Z,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,3},
-    Y<:AbstractArray{<:Real,1},
-    Z<:AbstractArray{<:AbstractFloat,3},
+    X<:AA{<:AbstractFloat,3},
+    Y<:AA{<:Real,1},
+    Z<:AA{<:AbstractFloat,3},
 }
 
     q = similar(f, 3)

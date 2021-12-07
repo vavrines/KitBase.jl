@@ -1,10 +1,10 @@
 """
-    2D: global_frame(w::AbstractArray{<:Real,1}, cosa, sina)
-    3D: global_frame(w::AbstractArray{<:Real,1}, dirccos::AbstractArray{<:Real,2})
+    2D: global_frame(w::AA{<:Real,1}, cosa, sina)
+    3D: global_frame(w::AA{<:Real,1}, dirccos::AA{<:Real,2})
 
 Transform local flow variables to global frame
 """
-function global_frame(w::T, cosa, sina) where {T<:AbstractArray{<:Real,1}}
+function global_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
 
     if eltype(w) <: Int
         G = similar(w, Float64)
@@ -31,7 +31,7 @@ end
 function global_frame(
     w::T,
     dirccos::X,
-) where {T<:AbstractArray{<:Real,1},X<:AbstractArray{<:Real,2}}
+) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
 
     if eltype(w) <: Int
         G = similar(w, Float64)
@@ -59,12 +59,12 @@ end
 
 
 """
-    2D: local_frame(w::AbstractArray{<:Real,1}, cosa, sina)
-    3D: local_frame(w::AbstractArray{<:Real,1}, dirccos::AbstractArray{<:Real,2})
+    2D: local_frame(w::AA{<:Real,1}, cosa, sina)
+    3D: local_frame(w::AA{<:Real,1}, dirccos::AA{<:Real,2})
 
 Transform global flow variables to local frame
 """
-function local_frame(w::T, cosa, sina) where {T<:AbstractArray{<:Real,1}}
+function local_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
 
     if eltype(w) <: Int
         L = similar(w, Float64)
@@ -91,7 +91,7 @@ end
 function local_frame(
     w::T,
     dirccos::X,
-) where {T<:AbstractArray{<:Real,1},X<:AbstractArray{<:Real,2}}
+) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
 
     if eltype(w) <: Int
         L = similar(w, Float64)

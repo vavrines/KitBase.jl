@@ -1,5 +1,5 @@
 """
-    struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace
+    struct PSpace1D{TR,TI<:Integer,TA<:AA} <: AbstractPhysicalSpace
         x0::TR
         x1::TR
         nx::TI
@@ -10,7 +10,7 @@
 1D physical space with structured mesh
 
 """
-struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace1D
+struct PSpace1D{TR,TI<:Integer,TA<:AA} <: AbstractPhysicalSpace1D
     x0::TR
     x1::TR
     nx::TI
@@ -39,7 +39,7 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 
 
 """
-    struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractMatrix{<:Real},TB<:AbstractArray{<:Real,4}} <: AbstractPhysicalSpace2D
+    struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractMatrix{<:Real},TB<:AA{<:Real,4}} <: AbstractPhysicalSpace2D
         x0::TR
         x1::TR
         nx::TI
@@ -60,7 +60,7 @@ struct PSpace2D{
     TR<:Real,
     TI<:Integer,
     TA<:AbstractMatrix{<:Real},
-    TB<:AbstractArray{<:Real,4},
+    TB<:AA{<:Real,4},
 } <: AbstractPhysicalSpace2D
     x0::TR
     x1::TR
@@ -144,7 +144,7 @@ struct CSpace2D{
     TR<:Real,
     TI<:Integer,
     TA<:AbstractMatrix{<:Real},
-    TB<:AbstractArray{<:Real,4},
+    TB<:AA{<:Real,4},
 } <: AbstractPhysicalSpace2D
     r0::TR
     r1::TR
@@ -284,8 +284,8 @@ end
 
 
 """
-    2D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1})
-    3D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1}, z::AbstractArray{<:Real,1})
+    2D: meshgrid(x::AA{<:Real,1}, y::AA{<:Real,1})
+    3D: meshgrid(x::AA{<:Real,1}, y::AA{<:Real,1}, z::AA{<:Real,1})
 
 Equivalent structured mesh generator as matlab
 """
@@ -308,7 +308,7 @@ end
 
 
 """
-    find_idx(x::AbstractArray{<:Real,1}, p::Real; mode = :nonuniform::Symbol)
+    find_idx(x::AA{<:Real,1}, p::Real; mode = :nonuniform::Symbol)
 
 Find the location index of a point in mesh
 
@@ -321,7 +321,7 @@ function find_idx(
     x::T,
     p::Real;
     mode = :nonuniform::Symbol,
-) where {T<:AbstractArray{<:Real,1}}
+) where {T<:AA{<:Real,1}}
 
     if mode == :uniform
         dx = x[2] - x[1]

@@ -11,7 +11,7 @@
 Initial & boundary conditions with no distribution function
 
 """
-mutable struct IB{T<:Union{Function,AbstractArray}} <: AbstractCondition
+mutable struct IB{T<:Union{Function,AA}} <: AbstractCondition
     fw::Function
     bc::T
 end

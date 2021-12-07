@@ -249,7 +249,7 @@ function ib_briowu(
     me,
     uspace::T,
     vspace::T,
-) where {T<:AbstractArray{<:AbstractFloat,3}}
+) where {T<:AA{<:AbstractFloat,3}}
 
     # upstream
     primL = zeros(5, 2)

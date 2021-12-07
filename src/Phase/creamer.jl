@@ -7,7 +7,7 @@
 
 Spherical linear interpolation
 """
-function slerp(pt1::T, pt2::T, n::Integer) where {T<:AbstractArray{<:Real,1}}
+function slerp(pt1::T, pt2::T, n::Integer) where {T<:AA{<:Real,1}}
     if norm(pt1 - pt2) < 1e-10 # same points
         return repeat(pt1, 1, n) # return n copies of that point
     end

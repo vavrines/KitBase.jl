@@ -21,7 +21,7 @@ end
 
 
 """
-    flux_lax!(fw::AbstractArray{<:Real,1}, wL::AbstractArray{<:Real,1}, wR::AbstractArray{<:Real,1}, γ::Real, dt::Real, dx::Real)
+    flux_lax!(fw::AA{<:Real,1}, wL::AA{<:Real,1}, wR::AA{<:Real,1}, γ::Real, dt::Real, dx::Real)
 
 Lax-Friedrichs flux
 
@@ -36,14 +36,14 @@ function flux_lax!(
     γ,
     dt,
     dx,
-) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1}}
+) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
     fw .= 0.5 * dt .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1] - dx / dt .* (wR - wL))
     return nothing
 end
 
 
 """
-    flux_hll!(fw::AbstractArray{<:Real,1}, wL::AbstractArray{<:Real,1}, wR::AbstractArray{<:Real,1}, γ::Real, dt::Real)
+    flux_hll!(fw::AA{<:Real,1}, wL::AA{<:Real,1}, wR::AA{<:Real,1}, γ::Real, dt::Real)
 
 HLL flux for the Euler equations
 
@@ -57,7 +57,7 @@ function flux_hll!(
     wR::Y,
     γ,
     dt,
-) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1}}
+) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -89,8 +89,8 @@ end
 
 
 """
-    flux_roe!(fw::AbstractArray{<:Real,1}, wL::AbstractArray{<:Real,1}, wR::AbstractArray{<:Real,1},
-    γ::Real, dt::Real, n = [1.0, 0.0]::AbstractArray{<:Real,1})
+    flux_roe!(fw::AA{<:Real,1}, wL::AA{<:Real,1}, wR::AA{<:Real,1},
+    γ::Real, dt::Real, n = [1.0, 0.0]::AA{<:Real,1})
 
 Roe's flux with entropy fix    
 
@@ -110,7 +110,7 @@ function flux_roe!(
     γ,
     dt,
     n = [1.0, 0.0],
-) where {X<:AbstractArray{<:Real,1},Y<:AbstractArray{<:Real,1}}
+) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)

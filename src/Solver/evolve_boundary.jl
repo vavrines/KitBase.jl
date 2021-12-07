@@ -6,7 +6,7 @@ function evolve_boundary!(
     dt,
     mode,
     bc,
-) where {T1<:AbstractArray{ControlVolume2D2F,2},T2<:AbstractArray{Interface2D2F,2}}
+) where {T1<:AA{ControlVolume2D2F,2},T2<:AA{Interface2D2F,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D

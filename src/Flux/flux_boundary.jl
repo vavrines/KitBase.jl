@@ -231,9 +231,9 @@ end
 # ------------------------------------------------------------
 function flux_boundary_maxwell!(
     fw::AbstractVector{T1},
-    ff::AbstractArray{T2,3},
+    ff::AA{T2,3},
     bc::AbstractVector{T3},
-    f::AbstractArray{T4,3},
+    f::AA{T4,3},
     u::T5,
     v::T5,
     w::T5,
@@ -246,7 +246,7 @@ function flux_boundary_maxwell!(
     T2<:AbstractFloat,
     T3<:Real,
     T4<:AbstractFloat,
-    T5<:AbstractArray{<:AbstractFloat,3},
+    T5<:AA{<:AbstractFloat,3},
 }
 
     @assert length(bc) == 5

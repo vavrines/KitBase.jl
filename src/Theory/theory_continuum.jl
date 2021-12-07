@@ -103,7 +103,7 @@ end
 
 * vector: primitive vector for Euler, Navier-Stokes and extended equations
 
-    conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,1}}
+    conserve_prim(W::T, γ) where {T<:AA{<:Real,1}}
 
     conserve_prim(ρ, M, E, γ)
 
@@ -180,7 +180,7 @@ end
 
 
 """
-    mixture_conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,2}}
+    mixture_conserve_prim(W::T, γ) where {T<:AA{<:Real,2}}
 
 Transform multi-component conservative -> primitive variables
 """
@@ -201,8 +201,8 @@ end
 
 """
     aap_hs_prim(
-        prim::AbstractArray{<:Real,2},
-        tau::AbstractArray{<:Real,1},
+        prim::AA{<:Real,2},
+        tau::AA{<:Real,1},
         mi::Real,
         ni::Real,
         me::Real,

@@ -52,7 +52,7 @@ function step!(
     dx,
     RES,
     AVG,
-) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}} # 1D0F
+) where {X<:AA{<:AbstractFloat,1},Y<:AA{<:AbstractFloat,1}} # 1D0F
 
     #--- store W^n and calculate H^n,\tau^n ---#
     w_old = deepcopy(w)
@@ -85,7 +85,7 @@ function step!(
     dt,
     RES,
     AVG,
-) where {T1<:AbstractArray{<:AbstractFloat,2},T2<:AbstractArray{<:AbstractFloat,2}}
+) where {T1<:AA{<:AbstractFloat,2},T2<:AA{<:AbstractFloat,2}}
 
     #--- update conservative flow variables ---#
     # w^n
@@ -146,11 +146,11 @@ function step!(
     AVG,
     collision = :bgk::Symbol,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:AbstractFloat,1},
-    T4<:AbstractArray{<:AbstractFloat,1},
-    T5<:AbstractArray{<:AbstractFloat,1},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,1},
+    T3<:AA{<:AbstractFloat,1},
+    T4<:AA{<:AbstractFloat,1},
+    T5<:AA{<:AbstractFloat,1},
 }
 
     #--- store W^n and calculate H^n,\tau^n ---#
@@ -209,11 +209,11 @@ function step!(
     AVG,
     collision = :bgk::Symbol,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:AbstractArray{<:AbstractFloat,1},
-    T4<:AbstractArray{<:AbstractFloat,3},
-    T5<:AbstractArray{<:AbstractFloat,3},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,3},
+    T3<:AA{<:AbstractFloat,1},
+    T4<:AA{<:AbstractFloat,3},
+    T5<:AA{<:AbstractFloat,3},
 }
 
     #--- store W^n and calculate shakhov term ---#
@@ -269,10 +269,10 @@ function step!(
     AVG,
     collision = :fsm::Symbol,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:AbstractArray{<:AbstractFloat,1},
-    T4<:AbstractArray{<:AbstractFloat,3},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,3},
+    T3<:AA{<:AbstractFloat,1},
+    T4<:AA{<:AbstractFloat,3},
 }
 
     @assert collision == :fsm
@@ -318,11 +318,11 @@ function step!(
     AVG,
     collision = :bgk::Symbol,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:AbstractFloat,1},
-    T4<:AbstractArray{<:AbstractFloat,1},
-    T5<:AbstractArray{<:AbstractFloat,1},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,1},
+    T3<:AA{<:AbstractFloat,1},
+    T4<:AA{<:AbstractFloat,1},
+    T5<:AA{<:AbstractFloat,1},
 }
 
     #--- store W^n and calculate shakhov term ---#
@@ -389,11 +389,11 @@ function step!(
     AVG,
     collision = :bgk::Symbol,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:AbstractFloat,2},
-    T4<:AbstractArray{<:AbstractFloat,2},
-    T5<:AbstractArray{<:AbstractFloat,2},
+    T1<:AA{<:AbstractFloat,2},
+    T2<:AA{<:AbstractFloat,2},
+    T3<:AA{<:AbstractFloat,2},
+    T4<:AA{<:AbstractFloat,2},
+    T5<:AA{<:AbstractFloat,2},
 }
 
     #--- update conservative flow variables ---#
@@ -505,11 +505,11 @@ function step!(
     AVG,
     collision = :rykov::Symbol,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:Real,1},
-    T4<:AbstractArray{<:AbstractFloat,1},
-    T5<:AbstractArray{<:AbstractFloat,1},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,1},
+    T3<:AA{<:Real,1},
+    T4<:AA{<:AbstractFloat,1},
+    T5<:AA{<:AbstractFloat,1},
 }
 
     #--- store W^n and calculate shakhov term ---#
@@ -1110,7 +1110,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk,
-) where {T1<:AbstractArray{<:AbstractFloat,1}}
+) where {T1<:AA{<:AbstractFloat,1}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1153,9 +1153,9 @@ function step!(
     AVG,
     collision = :bgk,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:AbstractFloat,2},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,2},
+    T3<:AA{<:AbstractFloat,2},
 }
 
     #--- store W^n and calculate shakhov term ---#
@@ -1222,8 +1222,8 @@ function step!(
     collision = :bgk,
 ) where {
     T1<:AbstractVector{<:AbstractFloat},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:AbstractFloat,2},
+    T2<:AA{<:AbstractFloat,2},
+    T3<:AA{<:AbstractFloat,2},
     T4<:AbstractVector{<:Real},
 }
 
@@ -1296,9 +1296,9 @@ function step!(
     AVG,
     collision = :bgk,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:AbstractFloat,2},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,2},
+    T3<:AA{<:AbstractFloat,2},
 }
 
     #--- store W^n and calculate shakhov term ---#
@@ -1379,8 +1379,8 @@ function step!(
     collision = :bgk,
 ) where {
     T1<:AbstractVector{<:AbstractFloat},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:AbstractFloat,2},
+    T2<:AA{<:AbstractFloat,2},
+    T3<:AA{<:AbstractFloat,2},
     T4<:AbstractVector{<:Real},
 }
 
@@ -1455,10 +1455,10 @@ function step!(
     AVG,
     collision = :fsm::Symbol,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:AbstractArray{<:AbstractFloat,1},
-    T4<:AbstractArray{<:AbstractFloat,3},
+    T1<:AA{<:AbstractFloat,1},
+    T2<:AA{<:AbstractFloat,3},
+    T3<:AA{<:AbstractFloat,1},
+    T4<:AA{<:AbstractFloat,3},
 }
 
     @assert collision == :fsm

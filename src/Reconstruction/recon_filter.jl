@@ -12,7 +12,7 @@ Filter of modal solutions
 - @arg filter: symbolic filter options including :l2, l2opt, :l1, :lasso, :exp, :houli
 """
 function modal_filter!(
-    u::AbstractArray{T},
+    u::AA{T},
     args...;
     filter::Symbol,
 ) where {T<:AbstractFloat}

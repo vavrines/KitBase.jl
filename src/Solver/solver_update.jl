@@ -9,8 +9,8 @@
         bc = :fix::Symbol,
     ) where {
         X<:AbstractSolverSet,
-        Y<:AbstractArray{ControlVolume1D1F,1},
-        Z<:AbstractArray{Interface1D1F,1},
+        Y<:AA{ControlVolume1D1F,1},
+        Z<:AA{Interface1D1F,1},
     }
 
     update!(
@@ -23,23 +23,8 @@
         bc = :extra::Symbol,
     ) where {
         X<:AbstractSolverSet,
-        Y<:AbstractArray{ControlVolume1D2F,1},
-        Z<:AbstractArray{Interface1D2F,1},
-    }
-
-    update!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        dt,
-        residual; # 1D / 2D
-        coll = :bgk::Symbol,
-        bc = :extra::Symbol,
-        isMHD = true::Bool,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AbstractArray{ControlVolume1D3F,1},
-        Z<:AbstractArray{Interface1D3F,1},
+        Y<:AA{ControlVolume1D2F,1},
+        Z<:AA{Interface1D2F,1},
     }
 
     update!(
@@ -53,8 +38,23 @@
         isMHD = true::Bool,
     ) where {
         X<:AbstractSolverSet,
-        Y<:AbstractArray{ControlVolume1D4F,1},
-        Z<:AbstractArray{Interface1D4F,1},
+        Y<:AA{ControlVolume1D3F,1},
+        Z<:AA{Interface1D3F,1},
+    }
+
+    update!(
+        KS::X,
+        ctr::Y,
+        face::Z,
+        dt,
+        residual; # 1D / 2D
+        coll = :bgk::Symbol,
+        bc = :extra::Symbol,
+        isMHD = true::Bool,
+    ) where {
+        X<:AbstractSolverSet,
+        Y<:AA{ControlVolume1D4F,1},
+        Z<:AA{Interface1D4F,1},
     }
 
     update!(
@@ -68,8 +68,8 @@
         bc = :fix::Symbol,
     ) where {
         X<:AbstractSolverSet,
-        Y<:AbstractArray{ControlVolume2D2F,2},
-        Z<:AbstractArray{Interface2D2F,2},
+        Y<:AA{ControlVolume2D2F,2},
+        Z<:AA{Interface2D2F,2},
     }
 
 Update flow variables over control volumes
@@ -85,8 +85,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume1D,1},
-    Z<:AbstractArray{Interface1D,1},
+    Y<:AA{ControlVolume1D,1},
+    Z<:AA{Interface1D,1},
     T<:AbstractFloat,
 }
 
@@ -130,13 +130,13 @@ function update!(
     ctr::Y,
     face::Z,
     dt,
-    residual::AbstractArray{T}; # 1D / 2D
+    residual::AA{T}; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume1D,1},
-    Z<:AbstractArray{Interface1D,1},
+    Y<:AA{ControlVolume1D,1},
+    Z<:AA{Interface1D,1},
     T<:AbstractFloat,
 }
 
@@ -201,8 +201,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume1D1F,1},
-    Z<:AbstractArray{Interface1D1F,1},
+    Y<:AA{ControlVolume1D1F,1},
+    Z<:AA{Interface1D1F,1},
 }
 
     sumRes = zero(ctr[1].w)
@@ -283,8 +283,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume1D2F,1},
-    Z<:AbstractArray{Interface1D2F,1},
+    Y<:AA{ControlVolume1D2F,1},
+    Z<:AA{Interface1D2F,1},
 }
 
     sumRes = zero(ctr[1].w)
@@ -374,8 +374,8 @@ function update!(
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume1D3F,1},
-    Z<:AbstractArray{Interface1D3F,1},
+    Y<:AA{ControlVolume1D3F,1},
+    Z<:AA{Interface1D3F,1},
 }
 
     sumRes = zero(ctr[1].w)
@@ -494,8 +494,8 @@ function update!(
     isMHD = true::Bool,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume1D4F,1},
-    Z<:AbstractArray{Interface1D4F,1},
+    Y<:AA{ControlVolume1D4F,1},
+    Z<:AA{Interface1D4F,1},
 }
 
     sumRes = zero(ctr[1].w)
@@ -539,8 +539,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume2D,2},
-    Z<:AbstractArray{Interface2D,2},
+    Y<:AA{ControlVolume2D,2},
+    Z<:AA{Interface2D,2},
 }
 
     nx, ny, dx, dy = begin
@@ -610,8 +610,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume2D1F,2},
-    Z<:AbstractArray{Interface2D1F,2},
+    Y<:AA{ControlVolume2D1F,2},
+    Z<:AA{Interface2D1F,2},
 }
 
     nx, ny, dx, dy = begin
@@ -694,8 +694,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolume2D2F,2},
-    Z<:AbstractArray{Interface2D2F,2},
+    Y<:AA{ControlVolume2D2F,2},
+    Z<:AA{Interface2D2F,2},
 }
 
     nx, ny, dx, dy = begin
@@ -782,8 +782,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolumeUS,1},
-    Z<:AbstractArray{Interface2D,1},
+    Y<:AA{ControlVolumeUS,1},
+    Z<:AA{Interface2D,1},
 }
 
     sumRes = zero(ctr[1].w)
@@ -828,8 +828,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolumeUS1F,1},
-    Z<:AbstractArray{Interface2D1F,1},
+    Y<:AA{ControlVolumeUS1F,1},
+    Z<:AA{Interface2D1F,1},
 }
 
     sumRes = zero(ctr[1].w)
@@ -887,8 +887,8 @@ function update!(
     bc = symbolize(KS.set.boundary),
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{ControlVolumeUS2F,1},
-    Z<:AbstractArray{Interface2D2F,1},
+    Y<:AA{ControlVolumeUS2F,1},
+    Z<:AA{Interface2D2F,1},
 }
 
     sumRes = zero(ctr[1].w)

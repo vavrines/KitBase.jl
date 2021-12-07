@@ -4,7 +4,7 @@
 Generalized surrogate function of `Symbol`
 """
 symbolize(x::AbstractString) = Symbol(x)
-symbolize(x::AbstractArray{T}) where {T<:AbstractString} = [symbolize(y) for y in x]
+symbolize(x::AA{T}) where {T<:AbstractString} = [symbolize(y) for y in x]
 
 
 """
@@ -40,7 +40,7 @@ function static_array(x::AbstractMatrix)
     return y
 end
 
-function static_array(x::AbstractArray{T,3}) where {T}
+function static_array(x::AA{T,3}) where {T}
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3)}}(collect(x))
 
     if x isa OffsetArray
@@ -57,7 +57,7 @@ function static_array(x::AbstractArray{T,3}) where {T}
     return y
 end
 
-function static_array(x::AbstractArray{T,4}) where {T}
+function static_array(x::AA{T,4}) where {T}
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3),size(x, 4)}}(collect(x))
 
     if x isa OffsetArray

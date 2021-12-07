@@ -6,8 +6,8 @@
         simTime,
     ) where {
         X<:AbstractSolverSet,
-        Y<:AbstractArray{<:AbstractControlVolume,1},
-        Z<:AbstractArray{<:AbstractInterface1D,1},
+        Y<:AA{<:AbstractControlVolume,1},
+        Z<:AA{<:AbstractInterface1D,1},
     }
 
     solve!(
@@ -18,8 +18,8 @@
         simTime,
     ) where {
         X<:AbstractSolverSet,
-        Y<:AbstractArray{<:AbstractControlVolume,2},
-        Z<:AbstractArray{<:AbstractInterface2D,2},
+        Y<:AA{<:AbstractControlVolume,2},
+        Z<:AA{<:AbstractInterface2D,2},
     }
 
 Solution algorithm
@@ -37,8 +37,8 @@ function solve!(
     simTime,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{<:Union{ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},1},
-    Z<:AbstractArray{<:AbstractInterface1D,1},
+    Y<:AA{<:Union{ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},1},
+    Z<:AA{<:AbstractInterface1D,1},
 }
 
     #--- initial checkpoint ---#
@@ -105,8 +105,8 @@ function solve!(
     simTime,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractArray{<:AbstractControlVolume,2},
-    Z<:AbstractArray{<:AbstractInterface2D,2},
+    Y<:AA{<:AbstractControlVolume,2},
+    Z<:AA{<:AbstractInterface2D,2},
 }
 
     #--- initial checkpoint ---#
@@ -169,7 +169,7 @@ function timestep(
     KS::X,
     ctr::Y,
     simTime,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
+) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,1}}
 
     tmax = 0.0
 
@@ -229,7 +229,7 @@ function timestep(
     KS::X,
     ctr::Y,
     simTime,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
+) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D

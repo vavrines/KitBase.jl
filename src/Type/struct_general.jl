@@ -149,15 +149,15 @@ Gas property
 end
 
 function Gas(
-    _Kn::Union{Real,AbstractArray}, # unified consideration of
-    _Ma::Union{Real,AbstractArray}, # 1. deterministic solution, and
-    _Pr::Union{Real,AbstractArray}, # 2. uncertainty quantification
-    _K::Union{Real,AbstractArray},
-    _γ = 5 / 3::Union{Real,AbstractArray},
-    _ω = 0.81::Union{Real,AbstractArray},
-    _αᵣ = 1.0::Union{Real,AbstractArray},
-    _ωᵣ = 0.5::Union{Real,AbstractArray},
-    _μᵣ = ref_vhs_vis(_Kn, _αᵣ, _ωᵣ)::Union{Real,AbstractArray},
+    _Kn::Union{Real,AA}, # unified consideration of
+    _Ma::Union{Real,AA}, # 1. deterministic solution, and
+    _Pr::Union{Real,AA}, # 2. uncertainty quantification
+    _K::Union{Real,AA},
+    _γ = 5 / 3::Union{Real,AA},
+    _ω = 0.81::Union{Real,AA},
+    _αᵣ = 1.0::Union{Real,AA},
+    _ωᵣ = 0.5::Union{Real,AA},
+    _μᵣ = ref_vhs_vis(_Kn, _αᵣ, _ωᵣ)::Union{Real,AA},
 )
     Kn = deepcopy(_Kn)
     Ma = deepcopy(_Ma)
@@ -319,16 +319,16 @@ end
 # {mi, ni, me, ne, sol, χ, ν} keep the same as before
 function Plasma1D(
     Kn::Array,
-    Ma::Union{Real,AbstractArray},
-    Pr::Union{Real,AbstractArray},
-    K::Union{Real,AbstractArray},
-    γ::Union{Real,AbstractArray},
+    Ma::Union{Real,AA},
+    Pr::Union{Real,AA},
+    K::Union{Real,AA},
+    γ::Union{Real,AA},
     mi::Real,
     ni::Real,
     me::Real,
     ne::Real,
-    lD::Union{Real,AbstractArray},
-    rL::Union{Real,AbstractArray},
+    lD::Union{Real,AA},
+    rL::Union{Real,AA},
     sol::Real,
     χ::Real,
     ν::Real,
@@ -470,16 +470,16 @@ end
 # {mi, ni, me, ne, sol, χ, ν} keep the same as before
 function Plasma2D(
     Kn::Array,
-    Ma::Union{Real,AbstractArray},
-    Pr::Union{Real,AbstractArray},
-    K::Union{Real,AbstractArray},
-    γ::Union{Real,AbstractArray},
+    Ma::Union{Real,AA},
+    Pr::Union{Real,AA},
+    K::Union{Real,AA},
+    γ::Union{Real,AA},
     mi::Real,
     ni::Real,
     me::Real,
     ne::Real,
-    lD::Union{Real,AbstractArray},
-    rL::Union{Real,AbstractArray},
+    lD::Union{Real,AA},
+    rL::Union{Real,AA},
     sol::Real,
     χ::Real,
     ν::Real,

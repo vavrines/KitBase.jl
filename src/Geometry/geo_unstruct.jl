@@ -22,7 +22,7 @@ struct UnstructPSpace{
     C<:AbstractMatrix{<:Integer},
     D<:AbstractVector{<:Integer},
     E<:AbstractVector{<:AbstractFloat},
-    F<:AbstractArray{<:AbstractFloat,3},
+    F<:AA{<:AbstractFloat,3},
 } <: AbstractPhysicalSpace
     cells::A # all information: cell, line, vertex
     points::B # locations of vertex points

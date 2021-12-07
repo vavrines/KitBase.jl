@@ -4,8 +4,8 @@
 
 """
     sample_particle!(ptc::Particle1D, m, x, v, e, idx, flag, tc)
-    sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
-    sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AbstractArray{<:Real,1}}
+    sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AA{<:Real,1}}
+    sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AA{<:Real,1}}
     sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx)
     sample_particle!(ptc::Particle, ip, p)
     sample_particle!(ptc::Particle, ip, KS::SolverSet, ctr, idx)
@@ -35,7 +35,7 @@ function sample_particle!(
     μᵣ,
     ω,
     flag = 0,
-) where {T<:AbstractArray{<:Real,1}}
+) where {T<:AA{<:Real,1}}
     ptc.m = m
     ptc.x = x + (rand() - 0.5) * dx
     ptc.v .= sample_maxwell(prim)
@@ -60,7 +60,7 @@ function sample_particle!(
     μᵣ,
     ω,
     flag = 0,
-) where {T<:AbstractArray{<:Real,1}}
+) where {T<:AA{<:Real,1}}
     ptc.m = m
     ptc.x = x + (rand() - 0.5) * dx
     ptc.v .= sample_maxwell(prim, umin, umax)
@@ -328,10 +328,10 @@ end
 
 function bgk_collision!(
     KS::SolverSet,
-    ctr::AbstractArray{ControlVolumeParticle1D,1},
+    ctr::AA{ControlVolumeParticle1D,1},
     ptc::Particle,
-    face::AbstractArray{Interface1D,1},
-    res::AbstractArray{<:AbstractFloat,1},
+    face::AA{Interface1D,1},
+    res::AA{<:AbstractFloat,1},
 )
 
     sum_res = zeros(3)
@@ -399,7 +399,7 @@ function sort!(
     ref,
     np = length(idx);
     mode = :uniform,
-) where {T<:AbstractArray{<:AbstractControlVolume1D,1}}
+) where {T<:AA{<:AbstractControlVolume1D,1}}
 
     # calculate cell indices of particles
     @inbounds for i = 1:np
@@ -523,10 +523,10 @@ end
 
 function update!(
     KS::AbstractSolverSet,
-    ctr::AbstractArray{ControlVolumeParticle1D,1},
-    ptc::AbstractArray{Particle1D,1},
-    ptc_temp::AbstractArray{Particle1D,1},
-    face::AbstractArray{Interface1D,1},
+    ctr::AA{ControlVolumeParticle1D,1},
+    ptc::AA{Particle1D,1},
+    ptc_temp::AA{Particle1D,1},
+    face::AA{Interface1D,1},
     dt,
     res;
     coll = :bgk::Symbol,
@@ -559,8 +559,8 @@ function particle_transport!(
     dt,
 ) where {
     T1<:AbstractSolverSet,
-    T2<:AbstractArray{ControlVolumeParticle1D,1},
-    T3<:AbstractArray{Particle1D,1},
+    T2<:AA{ControlVolumeParticle1D,1},
+    T3<:AA{Particle1D,1},
 }
 
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
@@ -644,10 +644,10 @@ Update algorithm for particle collisions
 """
 function particle_collision!(
     KS::T,
-    ctr::AbstractArray{ControlVolumeParticle1D,1},
-    ptc_temp::AbstractArray{Particle1D,1},
-    face::AbstractArray{Interface1D,1},
-    res::AbstractArray{<:AbstractFloat,1},
+    ctr::AA{ControlVolumeParticle1D,1},
+    ptc_temp::AA{Particle1D,1},
+    face::AA{Interface1D,1},
+    res::AA{<:AbstractFloat,1},
     coll = :bgk::Symbol,
 ) where {T<:AbstractSolverSet}
 
@@ -714,10 +714,10 @@ end
 
 function particle_boundary!(
     KS::T,
-    ctr::AbstractArray{ControlVolumeParticle1D,1},
-    ptc::AbstractArray{Particle1D,1},
-    ptc_temp::AbstractArray{Particle1D,1},
-    face::AbstractArray{Interface1D,1},
+    ctr::AA{ControlVolumeParticle1D,1},
+    ptc::AA{Particle1D,1},
+    ptc_temp::AA{Particle1D,1},
+    face::AA{Interface1D,1},
     dt,
     coll = :bgk::Symbol,
     bc = :fix::Symbol,

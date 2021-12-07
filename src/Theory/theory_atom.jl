@@ -24,7 +24,7 @@ vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real} =
 
 """
     aap_hs_collision_time(
-        prim::AbstractArray{<:Real,2},
+        prim::AA{<:Real,2},
         mi::Real,
         ni::Real,
         me::Real,
@@ -135,7 +135,7 @@ end
 
 RHS-ODE of Boltzmann equation
 """
-function boltzmann_ode!(df, f::AbstractArray{T,3}, p, t) where {T<:Real}
+function boltzmann_ode!(df, f::AA{T,3}, p, t) where {T<:Real}
     Kn, M, phi, psi, phipsi = p
     df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
 end
@@ -146,7 +146,7 @@ end
 
 RHS-ODE of Boltzmann equation with non-uniform velocity
 """
-function boltzmann_nuode!(df, f::AbstractArray{T,3}, p, t) where {T<:Real}
+function boltzmann_nuode!(df, f::AA{T,3}, p, t) where {T<:Real}
     Kn, M, phi, psi, phipsi, u, v, w, vnu, u1, v1, w1, vuni = p
 
     nu = length(u)
@@ -170,7 +170,7 @@ end
     
 RHS-ODE of BGK equation
 """
-function bgk_ode!(df, f::AbstractArray{T}, p, t) where {T<:Real}
+function bgk_ode!(df, f::AA{T}, p, t) where {T<:Real}
     g, τ = p
     df .= (g .- f) ./ τ
 end

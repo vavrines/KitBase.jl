@@ -119,7 +119,7 @@ function reduce_distribution(
 end
 
 function reduce_distribution(
-    f::AbstractArray{T1,3},
+    f::AA{T1,3},
     weights::AbstractMatrix{T2},
     dim = 1,
 ) where {T1<:Real,T2<:Real}
@@ -147,12 +147,12 @@ function reduce_distribution(
 end
 
 function reduce_distribution(
-    f::AbstractArray{X,3},
+    f::AA{X,3},
     v::Y,
     w::Y,
     weights::AbstractMatrix{Z},
     dim = 1,
-) where {X<:Real,Y<:AbstractArray{<:Real,3},Z<:Real}
+) where {X<:Real,Y<:AA{<:Real,3},Z<:Real}
 
     if dim == 1
         h = similar(f, axes(f, 1))
@@ -205,9 +205,9 @@ function full_distribution(
     ρ,
     γ = 5 / 3,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:AbstractFloat,3},
+    X<:AA{<:AbstractFloat,1},
+    Y<:AA{<:AbstractFloat,1},
+    Z<:AA{<:AbstractFloat,3},
 }
 
     @assert length(h) == size(v, 1) throw(
@@ -236,10 +236,10 @@ full_distribution(
     prim::A,
     γ = 5 / 3,
 ) where {
-    X<:AbstractArray{<:AbstractFloat,1},
-    Y<:AbstractArray{<:AbstractFloat,1},
-    Z<:AbstractArray{<:AbstractFloat,3},
-    A<:AbstractArray{<:Real,1},
+    X<:AA{<:AbstractFloat,1},
+    Y<:AA{<:AbstractFloat,1},
+    Z<:AA{<:AbstractFloat,3},
+    A<:AA{<:Real,1},
 } = full_distribution(h, b, u, weights, v, w, prim[1], γ)
 
 
@@ -329,8 +329,8 @@ function chapman_enskog(
 end
 
 function chapman_enskog(
-    u::AbstractArray{T1},
-    v::AbstractArray{T1},
+    u::AA{T1},
+    v::AA{T1},
     prim::AbstractVector{T2},
     a::AbstractVector{T3},
     b::AbstractVector{T3},

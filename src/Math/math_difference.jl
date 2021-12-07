@@ -46,8 +46,8 @@ Finite difference operation
 Note that for upwind difference, the coeff = 1/-1 can't take the default value as nothing.
 """
 function finite_difference(
-    y::AbstractArray,
-    x::AbstractArray,
+    y::AA,
+    x::AA,
     coeff = 1,
     uL = first(y),
     uR = last(y);

@@ -182,7 +182,7 @@ plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot i
 @recipe function plot_line_backend(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
+) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,1}}
 
     # solution
     pltx = KS.pSpace.x[1:KS.pSpace.nx]
@@ -204,7 +204,7 @@ plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot i
         pltx, plty[:, 1]
     end
 
-    if ctr[1].w isa AbstractArray
+    if ctr[1].w isa AA
         @series begin
             label := "u"
             pltx, plty[:, 2]
@@ -233,7 +233,7 @@ plot_contour(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plo
 @recipe function plot_contour_backend(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
+) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,2}}
 
     pltx = KS.ps.x[1:KS.ps.nx, 1]
     plty = KS.ps.y[1, 1:KS.ps.ny]
