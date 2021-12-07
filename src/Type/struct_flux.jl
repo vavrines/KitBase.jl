@@ -5,19 +5,16 @@
 
 
 mutable struct Flux1D{A,B} <: AbstractFlux1D
-
     w::A
     fw::B
 
     function Flux1D(w::AbstractArray, fw::AbstractArray)
         new{typeof(w),typeof(fw)}(w, fw)
     end
-
 end
 
 
 mutable struct Flux1D1F{A,B,C} <: AbstractFlux1D
-
     w::A
     fw::B
     ff::C
@@ -25,7 +22,6 @@ mutable struct Flux1D1F{A,B,C} <: AbstractFlux1D
     function Flux1D1F(w::AbstractArray, fw::AbstractArray, ff::AbstractArray)
         new{typeof(w),typeof(fw),typeof(ff)}(w, fw, ff)
     end
-
 end
 
 
