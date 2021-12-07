@@ -3,7 +3,7 @@
 # ============================================================
 
 function bc_mirror!(
-    ctr::AbstractMatrix{T},
+    ctr::AM{T},
     ng = 1::Integer;
     dirc,
 ) where {T<:AbstractControlVolume2D}

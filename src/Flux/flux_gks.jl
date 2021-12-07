@@ -137,7 +137,7 @@ function flux_gks!(
     μᵣ::Real,
     ω::Real,
     sw = zero(w)::Y,
-) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
 
     prim = conserve_prim(w, γ)
     mus = gauss_moments(prim, inK)
@@ -189,7 +189,7 @@ function flux_gks!(
     dxR::Real,
     swL = zero(wL)::Y,
     swR = zero(wR)::Y,
-) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -284,7 +284,7 @@ function flux_gks!(
     dxR::Real,
     swL = zero(wL)::Y,
     swR = zero(wR)::Y,
-) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
     primL = mixture_conserve_prim(wL, γ)
     primR = mixture_conserve_prim(wR, γ)
@@ -390,10 +390,10 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:Real,1},
-    T4<:AbstractArray{<:AbstractFloat,1},
+    T1<:AA{<:FN,1},
+    T2<:AA{<:FN,1},
+    T3<:AA{<:Real,1},
+    T4<:AA{<:FN,1},
 }
 
     primL = conserve_prim(wL, γ)
@@ -521,10 +521,10 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:Real,1},
-    T4<:AbstractArray{<:AbstractFloat,1},
+    T1<:AA{<:FN,1},
+    T2<:AA{<:FN,1},
+    T3<:AA{<:Real,1},
+    T4<:AA{<:FN,1},
 }
 
     primL = conserve_prim(wL, γ)
@@ -691,7 +691,7 @@ function flux_gks!(
     dy::Real,
     swL = zero(wL)::Y,
     swR = zero(wR)::Y,
-) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -789,7 +789,7 @@ function flux_gks!(
     len,
     swL = zero(wL)::Y,
     swR = zero(wR)::Y,
-) where {X<:AbstractArray{<:AbstractFloat,2},Y<:AbstractArray{<:Real,2}}
+) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
     primL = mixture_conserve_prim(wL, γ)
     primR = mixture_conserve_prim(wR, γ)
@@ -902,10 +902,10 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {
-    T1<:AbstractVector{<:AbstractFloat},
-    T2<:AbstractMatrix{<:AbstractFloat},
-    T3<:AbstractVector{<:AbstractFloat},
-    T4<:AbstractMatrix{<:AbstractFloat},
+    T1<:AV{<:FN},
+    T2<:AM{<:FN},
+    T3<:AV{<:FN},
+    T4<:AM{<:FN},
 }
 
     primL = conserve_prim(wL, γ)
@@ -1067,10 +1067,10 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {
-    T1<:AbstractVector{<:AbstractFloat},
-    T2<:AbstractMatrix{<:AbstractFloat},
-    T3<:AbstractVector{<:AbstractFloat},
-    T4<:AbstractMatrix{<:AbstractFloat},
+    T1<:AV{<:FN},
+    T2<:AM{<:FN},
+    T3<:AV{<:FN},
+    T4<:AM{<:FN},
 }
 
     primL = conserve_prim(wL, γ)
@@ -1310,7 +1310,7 @@ function flux_gks!(
     dt::Real,
     swL = zero(wL)::Y,
     swR = zero(wR)::Y,
-) where {X<:AbstractArray{<:AbstractFloat,1},Y<:AbstractArray{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -1376,11 +1376,11 @@ end
         shR = zeros(eltype(hR), axes(hR))::T4,
         sbR = zeros(eltype(bR), axes(bR))::T4,
     ) where {
-        T1<:AbstractArray{<:AbstractFloat,1},
-        T2<:AbstractArray{<:AbstractFloat,1},
-        T3<:AbstractArray{<:Real,1},
-        T4<:AbstractArray{<:AbstractFloat,1},
-        T5<:AbstractArray{<:AbstractFloat,1},
+        T1<:AA{<:FN,1},
+        T2<:AA{<:FN,1},
+        T3<:AA{<:Real,1},
+        T4<:AA{<:FN,1},
+        T5<:AA{<:FN,1},
     }
 
     flux_ugks!(
@@ -1410,11 +1410,11 @@ end
         shR = zeros(eltype(hR), axes(hR))::T4,
         sbR = zeros(eltype(bR), axes(bR))::T4,
     ) where {
-        T1<:AbstractArray{<:AbstractFloat,1},
-        T2<:AbstractArray{<:AbstractFloat,2},
-        T3<:AbstractArray{<:Real,1},
-        T4<:AbstractArray{<:AbstractFloat,2},
-        T5<:AbstractArray{<:AbstractFloat,2},
+        T1<:AA{<:FN,1},
+        T2<:AA{<:FN,2},
+        T3<:AA{<:Real,1},
+        T4<:AA{<:FN,2},
+        T5<:AA{<:FN,2},
     }
 
     flux_ugks!(
@@ -1451,11 +1451,11 @@ end
         sh1R = zeros(eltype(h1R), axes(h1R))::T4,
         sh2R = zeros(eltype(h2R), axes(h2R))::T4,
     ) where {
-        T1<:AbstractArray{<:AbstractFloat,2},
-        T2<:AbstractArray{<:AbstractFloat,3},
-        T3<:AbstractArray{<:Real,2},
-        T4<:AbstractArray{<:AbstractFloat,3},
-        T5<:AbstractArray{<:AbstractFloat,3},
+        T1<:AA{<:FN,2},
+        T2<:AA{<:FN,3},
+        T3<:AA{<:Real,2},
+        T4<:AA{<:FN,3},
+        T5<:AA{<:FN,3},
     }
 
 Unified gas kinetic scheme (UGKS)
@@ -1490,11 +1490,11 @@ function flux_ugks!(
     shR = zeros(eltype(hR), axes(hR))::T4,
     sbR = zeros(eltype(bR), axes(bR))::T4,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,1},
-    T3<:AbstractArray{<:Real,1},
-    T4<:AbstractArray{<:AbstractFloat,1},
-    T5<:AbstractArray{<:AbstractFloat,1},
+    T1<:AA{<:FN,1},
+    T2<:AA{<:FN,1},
+    T3<:AA{<:Real,1},
+    T4<:AA{<:FN,1},
+    T5<:AA{<:FN,1},
 } # 1D2F flux
 
     #--- reconstruct initial distribution ---#
@@ -1607,11 +1607,11 @@ function flux_ugks!(
     shR = zeros(eltype(hR), axes(hR))::T4,
     sbR = zeros(eltype(bR), axes(bR))::T4,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,1},
-    T2<:AbstractArray{<:AbstractFloat,2},
-    T3<:AbstractArray{<:Real,1},
-    T4<:AbstractArray{<:AbstractFloat,2},
-    T5<:AbstractArray{<:AbstractFloat,2},
+    T1<:AA{<:FN,1},
+    T2<:AA{<:FN,2},
+    T3<:AA{<:Real,1},
+    T4<:AA{<:FN,2},
+    T5<:AA{<:FN,2},
 } # 2D2F flux
 
     #--- reconstruct initial distribution ---#
@@ -1764,11 +1764,11 @@ function flux_ugks!(
     sh1R = zeros(eltype(h1R), axes(h1R))::T4,
     sh2R = zeros(eltype(h2R), axes(h2R))::T4,
 ) where {
-    T1<:AbstractArray{<:AbstractFloat,2},
-    T2<:AbstractArray{<:AbstractFloat,3},
-    T3<:AbstractArray{<:Real,2},
-    T4<:AbstractArray{<:AbstractFloat,3},
-    T5<:AbstractArray{<:AbstractFloat,3},
+    T1<:AA{<:FN,2},
+    T2<:AA{<:FN,3},
+    T3<:AA{<:Real,2},
+    T4<:AA{<:FN,3},
+    T5<:AA{<:FN,3},
 }
 
     #--- reconstruct initial distribution ---#
@@ -1887,9 +1887,7 @@ function flux_ugks!(
                 aT[2, j] * u[:, :, j] * H0[:, :, j] +
                 aT[3, j] * v[:, :, j] * H0[:, :, j] +
                 aT[4, j] * u[:, :, j] * H1[:, :, j] +
-                0.5 *
-                aT[5, j] *
-                ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])
+                0.5 * aT[5, j] * ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])
             ) +
             Mt[4, j] * u[:, :, j] * h0[:, :, j] - Mt[5, j] * u[:, :, j]^2 * sh0[:, :, j]
         @. fh1[:, :, j] =

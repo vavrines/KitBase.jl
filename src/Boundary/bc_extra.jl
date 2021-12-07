@@ -3,7 +3,7 @@
 # ============================================================
 
 function bc_extra!(
-    ctr::AbstractVector{T},
+    ctr::AV{T},
     ng = 1::Integer;
     dirc,
 ) where {T<:AbstractControlVolume1D}
@@ -24,7 +24,7 @@ function bc_extra!(
 end
 
 function bc_extra!(
-    ctr::AbstractMatrix{T},
+    ctr::AM{T},
     ng = 1::Integer;
     dirc,
 ) where {T<:AbstractControlVolume2D}

@@ -1,9 +1,9 @@
 """
-    mixture_gauss_moments(prim::AbstractMatrix{T}, inK) where {T<:Real}
+    mixture_gauss_moments(prim::AM{T}, inK) where {T<:Real}
 
 Calculate moments of Gaussian distribution in multi-component gas
 """
-function mixture_gauss_moments(prim::AbstractMatrix{T}, inK) where {T<:Real}
+function mixture_gauss_moments(prim::AM{T}, inK) where {T<:Real}
     if eltype(prim) <: Integer
         Mu = OffsetArray(similar(prim, Float64, 7, axes(prim, 2)), 0:6, axes(prim, 2))
     else
@@ -125,7 +125,7 @@ function mixture_moments_conserve(
     f::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
 
     w = similar(f, 3, size(f, 2))
     for j in axes(w, 2)
@@ -142,7 +142,7 @@ function mixture_moments_conserve(
     b::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
 
     w = similar(h, 3, size(h, 2))
     for j in axes(w, 2)
@@ -161,7 +161,7 @@ function mixture_moments_conserve(
     h3::X,
     u::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,2},T<:AbstractArray{<:AbstractFloat,2}}
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
 
     moments = similar(h0, 5, size(h0, 2))
     for j in axes(moments, 2)
@@ -179,7 +179,7 @@ function mixture_moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,3},T<:AbstractArray{<:AbstractFloat,3}}
+) where {X<:AA{<:FN,3},T<:AA{<:FN,3}}
 
     w = similar(f, 4, size(f, 3))
     for j in axes(w, 2)
@@ -197,7 +197,7 @@ function mixture_moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,3},T<:AbstractArray{<:AbstractFloat,3}}
+) where {X<:AA{<:FN,3},T<:AA{<:FN,3}}
 
     w = similar(h, 4, size(f, 3))
     for j in axes(w, 2)
@@ -217,7 +217,7 @@ function mixture_moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,3},T<:AbstractArray{<:AbstractFloat,3}}
+) where {X<:AA{<:FN,3},T<:AA{<:FN,3}}
 
     w = similar(h0, 5, size(h0, 3))
     for j in axes(w, 2)
@@ -242,7 +242,7 @@ function mixture_moments_conserve(
     v::T,
     w::T,
     ω::T,
-) where {X<:AbstractArray{<:AbstractFloat,4},T<:AbstractArray{<:AbstractFloat,4}}
+) where {X<:AA{<:FN,4},T<:AA{<:FN,4}}
 
     moments = similar(f, 5, size(f, 4))
     for j in axes(w, 2)
@@ -266,7 +266,7 @@ mixture_moments_conserve_slope(
     Mu::Y,
     Mxi::Y,
     alpha::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
 mixture_moments_conserve_slope(
     a::X,
@@ -275,7 +275,7 @@ mixture_moments_conserve_slope(
     Mxi::Y,
     alpha::I,
     beta::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
 mixture_moments_conserve_slope(
     a::X,
@@ -285,7 +285,7 @@ mixture_moments_conserve_slope(
     alpha::I,
     beta::I,
     delta::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
 Calculate slope-related conservative moments under the assumption
 `a = a1 + u * a2 + 0.5 * u^2 * a3`
@@ -296,7 +296,7 @@ function mixture_moments_conserve_slope(
     Mu::Y,
     Mxi::Y,
     alpha::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
     au = similar(a, 3, axes(a, 2))
     for j in axes(au, 2)
@@ -314,7 +314,7 @@ function mixture_moments_conserve_slope(
     Mxi::Y,
     alpha::I,
     beta::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
     au = similar(a, 4, axes(a, 2))
     for j in axes(au, 2)
@@ -334,7 +334,7 @@ function mixture_moments_conserve_slope(
     alpha::I,
     beta::I,
     delta::I,
-) where {X<:AbstractArray{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
 
     au = similar(a, 5, axes(a, 2))
     for j in axes(au, 2)

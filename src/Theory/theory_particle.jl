@@ -1,5 +1,5 @@
 """
-    sample_velocity(prim::AbstractArray{<:Real,1})
+    sample_velocity(prim::AA{<:Real,1})
 
 Sample particle velocity from Maxwellian. Unconstraint methods use Box-Muller sampling,
 while constraint one depends on Distributions.jl.
@@ -12,7 +12,7 @@ function sample_maxwell(λ::Real, v = 0.0::Real)
     return sqrt(-log(rd1) / λ) * sin(2.0 * π * rd2) + v
 end
 
-function sample_maxwell(prim::T) where {T<:AbstractArray{<:Real,1}}
+function sample_maxwell(prim::T) where {T<:AA{<:Real,1}}
 
     u = prim[2]
     if length(prim) == 3
@@ -44,7 +44,7 @@ function sample_maxwell(λ::Real, v, l, u)
     return rand(d) + v
 end
 
-function sample_maxwell(prim::T, l, u) where {T<:AbstractArray{<:Real,1}}
+function sample_maxwell(prim::T, l, u) where {T<:AA{<:Real,1}}
     u = prim[2]
     if length(prim) == 3
         v = 0.0
@@ -72,7 +72,7 @@ next_collision_time(τ) = -τ * log(rand())
 
 
 """
-    boundary_time(x, v::AbstractArray{<:Real,1}, xL, xR)
+    boundary_time(x, v::AA{<:Real,1}, xL, xR)
 
 Calculate traveling time to edges
 
@@ -89,7 +89,7 @@ function boundary_time(x, v::Real, xL, xR)
     return tb
 end
 
-function boundary_time(x, v::T, xL, xR) where {T<:AbstractArray{<:Real,1}}
+function boundary_time(x, v::T, xL, xR) where {T<:AA{<:Real,1}}
     if v[1] < 0.0
         tb = (xL - x) / v[1]
     elseif v[1] > 0.0

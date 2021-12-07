@@ -5,27 +5,23 @@
 
 
 mutable struct Flux1D{A,B} <: AbstractFlux1D
-
     w::A
     fw::B
 
-    function Flux1D(w::AbstractArray, fw::AbstractArray)
+    function Flux1D(w::AA, fw::AA)
         new{typeof(w),typeof(fw)}(w, fw)
     end
-
 end
 
 
 mutable struct Flux1D1F{A,B,C} <: AbstractFlux1D
-
     w::A
     fw::B
     ff::C
 
-    function Flux1D1F(w::AbstractArray, fw::AbstractArray, ff::AbstractArray)
+    function Flux1D1F(w::AA, fw::AA, ff::AA)
         new{typeof(w),typeof(fw),typeof(ff)}(w, fw, ff)
     end
-
 end
 
 
@@ -37,10 +33,10 @@ mutable struct Flux1D2F{A,B,C} <: AbstractFlux1D
     fb::C
 
     function Flux1D2F(
-        w::AbstractArray,
-        fw::AbstractArray,
-        fh::AbstractArray,
-        fb::AbstractArray,
+        w::AA,
+        fw::AA,
+        fh::AA,
+        fb::AA,
     )
         new{typeof(w),typeof(fw),typeof(fh)}(w, fw, fh, fb)
     end
@@ -59,12 +55,12 @@ mutable struct Flux2D{A,B,C} <: AbstractFlux2D
     fw2::C
 
     function Flux2D(
-        n1::AbstractArray,
-        w1::AbstractArray,
-        fw1::AbstractArray,
-        n2::AbstractArray,
-        w2::AbstractArray,
-        fw2::AbstractArray,
+        n1::AA,
+        w1::AA,
+        fw1::AA,
+        n2::AA,
+        w2::AA,
+        fw2::AA,
     )
         new{typeof(n1),typeof(w1),typeof(fw1)}(n1, w1, fw1, n2, w2, fw2)
     end
@@ -85,14 +81,14 @@ mutable struct Flux2D1F{A,B,C,D} <: AbstractFlux2D
     ff2::D
 
     function Flux2D1F(
-        n1::AbstractArray,
-        w1::AbstractArray,
-        fw1::AbstractArray,
-        ff1::AbstractArray,
-        n2::AbstractArray,
-        w2::AbstractArray,
-        fw2::AbstractArray,
-        ff2::AbstractArray,
+        n1::AA,
+        w1::AA,
+        fw1::AA,
+        ff1::AA,
+        n2::AA,
+        w2::AA,
+        fw2::AA,
+        ff2::AA,
     )
         new{typeof(n1),typeof(w1),typeof(fw1),typeof(ff1)}(
             n1,
@@ -124,16 +120,16 @@ mutable struct Flux2D2F{A,B,C,D} <: AbstractFlux2D
     fb2::D
 
     function Flux2D2F(
-        n1::AbstractArray,
-        w1::AbstractArray,
-        fw1::AbstractArray,
-        fh1::AbstractArray,
-        fb1::AbstractArray,
-        n2::AbstractArray,
-        w2::AbstractArray,
-        fw2::AbstractArray,
-        fh2::AbstractArray,
-        fb2::AbstractArray,
+        n1::AA,
+        w1::AA,
+        fw1::AA,
+        fh1::AA,
+        fb1::AA,
+        n2::AA,
+        w2::AA,
+        fw2::AA,
+        fh2::AA,
+        fb2::AA,
     )
         new{typeof(n1),typeof(w1),typeof(fw1),typeof(fh1)}(
             n1,

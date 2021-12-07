@@ -5,9 +5,7 @@
 export read_cfg,
        read_dict,
        write_jld,
-       write_vtk,
-       plot_line,
-       plot_contour
+       write_vtk
 
 
 """
@@ -150,7 +148,7 @@ function write_vtk(
     cells,
     cdata,
     pdata = zeros(axes(points, 1)),
-) where {T<:AbstractMatrix}
+) where {T<:AM}
     mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, cells[i, :]) for i in axes(cells, 1)]
     vtkfile = vtk_grid("sol", permutedims(points), mcells)
 
@@ -175,21 +173,16 @@ end
 
 
 """
-    plot_line(KS, ctr; backend = :plots)
+    plot_line(KS, ctr)
 
 Plot solution profiles
 """
-function plot_line(
-    KS::X,
-    ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
-    plot(KS, ctr)
-end
+plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot instead."
 
-@recipe function plot_line(
+@recipe function plot_line_backend(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,1}}
+) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,1}}
 
     # solution
     pltx = KS.pSpace.x[1:KS.pSpace.nx]
@@ -211,7 +204,7 @@ end
         pltx, plty[:, 1]
     end
 
-    if ctr[1].w isa AbstractArray
+    if ctr[1].w isa AA
         @series begin
             label := "u"
             pltx, plty[:, 2]
@@ -225,22 +218,25 @@ end
     # user-defined
     c = get(plotattributes, :linewidth, :auto)
 
-    nothing
+    return nothing
     
 end
 
 
 """
-    plot_contour(KS, ctr; backend = :plots)
+    plot_line(KS, ctr)
 
-Plot solution contours
+Plot solution profiles
 """
-function plot_contour(
+plot_contour(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot instead."
+
+@recipe function plot_contour_backend(
     KS::X,
-    ctr::Y;
-    color = :inferno,
-    backend = :plots::Symbol,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{<:AbstractControlVolume,2}}
+    ctr::Y,
+) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,2}}
+
+    pltx = KS.ps.x[1:KS.ps.nx, 1]
+    plty = KS.ps.y[1, 1:KS.ps.ny]
 
     sol = zeros(size(ctr[1].w, 1), KS.pSpace.nx, KS.pSpace.ny)
     for i in axes(sol, 2)
@@ -252,31 +248,19 @@ function plot_contour(
         end
     end
 
-    p1 = contourf(
-        KS.pSpace.x[1:KS.pSpace.nx, 1],
-        KS.pSpace.y[1, 1:KS.pSpace.ny],
-        sol[1, :, :]',
-        color = color,
-    )
-    p2 = contourf(
-        KS.pSpace.x[1:KS.pSpace.nx, 1],
-        KS.pSpace.y[1, 1:KS.pSpace.ny],
-        sol[2, :, :]',
-        color = color,
-    )
-    p3 = contourf(
-        KS.pSpace.x[1:KS.pSpace.nx, 1],
-        KS.pSpace.y[1, 1:KS.pSpace.ny],
-        sol[3, :, :]',
-        color = color,
-    )
-    p4 = contourf(
-        KS.pSpace.x[1:KS.pSpace.nx, 1],
-        KS.pSpace.y[1, 1:KS.pSpace.ny],
-        sol[4, :, :]',
-        color = color,
-    )
+    layout := (2, 2)
+    c = get(plotattributes, :inferno, :auto)
+    for (i, l) in enumerate(("ρ", "u", "v", "T"))
+        @series begin
+            subplot := i
+            xguide := "x"
+            yguide := "y"
+            fill := true
+            seriescolor := c
+            pltx, plty, sol[i, :, :]'
+        end
+    end
 
-    plot(p1, p2, p3, p4, layout = (2, 2))
+    return nothing
 
 end

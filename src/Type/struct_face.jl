@@ -8,7 +8,7 @@
 # ------------------------------------------------------------
 
 """
-    mutable struct Interface1D{A<:Union{Real,AbstractArray}} <: AbstractInterface1D
+    mutable struct Interface1D{A<:Union{Real,AA}} <: AbstractInterface1D
         fw::A
     end
 
@@ -16,7 +16,7 @@
 Note that deepcopy constructor is needed to work with StructArrays
 
 """
-mutable struct Interface1D{A<:Union{Real,AbstractArray}} <: AbstractInterface1D
+mutable struct Interface1D{A<:Union{Real,AA}} <: AbstractInterface1D
     fw::A
 end
 
@@ -35,7 +35,7 @@ end
 Note that deepcopy constructor is needed to work with StructArrays
 
 """
-mutable struct Interface1D1F{A,B<:AbstractArray} <: AbstractInterface1D
+mutable struct Interface1D1F{A,B<:AA} <: AbstractInterface1D
     fw::A
     ff::B
 end
@@ -56,7 +56,7 @@ end
         fh::B
         fb::B
 
-        function Interface1D2F(w::AbstractArray, f::AbstractArray)
+        function Interface1D2F(w::AA, f::AA)
             fw = zero(w)
             fh = zero(f)
             fb = zero(f)
@@ -68,13 +68,13 @@ end
 1D cell interface with 2 distribution functions
 
 """
-mutable struct Interface1D2F{A,B<:AbstractArray} <: AbstractInterface1D
+mutable struct Interface1D2F{A,B<:AA} <: AbstractInterface1D
     fw::A
     fh::B
     fb::B
 end
 
-function Interface1D2F(w, f::AbstractArray)
+function Interface1D2F(w, f::AA)
     fw = zero(w)
     fh = zero(f)
     fb = zero(f)
@@ -115,7 +115,7 @@ mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
 end
 
 # deterministic
-function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
+function Interface1D3F(w::AA, f::AA, E::AA{<:Real,1})
     fw = zeros(eltype(w), axes(w))
     fh0 = zeros(eltype(f), axes(f))
     fh1 = zeros(eltype(f), axes(f))
@@ -127,7 +127,7 @@ function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Re
 end
 
 # stochastic
-function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
+function Interface1D3F(w::AA, f::AA, E::AA{<:Real,2})
     fw = zeros(eltype(w), axes(w))
     fh0 = zeros(eltype(f), axes(f))
     fh1 = zeros(eltype(f), axes(f))
@@ -139,7 +139,7 @@ function Interface1D3F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Re
 end
 
 # Rykov
-function Interface1D3F(w::AbstractArray, f::AbstractArray)
+function Interface1D3F(w::AA, f::AA)
     fw = zero(w)
     fh0 = zero(f)
     fh1 = zero(f)
@@ -186,7 +186,7 @@ mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
 end
 
 # deterministic
-function Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,1})
+function Interface1D4F(w::AA, f::AA, E::AA{<:Real,1})
     fw = zeros(eltype(w), axes(w))
     fh0 = zeros(eltype(f), axes(f))
     fh1 = zeros(eltype(f), axes(f))
@@ -199,7 +199,7 @@ function Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Re
 end
 
 # stochastic
-function Interface1D4F(w::AbstractArray, f::AbstractArray, E::AbstractArray{<:Real,2})
+function Interface1D4F(w::AA, f::AA, E::AA{<:Real,2})
     fw = zeros(eltype(w), axes(w))
     fh0 = zeros(eltype(f), axes(f))
     fh1 = zeros(eltype(f), axes(f))
@@ -231,7 +231,7 @@ end
         n::B
         fw::C
 
-        function Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)
+        function Interface2D(L::Real, C::Real, S::Real, w::AA)
             len = L
             n = [C, S]
 
@@ -250,7 +250,7 @@ mutable struct Interface2D{A,B,C} <: AbstractInterface2D
     fw::C
 end
 
-function Interface2D(L::Real, C::Real, S::Real, w::AbstractArray)
+function Interface2D(L::Real, C::Real, S::Real, w::AA)
     len = L
     n = [C, S]
 
@@ -277,7 +277,7 @@ end
         fw::C
         ff::D
 
-        function Interface2D1F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+        function Interface2D1F(L::Real, C::Real, S::Real, w::AA, f::AA)
             len = L
             n = [C, S]
 
@@ -298,7 +298,7 @@ mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
     ff::D
 end
 
-function Interface2D1F(L::Real, C::Real, S::Real, w, f::AbstractArray)
+function Interface2D1F(L::Real, C::Real, S::Real, w, f::AA)
     len = L
     n = [C, S]
 
@@ -328,7 +328,7 @@ end
         fh::D
         fb::D
 
-        function Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+        function Interface2D2F(L::Real, C::Real, S::Real, w::AA, f::AA)
             len = L
             n = [C, S]
 
@@ -343,7 +343,7 @@ end
 2D cell interface with 2 distribution functions
 
 """
-mutable struct Interface2D2F{A,B<:AbstractVector,C,D} <: AbstractInterface2D
+mutable struct Interface2D2F{A,B<:AV,C,D} <: AbstractInterface2D
     len::A
     n::B
     fw::C
@@ -351,7 +351,7 @@ mutable struct Interface2D2F{A,B<:AbstractVector,C,D} <: AbstractInterface2D
     fb::D
 end
 
-function Interface2D2F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+function Interface2D2F(L::Real, C::Real, S::Real, w::AA, f::AA)
     len = L
     n = @SArray [C, S]
 
@@ -412,9 +412,9 @@ function Interface2D3F(
     L::Real,
     C::Real,
     S::Real,
-    w::AbstractArray,
-    f::AbstractArray,
-    E::AbstractArray{<:Real,1},
+    w::AA,
+    f::AA,
+    E::AA{<:Real,1},
 )
     len = L
     n = @SArray [C, S]
@@ -438,9 +438,9 @@ function Interface2D3F(
     L::Real,
     C::Real,
     S::Real,
-    w::AbstractArray,
-    f::AbstractArray,
-    E::AbstractArray{<:Real,2},
+    w::AA,
+    f::AA,
+    E::AA{<:Real,2},
 )
     len = L
     n = [C, S]
@@ -461,7 +461,7 @@ function Interface2D3F(
 end
 
 # Rykov
-function Interface2D3F(L::Real, C::Real, S::Real, w::AbstractArray, f::AbstractArray)
+function Interface2D3F(L::Real, C::Real, S::Real, w::AA, f::AA)
     len = L
     n = [C, S]
 

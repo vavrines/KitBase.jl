@@ -75,10 +75,7 @@ function copy_ctr!(
     return nothing
 end
 
-function copy_ctr!(
-    ctr::T,
-    ctr0::T,
-) where {T<:Union{ControlVolume1D3F,ControlVolume2D3F}}
+function copy_ctr!(ctr::T, ctr0::T) where {T<:Union{ControlVolume1D3F,ControlVolume2D3F}}
     ctr.w .= ctr0.w
     ctr.prim .= ctr0.prim
     ctr.sw .= ctr0.sw
@@ -94,10 +91,7 @@ function copy_ctr!(
     return nothing
 end
 
-function copy_ctr!(
-    ctr::T,
-    ctr0::T,
-) where {T<:ControlVolume1D4F}
+function copy_ctr!(ctr::T, ctr0::T) where {T<:ControlVolume1D4F}
     ctr.w .= ctr0.w
     ctr.prim .= ctr0.prim
     ctr.sw .= ctr0.sw

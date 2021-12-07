@@ -11,20 +11,20 @@ ref_vhs_vis(Kn, alpha, omega) =
 
 """
     vhs_collision_time(ρ, λ, μᵣ, ω)
-    vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real}
+    vhs_collision_time(prim::AV{T}, muRef, omega) where {T<:Real}
 
 Calculate collision time with variable hard sphere (VHS) model
 
 """
 vhs_collision_time(ρ, λ, μᵣ, ω) = μᵣ * 2.0 * λ^(1.0 - ω) / ρ
 
-vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real} =
+vhs_collision_time(prim::AV{T}, muRef, omega) where {T<:Real} =
     muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov model prim[end] should be λₜ
 
 
 """
     aap_hs_collision_time(
-        prim::AbstractArray{<:Real,2},
+        prim::AA{<:Real,2},
         mi::Real,
         ni::Real,
         me::Real,
@@ -34,7 +34,7 @@ vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real} =
 
 Calculate mixture collision time from AAP model
 """
-function aap_hs_collision_time(prim::AbstractMatrix{T}, mi, ni, me, ne, kn) where {T<:Real}
+function aap_hs_collision_time(prim::AM{T}, mi, ni, me, ne, kn) where {T<:Real}
 
     ν = similar(prim, 2)
 
@@ -135,7 +135,7 @@ end
 
 RHS-ODE of Boltzmann equation
 """
-function boltzmann_ode!(df, f::AbstractArray{T,3}, p, t) where {T<:Real}
+function boltzmann_ode!(df, f::AA{T,3}, p, t) where {T<:Real}
     Kn, M, phi, psi, phipsi = p
     df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
 end
@@ -146,7 +146,7 @@ end
 
 RHS-ODE of Boltzmann equation with non-uniform velocity
 """
-function boltzmann_nuode!(df, f::AbstractArray{T,3}, p, t) where {T<:Real}
+function boltzmann_nuode!(df, f::AA{T,3}, p, t) where {T<:Real}
     Kn, M, phi, psi, phipsi, u, v, w, vnu, u1, v1, w1, vuni = p
 
     nu = length(u)
@@ -170,7 +170,7 @@ end
     
 RHS-ODE of BGK equation
 """
-function bgk_ode!(df, f::AbstractArray{T}, p, t) where {T<:Real}
+function bgk_ode!(df, f::AA{T}, p, t) where {T<:Real}
     g, τ = p
     df .= (g .- f) ./ τ
 end

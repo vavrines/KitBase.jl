@@ -1,9 +1,9 @@
 """
-    reconstruct!(KS::SolverSet, ctr::AbstractArray)
+    reconstruct!(KS::SolverSet, ctr::AA)
 
 Reconstruct solutions in cells
 """
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -48,7 +48,7 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
 
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D1F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D1F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -90,7 +90,7 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
 
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D2F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D2F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -141,7 +141,7 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
 
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D3F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D3F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -201,7 +201,7 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolu
 
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AbstractArray{ControlVolume1D4F,1}}
+function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D4F,1}}
 
     if KS.set.interpOrder == 1
         return
@@ -276,7 +276,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{ControlVolume2D,2}}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D,2}}
 
     if KS.set.interpOrder == 1
         return
@@ -344,7 +344,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{ControlVolume2D1F,2}}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D1F,2}}
 
     if KS.set.interpOrder == 1
         return
@@ -461,7 +461,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{ControlVolume2D2F,2}}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D2F,2}}
 
     if KS.set.interpOrder == 1
         return
@@ -608,7 +608,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractArray{ControlVolume2D3F,2}}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D3F,2}}
 
     if KS.set.interpOrder == 1
         return
@@ -795,7 +795,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractVector{ControlVolumeUS}}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS}}
 
     if KS.set.interpOrder == 1
         return
@@ -826,7 +826,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractVector{ControlVolumeUS1F}}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS1F}}
 
     if KS.set.interpOrder == 1
         return
@@ -863,7 +863,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractVector{ControlVolumeUS2F}}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS2F}}
 
     if KS.set.interpOrder == 1
         return

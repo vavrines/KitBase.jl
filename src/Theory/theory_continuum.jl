@@ -3,14 +3,14 @@
 # ============================================================
 
 """
-    prim_conserve(prim::AbstractVector{T}, γ) where {T<:Real}
+    prim_conserve(prim::AV{T}, γ) where {T<:Real}
     prim_conserve(ρ, U, λ, γ)
     prim_conserve(ρ, U, V, λ, γ)
     prim_conserve(ρ, U, V, W, λ, γ)
 
 Transform primitive -> conservative variables
 """
-function prim_conserve(prim::AbstractVector{T}, γ) where {T<:Real}
+function prim_conserve(prim::AV{T}, γ) where {T<:Real}
     if eltype(prim) <: Integer
         W = similar(prim, Float64)
     else
@@ -48,7 +48,7 @@ prim_conserve(ρ, U, V, λ, γ) = prim_conserve([ρ, U, V, λ], γ)
 prim_conserve(ρ, U, V, W, λ, γ) = prim_conserve([ρ, U, V, W, λ], γ)
 
 #--- Rykov ---#
-function prim_conserve(prim::AbstractVector{T}, γ, Kr) where {T<:Real}
+function prim_conserve(prim::AV{T}, γ, Kr) where {T<:Real}
     if eltype(prim) <: Integer
         W = similar(prim, Float64, length(prim) - 1)
     else
@@ -75,11 +75,11 @@ end
 
 
 """
-    mixture_prim_conserve(prim::AbstractMatrix{T}, γ) where {T<:Real}
+    mixture_prim_conserve(prim::AM{T}, γ) where {T<:Real}
 
 Transform multi-component primitive -> conservative variables
 """
-function mixture_prim_conserve(prim::AbstractMatrix{T}, γ) where {T<:Real}
+function mixture_prim_conserve(prim::AM{T}, γ) where {T<:Real}
     if eltype(prim) <: Integer
         w = similar(prim, Float64)
     else
@@ -103,7 +103,7 @@ end
 
 * vector: primitive vector for Euler, Navier-Stokes and extended equations
 
-    conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,1}}
+    conserve_prim(W::T, γ) where {T<:AA{<:Real,1}}
 
     conserve_prim(ρ, M, E, γ)
 
@@ -115,7 +115,7 @@ conserve_prim(u) = [u, 0.5 * u, 1.0]
 
 conserve_prim(u, a) = [u, a, 1.0]
 
-function conserve_prim(W::AbstractVector{T}, γ) where {T<:Real}
+function conserve_prim(W::AV{T}, γ) where {T<:Real}
     if eltype(W) <: Integer
         prim = similar(W, Float64)
     else
@@ -151,7 +151,7 @@ conserve_prim(ρ, MX, MY, E, γ) = conserve_prim([ρ, MX, MY, E], γ)
 conserve_prim(ρ, MX, MY, MZ, E, γ) = conserve_prim([ρ, MX, MY, MZ, E], γ)
 
 #--- Rykov ---#
-function conserve_prim(w::AbstractVector{T}, K, Kr) where {T<:Real}
+function conserve_prim(w::AV{T}, K, Kr) where {T<:Real}
     if eltype(w) <: Integer
         prim = similar(w, Float64, length(w) + 1)
     else
@@ -180,11 +180,11 @@ end
 
 
 """
-    mixture_conserve_prim(W::T, γ) where {T<:AbstractArray{<:Real,2}}
+    mixture_conserve_prim(W::T, γ) where {T<:AA{<:Real,2}}
 
 Transform multi-component conservative -> primitive variables
 """
-function mixture_conserve_prim(W::AbstractMatrix{T}, γ) where {T<:Real}
+function mixture_conserve_prim(W::AM{T}, γ) where {T<:Real}
     if eltype(W) <: Integer
         prim = similar(W, Float64)
     else
@@ -201,8 +201,8 @@ end
 
 """
     aap_hs_prim(
-        prim::AbstractArray{<:Real,2},
-        tau::AbstractArray{<:Real,1},
+        prim::AA{<:Real,2},
+        tau::AA{<:Real,1},
         mi::Real,
         ni::Real,
         me::Real,
@@ -213,8 +213,8 @@ end
 Calculate mixture primitive variables from AAP model
 """
 function aap_hs_prim(
-    prim::AbstractMatrix{T1},
-    tau::AbstractVector{T2},
+    prim::AM{T1},
+    tau::AV{T2},
     mi,
     ni,
     me,
@@ -450,14 +450,14 @@ burgers_flux(u) = 0.5 * u^2
 
 
 """
-    euler_flux(w::AbstractVector{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
+    euler_flux(w::AV{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
 
 Theoretical fluxes of Euler Equations
 
 * @return: flux tuple
 
 """
-function euler_flux(w::AbstractVector{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
+function euler_flux(w::AV{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
     prim = conserve_prim(w, γ)
     p = 0.5 * prim[1] / prim[end]
 
@@ -514,14 +514,14 @@ end
 
 
 """
-    euler_jacobi(w::AbstractVector{T}, γ) where {T<:Real}
+    euler_jacobi(w::AV{T}, γ) where {T<:Real}
 
 Flux Jacobian of Euler Equations
 
 * @return: Jacobian matrix A
 
 """
-function euler_jacobi(w::AbstractVector{T}, γ) where {T<:Real}
+function euler_jacobi(w::AV{T}, γ) where {T<:Real}
     if eltype(w) <: Integer
         A = similar(w, Float64, 3, 3)
     else

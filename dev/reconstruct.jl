@@ -57,7 +57,7 @@ nt = ks.set.maxTime ÷ dt |> Int
     @inbounds Threads.@threads for i in eachindex(face)
         vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
         vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
-                
+                    
         if !(-1 in ps.faceCells[i, :])
             KitBase.flux_kfvs!(
                 face[i].fw,
@@ -94,7 +94,7 @@ nt = ks.set.maxTime ÷ dt |> Int
                     dt,
                     face[i].len,
                 )
-                    
+                        
                 face[i].fw .= KitBase.global_frame(face[i].fw, face[i].n[1], face[i].n[2])
             end
         end
@@ -140,7 +140,7 @@ nt = ks.set.maxTime ÷ dt |> Int
             )
         end
     end
-            
+                
     for i in eachindex(ps.cellType)
         if ps.cellType[i] == 3
             ids = ps.cellNeighbors[i, :]

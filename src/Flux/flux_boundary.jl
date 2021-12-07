@@ -14,18 +14,14 @@ Maxwell's diffusive boundary flux
 
 """
 function flux_boundary_maxwell!(
-    fw::AbstractVector{T1},
-    bc::AbstractVector{T2},
-    w::AbstractVector{T3},
+    fw::AV{T1},
+    bc::AV{T2},
+    w::AV{T3},
     inK,
     γ,
     dt,
     rot, # 1 / -1
-) where {
-    T1<:AbstractFloat,
-    T2<:Real,
-    T3<:Real,
-} # 1D continuum
+) where {T1<:FN,T2<:Real,T3<:Real} # 1D continuum
 
     @assert length(bc) == 3
 
@@ -47,10 +43,10 @@ end
 
 #--- 1D2F1V ---#
 function flux_boundary_maxwell!(
-    fw::AbstractVector{T1},
+    fw::AV{T1},
     fh::T2,
     fb::T2,
-    bc::AbstractVector{T3},
+    bc::AV{T3},
     h::T4,
     b::T4,
     u::T5,
@@ -59,11 +55,11 @@ function flux_boundary_maxwell!(
     dt,
     rot = 1,
 ) where {
-    T1<:AbstractFloat,
-    T2<:AbstractVector{<:AbstractFloat},
+    T1<:FN,
+    T2<:AV{<:FN},
     T3<:Real,
-    T4<:AbstractVector{<:AbstractFloat},
-    T5<:AbstractVector{<:AbstractFloat},
+    T4<:AV{<:FN},
+    T5<:AV{<:FN},
 } # 1D2F1V
 
     @assert length(bc) == 3
@@ -96,19 +92,15 @@ end
 
 #--- 2D Continuum ---#
 function flux_boundary_maxwell!(
-    fw::AbstractVector{T1},
-    bc::AbstractVector{T2},
-    w::AbstractVector{T3},
+    fw::AV{T1},
+    bc::AV{T2},
+    w::AV{T3},
     inK,
     γ,
     dt,
     len,
     rot,
-) where {
-    T1<:Real,
-    T2<:Real,
-    T3<:Real,
-}
+) where {T1<:Real,T2<:Real,T3<:Real}
 
     @assert length(bc) == 4
 
@@ -132,10 +124,10 @@ end
 # 2D1F2V
 # ------------------------------------------------------------
 function flux_boundary_maxwell!(
-    fw::AbstractVector{T1},
-    fh::AbstractMatrix{T2},
-    bc::AbstractVector{T3},
-    h::AbstractMatrix{T4},
+    fw::AV{T1},
+    fh::AM{T2},
+    bc::AV{T3},
+    h::AM{T4},
     u::T5,
     v::T5,
     ω::T5,
@@ -143,11 +135,11 @@ function flux_boundary_maxwell!(
     len,
     rot = 1,
 ) where {
-    T1<:AbstractFloat,
-    T2<:AbstractFloat,
+    T1<:FN,
+    T2<:FN,
     T3<:Real,
-    T4<:AbstractFloat,
-    T5<:AbstractMatrix{<:AbstractFloat},
+    T4<:FN,
+    T5<:AM{<:FN},
 }
 
     @assert length(bc) == 4
@@ -179,10 +171,10 @@ end
 # 2D2F2V
 # ------------------------------------------------------------
 function flux_boundary_maxwell!(
-    fw::AbstractVector{T1},
+    fw::AV{T1},
     fh::T2,
     fb::T2,
-    bc::AbstractVector{T3},
+    bc::AV{T3},
     h::T4,
     b::T4,
     u::T5,
@@ -193,11 +185,11 @@ function flux_boundary_maxwell!(
     len,
     rot = 1,
 ) where {
-    T1<:AbstractFloat,
-    T2<:AbstractMatrix{<:AbstractFloat},
+    T1<:FN,
+    T2<:AM{<:FN},
     T3<:Real,
-    T4<:AbstractMatrix{<:AbstractFloat},
-    T5<:AbstractMatrix{<:AbstractFloat},
+    T4<:AM{<:FN},
+    T5<:AM{<:FN},
 }
 
     @assert length(bc) == 4
@@ -238,10 +230,10 @@ end
 # 1F3V
 # ------------------------------------------------------------
 function flux_boundary_maxwell!(
-    fw::AbstractVector{T1},
-    ff::AbstractArray{T2,3},
-    bc::AbstractVector{T3},
-    f::AbstractArray{T4,3},
+    fw::AV{T1},
+    ff::AA{T2,3},
+    bc::AV{T3},
+    f::AA{T4,3},
     u::T5,
     v::T5,
     w::T5,
@@ -250,11 +242,11 @@ function flux_boundary_maxwell!(
     area,
     rot = 1,
 ) where {
-    T1<:AbstractFloat,
-    T2<:AbstractFloat,
+    T1<:FN,
+    T2<:FN,
     T3<:Real,
-    T4<:AbstractFloat,
-    T5<:AbstractArray{<:AbstractFloat,3},
+    T4<:FN,
+    T5<:AA{<:FN,3},
 }
 
     @assert length(bc) == 5
@@ -300,18 +292,13 @@ Specular reflection boundary flux
 
 """
 function flux_boundary_specular!(
-    fw::AbstractVector{T1},
-    ff::AbstractVector{T2},
-    f::AbstractVector{T3},
+    fw::AV{T1},
+    ff::AV{T2},
+    f::AV{T3},
     u::T4,
     ω::T4,
     dt,
-) where {
-    T1<:Real,
-    T2<:AbstractFloat,
-    T3<:AbstractFloat,
-    T4<:AbstractVector{<:AbstractFloat},
-} # 1D1F1V
+) where {T1<:Real,T2<:FN,T3<:FN,T4<:AV{<:FN}} # 1D1F1V
 
     fWall = similar(f)
     for i in eachindex(f)
@@ -332,7 +319,7 @@ end
 # 1D2F1V
 # ------------------------------------------------------------
 function flux_boundary_specular!(
-    fw::AbstractVector{T1},
+    fw::AV{T1},
     fh::T2,
     fb::T2,
     h::T3,
@@ -342,9 +329,9 @@ function flux_boundary_specular!(
     dt,
 ) where {
     T1<:Real,
-    T2<:AbstractVector{<:AbstractFloat},
-    T3<:AbstractVector{<:AbstractFloat},
-    T4<:AbstractVector{<:AbstractFloat},
+    T2<:AV{<:FN},
+    T3<:AV{<:FN},
+    T4<:AV{<:FN},
 }
 
     hWall = similar(h)

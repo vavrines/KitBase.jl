@@ -56,7 +56,7 @@ end
 
 
 """
-    Particle1D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
+    Particle1D(M::FN, X::Real, V::AA, IDX::Integer, T::Real)
 
 1D particle
 
@@ -89,7 +89,7 @@ end
 
 
 """
-    Particle2D(M::AbstractFloat, X::Real, V::AbstractArray, IDX::Integer, T::Real)
+    Particle2D(M::FN, X::Real, V::AA, IDX::Integer, T::Real)
 
 2D particle
 
@@ -109,10 +109,10 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
     tc::T1
 
     function Particle2D(
-        M::AbstractFloat,
+        M::FN,
         X::Real,
         Y::Real,
-        V::AbstractArray,
+        V::AA,
         E,
         IDX::Integer,
         IDY::Integer,
@@ -136,7 +136,7 @@ end
 
 
 """
-    ControlVolume1D(X::Real, DX::Real, W::AbstractArray, PRIM::AbstractArray)
+    ControlVolume1D(X::Real, DX::Real, W::AA, PRIM::AA)
 
 1D control volume in correspondence with particle simulation
 
@@ -164,8 +164,8 @@ mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1
     function ControlVolumeParticle1D(
         X::Real,
         DX::Real,
-        W::AbstractArray,
-        PRIM::AbstractArray,
+        W::AA,
+        PRIM::AA,
         TAU = 0.0::Real,
         NP = 0::Integer,
         IP = 0::Integer,
@@ -208,7 +208,7 @@ end
 
 
 """
-    ControlVolume2D(X::Real, DX::Real, Y::Real, DY::Real, W::AbstractArray, PRIM::AbstractArray)
+    ControlVolume2D(X::Real, DX::Real, Y::Real, DY::Real, W::AA, PRIM::AA)
 
 2D control volume in correspondence with particle simulation
 
@@ -240,8 +240,8 @@ mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
         DX::Real,
         Y::Real,
         DY::Real,
-        W::AbstractArray,
-        PRIM::AbstractArray,
+        W::AA,
+        PRIM::AA,
         TAU = 0.0::Real,
         NP = 0::Integer,
         IP = 0::Integer,

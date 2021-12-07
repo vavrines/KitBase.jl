@@ -19,3 +19,4 @@ KitBase.update!(ks, ctr, a1face, a2face, dt, zeros(4); coll = :bgk, bc = :period
 KitBase.update!(ks, ctr, a1face, a2face, dt, zeros(4); coll = :bgk, bc = :mirror)
 
 KitBase.plot_contour(ks, ctr)
+plot(ks, ctr)

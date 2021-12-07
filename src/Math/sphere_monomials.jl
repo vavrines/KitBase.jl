@@ -58,7 +58,7 @@ function monomial_basis(pointX, polyDegree::T) where {T<:Integer}
 end
 
 
-function eval_sphermonomial(quadpts::AbstractVector, polyDegree::Integer)
+function eval_sphermonomial(quadpts::AV, polyDegree::Integer)
     monomialBasis = zeros(basis_size(polyDegree, 1), size(quadpts, 1))
 
     for idx_quad = 1:length(quadpts)

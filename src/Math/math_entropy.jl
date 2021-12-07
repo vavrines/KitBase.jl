@@ -35,7 +35,7 @@ maxwell_boltzmann_dual_prime(f) = exp(f)
 
 Reconstruct mathematical entropy from Legendre dual
 """
-function kinetic_entropy(α::AbstractArray, m::AbstractArray, weights::AbstractVector)
+function kinetic_entropy(α::AA, m::AA, weights::AV)
     B = KitBase.maxwell_boltzmann_dual_prime.(α' * m)[:]
     return sum(maxwell_boltzmann.(B) .* weights)
 end

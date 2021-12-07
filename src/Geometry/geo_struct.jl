@@ -1,5 +1,5 @@
 """
-    struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace
+    struct PSpace1D{TR,TI<:Integer,TA<:AA} <: AbstractPhysicalSpace
         x0::TR
         x1::TR
         nx::TI
@@ -10,7 +10,7 @@
 1D physical space with structured mesh
 
 """
-struct PSpace1D{TR,TI<:Integer,TA<:AbstractArray} <: AbstractPhysicalSpace1D
+struct PSpace1D{TR,TI<:Integer,TA<:AA} <: AbstractPhysicalSpace1D
     x0::TR
     x1::TR
     nx::TI
@@ -39,7 +39,7 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 
 
 """
-    struct PSpace2D{TR<:Real,TI<:Integer,TA<:AbstractMatrix{<:Real},TB<:AbstractArray{<:Real,4}} <: AbstractPhysicalSpace2D
+    struct PSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <: AbstractPhysicalSpace2D
         x0::TR
         x1::TR
         nx::TI
@@ -59,8 +59,8 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 struct PSpace2D{
     TR<:Real,
     TI<:Integer,
-    TA<:AbstractMatrix{<:Real},
-    TB<:AbstractArray{<:Real,4},
+    TA<:AM{<:Real},
+    TB<:AA{<:Real,4},
 } <: AbstractPhysicalSpace2D
     x0::TR
     x1::TR
@@ -143,8 +143,8 @@ PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45
 struct CSpace2D{
     TR<:Real,
     TI<:Integer,
-    TA<:AbstractMatrix{<:Real},
-    TB<:AbstractArray{<:Real,4},
+    TA<:AM{<:Real},
+    TB<:AA{<:Real,4},
 } <: AbstractPhysicalSpace2D
     r0::TR
     r1::TR
@@ -244,15 +244,15 @@ end
 
 
 """
-    ndgrid(v::AbstractVector)
-    ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where T
-    ndgrid(vs::AbstractVector{T}...) where T
+    ndgrid(v::AV)
+    ndgrid(v1::AV{T}, v2::AV{T}) where T
+    ndgrid(vs::AV{T}...) where T
 
 Equivalent N-dimensional mesh generator as matlab
 """
-ndgrid(v::AbstractVector) = copy(v)
+ndgrid(v::AV) = copy(v)
 
-function ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where {T}
+function ndgrid(v1::AV{T}, v2::AV{T}) where {T}
     m, n = length(v1), length(v2)
     v1 = reshape(v1, m, 1)
     v2 = reshape(v2, 1, n)
@@ -260,7 +260,7 @@ function ndgrid(v1::AbstractVector{T}, v2::AbstractVector{T}) where {T}
     return (repeat(v1, 1, n), repeat(v2, m, 1))
 end
 
-function ndgrid(vs::AbstractVector{T}...) where {T}
+function ndgrid(vs::AV{T}...) where {T}
     ndgrid_fill(a, v, s, snext) = begin
         for j = 1:length(a)
             a[j] = v[div(rem(j - 1, snext), s)+1]
@@ -284,21 +284,21 @@ end
 
 
 """
-    2D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1})
-    3D: meshgrid(x::AbstractArray{<:Real,1}, y::AbstractArray{<:Real,1}, z::AbstractArray{<:Real,1})
+    2D: meshgrid(x::AA{<:Real,1}, y::AA{<:Real,1})
+    3D: meshgrid(x::AA{<:Real,1}, y::AA{<:Real,1}, z::AA{<:Real,1})
 
 Equivalent structured mesh generator as matlab
 """
-meshgrid(v::AbstractVector{T}) where {T} = meshgrid(v, v)
+meshgrid(v::AV{T}) where {T} = meshgrid(v, v)
 
-function meshgrid(x::T, y::T) where {T<:AbstractVector{<:Real}}
+function meshgrid(x::T, y::T) where {T<:AV{<:Real}}
     X = [i for j in y, i in x]
     Y = [j for j in y, i in x]
 
     return X, Y
 end
 
-function meshgrid(x::T, y::T, z::T) where {T<:AbstractVector{<:Real}}
+function meshgrid(x::T, y::T, z::T) where {T<:AV{<:Real}}
     X = [i for k in z, j in y, i in x]
     Y = [j for k in z, j in y, i in x]
     Z = [k for k in z, j in y, i in x]
@@ -308,7 +308,7 @@ end
 
 
 """
-    find_idx(x::AbstractArray{<:Real,1}, p::Real; mode = :nonuniform::Symbol)
+    find_idx(x::AA{<:Real,1}, p::Real; mode = :nonuniform::Symbol)
 
 Find the location index of a point in mesh
 
@@ -321,7 +321,7 @@ function find_idx(
     x::T,
     p::Real;
     mode = :nonuniform::Symbol,
-) where {T<:AbstractArray{<:Real,1}}
+) where {T<:AA{<:Real,1}}
 
     if mode == :uniform
         dx = x[2] - x[1]

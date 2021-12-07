@@ -167,7 +167,7 @@ end
     quadrature_weights(
         xyz::X,
         triangles::Y,
-    ) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Integer,2}}
+    ) where {X<:AA{<:Real,2},Y<:AA{<:Integer,2}}
 
 Create quadrature weights from points and triangulation
 
@@ -179,7 +179,7 @@ Create quadrature weights from points and triangulation
 function quadrature_weights(
     xyz::X,
     triangles::Y,
-) where {X<:AbstractArray{<:Real,2},Y<:AbstractArray{<:Integer,2}}
+) where {X<:AA{<:Real,2},Y<:AA{<:Integer,2}}
 
     weights = zeros(axes(xyz, 1))
     nTriangles = size(triangles, 1)

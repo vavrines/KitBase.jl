@@ -216,9 +216,9 @@ end
         ψ::Y,
         phipsi::Z,
     ) where {
-        X<:AbstractArray{<:Real,3},
-        Y<:AbstractArray{<:Real,4},
-        Z<:AbstractArray{<:Real,3},
+        X<:AA{<:Real,3},
+        Y<:AA{<:Real,4},
+        Z<:AA{<:Real,3},
         I<:Integer,
     }
 
@@ -233,9 +233,9 @@ function boltzmann_fft(
     ψ::Y,
     phipsi::Z,
 ) where {
-    X<:AbstractArray{<:Real,3},
-    Y<:AbstractArray{<:Real,4},
-    Z<:AbstractArray{<:Real,3},
+    X<:AA{<:Real,3},
+    Y<:AA{<:Real,4},
+    Z<:AA{<:Real,3},
     I<:Integer,
 }
 
@@ -278,12 +278,12 @@ end
         ψ::TY,
         phipsi::TZ,
     ) where {
-        T1<:AbstractArray{<:Real,3},
-        T2<:AbstractArray{<:Real,3},
+        T1<:AA{<:Real,3},
+        T2<:AA{<:Real,3},
         TR<:Real,
         TI<:Integer,
-        TY<:AbstractArray{<:Real,4},
-        TZ<:AbstractArray{<:Real,3},
+        TY<:AA{<:Real,4},
+        TZ<:AA{<:Real,3},
     }
 
 Calculate collision operator with FFT-based fast spectral method
@@ -298,12 +298,12 @@ function boltzmann_fft!(
     ψ::TY,
     phipsi::TZ,
 ) where {
-    T1<:AbstractArray{<:Real,3},
-    T2<:AbstractArray{<:Real,3},
+    T1<:AA{<:Real,3},
+    T2<:AA{<:Real,3},
     TR<:Real,
     TI<:Integer,
-    TY<:AbstractArray{<:Real,4},
-    TZ<:AbstractArray{<:Real,3},
+    TY<:AA{<:Real,4},
+    TZ<:AA{<:Real,3},
 }
 
     f_spec = f .+ 0im

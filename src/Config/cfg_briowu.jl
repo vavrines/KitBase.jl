@@ -155,7 +155,7 @@ function ib_briowu(
 
 end
 
-function ib_briowu(gam, mi, me, uspace::AbstractMatrix{T}) where {T<:AbstractFloat}
+function ib_briowu(gam, mi, me, uspace::AM{T}) where {T<:FN}
 
     # upstream
     primL = zeros(5, 2)
@@ -249,7 +249,7 @@ function ib_briowu(
     me,
     uspace::T,
     vspace::T,
-) where {T<:AbstractArray{<:AbstractFloat,3}}
+) where {T<:AA{<:FN,3}}
 
     # upstream
     primL = zeros(5, 2)

@@ -10,9 +10,9 @@ mutable struct Solution1D{A} <: AbstractSolution1D
     sw::A
 
     function Solution1D(
-        w::AbstractArray,
-        prim::AbstractArray,
-        sw = [zeros(axes(w[1])) for i in axes(w, 1)]::AbstractArray,
+        w::AA,
+        prim::AA,
+        sw = [zeros(axes(w[1])) for i in axes(w, 1)]::AA,
     )
         new{typeof(w)}(w, prim, sw)
     end
@@ -28,7 +28,7 @@ mutable struct Solution1D1F{A,B} <: AbstractSolution1D
     f::B
     sf::B
 
-    function Solution1D1F(w::AbstractArray, prim::AbstractArray, f::AbstractArray)
+    function Solution1D1F(w::AA, prim::AA, f::AA)
         sw = [zeros(axes(w[1])) for i in axes(w, 1)]
         sf = [zeros(axes(f[1])) for i in axes(f, 1)]
 
@@ -36,11 +36,11 @@ mutable struct Solution1D1F{A,B} <: AbstractSolution1D
     end
 
     function Solution1D1F(
-        w::AbstractArray,
-        prim::AbstractArray,
-        sw::AbstractArray,
-        f::AbstractArray,
-        sf::AbstractArray,
+        w::AA,
+        prim::AA,
+        sw::AA,
+        f::AA,
+        sf::AA,
     )
         new{typeof(w),typeof(f)}(w, prim, sw, f, sf)
     end
@@ -59,10 +59,10 @@ mutable struct Solution1D2F{A,B} <: AbstractSolution1D
     sb::B
 
     function Solution1D2F(
-        w::AbstractArray,
-        prim::AbstractArray,
-        h::AbstractArray,
-        b::AbstractArray,
+        w::AA,
+        prim::AA,
+        h::AA,
+        b::AA,
     )
         sw = [zeros(axes(w[1])) for i in axes(w, 1)]
         sh = [zeros(axes(h[1])) for i in axes(h, 1)]
@@ -72,13 +72,13 @@ mutable struct Solution1D2F{A,B} <: AbstractSolution1D
     end
 
     function Solution1D2F(
-        w::AbstractArray,
-        prim::AbstractArray,
-        sw::AbstractArray,
-        h::AbstractArray,
-        b::AbstractArray,
-        sh::AbstractArray,
-        sb::AbstractArray,
+        w::AA,
+        prim::AA,
+        sw::AA,
+        h::AA,
+        b::AA,
+        sh::AA,
+        sb::AA,
     )
         new{typeof(w),typeof(h)}(w, prim, sw, h, b, sh, sb)
     end
@@ -93,11 +93,11 @@ mutable struct Solution2D{A,B} <: AbstractSolution2D
     sw::B
 
     function Solution2D(
-        w::AbstractArray,
-        prim::AbstractArray,
+        w::AA,
+        prim::AA,
         sw = [
             zeros((axes(w[1])..., Base.OneTo(2))) for i in axes(w, 1), j in axes(w, 2)
-        ]::AbstractArray,
+        ]::AA,
     )
 
         new{typeof(w),typeof(sw)}(w, prim, sw)
@@ -114,7 +114,7 @@ mutable struct Solution2D1F{A,B,C,D} <: AbstractSolution2D
     f::C
     sf::D
 
-    function Solution2D1F(w::AbstractArray, prim::AbstractArray, f::AbstractArray)
+    function Solution2D1F(w::AA, prim::AA, f::AA)
         sw = [zeros((axes(w[1])..., Base.OneTo(2))) for i in axes(w, 1), j in axes(w, 2)]
         sf = [zeros((axes(f[1])..., Base.OneTo(2))) for i in axes(f, 1), j in axes(f, 2)]
 
@@ -122,11 +122,11 @@ mutable struct Solution2D1F{A,B,C,D} <: AbstractSolution2D
     end
 
     function Solution2D1F(
-        w::AbstractArray,
-        prim::AbstractArray,
-        sw::AbstractArray,
-        f::AbstractArray,
-        sf::AbstractArray,
+        w::AA,
+        prim::AA,
+        sw::AA,
+        f::AA,
+        sf::AA,
     )
         new{typeof(w),typeof(sw),typeof(f),typeof(sf)}(w, prim, sw, f, sf)
     end
@@ -145,10 +145,10 @@ mutable struct Solution2D2F{A,B,C,D} <: AbstractSolution2D
     sb::D
 
     function Solution2D2F(
-        w::AbstractArray,
-        prim::AbstractArray,
-        h::AbstractArray,
-        b::AbstractArray,
+        w::AA,
+        prim::AA,
+        h::AA,
+        b::AA,
     )
         sw = [zeros((axes(w[1])..., Base.OneTo(2))) for i in axes(w, 1), j in axes(w, 2)]
         sh = [zeros((axes(h[1])..., Base.OneTo(2))) for i in axes(h, 1), j in axes(h, 2)]
@@ -158,13 +158,13 @@ mutable struct Solution2D2F{A,B,C,D} <: AbstractSolution2D
     end
 
     function Solution2D2F(
-        w::AbstractArray,
-        prim::AbstractArray,
-        sw::AbstractArray,
-        h::AbstractArray,
-        b::AbstractArray,
-        sh::AbstractArray,
-        sb::AbstractArray,
+        w::AA,
+        prim::AA,
+        sw::AA,
+        h::AA,
+        b::AA,
+        sh::AA,
+        sb::AA,
     )
         new{typeof(w),typeof(sw),typeof(h),typeof(sh)}(w, prim, sw, h, b, sh, sb)
     end

@@ -7,8 +7,8 @@
         mode = Symbol(KS.set.flux)::Symbol,
         bc = :fix::Symbol,
     ) where {
-        T1<:AbstractArray{<:AbstractControlVolume1D,1},
-        T2<:AbstractArray{<:AbstractInterface1D,1},
+        T1<:AA{<:AbstractControlVolume1D,1},
+        T2<:AA{<:AbstractInterface1D,1},
     }
     
     evolve!(
@@ -20,8 +20,8 @@
         mode = Symbol(KS.set.flux)::Symbol,
         bc = :fix::Symbol,
     ) where {
-        T1<:AbstractArray{<:AbstractControlVolume2D,2},
-        T2<:AbstractArray{<:AbstractInterface2D,2},
+        T1<:AA{<:AbstractControlVolume2D,2},
+        T2<:AA{<:AbstractInterface2D,2},
     }
 
 Evolution of boundary fluxes
@@ -34,7 +34,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractArray{ControlVolume1D,1},T2<:AbstractArray{Interface1D,1}}
+) where {T1<:AA{ControlVolume1D,1},T2<:AA{Interface1D,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -128,7 +128,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractArray{ControlVolume1D1F,1},T2<:AbstractArray{Interface1D1F,1}}
+) where {T1<:AA{ControlVolume1D1F,1},T2<:AA{Interface1D1F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -227,7 +227,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractArray{ControlVolume1D2F,1},T2<:AbstractArray{Interface1D2F,1}}
+) where {T1<:AA{ControlVolume1D2F,1},T2<:AA{Interface1D2F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -353,7 +353,7 @@ function evolve!(
     bc = symbolize(KS.set.boundary),
     isPlasma = false::Bool,
     isMHD = false::Bool,
-) where {T1<:AbstractArray{ControlVolume1D4F,1},T2<:AbstractArray{Interface1D4F,1}}
+) where {T1<:AA{ControlVolume1D4F,1},T2<:AA{Interface1D4F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -466,7 +466,7 @@ function evolve!(
     bc = symbolize(KS.set.boundary),
     isPlasma = false::Bool,
     isMHD = false::Bool,
-) where {T1<:AbstractArray{ControlVolume1D3F,1},T2<:AbstractArray{Interface1D3F,1}}
+) where {T1<:AA{ControlVolume1D3F,1},T2<:AA{Interface1D3F,1}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1
@@ -611,7 +611,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractArray{ControlVolume2D,2},T2<:AbstractArray{Interface2D,2}}
+) where {T1<:AA{ControlVolume2D,2},T2<:AA{Interface2D,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -698,7 +698,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractArray{ControlVolume2D1F,2},T2<:AbstractArray{Interface2D1F,2}}
+) where {T1<:AA{ControlVolume2D1F,2},T2<:AA{Interface2D1F,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -959,7 +959,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractArray{ControlVolume2D2F,2},T2<:AbstractArray{Interface2D2F,2}}
+) where {T1<:AA{ControlVolume2D2F,2},T2<:AA{Interface2D2F,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -1141,7 +1141,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractVector{ControlVolumeUS},T2<:AbstractVector{Interface2D}}
+) where {T1<:AV{ControlVolumeUS},T2<:AV{Interface2D}}
 
     if mode == :hll
 
@@ -1222,7 +1222,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractVector{ControlVolumeUS1F},T2<:AbstractVector{Interface2D1F}}
+) where {T1<:AV{ControlVolumeUS1F},T2<:AV{Interface2D1F}}
 
     if mode == :kfvs
 
@@ -1299,7 +1299,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractVector{ControlVolumeUS2F},T2<:AbstractVector{Interface2D2F}}
+) where {T1<:AV{ControlVolumeUS2F},T2<:AV{Interface2D2F}}
 
     if mode == :kfvs
 

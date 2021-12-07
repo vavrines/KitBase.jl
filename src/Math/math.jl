@@ -6,7 +6,8 @@ export linspace,
        heaviside,
        fortsign,
        mat_split
-export central_diff,
+export finite_difference,
+       central_diff,
        central_diff!,
        central_diff2,
        central_diff2!,
@@ -23,6 +24,7 @@ export ylm, rlylm, eval_spherharmonic
 export basis_size, eval_sphermonomial
 
 include("math_general.jl")
+include("math_difference.jl")
 include("math_entropy.jl")
 include("math_closure.jl")
 include("sphere_harmonics.jl")

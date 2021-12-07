@@ -7,7 +7,7 @@
 
 Spherical linear interpolation
 """
-function slerp(pt1::T, pt2::T, n::Integer) where {T<:AbstractArray{<:Real,1}}
+function slerp(pt1::T, pt2::T, n::Integer) where {T<:AA{<:Real,1}}
     if norm(pt1 - pt2) < 1e-10 # same points
         return repeat(pt1, 1, n) # return n copies of that point
     end
@@ -31,8 +31,8 @@ Cleaner for all duplicate (non unique) entries of quadrature points and triangle
 
 """
 function unique(
-    Points::AbstractMatrix{T1},
-    Triangles::AbstractMatrix{T2},
+    Points::AM{T1},
+    Triangles::AM{T2},
 ) where {T1<:Real,T2<:Integer}
 
     nPoints = size(Points)[2]
@@ -121,12 +121,7 @@ function unique(
 end
 
 
-function area(
-    A::T,
-    B::T,
-    C::T,
-    geometry = :plane::Symbol,
-) where {T<:AbstractVector{<:Real}}
+function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
 
     if geometry == :plane
         alpha = angle(B, A, C)
@@ -158,7 +153,7 @@ function angle(
     A::T,
     C::T,
     geometry = :plane::Symbol,
-) where {T<:AbstractVector{<:Real}}
+) where {T<:AV{<:Real}}
 
     if geometry == :plane
         u, v = A - B, C - A
@@ -184,11 +179,7 @@ function angle(
 end
 
 
-function distance(
-    v1::T,
-    v2::T,
-    geometry = :plane::Symbol,
-) where {T<:AbstractVector{<:Real}}
+function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
 
     if geometry == :plane
         return norm(v1 - v2)
@@ -206,7 +197,7 @@ function distance(
 end
 
 
-function muphi_xyz!(muphi::T, xyz::T) where {T<:AbstractMatrix{<:Real}}
+function muphi_xyz!(muphi::T, xyz::T) where {T<:AM{<:Real}}
     n = size(xyz, 1)
     for i = 1:n
         xyz[i, 1] = sqrt(1 - muphi[i, 1]^2) * cos(muphi[i, 2])
@@ -216,7 +207,7 @@ function muphi_xyz!(muphi::T, xyz::T) where {T<:AbstractMatrix{<:Real}}
 end
 
 
-function xyz_muphi!(xyz::T, muphi::T) where {T<:AbstractMatrix{<:Real}}
+function xyz_muphi!(xyz::T, muphi::T) where {T<:AM{<:Real}}
     n = size(xyz, 1)
     for i = 1:n
         muphi[i, 1] = xyz[i, 3]

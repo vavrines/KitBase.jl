@@ -8,6 +8,5 @@ ks, ctr, face, simTime = KitBase.initialize(D)
 ks, ctr, face, simTime = KitBase.initialize("config.txt")
 KitBase.write_jld(ks, ctr)
 
-using KitBase.Plots
-plot_line(ks, ctr)
-#plot(ks, ctr, legend=:none)
+KitBase.plot_line(ks, ctr)
+plot(ks, ctr, legend = :none)

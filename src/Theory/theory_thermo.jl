@@ -48,10 +48,10 @@ Calculate speed of sound
 """
 sound_speed(λ::Real, γ::Real) = (0.5 * γ / λ)^0.5
 
-sound_speed(prim::AbstractVector{T}, γ) where {T<:Real} = sound_speed(prim[end], γ)
+sound_speed(prim::AV{T}, γ) where {T<:Real} = sound_speed(prim[end], γ)
 
 #--- mixture ---#
-function sound_speed(prim::AbstractMatrix{T}, γ) where {T<:Real}
+function sound_speed(prim::AM{T}, γ) where {T<:Real}
     c = similar(prim, axes(prim, 2))
     for j in eachindex(c)
         c[j] = sound_speed(prim[end, j], γ)
