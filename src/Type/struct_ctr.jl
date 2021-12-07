@@ -193,12 +193,12 @@ end
 function ControlVolume1D3F(
     W::AA{<:Real,2},
     PRIM::AA{<:Real,2},
-    H0::AA{<:AbstractFloat,3},
-    H1::AA{<:AbstractFloat,3},
-    H2::AA{<:AbstractFloat,3},
-    E0::AA{<:AbstractFloat,1},
-    B0::AA{<:AbstractFloat,1},
-    L::AA{<:AbstractFloat,2},
+    H0::AA{<:FN,3},
+    H1::AA{<:FN,3},
+    H2::AA{<:FN,3},
+    E0::AA{<:FN,1},
+    B0::AA{<:FN,1},
+    L::AA{<:FN,2},
 )
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -239,9 +239,9 @@ end
 function ControlVolume1D3F(
     W::AA{<:Real,1},
     PRIM::AA{<:Real,1},
-    H0::AA{<:AbstractFloat,1},
-    H1::AA{<:AbstractFloat,1},
-    H2::AA{<:AbstractFloat,1},
+    H0::AA{<:FN,1},
+    H1::AA{<:FN,1},
+    H2::AA{<:FN,1},
 )
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -282,12 +282,12 @@ end
 function ControlVolume1D3F(
     W::AA{<:Real,3},
     PRIM::AA{<:Real,3},
-    H0::AA{<:AbstractFloat,4},
-    H1::AA{<:AbstractFloat,4},
-    H2::AA{<:AbstractFloat,4},
-    E0::AA{<:AbstractFloat,2},
-    B0::AA{<:AbstractFloat,2},
-    L::AA{<:AbstractFloat,3},
+    H0::AA{<:FN,4},
+    H1::AA{<:FN,4},
+    H2::AA{<:FN,4},
+    E0::AA{<:FN,2},
+    B0::AA{<:FN,2},
+    L::AA{<:FN,3},
 )
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -390,7 +390,7 @@ end
 function ControlVolume1D4F(
     W::AA{<:Real,2},
     PRIM::AA{<:Real,2},
-    H0::AA{<:AbstractFloat,2},
+    H0::AA{<:FN,2},
     H1::AA{Float64,2},
     H2::AA{Float64,2},
     H3::AA{Float64,2},
@@ -443,7 +443,7 @@ end
 function ControlVolume1D4F(
     W::AA{<:Real,3},
     PRIM::AA{<:Real,3},
-    H0::AA{<:AbstractFloat,3},
+    H0::AA{<:FN,3},
     H1::AA{Float64,3},
     H2::AA{Float64,3},
     H3::AA{Float64,3},
@@ -771,9 +771,9 @@ end
 function ControlVolume2D3F(
     W::AA{<:Real,1},
     PRIM::AA{<:Real,1},
-    H0::AA{<:AbstractFloat,2},
-    H1::AA{<:AbstractFloat,2},
-    H2::AA{<:AbstractFloat,2},
+    H0::AA{<:FN,2},
+    H1::AA{<:FN,2},
+    H2::AA{<:FN,2},
 )
 
     w = deepcopy(W)
@@ -871,7 +871,7 @@ mutable struct ControlVolumeUS{E,F,A,B,C} <: AbstractUnstructControlVolume
     sw::C
 end
 
-function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AbstractVector}}
+function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AV}}
     n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)

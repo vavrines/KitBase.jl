@@ -119,19 +119,19 @@ end
 
 
 """
-    2D: unit_normal(p1::T, p2::T) where {T<:AbstractVector}
-    3D: unit_normal(p1::T, p2::T, p3::T) where {T<:AbstractVector}
+    2D: unit_normal(p1::T, p2::T) where {T<:AV}
+    3D: unit_normal(p1::T, p2::T, p3::T) where {T<:AV}
 
 Calculate unit normal vector
 """
-function unit_normal(p1::T, p2::T) where {T<:AbstractVector}
+function unit_normal(p1::T, p2::T) where {T<:AV}
     Δ = p2 .- p1
     l = norm(Δ) + 1e-6
 
     return [-Δ[2], Δ[1]] ./ l
 end
 
-function unit_normal(p1::T, p2::T, p3::T) where {T<:AbstractVector}
+function unit_normal(p1::T, p2::T, p3::T) where {T<:AV}
     v1 = p2 .- p1
     v2 = p3 .- p1
 
@@ -143,14 +143,14 @@ end
 
 
 """
-    point_distance(p1::T, p2::T) where {T<:AbstractVector}
-    point_distance(p::T, p1::T, p2::T) where {T<:AbstractVector}
+    point_distance(p1::T, p2::T) where {T<:AV}
+    point_distance(p::T, p1::T, p2::T) where {T<:AV}
 
 Calculate point-point/line/surface distance
 """
-point_distance(p1::T, p2::T) where {T<:AbstractVector} = norm(p1 .- p2)
+point_distance(p1::T, p2::T) where {T<:AV} = norm(p1 .- p2)
 
-function point_distance(p::T, p1::T, p2::T) where {T<:AbstractVector}
+function point_distance(p::T, p1::T, p2::T) where {T<:AV}
     x0, y0 = p
     x1, y1 = p1
     x2, y2 = p2

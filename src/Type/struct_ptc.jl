@@ -56,7 +56,7 @@ end
 
 
 """
-    Particle1D(M::AbstractFloat, X::Real, V::AA, IDX::Integer, T::Real)
+    Particle1D(M::FN, X::Real, V::AA, IDX::Integer, T::Real)
 
 1D particle
 
@@ -89,7 +89,7 @@ end
 
 
 """
-    Particle2D(M::AbstractFloat, X::Real, V::AA, IDX::Integer, T::Real)
+    Particle2D(M::FN, X::Real, V::AA, IDX::Integer, T::Real)
 
 2D particle
 
@@ -109,7 +109,7 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
     tc::T1
 
     function Particle2D(
-        M::AbstractFloat,
+        M::FN,
         X::Real,
         Y::Real,
         V::AA,

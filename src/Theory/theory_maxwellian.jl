@@ -15,19 +15,19 @@ Maxwellian in discrete form
 """
 maxwellian(u, ρ, U, λ) = @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
 
-maxwellian(u, prim::AbstractVector) = maxwellian(u, prim[1], prim[2], prim[end]) # in case of input with length 4/5
+maxwellian(u, prim::AV) = maxwellian(u, prim[1], prim[2], prim[end]) # in case of input with length 4/5
 
 #--- 2V ---#
 maxwellian(u, v, ρ, U, V, λ) = @. ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
 
-maxwellian(u, v, prim::AbstractVector) =
+maxwellian(u, v, prim::AV) =
     maxwellian(u, v, prim[1], prim[2], prim[3], prim[end]) # in case of input with length 5
 
 #--- 3V ---#
 maxwellian(u, v, w, ρ, U, V, W, λ) =
     @. ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
 
-maxwellian(u, v, w, prim::AbstractVector) =
+maxwellian(u, v, w, prim::AV) =
     maxwellian(u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
 
@@ -51,14 +51,14 @@ In-place Maxwellian
 * @return: Maxwellian distribution function
 
 """
-function maxwellian!(M::AbstractVector, u::AbstractVector, ρ, U, λ)
+function maxwellian!(M::AV, u::AV, ρ, U, λ)
 
     @. M = ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
     return nothing
 
 end
 
-maxwellian!(M::AbstractVector, u::AbstractVector, prim::AbstractVector) =
+maxwellian!(M::AV, u::AV, prim::AV) =
     maxwellian!(M, u, prim[1], prim[2], prim[end])
 
 # Rykov
@@ -69,11 +69,11 @@ function maxwellian!(
     Hr::T,
     Br::T,
     Rr::T,
-    u::AbstractVector,
-    prim::AbstractVector,
+    u::AV,
+    prim::AV,
     K,
     Kr,
-) where {T<:AbstractVector}
+) where {T<:AV}
 
     @. Ht = prim[1] * sqrt(prim[4] / π) * exp(-prim[4] * (u - prim[2])^2)
     @. Bt = Ht * K / (2.0 * prim[4])
@@ -94,7 +94,7 @@ function maxwellian!(M::AA, u::T, v::T, ρ, U, V, λ) where {T<:AA}
 
 end
 
-maxwellian!(M::AA, u::T, v::T, prim::AbstractVector) where {T<:AA} =
+maxwellian!(M::AA, u::T, v::T, prim::AV) where {T<:AA} =
     maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
 
 # Rykov
@@ -107,7 +107,7 @@ function maxwellian!(
     Rr::T1,
     u::T2,
     v::T2,
-    prim::AbstractVector,
+    prim::AV,
     K,
     Kr,
 ) where {T1<:AA,T2<:AA}
@@ -143,7 +143,7 @@ maxwellian!(
     u::T,
     v::T,
     w::T,
-    prim::AbstractVector,
+    prim::AV,
 ) where {T<:AA} =
     maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
@@ -155,7 +155,7 @@ maxwellian!(
 
 Multi-component Maxwellian in discrete form
 """
-function mixture_maxwellian(u::AbstractMatrix, prim::AbstractMatrix)
+function mixture_maxwellian(u::AM, prim::AM)
 
     mixM = similar(u)
     mixture_maxwellian!(mixM, u, prim)
@@ -165,7 +165,7 @@ function mixture_maxwellian(u::AbstractMatrix, prim::AbstractMatrix)
 end
 
 #--- 2V ---#
-function mixture_maxwellian(u::X, v::X, prim::AbstractMatrix) where {X<:AA}
+function mixture_maxwellian(u::X, v::X, prim::AM) where {X<:AA}
 
     mixM = similar(u)
     mixture_maxwellian!(mixM, u, v, prim)
@@ -175,7 +175,7 @@ function mixture_maxwellian(u::X, v::X, prim::AbstractMatrix) where {X<:AA}
 end
 
 #--- 3V ---#
-function mixture_maxwellian(u::X, v::X, w::X, prim::AbstractMatrix) where {X<:AA}
+function mixture_maxwellian(u::X, v::X, w::X, prim::AM) where {X<:AA}
 
     mixM = similar(u)
     mixture_maxwellian!(mixM, u, v, w, prim)
@@ -194,9 +194,9 @@ In-place multi-component Maxwellian
 
 """
 function mixture_maxwellian!(
-    M::AbstractMatrix,
+    M::AM,
     u::AA{T,2},
-    prim::AbstractMatrix,
+    prim::AM,
 ) where {T}
 
     for j in axes(M, 2)
@@ -213,7 +213,7 @@ function mixture_maxwellian!(
     M::AA{T1,3},
     u::T2,
     v::T2,
-    prim::AbstractMatrix,
+    prim::AM,
 ) where {T1,T2<:AA{T3,3}} where {T3}
 
     for k in axes(M, 3)
@@ -226,11 +226,11 @@ function mixture_maxwellian!(
 end
 
 function mixture_maxwellian!(
-    M::AbstractMatrix,
+    M::AM,
     u::T,
     v::T,
-    prim::AbstractMatrix,
-) where {T<:AbstractMatrix}
+    prim::AM,
+) where {T<:AM}
 
     for k in axes(M, 2)
         _M = @view M[:, k]
@@ -247,7 +247,7 @@ function mixture_maxwellian!(
     u::T2,
     v::T2,
     w::T2,
-    prim::AbstractMatrix,
+    prim::AM,
 ) where {T1,T2<:AA{T3,4}} where {T3}
 
     for l in axes(M, 4)
@@ -260,12 +260,12 @@ function mixture_maxwellian!(
 end
 
 function mixture_maxwellian!(
-    M::AbstractMatrix,
+    M::AM,
     u::T,
     v::T,
     w::T,
-    prim::AbstractMatrix,
-) where {T<:AbstractMatrix}
+    prim::AM,
+) where {T<:AM}
 
     for l in axes(M, 2)
         _M = @view M[:, l]

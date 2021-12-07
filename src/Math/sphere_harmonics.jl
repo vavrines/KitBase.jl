@@ -85,7 +85,7 @@ end
 
 Evaluate spherical harmonics basis at given quadrature points
 """
-function eval_spherharmonic(points::AbstractMatrix{T}, L) where {T<:Real}
+function eval_spherharmonic(points::AM{T}, L) where {T<:Real}
     ne = (L + 1)^2
     nq = size(points, 1)
     m = zeros(ne, nq)

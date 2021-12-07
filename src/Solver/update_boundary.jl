@@ -1059,8 +1059,8 @@ function update_boundary!(
     bc,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractVector{ControlVolumeUS},
-    Z<:AbstractVector{Interface2D},
+    Y<:AV{ControlVolumeUS},
+    Z<:AV{Interface2D},
 }
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
@@ -1083,8 +1083,8 @@ function update_boundary!(
     bc,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractVector{ControlVolumeUS1F},
-    Z<:AbstractVector{Interface2D1F},
+    Y<:AV{ControlVolumeUS1F},
+    Z<:AV{Interface2D1F},
 }
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
@@ -1108,8 +1108,8 @@ function update_boundary!(
     bc,
 ) where {
     X<:AbstractSolverSet,
-    Y<:AbstractVector{ControlVolumeUS2F},
-    Z<:AbstractVector{Interface2D2F},
+    Y<:AV{ControlVolumeUS2F},
+    Z<:AV{Interface2D2F},
 }
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3

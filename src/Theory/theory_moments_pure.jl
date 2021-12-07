@@ -135,7 +135,7 @@ end
 
 
 """
-    moments_conserve(Mu::OffsetArray{<:AbstractFloat,1}, alpha::Integer)
+    moments_conserve(Mu::OffsetArray{<:FN,1}, alpha::Integer)
 
     moments_conserve(Mu::OffsetArray{<:Real,1}, Mxi::OffsetArray{<:Real,1},
         alpha::Integer, delta::Integer)
@@ -146,7 +146,7 @@ end
 Calculate conservative moments of particle distribution
 
 """
-moments_conserve(Mu::T, alpha::I) where {T<:OffsetArray{<:AbstractFloat,1},I<:Integer} =
+moments_conserve(Mu::T, alpha::I) where {T<:OffsetArray{<:FN,1},I<:Integer} =
     Mu[alpha]
 
 function moments_conserve(
@@ -154,7 +154,7 @@ function moments_conserve(
     Mxi::T,
     alpha::I,
     delta::I,
-) where {T<:OffsetArray{<:AbstractFloat,1},I<:Integer}
+) where {T<:OffsetArray{<:FN,1},I<:Integer}
 
     uv = similar(Mu, 3)
     uv[1] = Mu[alpha] * Mxi[delta÷2]
@@ -172,7 +172,7 @@ function moments_conserve(
     alpha::I,
     beta::I,
     delta::I,
-) where {T<:OffsetArray{<:AbstractFloat,1},I<:Integer}
+) where {T<:OffsetArray{<:FN,1},I<:Integer}
 
     if length(Mw) == 3 # internal motion
         uv = similar(Mu, 4)
@@ -211,7 +211,7 @@ function moments_conserve(
     f::X,
     u::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
     w = similar(f, 3)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -226,7 +226,7 @@ function moments_conserve(
     b::X,
     u::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
     w = similar(h, 3)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -241,7 +241,7 @@ function moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(f, 4)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -258,7 +258,7 @@ function moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -281,7 +281,7 @@ function moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(h0, 5)
     w[1] = discrete_moments(h0, u, ω, 0)
     w[2] = discrete_moments(h0, u, ω, 1)
@@ -304,7 +304,7 @@ function moments_conserve(
     v::T,
     w::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,3},T<:AA{<:AbstractFloat,3}}
+) where {X<:AA{<:FN,3},T<:AA{<:FN,3}}
     moments = similar(f, 5)
 
     moments[1] = discrete_moments(f, u, ω, 0)
@@ -329,7 +329,7 @@ function moments_conserve(
     h3::X,
     u::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
     moments = similar(h0, 5)
 
     moments[1] = discrete_moments(h0, u, ω, 0)
@@ -351,7 +351,7 @@ Calculate conservative moments of diatomic particle distribution
     r::X,
     u::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}`
+) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}`
 - 2D: `diatomic_moments_conserve(
     h0::X,
     h1::X,
@@ -359,7 +359,7 @@ Calculate conservative moments of diatomic particle distribution
     u::T,
     v::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}`
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}`
 
 """
 function diatomic_moments_conserve(
@@ -368,7 +368,7 @@ function diatomic_moments_conserve(
     r::X,
     u::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,1},T<:AA{<:AbstractFloat,1}}
+) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -391,7 +391,7 @@ function diatomic_moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AA{<:AbstractFloat,2},T<:AA{<:AbstractFloat,2}}
+) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(h0, 5)
     w[1] = discrete_moments(h0, u, ω, 0)
     w[2] = discrete_moments(h0, u, ω, 1)
@@ -542,9 +542,9 @@ heat_flux(
     u::Z,
     ω::Z,
 ) where {
-    X<:AA{<:AbstractFloat,1},
+    X<:AA{<:FN,1},
     Y<:AA{<:Real,1},
-    Z<:AA{<:AbstractFloat,1},
+    Z<:AA{<:FN,1},
 } = 0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
 
 #--- 3F1V Rykov ---#
@@ -556,9 +556,9 @@ function heat_flux(
     u::Z,
     ω::Z,
 ) where {
-    X<:AA{<:AbstractFloat,1},
+    X<:AA{<:FN,1},
     Y<:AA{<:Real,1},
-    Z<:AA{<:AbstractFloat,1},
+    Z<:AA{<:FN,1},
 }
 
     q = similar(h, 2)
@@ -580,9 +580,9 @@ function heat_flux(
     v::Z,
     ω::Z,
 ) where {
-    X<:AA{<:AbstractFloat,2},
+    X<:AA{<:FN,2},
     Y<:AA{<:Real,1},
-    Z<:AA{<:AbstractFloat,2},
+    Z<:AA{<:FN,2},
 }
 
     q = similar(h, 2)
@@ -602,9 +602,9 @@ function heat_flux(
     v::Z,
     ω::Z,
 ) where {
-    X<:AA{<:AbstractFloat,2},
+    X<:AA{<:FN,2},
     Y<:AA{<:Real,1},
-    Z<:AA{<:AbstractFloat,2},
+    Z<:AA{<:FN,2},
 }
 
     q = similar(h, 2)
@@ -634,9 +634,9 @@ function heat_flux(
     v::Z,
     ω::Z,
 ) where {
-    X<:AA{<:AbstractFloat,2},
+    X<:AA{<:FN,2},
     Y<:AA{<:Real,1},
-    Z<:AA{<:AbstractFloat,2},
+    Z<:AA{<:FN,2},
 }
 
     q = similar(h, 4)
@@ -667,9 +667,9 @@ function heat_flux(
     w::Z,
     ω::Z,
 ) where {
-    X<:AA{<:AbstractFloat,3},
+    X<:AA{<:FN,3},
     Y<:AA{<:Real,1},
-    Z<:AA{<:AbstractFloat,3},
+    Z<:AA{<:FN,3},
 }
 
     q = similar(f, 3)

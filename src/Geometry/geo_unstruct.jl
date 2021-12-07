@@ -18,11 +18,11 @@ Physical space with unstructured mesh
 """
 struct UnstructPSpace{
     A,
-    B<:AbstractMatrix{<:AbstractFloat},
-    C<:AbstractMatrix{<:Integer},
-    D<:AbstractVector{<:Integer},
-    E<:AbstractVector{<:AbstractFloat},
-    F<:AA{<:AbstractFloat,3},
+    B<:AM{<:FN},
+    C<:AM{<:Integer},
+    D<:AV{<:Integer},
+    E<:AV{<:FN},
+    F<:AA{<:FN,3},
 } <: AbstractPhysicalSpace
     cells::A # all information: cell, line, vertex
     points::B # locations of vertex points

@@ -28,7 +28,7 @@ fortsign(x, y) = abs(x) * sign(y)
 
 Split matrix into row vectors
 """
-function mat_split(m::AbstractMatrix{T}) where {T<:Number}
+function mat_split(m::AM{T}) where {T<:Number}
 
     if length(m[1, :]) == 2
         nx = eltype(m).([1.0 0.0])

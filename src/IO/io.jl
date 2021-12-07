@@ -148,7 +148,7 @@ function write_vtk(
     cells,
     cdata,
     pdata = zeros(axes(points, 1)),
-) where {T<:AbstractMatrix}
+) where {T<:AM}
     mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, cells[i, :]) for i in axes(cells, 1)]
     vtkfile = vtk_grid("sol", permutedims(points), mcells)
 

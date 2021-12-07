@@ -1141,7 +1141,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractVector{ControlVolumeUS},T2<:AbstractVector{Interface2D}}
+) where {T1<:AV{ControlVolumeUS},T2<:AV{Interface2D}}
 
     if mode == :hll
 
@@ -1222,7 +1222,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractVector{ControlVolumeUS1F},T2<:AbstractVector{Interface2D1F}}
+) where {T1<:AV{ControlVolumeUS1F},T2<:AV{Interface2D1F}}
 
     if mode == :kfvs
 
@@ -1299,7 +1299,7 @@ function evolve!(
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AbstractVector{ControlVolumeUS2F},T2<:AbstractVector{Interface2D2F}}
+) where {T1<:AV{ControlVolumeUS2F},T2<:AV{Interface2D2F}}
 
     if mode == :kfvs
 

@@ -4,9 +4,9 @@
 Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
 """
 function em_coefficients(
-    prim::AbstractMatrix{X},
-    E::AbstractVector{Y},
-    B::AbstractVector{Z},
+    prim::AM{X},
+    E::AV{Y},
+    B::AV{Z},
     mr,
     lD,
     rL,

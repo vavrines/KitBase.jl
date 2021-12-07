@@ -7,8 +7,8 @@ Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 *
 pdf_slope(u, Δ) = Δ / (u + 1e-7)
 
 function pdf_slope(
-    prim::AbstractVector{T1},
-    sw::AbstractVector{T2},
+    prim::AV{T1},
+    sw::AV{T2},
     inK,
 ) where {T1<:Real,T2<:Real}
 
@@ -68,8 +68,8 @@ Calculate slope of multi-component particle distribution function `a = a1 + u * 
 
 """
 function mixture_pdf_slope(
-    prim::AbstractMatrix{T1},
-    sw::AbstractMatrix{T2},
+    prim::AM{T1},
+    sw::AM{T2},
     inK,
 ) where {T1<:Real,T2<:Real}
 
@@ -95,8 +95,8 @@ Reduced distribution function
 
 """
 function reduce_distribution(
-    f::AbstractMatrix{T1},
-    weights::AbstractVector{T2},
+    f::AM{T1},
+    weights::AV{T2},
     dim = 1,
 ) where {T1<:Real,T2<:Real}
 
@@ -120,7 +120,7 @@ end
 
 function reduce_distribution(
     f::AA{T1,3},
-    weights::AbstractMatrix{T2},
+    weights::AM{T2},
     dim = 1,
 ) where {T1<:Real,T2<:Real}
 
@@ -150,7 +150,7 @@ function reduce_distribution(
     f::AA{X,3},
     v::Y,
     w::Y,
-    weights::AbstractMatrix{Z},
+    weights::AM{Z},
     dim = 1,
 ) where {X<:Real,Y<:AA{<:Real,3},Z<:Real}
 
@@ -205,9 +205,9 @@ function full_distribution(
     ρ,
     γ = 5 / 3,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,1},
-    Z<:AA{<:AbstractFloat,3},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,1},
+    Z<:AA{<:FN,3},
 }
 
     @assert length(h) == size(v, 1) throw(
@@ -236,9 +236,9 @@ full_distribution(
     prim::A,
     γ = 5 / 3,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,1},
-    Z<:AA{<:AbstractFloat,3},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,1},
+    Z<:AA{<:FN,3},
     A<:AA{<:Real,1},
 } = full_distribution(h, b, u, weights, v, w, prim[1], γ)
 
@@ -248,7 +248,7 @@ full_distribution(
 
 Shift distribution function by external force
 """
-function shift_pdf!(f::AbstractVector{T}, a, du, dt) where {T<:Real}
+function shift_pdf!(f::AV{T}, a, du, dt) where {T<:Real}
 
     q0 = eachindex(f) |> first # for OffsetArray
     q1 = eachindex(f) |> last
@@ -288,9 +288,9 @@ end
 
 #--- multi-component gas ---#
 function shift_pdf!(
-    f::AbstractMatrix{X},
-    a::AbstractVector{Y},
-    du::AbstractVector{Z},
+    f::AM{X},
+    a::AV{Y},
+    du::AV{Z},
     dt,
 ) where {X<:Real,Y<:Real,Z<:Real}
 
@@ -311,12 +311,12 @@ end
 Recover discrete Chapman-Enskog expansion
 """
 function chapman_enskog(
-    u::AbstractVector{T1},
-    prim::AbstractVector{T2},
-    a::AbstractVector{T3},
-    A::AbstractVector{T3},
+    u::AV{T1},
+    prim::AV{T2},
+    a::AV{T3},
+    A::AV{T3},
     τ::Real,
-) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
+) where {T1<:FN,T2<:Real,T3<:Real}
 
     M = maxwellian(u, prim)
     f = @. M * (
@@ -331,12 +331,12 @@ end
 function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
-    prim::AbstractVector{T2},
-    a::AbstractVector{T3},
-    b::AbstractVector{T3},
-    A::AbstractVector{T3},
+    prim::AV{T2},
+    a::AV{T3},
+    b::AV{T3},
+    A::AV{T3},
     τ::Real,
-) where {T1<:AbstractFloat,T2<:Real,T3<:Real}
+) where {T1<:FN,T2<:Real,T3<:Real}
 
     M = maxwellian(u, v, prim)
     f = @. M * (

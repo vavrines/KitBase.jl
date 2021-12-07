@@ -343,7 +343,7 @@ end
 2D cell interface with 2 distribution functions
 
 """
-mutable struct Interface2D2F{A,B<:AbstractVector,C,D} <: AbstractInterface2D
+mutable struct Interface2D2F{A,B<:AV,C,D} <: AbstractInterface2D
     len::A
     n::B
     fw::C

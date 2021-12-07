@@ -15,7 +15,7 @@ function modal_filter!(
     u::AA{T},
     args...;
     filter::Symbol,
-) where {T<:AbstractFloat}
+) where {T<:FN}
     filtstr = "filter_" * string(filter) * "!"
     filtfunc = Symbol(filtstr) |> eval
     filtfunc(u, args...)
@@ -23,7 +23,7 @@ function modal_filter!(
     return nothing
 end
 
-function filter_l2!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
+function filter_l2!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
     q1 = eachindex(u) |> last
     @assert q0 >= 0
@@ -36,7 +36,7 @@ function filter_l2!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_l2!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
+function filter_l2!(u::AM{T}, args...) where {T<:FN}
     p0 = axes(u, 1) |> first
     q0 = axes(u, 2) |> first
     @assert p0 >= 0
@@ -51,7 +51,7 @@ function filter_l2!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_l2opt!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
+function filter_l2opt!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
     q1 = eachindex(u) |> last
     @assert q0 >= 0
@@ -65,7 +65,7 @@ function filter_l2opt!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_l2opt!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
+function filter_l2opt!(u::AM{T}, args...) where {T<:FN}
     p0 = axes(u, 1) |> first
     q0 = axes(u, 2) |> first
     @assert p0 >= 0
@@ -94,7 +94,7 @@ function filter_l2opt!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_l1!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
+function filter_l1!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
     q1 = eachindex(u) |> last
     @assert q0 >= 0
@@ -112,7 +112,7 @@ function filter_l1!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_l1!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
+function filter_l1!(u::AM{T}, args...) where {T<:FN}
     p0 = axes(u, 1) |> first
     q0 = axes(u, 2) |> first
     @assert p0 >= 0
@@ -131,7 +131,7 @@ function filter_l1!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_lasso!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
+function filter_lasso!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
     @assert q0 >= 0
 
@@ -143,7 +143,7 @@ function filter_lasso!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_lasso!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
+function filter_lasso!(u::AM{T}, args...) where {T<:FN}
     nr, nz = size(u)
     ℓ = args[1]
     λ1 = abs(u[end, 1]) / (nr * (nr - 1) * ℓ[end, 1])
@@ -154,7 +154,7 @@ function filter_lasso!(u::AbstractMatrix{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_exp!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
+function filter_exp!(u::AV{T}, args...) where {T<:FN}
     N = length(u) - 1
     s = args[1]
     Nc = begin
@@ -171,7 +171,7 @@ function filter_exp!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
     return nothing
 end
 
-function filter_houli!(u::AbstractVector{T}, args...) where {T<:AbstractFloat}
+function filter_houli!(u::AV{T}, args...) where {T<:FN}
     N = length(u) - 1
     s = args[1]
     Nc = begin

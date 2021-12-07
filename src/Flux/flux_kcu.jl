@@ -29,11 +29,11 @@ function flux_kcu!(
     Pr,
     dt,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,1},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,1},
     Z<:AA{<:Real,1},
-    A<:AA{<:AbstractFloat,1},
-    B<:AA{<:AbstractFloat,1},
+    A<:AA{<:FN,1},
+    B<:AA{<:FN,1},
 } # 1D1F1V
 
     # upwind reconstruction
@@ -103,11 +103,11 @@ function flux_kcu!(
     Kn,
     dt,
 ) where {
-    X<:AA{<:AbstractFloat,2},
-    Y<:AA{<:AbstractFloat,2},
+    X<:AA{<:FN,2},
+    Y<:AA{<:FN,2},
     Z<:AA{<:Real,2},
-    A<:AA{<:AbstractFloat,2},
-    B<:AA{<:AbstractFloat,2},
+    A<:AA{<:FN,2},
+    B<:AA{<:FN,2},
 }
 
     # upwind reconstruction
@@ -186,11 +186,11 @@ function flux_kcu!(
     Pr,
     dt,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,3},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,3},
     Z<:AA{<:Real,1},
-    A<:AA{<:AbstractFloat,3},
-    B<:AA{<:AbstractFloat,3},
+    A<:AA{<:FN,3},
+    B<:AA{<:FN,3},
 } # 1D1F1V
 
     # upwind reconstruction
@@ -265,11 +265,11 @@ function flux_kcu!(
     Pr,
     dt,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,1},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,1},
     Z<:AA{<:Real,1},
-    A<:AA{<:AbstractFloat,1},
-    B<:AA{<:AbstractFloat,1},
+    A<:AA{<:FN,1},
+    B<:AA{<:FN,1},
 }
 
     # upwind reconstruction
@@ -344,11 +344,11 @@ function flux_kcu!(
     Kn,
     dt,
 ) where {
-    T1<:AA{<:AbstractFloat,2},
-    T2<:AA{<:AbstractFloat,2},
+    T1<:AA{<:FN,2},
+    T2<:AA{<:FN,2},
     T3<:AA{<:Real,2},
-    T4<:AA{<:AbstractFloat,2},
-    T5<:AA{<:AbstractFloat,2},
+    T4<:AA{<:FN,2},
+    T5<:AA{<:FN,2},
 }
 
     # upwind reconstruction
@@ -444,11 +444,11 @@ function flux_kcu!(
     Pr,
     dt,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,1},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,1},
     Z<:AA{<:Real,1},
-    A<:AA{<:AbstractFloat,1},
-    B<:AA{<:AbstractFloat,1},
+    A<:AA{<:FN,1},
+    B<:AA{<:FN,1},
 }
 
     # upwind reconstruction
@@ -539,11 +539,11 @@ function flux_kcu!(
     dt,
     isMHD = false::Bool,
 ) where {
-    X<:AA{<:AbstractFloat,2},
-    Y<:AA{<:AbstractFloat,2},
+    X<:AA{<:FN,2},
+    Y<:AA{<:FN,2},
     Z<:AA{<:Real,2},
-    A<:AA{<:AbstractFloat,2},
-    B<:AA{<:AbstractFloat,2},
+    A<:AA{<:FN,2},
+    B<:AA{<:FN,2},
 }
 
     #--- upwind reconstruction ---#
@@ -645,11 +645,11 @@ function flux_kcu!(
     dt,
     len,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,2},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,2},
     Z<:AA{<:Real,1},
-    A<:AA{<:AbstractFloat,2},
-    B<:AA{<:AbstractFloat,2},
+    A<:AA{<:FN,2},
+    B<:AA{<:FN,2},
 }
 
     # reconstruct initial distribution
@@ -723,11 +723,11 @@ function flux_kcu!(
     dt,
     len,
 ) where {
-    T1<:AA{<:AbstractFloat,1},
-    T2<:AA{<:AbstractFloat,2},
+    T1<:AA{<:FN,1},
+    T2<:AA{<:FN,2},
     T3<:AA{<:Real,1},
-    T4<:AA{<:AbstractFloat,2},
-    T5<:AA{<:AbstractFloat,2},
+    T4<:AA{<:FN,2},
+    T5<:AA{<:FN,2},
 }
 
     # reconstruct initial distribution
@@ -807,11 +807,11 @@ function flux_kcu!(
     dt,
     len,
 ) where {
-    X<:AA{<:AbstractFloat,1},
-    Y<:AA{<:AbstractFloat,2},
+    X<:AA{<:FN,1},
+    Y<:AA{<:FN,2},
     Z<:AA{<:Real,1},
-    A<:AA{<:AbstractFloat,2},
-    B<:AA{<:AbstractFloat,2},
+    A<:AA{<:FN,2},
+    B<:AA{<:FN,2},
 }
 
     # reconstruct initial distribution
@@ -897,11 +897,11 @@ function flux_kcu!(
     len,
     isMHD = false::Bool,
 ) where {
-    X<:AA{<:AbstractFloat,2},
-    Y<:AA{<:AbstractFloat,3},
+    X<:AA{<:FN,2},
+    Y<:AA{<:FN,3},
     Z<:AA{<:Real,2},
-    A<:AA{<:AbstractFloat,3},
-    B<:AA{<:AbstractFloat,3},
+    A<:AA{<:FN,3},
+    B<:AA{<:FN,3},
 }
 
     # reconstruct initial distribution

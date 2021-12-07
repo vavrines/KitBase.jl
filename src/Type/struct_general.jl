@@ -20,7 +20,7 @@
 Computational setup
 
 """
-@with_kw struct Setup{S,I<:Integer,E<:AbstractVector,F<:Real,G<:Real} <: AbstractSetup
+@with_kw struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
     matter::S = "gas"
     case::S = "dev"
     space::S = "1d0f0v"
@@ -102,9 +102,9 @@ Radiation property for linear Boltzmann equation
 end
 
 function Radiation(
-    _Kn::Union{Real,AbstractVector},
-    _ss::Union{Real,AbstractVector},
-    _sa::Union{Real,AbstractVector},
+    _Kn::Union{Real,AV},
+    _ss::Union{Real,AV},
+    _sa::Union{Real,AV},
 )
     Kn = deepcopy(_Kn)
     σs = deepcopy(_ss)

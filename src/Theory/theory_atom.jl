@@ -11,14 +11,14 @@ ref_vhs_vis(Kn, alpha, omega) =
 
 """
     vhs_collision_time(ρ, λ, μᵣ, ω)
-    vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real}
+    vhs_collision_time(prim::AV{T}, muRef, omega) where {T<:Real}
 
 Calculate collision time with variable hard sphere (VHS) model
 
 """
 vhs_collision_time(ρ, λ, μᵣ, ω) = μᵣ * 2.0 * λ^(1.0 - ω) / ρ
 
-vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real} =
+vhs_collision_time(prim::AV{T}, muRef, omega) where {T<:Real} =
     muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov model prim[end] should be λₜ
 
 
@@ -34,7 +34,7 @@ vhs_collision_time(prim::AbstractVector{T}, muRef, omega) where {T<:Real} =
 
 Calculate mixture collision time from AAP model
 """
-function aap_hs_collision_time(prim::AbstractMatrix{T}, mi, ni, me, ne, kn) where {T<:Real}
+function aap_hs_collision_time(prim::AM{T}, mi, ni, me, ne, kn) where {T<:Real}
 
     ν = similar(prim, 2)
 

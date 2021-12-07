@@ -35,7 +35,7 @@ function flux_em!(
     ν,
     dt,
 ) where {
-    T1<:AA{<:AbstractFloat,1},
+    T1<:AA{<:FN,1},
     T2<:AA{<:Real,1},
     T3<:AA{<:Real,2},
     T4<:AA{<:Real,1},
@@ -157,7 +157,7 @@ function flux_emx!(
     ν,
     dt,
 ) where {
-    X<:AA{<:AbstractFloat,1},
+    X<:AA{<:FN,1},
     Y<:AA{<:Real,1},
     A<:AA{<:Real,2},
     B<:AA{<:Real,1},

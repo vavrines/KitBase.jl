@@ -87,7 +87,7 @@ function update!(
     X<:AbstractSolverSet,
     Y<:AA{ControlVolume1D,1},
     Z<:AA{Interface1D,1},
-    T<:AbstractFloat,
+    T<:FN,
 }
 
     sumRes = zero(ctr[1].w)
@@ -137,7 +137,7 @@ function update!(
     X<:AbstractSolverSet,
     Y<:AA{ControlVolume1D,1},
     Z<:AA{Interface1D,1},
-    T<:AbstractFloat,
+    T<:FN,
 }
 
     sumRes = zero(ctr[1].w)

@@ -12,7 +12,7 @@ symbolize(x::AA{T}) where {T<:AbstractString} = [symbolize(y) for y in x]
 
 Transform to static array
 """
-function static_array(x::AbstractVector)
+function static_array(x::AV)
     y = MVector{length(x)}(collect(x))
 
     if x isa OffsetArray
@@ -25,7 +25,7 @@ function static_array(x::AbstractVector)
     return y
 end
 
-function static_array(x::AbstractMatrix)
+function static_array(x::AM)
     y = MMatrix{size(x, 1),size(x, 2)}(collect(x))
 
     if x isa OffsetArray

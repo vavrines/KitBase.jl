@@ -19,7 +19,7 @@ struct VSpace1D{
     TR<:Real,
     TI<:Integer,
     TA<:AA{<:Real},
-    TB<:AbstractVector{<:Real},
+    TB<:AV{<:Real},
 } <: AbstractVelocitySpace1D
     u0::TR
     u1::TR
@@ -688,10 +688,10 @@ Unstructured velocity space
 
 """
 struct UnstructVSpace{
-    TR<:Union{Real,AbstractVector},
-    TI<:Union{Integer,AbstractVector},
+    TR<:Union{Real,AV},
+    TI<:Union{Integer,AV},
     TA<:AA,
-    TB<:AbstractVector{<:Real},
+    TB<:AV{<:Real},
 } <: AbstractVelocitySpace
     u0::TR
     u1::TR

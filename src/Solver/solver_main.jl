@@ -295,7 +295,7 @@ function timestep(
     KS::X,
     ctr::Y,
     simTime,
-) where {X<:AbstractSolverSet,Y<:AbstractVector{<:AbstractUnstructControlVolume}}
+) where {X<:AbstractSolverSet,Y<:AV{<:AbstractUnstructControlVolume}}
 
     tmax = 0.0
 

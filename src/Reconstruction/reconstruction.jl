@@ -55,21 +55,21 @@ end
         wL::Y,
         wR::Y,
         Δx,
-    ) where {X<:AA{<:AbstractFloat,1},Y<:AA{<:Real,1}}
+    ) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
 
     reconstruct2!(
         sw::X,
         wL::Y,
         wR::Y,
         Δx,
-    ) where {X<:AA{<:AbstractFloat,2},Y<:AA{<:Real,2}}
+    ) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
     reconstruct2!(
         sw::X,
         wL::Y,
         wR::Y,
         Δx,
-    ) where {X<:AA{<:AbstractFloat,3},Y<:AA{<:Real,3}}
+    ) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
 
 Two-cell reconstruction
 
@@ -79,7 +79,7 @@ function reconstruct2!(
     wL::Y,
     wR::Y,
     Δx,
-) where {X<:AA{<:AbstractFloat,1},Y<:AA{<:Real,1}}
+) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
     sw .= (wR .- wL) ./ Δx
 end
 
@@ -88,7 +88,7 @@ function reconstruct2!(
     wL::Y,
     wR::Y,
     Δx,
-) where {X<:AA{<:AbstractFloat,2},Y<:AA{<:Real,2}}
+) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
     for j in axes(sw, 2)
         swj = @view sw[:, j]
@@ -102,7 +102,7 @@ function reconstruct2!(
     wL::Y,
     wR::Y,
     Δx,
-) where {X<:AA{<:AbstractFloat,3},Y<:AA{<:Real,3}}
+) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
 
     for k in axes(sw, 3), j in axes(sw, 2)
         swjk = @view sw[:, j, k]
@@ -226,7 +226,7 @@ end
         ΔxL,
         ΔxR,
         limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:AbstractFloat,1},Y<:AA{<:Real,1}}
+    ) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
 
     reconstruct3!(
         sw::X,
@@ -236,7 +236,7 @@ end
         ΔxL,
         ΔxR,
         limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:AbstractFloat,2},Y<:AA{<:Real,2}}
+    ) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
     reconstruct3!(
         sw::X,
@@ -246,7 +246,7 @@ end
         ΔxL,
         ΔxR,
         limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:AbstractFloat,3},Y<:AA{<:Real,3}}
+    ) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
 
     reconstruct3!(
         sw::X,
@@ -256,7 +256,7 @@ end
         ΔxL,
         ΔxR,
         limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:AbstractFloat,4},Y<:AA{<:Real,4}}
+    ) where {X<:AA{<:FN,4},Y<:AA{<:Real,4}}
 
 Three-cell reconstruction
 
@@ -269,7 +269,7 @@ function reconstruct3!(
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:AbstractFloat,1},Y<:AA{<:Real,1}}
+) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
 
@@ -284,7 +284,7 @@ function reconstruct3!(
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:AbstractFloat,2},Y<:AA{<:Real,2}}
+) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
     for j in axes(sw, 2)
         swj = @view sw[:, j]
@@ -301,7 +301,7 @@ function reconstruct3!(
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:AbstractFloat,3},Y<:AA{<:Real,3}}
+) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
 
     for k in axes(sw, 3), j in axes(sw, 2)
         swjk = @view sw[:, j, k]
@@ -318,7 +318,7 @@ function reconstruct3!(
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:AbstractFloat,4},Y<:AA{<:Real,4}}
+) where {X<:AA{<:FN,4},Y<:AA{<:Real,4}}
 
     for l in axes(sw, 4), k in axes(sw, 3), j in axes(sw, 2)
         sjkl = @view sw[:, j, k, l]
@@ -347,7 +347,7 @@ end
         Δx2,
         Δx3,
         limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:AbstractFloat,1},Y<:AA{<:Real,1}}
+    ) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
 
     function reconstruct4!(
         sw::X,
@@ -359,7 +359,7 @@ end
         Δx2,
         Δx3,
         limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:AbstractFloat,2},Y<:AA{<:Real,2}}
+    ) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
 Four-cell reconstruction for triangular mesh
 
@@ -374,7 +374,7 @@ function reconstruct4!(
     Δx2,
     Δx3,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:AbstractFloat,1},Y<:AA{<:Real,1}}
+) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
     s1 = (wN .- w1) ./ Δx1
     s2 = (wN .- w2) ./ Δx2
     s3 = (wN .- w3) ./ Δx3
@@ -392,7 +392,7 @@ function reconstruct4!(
     Δx2,
     Δx3,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:AbstractFloat,2},Y<:AA{<:Real,2}}
+) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
 
     for j in axes(sw, 2)
         swj = @view sw[:, j]

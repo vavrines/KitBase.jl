@@ -4,12 +4,12 @@
 # ============================================================
 
 """
-    flux_upwind(uL, uR, Ω::T, n::T, dt) where {T<:AbstractVector}
+    flux_upwind(uL, uR, Ω::T, n::T, dt) where {T<:AV}
 
 Upwind flux
 
 """
-function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AbstractVector}
+function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AV}
     ip = dot(Ω, n) # inner product
 
     if ip > 0

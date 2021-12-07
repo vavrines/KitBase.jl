@@ -795,7 +795,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractVector{ControlVolumeUS}}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS}}
 
     if KS.set.interpOrder == 1
         return
@@ -826,7 +826,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractVector{ControlVolumeUS1F}}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS1F}}
 
     if KS.set.interpOrder == 1
         return
@@ -863,7 +863,7 @@ end
 function reconstruct!(
     KS::X,
     ctr::Y,
-) where {X<:AbstractSolverSet,Y<:AbstractVector{ControlVolumeUS2F}}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS2F}}
 
     if KS.set.interpOrder == 1
         return
