@@ -10,6 +10,8 @@ if VERSION < v"1.3"
     @warn "Kinetic works better with Julia 1.3 or newer versions."
 end
 
+export KB
+
 import Base: *
 using Base.Threads: @threads
 using CSV
@@ -52,6 +54,7 @@ include("Config/config.jl")
 include("Boundary/boundary.jl")
 include("Solver/solver.jl")
 
+const KB = KitBase
 const itp = PyNULL()
 
 function __init__()
