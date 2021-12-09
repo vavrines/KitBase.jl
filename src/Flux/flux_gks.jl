@@ -723,8 +723,8 @@ function flux_gks!(
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
         -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mv, Mxi, 1, 0, 0) .+
-            moments_conserve_slope(gaR, MuR, Mv, Mxi, 1, 0, 0)
+            moments_conserve_slope(gaL, MuL, Mv, Mw, 1, 0, 0) .+
+            moments_conserve_slope(gaR, MuR, Mv, Mw, 1, 0, 0)
         )
     # ga = pdf_slope(prim, sw, inK)
     # sw =  -prim[1] .* moments_conserve_slope(ga, Mu, Mv, Mw, 1, 0, 0)
@@ -751,13 +751,13 @@ function flux_gks!(
     # fw .= Mt[1] .* prim[1] .* Muv .+ Mt[2] .* prim[1] .* Mau .+ Mt[3] .* prim[1] .* MauT
 
     # flux related to upwind distribution
-    MuvL = moments_conserve(MuL1, Mv1, Mxi1, 1, 0, 0)
-    MauL = moments_conserve_slope(faL, MuL1, Mv1, Mxi1, 2, 0, 0)
-    MauLT = moments_conserve_slope(faTL, MuL1, Mv1, Mxi1, 1, 0, 0)
+    MuvL = moments_conserve(MuL1, Mv1, Mw1, 1, 0, 0)
+    MauL = moments_conserve_slope(faL, MuL1, Mv1, Mw1, 2, 0, 0)
+    MauLT = moments_conserve_slope(faTL, MuL1, Mv1, Mw1, 1, 0, 0)
 
-    MuvR = moments_conserve(MuR2, Mv2, Mxi2, 1, 0, 0)
-    MauR = moments_conserve_slope(faR, MuR2, Mv2, Mxi2, 2, 0, 0)
-    MauRT = moments_conserve_slope(faTR, MuR2, Mv2, Mxi2, 1, 0, 0)
+    MuvR = moments_conserve(MuR2, Mv2, Mw2, 1, 0, 0)
+    MauR = moments_conserve_slope(faR, MuR2, Mv2, Mw2, 2, 0, 0)
+    MauRT = moments_conserve_slope(faTR, MuR2, Mv2, Mw2, 1, 0, 0)
 
     @. fw +=
         Mt[4] * primL[1] * MuvL - (Mt[5] + tau * Mt[4]) * primL[1] * MauL -
