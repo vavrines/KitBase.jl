@@ -361,7 +361,7 @@ function chapman_enskog(
     τ::Real,
 ) where {T1<:FN,T2<:Real,T3<:Real}
 
-    M = maxwellian(u, v, prim)
+    M = maxwellian(u, v, w, prim)
     f = @. M * (
         1.0 - τ * (a[1] * u + a[2] * u^2 + a[3] * u * v + a[4] * u * w + 0.5 * a[5] * u * (u^2 + v^2 + w^2)) -
         τ * (b[1] * v + b[2] * u * v + b[3] * v^2 + b[4] * w * v + 0.5 * b[5] * v * (u^2 + v^2 + w^2)) -
