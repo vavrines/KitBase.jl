@@ -348,3 +348,27 @@ function chapman_enskog(
     return f
 
 end
+
+function chapman_enskog(
+    u::AA{T1},
+    v::AA{T1},
+    w::AA{T1},
+    prim::AV{T2},
+    a::AV{T3},
+    b::AV{T3},
+    c::AV{T3},
+    A::AV{T3},
+    τ::Real,
+) where {T1<:FN,T2<:Real,T3<:Real}
+
+    M = maxwellian(u, v, w, prim)
+    f = @. M * (
+        1.0 - τ * (a[1] * u + a[2] * u^2 + a[3] * u * v + a[4] * u * w + 0.5 * a[5] * u * (u^2 + v^2 + w^2)) -
+        τ * (b[1] * v + b[2] * u * v + b[3] * v^2 + b[4] * w * v + 0.5 * b[5] * v * (u^2 + v^2 + w^2)) -
+        τ * (c[1] * w + c[2] * u * w + c[3] * v * w + c[4] * w^2 + 0.5 * c[5] * w * (u^2 + v^2 + w^2)) -
+        τ * (A[1] + A[2] * u + A[3] * v + A[4] * w + 0.5 * A[5] * (u^2 + v^2 + w^2))
+    )
+
+    return f
+
+end

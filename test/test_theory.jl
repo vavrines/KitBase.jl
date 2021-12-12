@@ -287,3 +287,14 @@ KitBase.chapman_enskog(
     rand(4),
     0.1,
 )
+KitBase.chapman_enskog(
+    rand(16, 16, 16),
+    rand(16, 16, 16),
+    rand(16, 16, 16),
+    [1.0, 0.0, 0.0, 0.0, 1.0],
+    rand(5),
+    rand(5),
+    rand(5),
+    rand(5),
+    0.1,
+)
