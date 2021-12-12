@@ -1,4 +1,5 @@
-using Test, Plots, KitBase
+using Test, KitBase
+using Plots
 
 cd(@__DIR__)
 include("test_data.jl")

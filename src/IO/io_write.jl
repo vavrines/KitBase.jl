@@ -73,9 +73,9 @@ function write_tec(x::AV, sol)
         varnm = varnm * "V" * string(len)
     
         println(f, "VARIABLES = X, Y, " * varnm)
-        println(f, "ZONE I = $nx, J = $ny")
+        println(f, "ZONE I = $nx")
     
-        dp = "DATAPACKING = BLOCK, "
+        dp = "DATAPACKING = BLOCK"
         println(f, dp)
         
         write_num(f, x)
@@ -165,10 +165,4 @@ function write_num(io, xs::AA)
         @printf(io, "%.6f ", x)
     end
     print(io, "\n")
-end
-
-function write_num(io, xs...)
-    for x in xs
-        write_num(io, x)
-    end
 end

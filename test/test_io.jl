@@ -12,12 +12,15 @@ KitBase.plot_line(ks, ctr)
 plot(ks, ctr, legend = :none)
 
 # tecplot writer
-x = zeros(5, 3)
+x = rand(5)
+sol = randn(5, 2)
+write_tec(x, sol)
+
+x = zeros(4, 3)
 y = zero(x)
-for i = 1:5, j = 1:3
+for i in axes(x, 1), j in axes(y, 2)
     x[i, j] = 0.25 * (i-1)
     y[i, j] = 0.5 * (j-1)
 end
-sol = randn(4, 2, 2)
-
+sol = randn((size(x)..., 2))
 write_tec(x, y, sol)
