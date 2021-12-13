@@ -37,11 +37,7 @@ function update_boundary!(
     dt,
     residual;
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume1D,1},
-    Z<:AA{Interface1D,1},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D,1},Z<:AA{Interface1D,1}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -141,11 +137,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision),
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume1D1F,1},
-    Z<:AA{Interface1D1F,1},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D1F,1},Z<:AA{Interface1D1F,1}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -280,11 +272,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision),
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume1D2F,1},
-    Z<:AA{Interface1D2F,1},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D2F,1},Z<:AA{Interface1D2F,1}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -436,11 +424,7 @@ function update_boundary!(
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
     isMHD = false::Bool,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume1D3F,1},
-    Z<:AA{Interface1D3F,1},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D3F,1},Z<:AA{Interface1D3F,1}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -486,11 +470,7 @@ function update_boundary!(
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
     isMHD = false::Bool,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume1D4F,1},
-    Z<:AA{Interface1D4F,1},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D4F,1},Z<:AA{Interface1D4F,1}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -536,11 +516,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume2D,2},
-    Z<:AA{Interface2D,2},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D,2},Z<:AA{Interface2D,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -672,11 +648,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume2D1F,2},
-    Z<:AA{Interface2D1F,2},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D1F,2},Z<:AA{Interface2D1F,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -853,11 +825,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{ControlVolume2D2F,2},
-    Z<:AA{Interface2D2F,2},
-}
+) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D2F,2},Z<:AA{Interface2D2F,2}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -1057,11 +1025,7 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AV{ControlVolumeUS},
-    Z<:AV{Interface2D},
-}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS},Z<:AV{Interface2D}}
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
@@ -1081,11 +1045,7 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AV{ControlVolumeUS1F},
-    Z<:AV{Interface2D1F},
-}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS1F},Z<:AV{Interface2D1F}}
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
@@ -1106,11 +1066,7 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AV{ControlVolumeUS2F},
-    Z<:AV{Interface2D2F},
-}
+) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS2F},Z<:AV{Interface2D2F}}
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]

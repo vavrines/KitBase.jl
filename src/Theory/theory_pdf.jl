@@ -6,12 +6,7 @@ Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 *
 """
 pdf_slope(u, Δ) = Δ / (u + 1e-7)
 
-function pdf_slope(
-    prim::AV{T1},
-    sw::AV{T2},
-    inK,
-) where {T1<:Real,T2<:Real}
-
+function pdf_slope(prim::AV, sw::AV, inK)
     sl = similar(sw, axes(prim))
 
     if length(prim) == 3
@@ -57,7 +52,6 @@ function pdf_slope(
     end
 
     return sl
-
 end
 
 
@@ -67,12 +61,7 @@ end
 Calculate slope of multi-component particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
 """
-function mixture_pdf_slope(
-    prim::AM{T1},
-    sw::AM{T2},
-    inK,
-) where {T1<:Real,T2<:Real}
-
+function mixture_pdf_slope(prim::AM, sw::AM, inK)
     sl = similar(sw, axes(prim))
 
     for j in axes(sl, 2)
@@ -80,7 +69,6 @@ function mixture_pdf_slope(
     end
 
     return sl
-
 end
 
 
@@ -94,12 +82,7 @@ Reduced distribution function
 * @arg : quadrature weights with reduced velocity setting (v & w by default)
 
 """
-function reduce_distribution(
-    f::AM{T1},
-    weights::AV{T2},
-    dim = 1,
-) where {T1<:Real,T2<:Real}
-
+function reduce_distribution(f::AM, weights::AV, dim = 1)
     if dim == 1
         h = similar(f, axes(f, 1))
         for i in eachindex(h)
@@ -115,15 +98,9 @@ function reduce_distribution(
     end
 
     return h
-
 end
 
-function reduce_distribution(
-    f::AA{T1,3},
-    weights::AM{T2},
-    dim = 1,
-) where {T1<:Real,T2<:Real}
-
+function reduce_distribution(f::AA{T1,3}, weights::AM, dim = 1) where {T1}
     if dim == 1
         h = similar(f, axes(f, 1))
         for i in eachindex(h)
@@ -143,16 +120,15 @@ function reduce_distribution(
     end
 
     return h
-
 end
 
 function reduce_distribution(
     f::AA{X,3},
     v::Y,
     w::Y,
-    weights::AM{Z},
+    weights::AM,
     dim = 1,
-) where {X<:Real,Y<:AA{<:Real,3},Z<:Real}
+) where {X,Y<:AA{<:Real,3}}
 
     if dim == 1
         h = similar(f, axes(f, 1))
@@ -204,11 +180,7 @@ function full_distribution(
     w::Z,
     ρ,
     γ = 5 / 3,
-) where {
-    X<:AA{<:FN,1},
-    Y<:AA{<:FN,1},
-    Z<:AA{<:FN,3},
-}
+) where {X<:AA{<:FN,1},Y<:AA{<:FN,1},Z<:AA{<:FN,3}}
 
     @assert length(h) == size(v, 1) throw(
         DimensionMismatch("reduced and full distribution function mismatch"),
@@ -235,12 +207,8 @@ full_distribution(
     w::Z,
     prim::A,
     γ = 5 / 3,
-) where {
-    X<:AA{<:FN,1},
-    Y<:AA{<:FN,1},
-    Z<:AA{<:FN,3},
-    A<:AA{<:Real,1},
-} = full_distribution(h, b, u, weights, v, w, prim[1], γ)
+) where {X<:AA{<:FN,1},Y<:AA{<:FN,1},Z<:AA{<:FN,3},A<:AA{<:Real,1}} =
+    full_distribution(h, b, u, weights, v, w, prim[1], γ)
 
 
 """
@@ -287,12 +255,7 @@ function shift_pdf!(f::AV{T}, a, du, dt) where {T<:Real}
 end
 
 #--- multi-component gas ---#
-function shift_pdf!(
-    f::AM{X},
-    a::AV{Y},
-    du::AV{Z},
-    dt,
-) where {X<:Real,Y<:Real,Z<:Real}
+function shift_pdf!(f::AM{X}, a::AV{Y}, du::AV{Z}, dt) where {X<:Real,Y<:Real,Z<:Real}
 
     for j in axes(f, 2)
         _f = @view f[:, j]
@@ -305,8 +268,8 @@ end
 
 
 """
-    chapman_enskog(u, prim, a, A, τ)
-    chapman_enskog(u, v, prim, a, b, A, τ)
+    chapman_enskog(u, prim, sw, K, τ)
+    chapman_enskog(u, v, prim, swx, swy, K, τ)
 
 Recover discrete Chapman-Enskog expansion
 """
@@ -329,6 +292,23 @@ function chapman_enskog(
 end
 
 function chapman_enskog(
+    u::AV{T1},
+    prim::AV{<:RN},
+    sw::AV{<:RN},
+    K::Real,
+    τ::Real,
+) where {T1}
+
+    Mu, Mxi, _, _1 = gauss_moments(prim, K)
+    a = pdf_slope(prim, sw, K)
+    swt = -prim[1] .* moments_conserve_slope(a, Mu, Mxi, 1)
+    A = pdf_slope(prim, swt, K)
+
+    return chapman_enskog(u, prim, a, A, τ)
+
+end
+
+function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
     prim::AV{T2},
@@ -346,5 +326,100 @@ function chapman_enskog(
     )
 
     return f
+
+end
+
+function chapman_enskog(
+    u::AA{T1},
+    v::AA{T1},
+    prim::AV{<:RN},
+    swx::AV{<:RN},
+    swy::AV{<:RN},
+    K::Real,
+    τ::Real,
+) where {T1}
+
+    Mu, Mv, Mxi, _, _1 = gauss_moments(prim, K)
+    a = pdf_slope(prim, swx, K)
+    b = pdf_slope(prim, swy, K)
+    sw =
+        -prim[1] .* (
+            moments_conserve_slope(a, Mu, Mv, Mxi, 1, 0) .+
+            moments_conserve_slope(b, Mu, Mv, Mxi, 0, 1)
+        )
+    A = pdf_slope(prim, sw, K)
+
+    return chapman_enskog(u, v, prim, a, b, A, τ)
+
+end
+
+function chapman_enskog(
+    u::AA{T1},
+    v::AA{T1},
+    w::AA{T1},
+    prim::AV{T2},
+    a::AV{T3},
+    b::AV{T3},
+    c::AV{T3},
+    A::AV{T3},
+    τ::Real,
+) where {T1<:FN,T2<:Real,T3<:Real}
+
+    M = maxwellian(u, v, w, prim)
+    f = @. M * (
+        1.0 -
+        τ * (
+            a[1] * u +
+            a[2] * u^2 +
+            a[3] * u * v +
+            a[4] * u * w +
+            0.5 * a[5] * u * (u^2 + v^2 + w^2)
+        ) -
+        τ * (
+            b[1] * v +
+            b[2] * u * v +
+            b[3] * v^2 +
+            b[4] * w * v +
+            0.5 * b[5] * v * (u^2 + v^2 + w^2)
+        ) -
+        τ * (
+            c[1] * w +
+            c[2] * u * w +
+            c[3] * v * w +
+            c[4] * w^2 +
+            0.5 * c[5] * w * (u^2 + v^2 + w^2)
+        ) -
+        τ * (A[1] + A[2] * u + A[3] * v + A[4] * w + 0.5 * A[5] * (u^2 + v^2 + w^2))
+    )
+
+    return f
+
+end
+
+function chapman_enskog(
+    u::AA{T1},
+    v::AA{T1},
+    w::AA{T1},
+    prim::AV{<:RN},
+    swx::AV{<:RN},
+    swy::AV{<:RN},
+    swz::AV{<:RN},
+    K::Real,
+    τ::Real,
+) where {T1}
+
+    Mu, Mv, Mw, _, _1 = gauss_moments(prim, K)
+    a = pdf_slope(prim, swx, K)
+    b = pdf_slope(prim, swy, K)
+    c = pdf_slope(prim, swz, K)
+    sw =
+        -prim[1] .* (
+            moments_conserve_slope(a, Mu, Mv, Mw, 1, 0, 0) .+
+            moments_conserve_slope(b, Mu, Mv, Mw, 0, 1, 0) .+
+            moments_conserve_slope(c, Mu, Mv, Mw, 0, 0, 1)
+        )
+    A = pdf_slope(prim, sw, K)
+
+    return chapman_enskog(u, v, w, prim, a, b, c, A, τ)
 
 end

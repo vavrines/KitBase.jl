@@ -66,10 +66,7 @@ function flux_kfvs!(
     dt,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {
-    Z<:AV{<:FN},
-    A<:AV{<:FN},
-}
+) where {Z<:AV{<:FN},A<:AV{<:FN}}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -99,10 +96,7 @@ function flux_kfvs!(
     dt,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {
-    Z<:AM{<:FN},
-    A<:AM{<:FN},
-}
+) where {Z<:AM{<:FN},A<:AM{<:FN}}
 
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
@@ -139,11 +133,7 @@ function flux_kfvs!(
     sbL = zero(bL)::Z,
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
-) where {
-    Y<:AV{<:FN},
-    Z<:AV{<:FN},
-    A<:AV{<:FN},
-}
+) where {Y<:AV{<:FN},Z<:AV{<:FN},A<:AV{<:FN}}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -184,11 +174,7 @@ function flux_kfvs!(
     sbL = zero(bL)::Z,
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
-) where {
-    Y<:AM{<:FN},
-    Z<:AM{<:FN},
-    A<:AM{<:FN},
-}
+) where {Y<:AM{<:FN},Z<:AM{<:FN},A<:AM{<:FN}}
 
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
@@ -235,11 +221,7 @@ function flux_kfvs!(
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
     srR = zero(rR)::Z,
-) where {
-    Y<:AV{<:FN},
-    Z<:AV{<:FN},
-    A<:AV{<:FN},
-}
+) where {Y<:AV{<:FN},Z<:AV{<:FN},A<:AV{<:FN}}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -284,10 +266,7 @@ function flux_kfvs!(
     dt::Real,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {
-    Z<:AA{<:FN,3},
-    A<:AA{<:FN,3},
-}
+) where {Z<:AA{<:FN,3},A<:AA{<:FN,3}}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -323,10 +302,7 @@ function flux_kfvs!(
     len::Real,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {
-    Z<:AA{<:FN,3},
-    A<:AA{<:FN,3},
-}
+) where {Z<:AA{<:FN,3},A<:AA{<:FN,3}}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -378,11 +354,7 @@ function flux_kfvs!(
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
     sh3R = zero(h3R)::Z,
-) where {
-    Y<:AV{<:FN},
-    Z<:AV{<:FN},
-    A<:AV{<:FN},
-}
+) where {Y<:AV{<:FN},Z<:AV{<:FN},A<:AV{<:FN}}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -441,11 +413,7 @@ function flux_kfvs!(
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
     sh3R = zero(h3R)::Z,
-) where {
-    Y<:AM{<:FN},
-    Z<:AM{<:FN},
-    A<:AM{<:FN},
-}
+) where {Y<:AM{<:FN},Z<:AM{<:FN},A<:AM{<:FN}}
 
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
@@ -501,10 +469,7 @@ function flux_kfvs!(
     len,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {
-    Z<:Union{AV{<:FN},AM{<:FN}},
-    A<:Union{AV{<:FN},AM{<:FN}},
-}
+) where {Z<:Union{AV{<:FN},AM{<:FN}},A<:Union{AV{<:FN},AM{<:FN}}}
 
     # --- upwind reconstruction ---#
     δ = heaviside.(u)
@@ -605,11 +570,7 @@ function flux_kfvs!(
     sh0R = zero(h0R)::Z,
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
-) where {
-    Y<:AM{<:FN},
-    Z<:AM{<:FN},
-    A<:AM{<:FN},
-}
+) where {Y<:AM{<:FN},Z<:AM{<:FN},A<:AM{<:FN}}
 
     #--- upwind reconstruction ---#
     δ = heaviside.(u)
@@ -665,11 +626,7 @@ function flux_kfvs!(
     sh0R = zero(h0R)::Z,
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
-) where {
-    Y<:AA{<:FN,3},
-    Z<:AA{<:FN,3},
-    A<:AA{<:FN,3},
-}
+) where {Y<:AA{<:FN,3},Z<:AA{<:FN,3},A<:AA{<:FN,3}}
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)

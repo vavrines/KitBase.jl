@@ -54,13 +54,7 @@ function flux_boundary_maxwell!(
     inK,
     dt,
     rot = 1,
-) where {
-    T1<:FN,
-    T2<:AV{<:FN},
-    T3<:Real,
-    T4<:AV{<:FN},
-    T5<:AV{<:FN},
-} # 1D2F1V
+) where {T1<:FN,T2<:AV{<:FN},T3<:Real,T4<:AV{<:FN},T5<:AV{<:FN}} # 1D2F1V
 
     @assert length(bc) == 3
 
@@ -134,13 +128,7 @@ function flux_boundary_maxwell!(
     dt,
     len,
     rot = 1,
-) where {
-    T1<:FN,
-    T2<:FN,
-    T3<:Real,
-    T4<:FN,
-    T5<:AM{<:FN},
-}
+) where {T1<:FN,T2<:FN,T3<:Real,T4<:FN,T5<:AM{<:FN}}
 
     @assert length(bc) == 4
 
@@ -184,13 +172,7 @@ function flux_boundary_maxwell!(
     dt,
     len,
     rot = 1,
-) where {
-    T1<:FN,
-    T2<:AM{<:FN},
-    T3<:Real,
-    T4<:AM{<:FN},
-    T5<:AM{<:FN},
-}
+) where {T1<:FN,T2<:AM{<:FN},T3<:Real,T4<:AM{<:FN},T5<:AM{<:FN}}
 
     @assert length(bc) == 4
 
@@ -241,13 +223,7 @@ function flux_boundary_maxwell!(
     dt,
     area,
     rot = 1,
-) where {
-    T1<:FN,
-    T2<:FN,
-    T3<:Real,
-    T4<:FN,
-    T5<:AA{<:FN,3},
-}
+) where {T1<:FN,T2<:FN,T3<:Real,T4<:FN,T5<:AA{<:FN,3}}
 
     @assert length(bc) == 5
 
@@ -327,12 +303,7 @@ function flux_boundary_specular!(
     u::T4,
     ω::T4,
     dt,
-) where {
-    T1<:Real,
-    T2<:AV{<:FN},
-    T3<:AV{<:FN},
-    T4<:AV{<:FN},
-}
+) where {T1<:Real,T2<:AV{<:FN},T3<:AV{<:FN},T4<:AV{<:FN}}
 
     hWall = similar(h)
     bWall = similar(b)

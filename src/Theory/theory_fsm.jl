@@ -232,12 +232,7 @@ function boltzmann_fft(
     ϕ::Y,
     ψ::Y,
     phipsi::Z,
-) where {
-    X<:AA{<:Real,3},
-    Y<:AA{<:Real,4},
-    Z<:AA{<:Real,3},
-    I<:Integer,
-}
+) where {X<:AA{<:Real,3},Y<:AA{<:Real,4},Z<:AA{<:Real,3},I<:Integer}
 
     f_spec = f .+ 0im
     bfft!(f_spec)

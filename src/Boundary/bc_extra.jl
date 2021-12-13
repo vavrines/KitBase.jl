@@ -2,12 +2,7 @@
 # Extrapolation Functions
 # ============================================================
 
-function bc_extra!(
-    ctr::AV{T},
-    ng = 1::Integer;
-    dirc,
-) where {T<:AbstractControlVolume1D}
-
+function bc_extra!(ctr::AV{T}, ng = 1::Integer; dirc) where {T<:AbstractControlVolume1D}
     if Symbol(dirc) in (:xl, :xL)
         for i = 1:ng
             copy_ctr!(ctr[1-i], ctr[1])
@@ -20,15 +15,9 @@ function bc_extra!(
     end
 
     return nothing
-
 end
 
-function bc_extra!(
-    ctr::AM{T},
-    ng = 1::Integer;
-    dirc,
-) where {T<:AbstractControlVolume2D}
-
+function bc_extra!(ctr::AM{T}, ng = 1::Integer; dirc) where {T<:AbstractControlVolume2D}
     if Symbol(dirc) in (:xl, :xL)
         for j in axes(ctr, 2), i = 1:ng
             copy_ctr!(ctr[1-i, j], ctr[1, j])
@@ -50,5 +39,4 @@ function bc_extra!(
     end
 
     return nothing
-
 end

@@ -15,12 +15,8 @@
 1D velocity space
 
 """
-struct VSpace1D{
-    TR<:Real,
-    TI<:Integer,
-    TA<:AA{<:Real},
-    TB<:AV{<:Real},
-} <: AbstractVelocitySpace1D
+struct VSpace1D{TR<:Real,TI<:Integer,TA<:AA{<:Real},TB<:AV{<:Real}} <:
+       AbstractVelocitySpace1D
     u0::TR
     u1::TR
     nu::TI
@@ -388,8 +384,7 @@ VSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 1D multi-component velocity space
 
 """
-struct MVSpace1D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,2}} <:
-       AbstractVelocitySpace1D
+struct MVSpace1D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,2}} <: AbstractVelocitySpace1D
     u0::TR
     u1::TR
     nu::TI
@@ -458,8 +453,7 @@ MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1
 2D multi-component velocity space
 
 """
-struct MVSpace2D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{Float64,3}} <:
-       AbstractVelocitySpace2D
+struct MVSpace2D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{Float64,3}} <: AbstractVelocitySpace2D
     u0::TR
     u1::TR
     nu::TI
@@ -558,8 +552,7 @@ MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
 3D multi-component velocity space
 
 """
-struct MVSpace3D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,4}} <:
-       AbstractVelocitySpace3D
+struct MVSpace3D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,4}} <: AbstractVelocitySpace3D
     u0::TR
     u1::TR
     nu::TI
@@ -687,12 +680,8 @@ MVSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 Unstructured velocity space
 
 """
-struct UnstructVSpace{
-    TR<:Union{Real,AV},
-    TI<:Union{Integer,AV},
-    TA<:AA,
-    TB<:AV{<:Real},
-} <: AbstractVelocitySpace
+struct UnstructVSpace{TR<:Union{Real,AV},TI<:Union{Integer,AV},TA<:AA,TB<:AV{<:Real}} <:
+       AbstractVelocitySpace
     u0::TR
     u1::TR
     nu::TI

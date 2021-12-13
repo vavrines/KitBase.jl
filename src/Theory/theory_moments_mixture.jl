@@ -121,19 +121,13 @@ end
 # Discrete moments of conservative variables
 # ------------------------------------------------------------
 #--- 1F1V ---#
-function mixture_moments_conserve(
-    f::X,
-    u::T,
-    ω::T,
-) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
-
+function mixture_moments_conserve(f::X, u::T, ω::T) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(f, 3, size(f, 2))
     for j in axes(w, 2)
         w[:, j] .= moments_conserve(f[:, j], u, ω)
     end
 
     return w
-
 end
 
 #--- 2F1V ---#

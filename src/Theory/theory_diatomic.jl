@@ -86,12 +86,7 @@ function rykov!(
     σ,
     ω0,
     ω1,
-) where {
-    T1<:AV{<:Real},
-    T2<:AV{<:Real},
-    T3<:AV{<:Real},
-    T4<:AV{<:Real},
-}
+) where {T1<:AV{<:Real},T2<:AV{<:Real},T3<:AV{<:Real},T4<:AV{<:Real}}
 
     @. Ht_plus =
         (
@@ -165,12 +160,7 @@ function rykov!(
     σ,
     ω0,
     ω1,
-) where {
-    T1<:AA{<:Real,2},
-    T2<:AA{<:Real,2},
-    T3<:AA{<:Real,1},
-    T4<:AA{<:Real,1},
-}
+) where {T1<:AA{<:Real,2},T2<:AA{<:Real,2},T3<:AA{<:Real,1},T4<:AA{<:Real,1}}
 
     @. Ht_plus =
         (

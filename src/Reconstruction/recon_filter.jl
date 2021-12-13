@@ -11,11 +11,7 @@ Filter of modal solutions
 - @arg args...: filter parameters including strength, norm, etc.
 - @arg filter: symbolic filter options including :l2, l2opt, :l1, :lasso, :exp, :houli
 """
-function modal_filter!(
-    u::AA{T},
-    args...;
-    filter::Symbol,
-) where {T<:FN}
+function modal_filter!(u::AA{T}, args...; filter::Symbol) where {T<:FN}
     filtstr = "filter_" * string(filter) * "!"
     filtfunc = Symbol(filtstr) |> eval
     filtfunc(u, args...)

@@ -15,6 +15,9 @@ function ib_sod(
         primL = [1.0, 0.0, 0.5]
         primR = [0.125, 0.0, 0.625]
 
+        primL = ifelse(set.space[5:6] == "3v", [primL[1:2]; zeros(2); primL[end]], primL)
+        primR = ifelse(set.space[5:6] == "3v", [primR[1:2]; zeros(2); primR[end]], primR)
+
         wL = prim_conserve(primL, gas.γ)
         wR = prim_conserve(primR, gas.γ)
 

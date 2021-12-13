@@ -2,12 +2,7 @@
 # Mirroring Functions
 # ============================================================
 
-function bc_mirror!(
-    ctr::AM{T},
-    ng = 1::Integer;
-    dirc,
-) where {T<:AbstractControlVolume2D}
-
+function bc_mirror!(ctr::AM{T}, ng = 1::Integer; dirc) where {T<:AbstractControlVolume2D}
     if Symbol(dirc) in (:xl, :xL)
         for j in axes(ctr, 2), i = 1:ng
             bc_mirror!(ctr[1-i, j], ctr[i, j], :x)
@@ -29,7 +24,6 @@ function bc_mirror!(
     end
 
     return nothing
-
 end
 
 function bc_mirror!(ctr::ControlVolume2D, ctr0::ControlVolume2D, dirc)

@@ -20,8 +20,7 @@ maxwellian(u, prim::AV) = maxwellian(u, prim[1], prim[2], prim[end]) # in case o
 #--- 2V ---#
 maxwellian(u, v, ρ, U, V, λ) = @. ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
 
-maxwellian(u, v, prim::AV) =
-    maxwellian(u, v, prim[1], prim[2], prim[3], prim[end]) # in case of input with length 5
+maxwellian(u, v, prim::AV) = maxwellian(u, v, prim[1], prim[2], prim[3], prim[end]) # in case of input with length 5
 
 #--- 3V ---#
 maxwellian(u, v, w, ρ, U, V, W, λ) =
@@ -58,8 +57,7 @@ function maxwellian!(M::AV, u::AV, ρ, U, λ)
 
 end
 
-maxwellian!(M::AV, u::AV, prim::AV) =
-    maxwellian!(M, u, prim[1], prim[2], prim[end])
+maxwellian!(M::AV, u::AV, prim::AV) = maxwellian!(M, u, prim[1], prim[2], prim[end])
 
 # Rykov
 function maxwellian!(
@@ -123,28 +121,12 @@ function maxwellian!(
 end
 
 #--- 3V ---#
-function maxwellian!(
-    M::AA,
-    u::T,
-    v::T,
-    w::T,
-    ρ,
-    U,
-    V,
-    W,
-    λ,
-) where {T<:AA}
+function maxwellian!(M::AA, u::T, v::T, w::T, ρ, U, V, W, λ) where {T<:AA}
     @. M = ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
     return nothing
 end
 
-maxwellian!(
-    M::AA,
-    u::T,
-    v::T,
-    w::T,
-    prim::AV,
-) where {T<:AA} =
+maxwellian!(M::AA, u::T, v::T, w::T, prim::AV) where {T<:AA} =
     maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
 
@@ -193,11 +175,7 @@ end
 In-place multi-component Maxwellian
 
 """
-function mixture_maxwellian!(
-    M::AM,
-    u::AA{T,2},
-    prim::AM,
-) where {T}
+function mixture_maxwellian!(M::AM, u::AA{T,2}, prim::AM) where {T}
 
     for j in axes(M, 2)
         _M = @view M[:, j]
@@ -225,12 +203,7 @@ function mixture_maxwellian!(
 
 end
 
-function mixture_maxwellian!(
-    M::AM,
-    u::T,
-    v::T,
-    prim::AM,
-) where {T<:AM}
+function mixture_maxwellian!(M::AM, u::T, v::T, prim::AM) where {T<:AM}
 
     for k in axes(M, 2)
         _M = @view M[:, k]
@@ -259,13 +232,7 @@ function mixture_maxwellian!(
 
 end
 
-function mixture_maxwellian!(
-    M::AM,
-    u::T,
-    v::T,
-    w::T,
-    prim::AM,
-) where {T<:AM}
+function mixture_maxwellian!(M::AM, u::T, v::T, w::T, prim::AM) where {T<:AM}
 
     for l in axes(M, 2)
         _M = @view M[:, l]

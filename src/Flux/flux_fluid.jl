@@ -29,14 +29,7 @@ _P. D. Lax, Weak Solutions of Nonlinear Hyperbolic Equations and Their Numerical
 Commun. Pure and Applied Mathematics, 7, 159-193, 1954._
 
 """
-function flux_lax!(
-    fw::X,
-    wL::Y,
-    wR::Y,
-    γ,
-    dt,
-    dx,
-) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
+function flux_lax!(fw::X, wL::Y, wR::Y, γ, dt, dx) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
     fw .= 0.5 * dt .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1] - dx / dt .* (wR - wL))
     return nothing
 end
@@ -51,14 +44,7 @@ HLL flux for the Euler equations
 - @args: specific heat ratio
 
 """
-function flux_hll!(
-    fw::X,
-    wL::Y,
-    wR::Y,
-    γ,
-    dt,
-) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
-
+function flux_hll!(fw::X, wL::Y, wR::Y, γ, dt) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -84,7 +70,6 @@ function flux_hll!(
     fw .*= dt
 
     return nothing
-
 end
 
 

@@ -101,11 +101,7 @@ Radiation property for linear Boltzmann equation
     np::T4 = 1000
 end
 
-function Radiation(
-    _Kn::Union{Real,AV},
-    _ss::Union{Real,AV},
-    _sa::Union{Real,AV},
-)
+function Radiation(_Kn::Union{Real,AV}, _ss::Union{Real,AV}, _sa::Union{Real,AV})
     Kn = deepcopy(_Kn)
     σs = deepcopy(_ss)
     σa = deepcopy(_sa)

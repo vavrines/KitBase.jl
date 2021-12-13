@@ -243,14 +243,7 @@ function ib_briowu(gam, mi, me, uspace::AM{T}) where {T<:FN}
 
 end
 
-function ib_briowu(
-    gam,
-    mi,
-    me,
-    uspace::T,
-    vspace::T,
-) where {T<:AA{<:FN,3}}
-
+function ib_briowu(gam, mi, me, uspace::T, vspace::T) where {T<:AA{<:FN,3}}
     # upstream
     primL = zeros(5, 2)
     primL[1, 1] = 1.0 * mi
@@ -326,5 +319,4 @@ function ib_briowu(
     ER,
     BR,
     lorenzR
-
 end

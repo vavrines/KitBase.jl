@@ -28,11 +28,7 @@ function global_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
 
 end
 
-function global_frame(
-    w::T,
-    dirccos::X,
-) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
-
+function global_frame(w::T, dirccos::X) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
     if eltype(w) <: Int
         G = similar(w, Float64)
     else
@@ -54,7 +50,6 @@ function global_frame(
     end
 
     return G
-
 end
 
 
@@ -88,11 +83,7 @@ function local_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
 
 end
 
-function local_frame(
-    w::T,
-    dirccos::X,
-) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
-
+function local_frame(w::T, dirccos::X) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
     if eltype(w) <: Int
         L = similar(w, Float64)
     else
@@ -114,7 +105,6 @@ function local_frame(
     end
 
     return L
-
 end
 
 

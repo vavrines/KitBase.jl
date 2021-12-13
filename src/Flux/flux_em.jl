@@ -34,12 +34,7 @@ function flux_em!(
     χ,
     ν,
     dt,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:Real,1},
-    T3<:AA{<:Real,2},
-    T4<:AA{<:Real,1},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:Real,1},T3<:AA{<:Real,2},T4<:AA{<:Real,1}}
 
 
     @assert length(femL) == length(femR) == 8
@@ -156,12 +151,7 @@ function flux_emx!(
     χ,
     ν,
     dt,
-) where {
-    X<:AA{<:FN,1},
-    Y<:AA{<:Real,1},
-    A<:AA{<:Real,2},
-    B<:AA{<:Real,1},
-}
+) where {X<:AA{<:FN,1},Y<:AA{<:Real,1},A<:AA{<:Real,2},B<:AA{<:Real,1}}
 
     slop = zeros(8, 8)
     slop[3, 1] = -0.5 * sol^2 * (BR[2] - BL[2]) + 0.5 * sol * (ER[3] - EL[3])

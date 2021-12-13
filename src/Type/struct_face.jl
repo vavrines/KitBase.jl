@@ -408,14 +408,7 @@ mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
     femRD::E
 end
 
-function Interface2D3F(
-    L::Real,
-    C::Real,
-    S::Real,
-    w::AA,
-    f::AA,
-    E::AA{<:Real,1},
-)
+function Interface2D3F(L::Real, C::Real, S::Real, w::AA, f::AA, E::AA{<:Real,1})
     len = L
     n = @SArray [C, S]
 
@@ -434,14 +427,7 @@ function Interface2D3F(
     return Interface2D3F(len, n, fw, fh0, fh1, fh2, femL, femR, femLU, femLD, femRU, femRD)
 end
 
-function Interface2D3F(
-    L::Real,
-    C::Real,
-    S::Real,
-    w::AA,
-    f::AA,
-    E::AA{<:Real,2},
-)
+function Interface2D3F(L::Real, C::Real, S::Real, w::AA, f::AA, E::AA{<:Real,2})
     len = L
     n = [C, S]
 
