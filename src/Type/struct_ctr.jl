@@ -114,13 +114,7 @@ mutable struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
     sb::B
 end
 
-function ControlVolume1D2F(
-    W::T1,
-    PRIM::T1,
-    H::T2,
-    B::T2,
-) where {T1<:AA,T2<:AA}
-
+function ControlVolume1D2F(W::T1, PRIM::T1, H::T2, B::T2) where {T1<:AA,T2<:AA}
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = zero(W)
@@ -131,7 +125,6 @@ function ControlVolume1D2F(
     sb = zero(b)
 
     return ControlVolume1D2F{typeof(w),typeof(h)}(w, prim, sw, h, b, sh, sb)
-
 end
 
 function Base.show(io::IO, ctr::ControlVolume1D2F{A,B}) where {A,B}
@@ -621,13 +614,7 @@ mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
     sb::D
 end
 
-function ControlVolume2D2F(
-    W::AA,
-    PRIM::AA,
-    H::AA,
-    B::AA,
-)
-
+function ControlVolume2D2F(W::AA, PRIM::AA, H::AA, B::AA)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
@@ -649,7 +636,6 @@ function ControlVolume2D2F(
         sh,
         sb,
     )
-
 end
 
 function Base.show(io::IO, ctr::ControlVolume2D2F{A,B,C,D}) where {A,B,C,D}
@@ -708,17 +694,7 @@ mutable struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2
 end
 
 #--- deterministic & stochastic ---#
-function ControlVolume2D3F(
-    W::AA,
-    PRIM::AA,
-    H0::AA,
-    H1::AA,
-    H2::AA,
-    E0::AA,
-    B0::AA,
-    L::AA,
-)
-
+function ControlVolume2D3F(W::AA, PRIM::AA, H0::AA, H1::AA, H2::AA, E0::AA, B0::AA, L::AA)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
@@ -764,7 +740,6 @@ function ControlVolume2D3F(
         ψ,
         lorenz,
     )
-
 end
 
 #--- Rykov ---#
@@ -995,16 +970,7 @@ mutable struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     sb::D
 end
 
-function ControlVolumeUS2F(
-    N,
-    X,
-    DX,
-    W::T1,
-    PRIM::T1,
-    H::T2,
-    B::T2,
-) where {T1<:AA,T2<:AA}
-
+function ControlVolumeUS2F(N, X, DX, W::T1, PRIM::T1, H::T2, B::T2) where {T1<:AA,T2<:AA}
     n = deepcopy(N)
     x = deepcopy(X)
     dx = deepcopy(DX)
@@ -1045,5 +1011,4 @@ function ControlVolumeUS2F(
         sh,
         sb,
     )
-
 end

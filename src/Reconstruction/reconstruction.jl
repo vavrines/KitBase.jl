@@ -74,41 +74,22 @@ end
 Two-cell reconstruction
 
 """
-function reconstruct2!(
-    sw::X,
-    wL::Y,
-    wR::Y,
-    Δx,
-) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
+function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
     sw .= (wR .- wL) ./ Δx
 end
 
-function reconstruct2!(
-    sw::X,
-    wL::Y,
-    wR::Y,
-    Δx,
-) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
-
+function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
     for j in axes(sw, 2)
         swj = @view sw[:, j]
         reconstruct2!(swj, wL[:, j], wR[:, j], Δx)
     end
-
 end
 
-function reconstruct2!(
-    sw::X,
-    wL::Y,
-    wR::Y,
-    Δx,
-) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
-
+function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
     for k in axes(sw, 3), j in axes(sw, 2)
         swjk = @view sw[:, j, k]
         reconstruct2!(swjk, wL[:, j, k], wR[:, j, k], Δx)
     end
-
 end
 
 

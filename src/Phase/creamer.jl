@@ -30,11 +30,7 @@ Cleaner for all duplicate (non unique) entries of quadrature points and triangle
 * @return xyz & triangulation : new quadrature points and triangulation
 
 """
-function unique(
-    Points::AM{T1},
-    Triangles::AM{T2},
-) where {T1<:Real,T2<:Integer}
-
+function unique(Points::AM{T1}, Triangles::AM{T2}) where {T1<:Real,T2<:Integer}
     nPoints = size(Points)[2]
     nTriangles = size(Triangles)[2]
 
@@ -117,12 +113,10 @@ function unique(
     end
 
     return xyz, triangulation
-
 end
 
 
 function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
-
     if geometry == :plane
         alpha = angle(B, A, C)
         lb = norm(B - A)
@@ -140,7 +134,6 @@ function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
     else
         throw("geometry has to be planar or sphere")
     end
-
 end
 
 
@@ -148,13 +141,7 @@ end
 Args order (B,A,C) isn't a mistake
 
 """
-function angle(
-    B::T,
-    A::T,
-    C::T,
-    geometry = :plane::Symbol,
-) where {T<:AV{<:Real}}
-
+function angle(B::T, A::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
     if geometry == :plane
         u, v = A - B, C - A
         return acos(dot(u, v) / norm(u, 2) / norm(v, 2))
@@ -175,12 +162,10 @@ function angle(
     else
         throw("geometry has to be planar or sphere")
     end
-
 end
 
 
 function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
-
     if geometry == :plane
         return norm(v1 - v2)
     elseif geometry == :sphere
@@ -193,7 +178,6 @@ function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
     else
         throw("geometry has to be planar or sphere")
     end
-
 end
 
 

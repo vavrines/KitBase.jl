@@ -12,14 +12,7 @@ Shakhov non-equilibrium part
 * @arg: primitive variables, Prandtl number, heat flux, inner degree of freedom
 
 """
-function shakhov(
-    u::AV{X},
-    M::AV{Y},
-    q,
-    prim::AV{Z},
-    Pr,
-) where {X<:FN,Y<:FN,Z<:Real} # 1F1V
-
+function shakhov(u::AV{X}, M::AV{Y}, q, prim::AV{Z}, Pr) where {X<:FN,Y<:FN,Z<:Real} # 1F1V
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
        q *
@@ -27,7 +20,6 @@ function shakhov(
        M
 
     return M_plus
-
 end
 
 #--- 2F1V ---#
@@ -85,12 +77,7 @@ function shakhov(
     prim::AV{Z},
     Pr,
     K,
-) where {
-    T<:AA{<:FN,2},
-    X<:AA{<:FN,2},
-    Y<:Real,
-    Z<:Real,
-}
+) where {T<:AA{<:FN,2},X<:AA{<:FN,2},Y<:Real,Z<:Real}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -140,15 +127,7 @@ In-place Shakhov non-equilibrium part
 * @arg: primitive variables, Prandtl number, heat flux, inner degree of freedom
 
 """
-function shakhov!(
-    S::T1,
-    u::AV{T2},
-    M::T1,
-    q,
-    prim,
-    Pr,
-) where {T1<:AA{<:FN,1},T2<:FN} # 1F1V
-
+function shakhov!(S::T1, u::AV{T2}, M::T1, q, prim, Pr) where {T1<:AA{<:FN,1},T2<:FN} # 1F1V
     @. S = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
        q *
@@ -156,7 +135,6 @@ function shakhov!(
        M
 
     return nothing
-
 end
 
 #--- 2F1V ---#

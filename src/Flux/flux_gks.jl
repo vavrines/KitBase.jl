@@ -389,12 +389,7 @@ function flux_gks!(
     dxR,
     swL::T3,
     swR::T3,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,1},
-    T3<:AA{<:Real,1},
-    T4<:AA{<:FN,1},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -520,12 +515,7 @@ function flux_gks!(
     dxR,
     swL::T3,
     swR::T3,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,1},
-    T3<:AA{<:Real,1},
-    T4<:AA{<:FN,1},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -711,7 +701,7 @@ function flux_gks!(
     faL = pdf_slope(primL, swL, inK)
     sw = -primL[1] .* moments_conserve_slope(faL, Mu1, Mv1, Mw1, 1, 0, 0)
     faTL = pdf_slope(primL, sw, inK)
-    
+
     faR = pdf_slope(primR, swR, inK)
     sw = -primR[1] .* moments_conserve_slope(faR, Mu2, Mv1, Mw2, 1, 0, 0)
     faTR = pdf_slope(primR, sw, inK)
@@ -901,12 +891,7 @@ function flux_gks!(
     dy::Real,
     swL::T3,
     swR::T3,
-) where {
-    T1<:AV{<:FN},
-    T2<:AM{<:FN},
-    T3<:AV{<:FN},
-    T4<:AM{<:FN},
-}
+) where {T1<:AV{<:FN},T2<:AM{<:FN},T3<:AV{<:FN},T4<:AM{<:FN}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -1066,12 +1051,7 @@ function flux_gks!(
     dy::Real,
     swL::T3,
     swR::T3,
-) where {
-    T1<:AV{<:FN},
-    T2<:AM{<:FN},
-    T3<:AV{<:FN},
-    T4<:AM{<:FN},
-}
+) where {T1<:AV{<:FN},T2<:AM{<:FN},T3<:AV{<:FN},T4<:AM{<:FN}}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -1489,13 +1469,7 @@ function flux_ugks!(
     sbL = zeros(eltype(bL), axes(bL))::T4,
     shR = zeros(eltype(hR), axes(hR))::T4,
     sbR = zeros(eltype(bR), axes(bR))::T4,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,1},
-    T3<:AA{<:Real,1},
-    T4<:AA{<:FN,1},
-    T5<:AA{<:FN,1},
-} # 1D2F flux
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1},T5<:AA{<:FN,1}} # 1D2F flux
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)
@@ -1606,13 +1580,7 @@ function flux_ugks!(
     sbL = zeros(eltype(bL), axes(bL))::T4,
     shR = zeros(eltype(hR), axes(hR))::T4,
     sbR = zeros(eltype(bR), axes(bR))::T4,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,2},
-    T3<:AA{<:Real,1},
-    T4<:AA{<:FN,2},
-    T5<:AA{<:FN,2},
-} # 2D2F flux
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,2},T3<:AA{<:Real,1},T4<:AA{<:FN,2},T5<:AA{<:FN,2}} # 2D2F flux
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)
@@ -1763,13 +1731,7 @@ function flux_ugks!(
     sh0R = zeros(eltype(h0R), axes(h0R))::T4,
     sh1R = zeros(eltype(h1R), axes(h1R))::T4,
     sh2R = zeros(eltype(h2R), axes(h2R))::T4,
-) where {
-    T1<:AA{<:FN,2},
-    T2<:AA{<:FN,3},
-    T3<:AA{<:Real,2},
-    T4<:AA{<:FN,3},
-    T5<:AA{<:FN,3},
-}
+) where {T1<:AA{<:FN,2},T2<:AA{<:FN,3},T3<:AA{<:Real,2},T4<:AA{<:FN,3},T5<:AA{<:FN,3}}
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)

@@ -557,11 +557,7 @@ function particle_transport!(
     ptc::T3,
     ptc_tmp::T3,
     dt,
-) where {
-    T1<:AbstractSolverSet,
-    T2<:AA{ControlVolumeParticle1D,1},
-    T3<:AA{Particle1D,1},
-}
+) where {T1<:AbstractSolverSet,T2<:AA{ControlVolumeParticle1D,1},T3<:AA{Particle1D,1}}
 
     @inbounds Threads.@threads for i = 1:KS.pSpace.nx
         ctr[i].wf .= ctr[i].w

@@ -56,12 +56,8 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 2D Physical space with structured mesh
 
 """
-struct PSpace2D{
-    TR<:Real,
-    TI<:Integer,
-    TA<:AM{<:Real},
-    TB<:AA{<:Real,4},
-} <: AbstractPhysicalSpace2D
+struct PSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <:
+       AbstractPhysicalSpace2D
     x0::TR
     x1::TR
     nx::TI
@@ -140,12 +136,8 @@ PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45
 2D Circular space in polar coordinates
 
 """
-struct CSpace2D{
-    TR<:Real,
-    TI<:Integer,
-    TA<:AM{<:Real},
-    TB<:AA{<:Real,4},
-} <: AbstractPhysicalSpace2D
+struct CSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <:
+       AbstractPhysicalSpace2D
     r0::TR
     r1::TR
     nr::TI
@@ -317,19 +309,13 @@ Find the location index of a point in mesh
 - @arg mode: choose uniform / nonuniform formulations
 
 """
-function find_idx(
-    x::T,
-    p::Real;
-    mode = :nonuniform::Symbol,
-) where {T<:AA{<:Real,1}}
-
+function find_idx(x::T, p::Real; mode = :nonuniform::Symbol) where {T<:AA{<:Real,1}}
     if mode == :uniform
         dx = x[2] - x[1]
         return Int(ceil((p - x[1] + 0.5 * dx) / dx)) # point location
     else
         return argmin(abs.(x .- p)) # center location
     end
-
 end
 
 # ------------------------------------------------------------

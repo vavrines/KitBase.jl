@@ -45,7 +45,7 @@ plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot i
     c = get(plotattributes, :linewidth, :auto)
 
     return nothing
-    
+
 end
 
 

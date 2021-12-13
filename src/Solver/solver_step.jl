@@ -17,17 +17,7 @@
 
 Update flow variables with finite volume formulation
 """
-function step!(
-    fwL::X,
-    w::X,
-    prim::AV{X},
-    fwR::X,
-    a,
-    dx,
-    RES,
-    AVG,
-) where {X<:FN} # scalar
-
+function step!(fwL::X, w::X, prim::AV{X}, fwR::X, a, dx, RES, AVG) where {X<:FN} # scalar
     #--- store W^n and calculate H^n,\tau^n ---#
     w_old = deepcopy(w)
 
@@ -40,7 +30,6 @@ function step!(
     AVG += abs(w)
 
     return w, RES, AVG
-
 end
 
 function step!(
@@ -145,13 +134,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk::Symbol,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,1},
-    T3<:AA{<:FN,1},
-    T4<:AA{<:FN,1},
-    T5<:AA{<:FN,1},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:FN,1},T4<:AA{<:FN,1},T5<:AA{<:FN,1}}
 
     #--- store W^n and calculate H^n,\tau^n ---#
     w_old = deepcopy(w)
@@ -208,13 +191,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk::Symbol,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,3},
-    T3<:AA{<:FN,1},
-    T4<:AA{<:FN,3},
-    T5<:AA{<:FN,3},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,3},T3<:AA{<:FN,1},T4<:AA{<:FN,3},T5<:AA{<:FN,3}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -268,12 +245,7 @@ function step!(
     RES,
     AVG,
     collision = :fsm::Symbol,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,3},
-    T3<:AA{<:FN,1},
-    T4<:AA{<:FN,3},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,3},T3<:AA{<:FN,1},T4<:AA{<:FN,3}}
 
     @assert collision == :fsm
 
@@ -317,13 +289,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk::Symbol,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,1},
-    T3<:AA{<:FN,1},
-    T4<:AA{<:FN,1},
-    T5<:AA{<:FN,1},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:FN,1},T4<:AA{<:FN,1},T5<:AA{<:FN,1}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -388,13 +354,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk::Symbol,
-) where {
-    T1<:AA{<:FN,2},
-    T2<:AA{<:FN,2},
-    T3<:AA{<:FN,2},
-    T4<:AA{<:FN,2},
-    T5<:AA{<:FN,2},
-}
+) where {T1<:AA{<:FN,2},T2<:AA{<:FN,2},T3<:AA{<:FN,2},T4<:AA{<:FN,2},T5<:AA{<:FN,2}}
 
     #--- update conservative flow variables ---#
     # w^n
@@ -504,13 +464,7 @@ function step!(
     RES,
     AVG,
     collision = :rykov::Symbol,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,1},
-    T3<:AA{<:Real,1},
-    T4<:AA{<:FN,1},
-    T5<:AA{<:FN,1},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1},T5<:AA{<:FN,1}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1152,11 +1106,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,2},
-    T3<:AA{<:FN,2},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,2},T3<:AA{<:FN,2}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1220,12 +1170,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk,
-) where {
-    T1<:AV{<:FN},
-    T2<:AA{<:FN,2},
-    T3<:AA{<:FN,2},
-    T4<:AV{<:Real},
-}
+) where {T1<:AV{<:FN},T2<:AA{<:FN,2},T3<:AA{<:FN,2},T4<:AV{<:Real}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1295,11 +1240,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,2},
-    T3<:AA{<:FN,2},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,2},T3<:AA{<:FN,2}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1377,12 +1318,7 @@ function step!(
     RES,
     AVG,
     collision = :bgk,
-) where {
-    T1<:AV{<:FN},
-    T2<:AA{<:FN,2},
-    T3<:AA{<:FN,2},
-    T4<:AV{<:Real},
-}
+) where {T1<:AV{<:FN},T2<:AA{<:FN,2},T3<:AA{<:FN,2},T4<:AV{<:Real}}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -1454,12 +1390,7 @@ function step!(
     RES,
     AVG,
     collision = :fsm::Symbol,
-) where {
-    T1<:AA{<:FN,1},
-    T2<:AA{<:FN,3},
-    T3<:AA{<:FN,1},
-    T4<:AA{<:FN,3},
-}
+) where {T1<:AA{<:FN,1},T2<:AA{<:FN,3},T3<:AA{<:FN,1},T4<:AA{<:FN,3}}
 
     @assert collision == :fsm
 

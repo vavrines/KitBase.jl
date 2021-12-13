@@ -18,12 +18,7 @@ end
 
 Write data into VTK
 """
-function write_vtk(
-    points::T,
-    cells,
-    cdata,
-    pdata = zeros(axes(points, 1)),
-) where {T<:AM}
+function write_vtk(points::T, cells, cdata, pdata = zeros(axes(points, 1))) where {T<:AM}
     mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, cells[i, :]) for i in axes(cells, 1)]
     vtkfile = vtk_grid("sol", permutedims(points), mcells)
 
@@ -65,19 +60,19 @@ function write_tec(x::AV, sol)
                 length(sol), "vector"
             end
         end
-    
+
         varnm = ""
         for i = 1:len-1
             varnm = varnm * "V" * string(i) * ", "
         end
         varnm = varnm * "V" * string(len)
-    
+
         println(f, "VARIABLES = X, Y, " * varnm)
         println(f, "ZONE I = $nx")
-    
+
         dp = "DATAPACKING = BLOCK"
         println(f, dp)
-        
+
         write_num(f, x)
 
         if type == "scalar"
@@ -115,16 +110,16 @@ function write_tec(x::AM, y::AM, sol)
                 false
             end
         end
-    
+
         varnm = ""
         for i = 1:len-1
             varnm = varnm * "V" * string(i) * ", "
         end
         varnm = varnm * "V" * string(len)
-    
+
         println(f, "VARIABLES = X, Y, " * varnm)
         println(f, "ZONE I = $nx, J = $ny")
-    
+
         dp = "DATAPACKING = BLOCK, "
         vl = begin
             if isCenter
@@ -136,7 +131,7 @@ function write_tec(x::AM, y::AM, sol)
             end
         end
         println(f, dp * vl)
-        
+
         write_num(f, x)
         write_num(f, y)
 

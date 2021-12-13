@@ -32,12 +32,7 @@ mutable struct Flux1D2F{A,B,C} <: AbstractFlux1D
     fh::C
     fb::C
 
-    function Flux1D2F(
-        w::AA,
-        fw::AA,
-        fh::AA,
-        fb::AA,
-    )
+    function Flux1D2F(w::AA, fw::AA, fh::AA, fb::AA)
         new{typeof(w),typeof(fw),typeof(fh)}(w, fw, fh, fb)
     end
 
@@ -54,14 +49,7 @@ mutable struct Flux2D{A,B,C} <: AbstractFlux2D
     w2::B
     fw2::C
 
-    function Flux2D(
-        n1::AA,
-        w1::AA,
-        fw1::AA,
-        n2::AA,
-        w2::AA,
-        fw2::AA,
-    )
+    function Flux2D(n1::AA, w1::AA, fw1::AA, n2::AA, w2::AA, fw2::AA)
         new{typeof(n1),typeof(w1),typeof(fw1)}(n1, w1, fw1, n2, w2, fw2)
     end
 
@@ -80,16 +68,7 @@ mutable struct Flux2D1F{A,B,C,D} <: AbstractFlux2D
     fw2::C
     ff2::D
 
-    function Flux2D1F(
-        n1::AA,
-        w1::AA,
-        fw1::AA,
-        ff1::AA,
-        n2::AA,
-        w2::AA,
-        fw2::AA,
-        ff2::AA,
-    )
+    function Flux2D1F(n1::AA, w1::AA, fw1::AA, ff1::AA, n2::AA, w2::AA, fw2::AA, ff2::AA)
         new{typeof(n1),typeof(w1),typeof(fw1),typeof(ff1)}(
             n1,
             w1,

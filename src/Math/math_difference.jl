@@ -154,11 +154,7 @@ end
 
 Central difference
 """
-function central_diff!(
-    dy::AV{T1},
-    y::T2,
-    x::T2,
-) where {T1,T2<:AV{<:Number}}
+function central_diff!(dy::AV{T1}, y::T2, x::T2) where {T1,T2<:AV{<:Number}}
     @assert axes(dy) == axes(y) == axes(x)
 
     idx = eachindex(y) |> collect
@@ -188,11 +184,7 @@ end
     
 Central difference
 """
-function central_diff2!(
-    dy::AV{T1},
-    y::T2,
-    x::T2,
-) where {T1,T2<:AV{<:Number}}
+function central_diff2!(dy::AV{T1}, y::T2, x::T2) where {T1,T2<:AV{<:Number}}
     @assert axes(dy) == axes(y) == axes(x)
 
     i0 = eachindex(y) |> first
@@ -221,12 +213,7 @@ end
 
 Upwind difference
 """
-function upwind_diff(
-    y::AV{T1},
-    x::AV{T2};
-    stream = :right::Symbol,
-) where {T1,T2}
-
+function upwind_diff(y::AV{T1}, x::AV{T2}; stream = :right::Symbol) where {T1,T2}
     dy = zeros(eltype(y), axes(y))
 
     idx = eachindex(y) |> collect
@@ -248,7 +235,6 @@ function upwind_diff(
     end
 
     return dy
-
 end
 
 function upwind_diff(y::AV{T}, dx; stream = :right::Symbol) where {T}
@@ -296,18 +282,11 @@ function upwind_diff!(
 
 end
 
-function upwind_diff!(
-    dy::AV{T1},
-    y::AV{T2},
-    dx;
-    stream = :right::Symbol,
-) where {T1,T2}
-
+function upwind_diff!(dy::AV{T1}, y::AV{T2}, dx; stream = :right::Symbol) where {T1,T2}
     x = linspace(0, length(y) - 1, length(y)) .* dx
     upwind_diff!(dy, y, x, stream = stream)
 
     return nothing
-
 end
 
 

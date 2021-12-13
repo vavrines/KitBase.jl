@@ -100,7 +100,7 @@ function reduce_distribution(f::AM, weights::AV, dim = 1)
     return h
 end
 
-function reduce_distribution(f::AA{T1,3}, weights::AM, dim = 1) where T1
+function reduce_distribution(f::AA{T1,3}, weights::AM, dim = 1) where {T1}
     if dim == 1
         h = similar(f, axes(f, 1))
         for i in eachindex(h)
@@ -297,7 +297,7 @@ function chapman_enskog(
     sw::AV{<:RN},
     K::Real,
     τ::Real,
-) where T1
+) where {T1}
 
     Mu, Mxi, _, _1 = gauss_moments(prim, K)
     a = pdf_slope(prim, sw, K)
@@ -337,7 +337,7 @@ function chapman_enskog(
     swy::AV{<:RN},
     K::Real,
     τ::Real,
-) where T1
+) where {T1}
 
     Mu, Mv, Mxi, _, _1 = gauss_moments(prim, K)
     a = pdf_slope(prim, swx, K)
@@ -406,7 +406,7 @@ function chapman_enskog(
     swz::AV{<:RN},
     K::Real,
     τ::Real,
-) where T1
+) where {T1}
 
     Mu, Mv, Mw, _, _1 = gauss_moments(prim, K)
     a = pdf_slope(prim, swx, K)
