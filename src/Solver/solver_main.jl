@@ -247,16 +247,13 @@ function timestep(
             for i = 1:nx
                 prim = ctr[i, j].prim
                 sos = sound_speed(prim, KS.gas.γ)
-                umax = ifelse(
-                    KS.vs isa Nothing,
-                    abs(prim[2]) + sos,
-                    max(KS.vSpace.u1, abs(prim[2])) + sos,
-                )
-                vmax = ifelse(
-                    KS.vs isa Nothing,
-                    abs(prim[3]) + sos,
-                    max(KS.vSpace.v1, abs(prim[3])) + sos,
-                )
+                umax, vmax = begin
+                    if KS.vs isa Nothing
+                        abs(prim[2]) + sos, abs(prim[3]) + sos
+                    else
+                        max(KS.vSpace.u1, abs(prim[2])) + sos, max(KS.vSpace.v1, abs(prim[3])) + sos
+                    end
+                end
                 tmax = max(tmax, umax / dx[i, j] + vmax / dy[i, j])
             end
         end
