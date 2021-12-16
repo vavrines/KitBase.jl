@@ -536,24 +536,40 @@ function set_property(dict::T) where {T<:AbstractDict}
     end
     γ = heat_capacity_ratio(dict[:inK], γD)
 
-    if matter == "radiation"
+    if dict[:matter] == "radiation"
 
         gas = Radiation(dict[:knudsen], dict[:sigmaS], dict[:sigmaA])
 
-    elseif matter == "gas"
+    elseif dict[:matter] == "gas"
 
         if nSpecies == 1
             μᵣ = ref_vhs_vis(dict[:knudsen], dict[:alphaRef], dict[:omegaRef])
+
+            if dict[:collision] == "fsm"
+                nm = begin
+                    if haskey(dict, :nm)
+                        dict[:nm]
+                    else
+                        return 5
+                    end
+                end
+                vs = set_velocity(; dict...)
+                fsm = fsm_kernel(vs, μᵣ, nm, dict[:alphaRef])
+            else
+                fsm = nothing
+            end
+
             gas = Gas(
-                dict[:knudsen],
-                dict[:mach],
-                dict[:prandtl],
-                dict[:inK],
-                γ,
-                dict[:omega],
-                dict[:alphaRef],
-                dict[:omegaRef],
-                μᵣ,
+                Kn = dict[:knudsen],
+                Ma = dict[:mach],
+                Pr = dict[:prandtl],
+                K = dict[:inK],
+                γ = γ,
+                ω = dict[:omega],
+                αᵣ = dict[:alphaRef],
+                ωᵣ = dict[:omegaRef],
+                μᵣ = μᵣ,
+                fsm = fsm,
             )
         elseif nSpecies == 2
             kne = dict[:knudsen] * (dict[:me] / dict[:mi])

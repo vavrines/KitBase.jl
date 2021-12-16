@@ -50,19 +50,7 @@ KitBase.update!(ks, ctr, face, dt, zeros(3); bc = :mirror)
 KitBase.evolve!(ks, ctr, face, dt; mode = :kfvs)
 KitBase.evolve!(ks, ctr, face, dt; mode = :kcu)
 
-gas = KitBase.Gas(
-    ks.gas.Kn,
-    ks.gas.Ma,
-    ks.gas.Pr,
-    ks.gas.K,
-    ks.gas.γ,
-    ks.gas.ω,
-    ks.gas.αᵣ,
-    ks.gas.ωᵣ,
-    ks.gas.μᵣ,
-    1e-3,
-    1000,
-)
+gas = KitBase.Gas()
 ks1 = KitBase.SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolder)
 KitBase.init_ptc!(ks1, ctr, mode = :soa)
 KitBase.init_ptc!(ks1, ctr, mode = :aos)

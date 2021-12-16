@@ -208,6 +208,31 @@ end
 
 
 """
+Create pre-computed kernel for fast spectral method
+
+"""
+function fsm_kernel(vs::AbstractVelocitySpace, μ, nm = 5, α = 1.0)
+    kn_bz = hs_boltz_kn(μ, α)
+
+    phi, psi, phipsi = kernel_mode(
+        nm,
+        vs.u1,
+        vs.v1,
+        vs.w1,
+        vs.du[1, 1, 1],
+        vs.dv[1, 1, 1],
+        vs.dw[1, 1, 1],
+        vs.nu,
+        vs.nv,
+        vs.nw,
+        α,
+    )
+
+    return (Kn = kn_bz, nm = nm, ϕ = phi, ψ = psi, χ = phipsi)
+end
+
+
+"""
     boltzmann_fft(
         f::X,
         Kn,
