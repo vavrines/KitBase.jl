@@ -35,7 +35,13 @@ function VSpace1D(
 ) where {TI<:Integer}
 
     δ = (U1 - U0) / NU
-    u = OffsetArray{PRECISION}(undef, 1-NG:NU+NG)
+    u = begin
+        if NG > 0
+            OffsetArray{PRECISION}(undef, 1-NG:NU+NG)
+        else
+            Array{PRECISION}(undef, NU)
+        end
+    end
     du = similar(u)
     weights = similar(u)
 
@@ -116,7 +122,13 @@ function VSpace2D(
 
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
-    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV)
+    u = begin
+        if NGU > 0 || NGV > 0
+            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV)
+        else
+            Array{PRECISION}(undef, NU, NV)
+        end
+    end
     v = similar(u)
     du = similar(u)
     dv = similar(u)
@@ -281,7 +293,13 @@ function VSpace3D(
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     δw = (W1 - W0) / NW
-    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW)
+    u = begin
+        if NGU > 0 || NGV > 0 || NGW > 0
+            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW)
+        else
+            Array{PRECISION}(undef, NU, NV, NW)
+        end
+    end
     v = similar(u)
     w = similar(u)
     du = similar(u)
@@ -407,7 +425,13 @@ function MVSpace1D(
     u0 = PRECISION.([Ui0, Ue0])
     u1 = PRECISION.([Ui1, Ue1])
     δ = (u1 .- u0) ./ NU
-    u = OffsetArray{PRECISION}(undef, 1-NG:NU+NG, 1:2)
+    u = begin
+        if NG > 0
+            OffsetArray{PRECISION}(undef, 1-NG:NU+NG, 1:2)
+        else
+            Array{PRECISION}(undef, NU, 2)
+        end
+    end
     du = similar(u)
     weights = similar(u)
 
@@ -490,7 +514,13 @@ function MVSpace2D(
     v0 = PRECISION.([Vi0, Ve0])
     v1 = PRECISION.([Vi1, Ve1])
     δv = (v1 .- v0) ./ NV
-    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1:2)
+    u = begin
+        if NGU > 0 || NGV > 0
+            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1:2)
+        else
+            Array{PRECISION}(undef, NU, NV, 2)
+        end
+    end
     v = similar(u)
     du = similar(u)
     dv = similar(u)
@@ -604,7 +634,13 @@ function MVSpace3D(
     w1 = PRECISION.([Wi1, We1])
     δw = (w1 .- w0) ./ NW
 
-    u = OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW, 1:2)
+    u = begin
+        if NGU > 0 || NGV > 0 || NGW > 0
+            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW, 1:2)
+        else
+            Array{PRECISION}(undef, NU, NV, NW, 2)
+        end
+    end
     v = similar(u)
     w = similar(u)
     du = similar(u)
