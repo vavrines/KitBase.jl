@@ -236,12 +236,14 @@ KitBase.vhs_collision_time(prim, 1e-3, 0.81)
 KitBase.rykov_zr(100, 91.5, 18.1)
 
 KitBase.hs_boltz_kn(1e-3, 1.0)
+vs = VSpace3D(-5, 5, 16, -5, 5, 16, -5, 5, 16)
+fsm = KitBase.fsm_kernel(vs, 1e-3)
 phi, psi, phipsi =
     KitBase.kernel_mode(5, 5.0, 5.0, 5.0, 0.1, 0.1, 0.1, 16, 16, 16, 1.0, quad_num = 16)
 KitBase.kernel_mode(5, 5.0, 5.0, 5.0, 16, 16, 16, 1.0, quad_num = 16)
 KitBase.kernel_mode(5, 5.0, 5.0, 0.1, 0.1, 16, 16, quad_num = 16)
-KitBase.boltzmann_fft(rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
-KitBase.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), 1.0, 5, phi, psi, phipsi)
+KitBase.boltzmann_fft(rand(16, 16, 16), fsm)
+KitBase.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), fsm)
 
 KitBase.boltzmann_ode!(zeros(16, 16, 16), rand(16, 16, 16), (1.0, 5, phi, psi, phipsi), 0.0)
 KitBase.bgk_ode!(zeros(16, 16, 16), rand(16, 16, 16), (rand(16, 16, 16), 1e-2), 0.0)

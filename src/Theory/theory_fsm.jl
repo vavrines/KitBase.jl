@@ -233,31 +233,27 @@ end
 
 
 """
-    boltzmann_fft(
-        f::X,
-        Kn,
-        M::I,
-        ϕ::Y,
-        ψ::Y,
-        phipsi::Z,
-    ) where {
-        X<:AA{<:Real,3},
-        Y<:AA{<:Real,4},
-        Z<:AA{<:Real,3},
-        I<:Integer,
-    }
+    boltzmann_fft(f, Kn, M, ϕ, ψ, χ)
 
 Calculate collision operator with FFT-based fast spectral method
 
 """
 function boltzmann_fft(
-    f::X,
+    f0::AA{<:Real,3},
     Kn,
-    M::I,
+    M::Integer,
     ϕ::Y,
     ψ::Y,
-    phipsi::Z,
-) where {X<:AA{<:Real,3},Y<:AA{<:Real,4},Z<:AA{<:Real,3},I<:Integer}
+    phipsi::AA{<:Real,3},
+) where {Y<:AA{<:Real,4}}
+
+    f = begin
+        if f0 isa Array
+            f0
+        else
+            Array(f0)
+        end
+    end
 
     f_spec = f .+ 0im
     bfft!(f_spec)
@@ -287,44 +283,32 @@ function boltzmann_fft(
 
 end
 
+boltzmann_fft(f, p) = boltzmann_fft(f, p.Kn, p.nm, p.ϕ, p.ψ, p.χ)
+
 
 """
-    boltzmann_fft!(
-        Q::T1,
-        f::T2,
-        Kn::TR,
-        M::TI,
-        ϕ::TY,
-        ψ::TY,
-        phipsi::TZ,
-    ) where {
-        T1<:AA{<:Real,3},
-        T2<:AA{<:Real,3},
-        TR<:Real,
-        TI<:Integer,
-        TY<:AA{<:Real,4},
-        TZ<:AA{<:Real,3},
-    }
+    boltzmann_fft!(Q, f, Kn, M, ϕ, ψ, χ)
 
 Calculate collision operator with FFT-based fast spectral method
 
 """
 function boltzmann_fft!(
-    Q::T1,
-    f::T2,
-    Kn::TR,
-    M::TI,
-    ϕ::TY,
-    ψ::TY,
-    phipsi::TZ,
-) where {
-    T1<:AA{<:Real,3},
-    T2<:AA{<:Real,3},
-    TR<:Real,
-    TI<:Integer,
-    TY<:AA{<:Real,4},
-    TZ<:AA{<:Real,3},
-}
+    Q::AA{<:Real,3},
+    f0::AA{<:Real,3},
+    Kn::Real,
+    M::Integer,
+    ϕ::T,
+    ψ::T,
+    phipsi::AA{<:Real,3},
+) where {T<:AA{<:Real,4}}
+
+    f = begin
+        if f0 isa Array
+            f0
+        else
+            Array(f0)
+        end
+    end
 
     f_spec = f .+ 0im
     bfft!(f_spec)
@@ -351,3 +335,5 @@ function boltzmann_fft!(
     @. Q = 4.0 * π^2 / Kn / M^2 * real(f_temp)
 
 end
+
+boltzmann_fft!(Q, f, p) = boltzmann_fft!(Q, f, p.Kn, p.nm, p.ϕ, p.ψ, p.χ)
