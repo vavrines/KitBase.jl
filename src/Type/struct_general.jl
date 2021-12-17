@@ -20,7 +20,7 @@
 Computational setup
 
 """
-@with_kw struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
+@kwdef struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
     matter::S = "gas"
     case::S = "dev"
     space::S = "1d0f0v"
@@ -79,7 +79,7 @@ end
 
 Fluid property for scalar conservation laws
 """
-@with_kw mutable struct Scalar{TA,TB} <: AbstractProperty
+@kwdef mutable struct Scalar{TA,TB} <: AbstractProperty
     a::TA = 1.0
     μᵣ::TB = 1e-8
 end
@@ -93,7 +93,7 @@ end
 Radiation property for linear Boltzmann equation
 
 """
-@with_kw mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
+@kwdef mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
     Kn::T1 = 1.0
     σs::T2 = 1.0
     σa::T2 = 0.0
@@ -130,7 +130,7 @@ end
 Gas property
 
 """
-@with_kw mutable struct Gas{T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11<:Integer,T12} <: AbstractGas
+@kwdef mutable struct Gas{T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11<:Integer,T12} <: AbstractGas
     Kn::T1 = 1e-2
     Ma::T2 = 0.0
     Pr::T3 = 1.0
@@ -168,7 +168,7 @@ end
 Diatomic gas property
 
 """
-@with_kw struct DiatomicGas{TA,TI,TF} <: AbstractGas
+@kwdef struct DiatomicGas{TA,TI,TF} <: AbstractGas
     Kn::TA = 1e-2
     Ma::TA = 0.0
     Pr::TA = 1.0
@@ -203,7 +203,7 @@ end
 Multi-component gas property
 
 """
-@with_kw struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractGas
+@kwdef struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractGas
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
@@ -240,7 +240,7 @@ end
 1D plasma property
 
 """
-@with_kw struct Plasma1D{A,B,C,TD,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
+@kwdef struct Plasma1D{A,B,C,TD,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
@@ -388,7 +388,7 @@ end
 2D plasma property
 
 """
-@with_kw struct Plasma2D{A,B,C,D,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
+@kwdef struct Plasma2D{A,B,C,D,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
