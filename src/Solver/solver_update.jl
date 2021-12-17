@@ -219,29 +219,54 @@ function update!(
             )
         end
     elseif phase == "1f3v"
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
-            step!(
-                face[i].fw,
-                face[i].ff,
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].f,
-                face[i+1].fw,
-                face[i+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.w,
-                KS.vSpace.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                sumRes,
-                sumAvg,
-                coll,
-            )
+        if KS.set.collision == "fsm"
+            @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+                step!(
+                    face[i].fw,
+                    face[i].ff,
+                    ctr[i].w,
+                    ctr[i].prim,
+                    ctr[i].f,
+                    face[i+1].fw,
+                    face[i+1].ff,
+                    KS.gas.γ,
+                    KS.gas.fsm.Kn,
+                    KS.gas.fsm.nm,
+                    KS.gas.fsm.ϕ,
+                    KS.gas.fsm.ψ,
+                    KS.gas.fsm.χ,
+                    KS.ps.dx[i],
+                    dt,
+                    sumRes,
+                    sumAvg,
+                    coll,
+                )
+            end
+        else
+            @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+                step!(
+                    face[i].fw,
+                    face[i].ff,
+                    ctr[i].w,
+                    ctr[i].prim,
+                    ctr[i].f,
+                    face[i+1].fw,
+                    face[i+1].ff,
+                    KS.vSpace.u,
+                    KS.vSpace.v,
+                    KS.vSpace.w,
+                    KS.vSpace.weights,
+                    KS.gas.γ,
+                    KS.gas.μᵣ,
+                    KS.gas.ω,
+                    KS.gas.Pr,
+                    KS.ps.dx[i],
+                    dt,
+                    sumRes,
+                    sumAvg,
+                    coll,
+                )
+            end
         end
     end
 
