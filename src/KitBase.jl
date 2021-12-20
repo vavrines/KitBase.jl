@@ -12,7 +12,7 @@ end
 
 export KB
 
-import Base: *
+import Base: *, @kwdef
 using Base.Threads: @threads
 using CSV
 using CUDA
@@ -28,7 +28,6 @@ using LinearAlgebra
 using MultivariatePolynomials
 using OffsetArrays
 using Optim
-using Parameters
 using Printf
 using ProgressMeter
 using PyCall

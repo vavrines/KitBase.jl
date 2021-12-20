@@ -22,7 +22,13 @@ function PSpace1D(X0::TR, X1::TR, NX::TI, NG = 0::Integer) where {TR,TI}
     TX = ifelse(TR == Float32, Float32, Float64)
 
     δ = (X1 - X0) / NX
-    x = OffsetArray{TX}(undef, 1-NG:NX+NG)
+    x = begin
+        if NG > 0
+            OffsetArray{TX}(undef, 1-NG:NX+NG)
+        else
+            Array{TX}(undef, NX)
+        end
+    end
     dx = similar(x)
 
     # uniform mesh
@@ -85,11 +91,16 @@ function PSpace2D(
 
     δx = (X1 - X0) / NX
     δy = (Y1 - Y0) / NY
-    x = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-    y = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-    dx = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-    dy = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-
+    x = begin
+        if NGX > 0 || NGY > 0
+            OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
+        else
+            Array{TX}(undef, NX, NY)
+        end
+    end
+    y = similar(x)
+    dx = similar(x)
+    dy = similar(x)
     for j in axes(x, 2)
         for i in axes(x, 1)
             x[i, j] = X0 + (i - 0.5) * δx
@@ -99,7 +110,7 @@ function PSpace2D(
         end
     end
 
-    vertices = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY, 4, 2)
+    vertices = similar(x, axes(x)..., 4, 2)
     for j in axes(vertices, 2), i in axes(vertices, 1)
         vertices[i, j, 1, 1] = x[i, j] - 0.5 * dx[i, j]
         vertices[i, j, 2, 1] = x[i, j] + 0.5 * dx[i, j]
@@ -168,13 +179,19 @@ function CSpace2D(
 
     δr = (R1 - R0) / NR
     δθ = (θ1 - θ0) / Nθ
-    r = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
-    θ = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
-    x = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
-    y = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
-    dr = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
-    dθ = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
-    darc = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+    r = begin
+        if NGR > 0 || NGθ > 0
+            OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
+        else
+            Array{TX}(undef, NR, Nθ)
+        end
+    end
+    θ = similar(r)
+    x = similar(r)
+    y = similar(r)
+    dr = similar(r)
+    dθ = similar(r)
+    darc = similar(r)
 
     for j in axes(r, 2)
         for i in axes(r, 1)
@@ -188,7 +205,7 @@ function CSpace2D(
         end
     end
 
-    vertices = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ, 4, 2)
+    vertices = similar(r, axes(r)..., 4, 2)
     for j in axes(vertices, 2), i in axes(vertices, 1)
         vertices[i, j, 1, 1] = (r[i, j] - 0.5 * dr[i, j]) * cos(θ[i, j] - 0.5 * dθ[i, j])
         vertices[i, j, 2, 1] = (r[i, j] + 0.5 * dr[i, j]) * cos(θ[i, j] - 0.5 * dθ[i, j])

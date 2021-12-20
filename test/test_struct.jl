@@ -21,21 +21,8 @@ Setup(
 ) |> show
 KitBase.Scalar(1.0, 1e-3)
 KitBase.Radiation(1e-2, 1.0, 0.0, 1e-3, 1000)
-gas = KitBase.Gas(knudsen, mach, prandtl, inK, 3.0, omega, alphaRef, omegaRef, 0.01)
+gas = KitBase.Gas()
 show(gas)
-KitBase.Gas(
-    knudsen,
-    mach,
-    prandtl,
-    inK,
-    3.0,
-    omega,
-    alphaRef,
-    omegaRef,
-    0.01,
-    1e-4,
-    10000,
-) |> show
 KitBase.Mixture([0.1, 0.5], mach, prandtl, inK, 3.0, 1.0, 0.5, 0.5, 0.5) |> show
 KitBase.Plasma1D(
     [0.1, 0.5],

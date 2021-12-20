@@ -257,7 +257,7 @@ function init_fvm(
                     -n,
                 )
 
-                a1face[i, j] = Interface2D1F(
+                a1face[i, j] = Interface2D(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
                     n[1],
                     n[2],
@@ -271,7 +271,7 @@ function init_fvm(
                 -n,
             )
 
-            a1face[nx+1, j] = Interface2D1F(
+            a1face[nx+1, j] = Interface2D(
                 point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
                 n[1],
                 n[2],
@@ -287,7 +287,7 @@ function init_fvm(
                     -n,
                 )
 
-                a2face[i, j] = Interface2D1F(
+                a2face[i, j] = Interface2D(
                     point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
                     n[1],
                     n[2],
@@ -301,7 +301,7 @@ function init_fvm(
                 -n,
             )
 
-            a2face[i, ny+1] = Interface2D1F(
+            a2face[i, ny+1] = Interface2D(
                 point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
                 n[1],
                 n[2],
