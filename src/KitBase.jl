@@ -23,6 +23,7 @@ using Distributions
 using FastGaussQuadrature
 using FFTW
 using FileIO
+using ForwardDiff
 using JLD2
 using LinearAlgebra
 using MultivariatePolynomials
@@ -50,6 +51,7 @@ include("Theory/theory.jl")
 include("Phase/phase.jl")
 include("Reconstruction/reconstruction.jl")
 include("Flux/flux.jl")
+include("AD/ad.jl")
 include("Config/config.jl")
 include("Boundary/boundary.jl")
 include("Solver/solver.jl")
