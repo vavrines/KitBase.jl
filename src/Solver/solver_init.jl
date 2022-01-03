@@ -346,7 +346,7 @@ function init_fvm(
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
             n .= ifelse(
-                dot(n, (ps.vertices[i, j, 2, :] .+ ps.vertices[i, j, 3, :]) ./ 2 .- [ps.x[nx, j], ps.y[nx, j]]) >= 0,
+                dot(n, (ps.vertices[nx, j, 2, :] .+ ps.vertices[nx, j, 3, :]) ./ 2 .- [ps.x[nx, j], ps.y[nx, j]]) >= 0,
                 n,
                 -n,
             )
@@ -378,7 +378,7 @@ function init_fvm(
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
             n .= ifelse(
-                dot(n, (ps.vertices[i, j, 3, :] .+ ps.vertices[i, j, 4, :]) ./ 2 .- [ps.x[i, ny], ps.y[i, ny]]) >= 0,
+                dot(n, (ps.vertices[i, ny, 3, :] .+ ps.vertices[i, ny, 4, :]) ./ 2 .- [ps.x[i, ny], ps.y[i, ny]]) >= 0,
                 n,
                 -n,
             )
@@ -429,7 +429,7 @@ function init_fvm(
             end
             n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
             n .= ifelse(
-                dot(n, (ps.vertices[i, j, 2, :] .+ ps.vertices[i, j, 3, :]) ./ 2 .- [ps.x[nx, j], ps.y[nx, j]]) >= 0,
+                dot(n, (ps.vertices[nx, j, 2, :] .+ ps.vertices[nx, j, 3, :]) ./ 2 .- [ps.x[nx, j], ps.y[nx, j]]) >= 0,
                 n,
                 -n,
             )
@@ -461,7 +461,7 @@ function init_fvm(
             end
             n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
             n .= ifelse(
-                dot(n, (ps.vertices[i, j, 3, :] .+ ps.vertices[i, j, 4, :]) ./ 2 .- [ps.x[i, ny], ps.y[i, ny]]) >= 0,
+                dot(n, (ps.vertices[i, ny, 3, :] .+ ps.vertices[i, ny, 4, :]) ./ 2 .- [ps.x[i, ny], ps.y[i, ny]]) >= 0,
                 n,
                 -n,
             )
