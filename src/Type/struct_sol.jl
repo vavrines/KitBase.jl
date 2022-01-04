@@ -3,128 +3,76 @@
 # Solver stores data in structs of arrays (SoA)
 # ============================================================
 
-mutable struct Solution1D{A} <: AbstractSolution1D
+struct Solution{T1,T2,ND} <: AbstractSolution
+    w::T1
+    prim::T1
+    ∇w::T2
+end
 
-    w::A
-    prim::A
-    sw::A
+struct Solution1F{T1,T2,T3,T4,ND} <: AbstractSolution
+    w::T1
+    prim::T1
+    ∇w::T2
+    f::T3
+    ∇f::T4
+end
 
-    function Solution1D(w::AA, prim::AA, sw = [zeros(axes(w[1])) for i in axes(w, 1)]::AA)
-        new{typeof(w)}(w, prim, sw)
-    end
-
+struct Solution2F{T1,T2,T3,T4,ND} <: AbstractSolution
+    w::T1
+    prim::T1
+    ∇w::T2
+    h::T3
+    b::T3
+    ∇h::T4
+    ∇b::T4
 end
 
 
-mutable struct Solution1D1F{A,B} <: AbstractSolution1D
+function Solution1D(w::AA, prim::AA)
+    sw = zero(w)
+    return Solution{typeof(w),typeof(sw),1}(w, prim, sw)
+end
 
-    w::A
-    prim::A
-    sw::A
-    f::B
-    sf::B
+function Solution1D(w::AA, prim::AA, f::AA)
+    sw = zero(w)
+    sf = zero(f)
+    return Solution1F{typeof(w),typeof(sw),typeof(f),typeof(sf),1}(w, prim, sw, f, sf)
+end
 
-    function Solution1D1F(w::AA, prim::AA, f::AA)
-        sw = [zeros(axes(w[1])) for i in axes(w, 1)]
-        sf = [zeros(axes(f[1])) for i in axes(f, 1)]
-
-        new{typeof(w),typeof(f)}(w, prim, sw, f, sf)
-    end
-
-    function Solution1D1F(w::AA, prim::AA, sw::AA, f::AA, sf::AA)
-        new{typeof(w),typeof(f)}(w, prim, sw, f, sf)
-    end
-
+function Solution1D(w::AA, prim::AA, h::AA, b::AA)
+    sw = zero(w)
+    sh = zero(h)
+    sb = zero(b)
+    return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),1}(w, prim, sw, h, b, sh, sb)
 end
 
 
-mutable struct Solution1D2F{A,B} <: AbstractSolution1D
-
-    w::A
-    prim::A
-    sw::A
-    h::B
-    b::B
-    sh::B
-    sb::B
-
-    function Solution1D2F(w::AA, prim::AA, h::AA, b::AA)
-        sw = [zeros(axes(w[1])) for i in axes(w, 1)]
-        sh = [zeros(axes(h[1])) for i in axes(h, 1)]
-        sb = [zeros(axes(b[1])) for i in axes(b, 1)]
-
-        new{typeof(w),typeof(h)}(w, prim, sw, h, b, sh, sb)
-    end
-
-    function Solution1D2F(w::AA, prim::AA, sw::AA, h::AA, b::AA, sh::AA, sb::AA)
-        new{typeof(w),typeof(h)}(w, prim, sw, h, b, sh, sb)
-    end
-
+function Solution2D(w::AA, prim::AA)
+    sw = zeros(eltype(w), axes(w)[1], 2, axes(w)[2:end]...)
+    return Solution{typeof(w),typeof(sw),2}(w, prim, sw)
 end
 
-
-mutable struct Solution2D{A,B} <: AbstractSolution2D
-
-    w::A
-    prim::A
-    sw::B
-
-    function Solution2D(
-        w::AA,
-        prim::AA,
-        sw = [
-            zeros((axes(w[1])..., Base.OneTo(2))) for i in axes(w, 1), j in axes(w, 2)
-        ]::AA,
-    )
-
-        new{typeof(w),typeof(sw)}(w, prim, sw)
+function Solution2D(w::AA, prim::AA, f::AA)
+    sw = zeros(eltype(w), axes(w)[1], 2, axes(w)[2:end]...)
+    sf = begin
+        if ndims(f) - ndims(w) > 1
+            zeros(eltype(f), axes(f)[1:2]..., 2, axes(f)[3:end]...)
+        else
+            zeros(eltype(f), axes(f)[1], 2, axes(f)[2:end]...)
+        end
     end
-
+    return Solution1F{typeof(w),typeof(sw),typeof(f),typeof(sf),2}(w, prim, sw, f, sf)
 end
 
-
-mutable struct Solution2D1F{A,B,C,D} <: AbstractSolution2D
-
-    w::A
-    prim::A
-    sw::B
-    f::C
-    sf::D
-
-    function Solution2D1F(w::AA, prim::AA, f::AA)
-        sw = [zeros((axes(w[1])..., Base.OneTo(2))) for i in axes(w, 1), j in axes(w, 2)]
-        sf = [zeros((axes(f[1])..., Base.OneTo(2))) for i in axes(f, 1), j in axes(f, 2)]
-
-        new{typeof(w),typeof(sw),typeof(f),typeof(sf)}(w, prim, sw, f, sf)
+function Solution2D(w::AA, prim::AA, h::AA, b::AA)
+    sw = zeros(eltype(w), axes(w)[1], 2, axes(w)[2:end]...)
+    sh = begin
+        if ndims(h) - ndims(w) > 1
+            zeros(eltype(h), axes(h)[1:2]..., 2, axes(h)[3:end]...)
+        else
+            zeros(eltype(h), axes(h)[1], 2, axes(h)[2:end]...)
+        end
     end
-
-    function Solution2D1F(w::AA, prim::AA, sw::AA, f::AA, sf::AA)
-        new{typeof(w),typeof(sw),typeof(f),typeof(sf)}(w, prim, sw, f, sf)
-    end
-
-end
-
-
-mutable struct Solution2D2F{A,B,C,D} <: AbstractSolution2D
-
-    w::A
-    prim::A
-    sw::B
-    h::C
-    b::C
-    sh::D
-    sb::D
-
-    function Solution2D2F(w::AA, prim::AA, h::AA, b::AA)
-        sw = [zeros((axes(w[1])..., Base.OneTo(2))) for i in axes(w, 1), j in axes(w, 2)]
-        sh = [zeros((axes(h[1])..., Base.OneTo(2))) for i in axes(h, 1), j in axes(h, 2)]
-        sb = [zeros((axes(b[1])..., Base.OneTo(2))) for i in axes(b, 1), j in axes(b, 2)]
-
-        new{typeof(w),typeof(sw),typeof(h),typeof(sh)}(w, prim, sw, h, b, sh, sb)
-    end
-
-    function Solution2D2F(w::AA, prim::AA, sw::AA, h::AA, b::AA, sh::AA, sb::AA)
-        new{typeof(w),typeof(sw),typeof(h),typeof(sh)}(w, prim, sw, h, b, sh, sb)
-    end
-
+    sb = zero(sh)
+    return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),2}(w, prim, sw, h, b, sh, sb)
 end
