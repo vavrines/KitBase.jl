@@ -89,7 +89,7 @@ end
 
 
 """
-    mutable struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
+    struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
         w::A
         prim::A
         sw::A
@@ -103,7 +103,7 @@ end
 1D control volume with 2 distribution functions
 
 """
-mutable struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
+struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
     w::A
     prim::A
     sw::A
@@ -141,7 +141,7 @@ end
 
 
 """
-    mutable struct ControlVolume1D3F{A,B,C,D,E} <: AbstractControlVolume1D
+    struct ControlVolume1D3F{A,B,C,D,E} <: AbstractControlVolume1D
         w::A
         prim::A
         sw::A
@@ -163,7 +163,7 @@ end
 1D control volume with 3 distribution functions
 
 """
-mutable struct ControlVolume1D3F{A,B,C,D,E} <: AbstractControlVolume1D
+struct ControlVolume1D3F{A,B,C,D,E} <: AbstractControlVolume1D
     w::A
     prim::A
     sw::A
@@ -334,7 +334,7 @@ end
 
 
 """
-    mutable struct ControlVolume1D4F{A,B,C,D,E} <: AbstractControlVolume1D
+    struct ControlVolume1D4F{A,B,C,D,E} <: AbstractControlVolume1D
         w::A
         prim::A
         sw::A
@@ -358,7 +358,7 @@ end
 1D control volume with 4 distribution functions
 
 """
-mutable struct ControlVolume1D4F{A,B,C,D,E} <: AbstractControlVolume1D
+struct ControlVolume1D4F{A,B,C,D,E} <: AbstractControlVolume1D
     w::A
     prim::A
     sw::A
@@ -589,7 +589,7 @@ end
 
 
 """
-    mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
+    struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
         w::A
         prim::A
         sw::B
@@ -603,7 +603,7 @@ end
 2D control volume with 2 distribution functions
 
 """
-mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
+struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
     w::A
     prim::A
     sw::B
@@ -652,7 +652,7 @@ end
 
 
 """
-    mutable struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
+    struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
         w::T2
         prim::T2
         sw::T3
@@ -674,7 +674,7 @@ end
 2D control volume with 3 distribution functions
 
 """
-mutable struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
+struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
     w::T2
     prim::T2
     sw::T3
@@ -872,7 +872,7 @@ end
 
 
 """
-    mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+    struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
         n::E
         x::F
         dx::F
@@ -888,7 +888,7 @@ end
 Unstructured control volume with 1 distribution function
 
 """
-mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     n::E
     x::F
     dx::F
@@ -937,7 +937,7 @@ end
 
 
 """
-    mutable struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+    struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
         n::E
         x::F
         dx::F
@@ -955,7 +955,7 @@ end
 Unstructured control volume with 2 distribution functions
 
 """
-mutable struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     n::E
     x::F
     dx::F
