@@ -94,6 +94,51 @@ function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}
     )
 end
 
+function ControlVolume(W, PRIM, ND)
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    sw = begin
+        if ND == 1
+            zero(w)
+        elseif ND == 2
+            slope_array(w)
+        end
+    end
+
+    return ControlVolume{typeof(w),typeof(sw),ND}(w, prim, sw)
+end
+
+function ControlVolume(W, PRIM, F, ND)
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    f = deepcopy(F)
+    sw, sf = begin
+        if ND == 1
+            zero(w), zero(f)
+        elseif ND == 2
+            slope_array(w), slope_array(f)
+        end
+    end
+
+    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),ND}(w, prim, sw, f, sf)
+end
+
+function ControlVolume(W, PRIM, H, B, ND)
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    h = deepcopy(H)
+    b = deepcopy(B)
+    sw, sh, sb = begin
+        if ND == 1
+            zero(w), zero(h), zero(b)
+        elseif ND == 2
+            slope_array(w), slope_array(h), slope_array(b)
+        end
+    end
+
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),ND}(w, prim, sw, h, b, sh, sb)
+end
+
 # ------------------------------------------------------------
 # 1D
 # ------------------------------------------------------------

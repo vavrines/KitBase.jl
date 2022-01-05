@@ -88,9 +88,12 @@ fw = (args...) -> [1.0, 0.0, rand()]
 KitBase.IB(fw, gas) |> show
 
 #--- control volume ---#
-KitBase.ControlVolume{typeof(w),typeof(w),1}(w, prim, zero(w)) |> show
-KitBase.ControlVolume1F{typeof(w),typeof(w),typeof(h),typeof(h),1}(w, prim, zero(w), h, zero(h)) |> show
-KitBase.ControlVolume2F{typeof(w),typeof(w),typeof(h),typeof(h),1}(w, prim, zero(w), h, b, zero(h), zero(b)) |> show
+KitBase.ControlVolume(w, prim, 1)
+KitBase.ControlVolume(w, prim, 2)
+KitBase.ControlVolume(w, prim, h, 1)
+KitBase.ControlVolume(w, prim, h, 2)
+KitBase.ControlVolume(w, prim, h, h, 1)
+KitBase.ControlVolume(w, prim, h, h, 2)
 
 KitBase.ControlVolume1D(w, prim) |> show
 KitBase.ControlVolume1D1F(w, prim, h) |> show

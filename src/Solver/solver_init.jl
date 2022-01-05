@@ -3,17 +3,14 @@
 # ============================================================
 
 """
-    initialize(configfilename::T) where {T<:AbstractString}
-    initialize(config::T) where {T<:AbstractDict}
+$(TYPEDSIGNATURES)
 
-Initialize solver from input file or dictionary.
-This can also be done from a Julia script directly.
-
+Initialize solver...
 """
 function initialize(configfilename::T) where {T<:AbstractString}
     println("==============================================================")
     println("Kinetic.jl")
-    println("Portable Kinetic Simulation and Scientific Machine Learning")
+    println("A Portable Toolbox for Scientific and Neural Computing")
     println("==============================================================")
     println("")
     @info "initializing solver"
@@ -35,10 +32,13 @@ function initialize(configfilename::T) where {T<:AbstractString}
     end
 end
 
+"""
+$(TYPEDSIGNATURES)
+"""
 function initialize(config::T) where {T<:AbstractDict}
     println("==============================================================")
     println("Kinetic.jl")
-    println("A Lightweight Toolbox for Scientific and Neural Computing")
+    println("A Portable Toolbox for Scientific and Neural Computing")
     println("==============================================================")
     println("")
     @info "initializing solver"
@@ -52,10 +52,9 @@ end
 
 
 """
-    init_fvm(KS::T, ps::T1) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace}
+$(TYPEDSIGNATURES)
 
-Initialize finite volume method
-
+Initialize finite volume method...
 """
 function init_fvm(
     KS::T,
