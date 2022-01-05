@@ -1,42 +1,16 @@
 """
-    hs_boltz_kn(mu_ref, alpha)
+$(SIGNATURES)
 
 Calculate effective Knudsen number for fast spectral method with hard sphere (HS) model
-    
 """
 hs_boltz_kn(mu_ref, alpha) =
     64 * sqrt(2.0)^alpha / 5.0 * gamma((alpha + 3) / 2) * gamma(2.0) * sqrt(pi) * mu_ref
 
 
 """
-    kernel_mode(
-        M::TI,
-        umax::TR,
-        vmax::TR,
-        du::TR,
-        dv::TR,
-        unum::TI,
-        vnum::TI;
-        quad_num = 64::TI,
-    ) where {TI<:Integer,TR<:Real}
+$(TYPEDSIGNATURES)
 
-    kernel_mode(
-        M::I,
-        umax::R,
-        vmax::R,
-        wmax::R,
-        du::R,
-        dv::R,
-        dw::R,
-        unum::I,
-        vnum::I,
-        wnum::I,
-        alpha::R;
-        quad_num = 64::I,
-    ) where {I<:Integer,R<:Real}
-
-Calculate collision kernel for fast spectral method
-
+Calculate collision kernel for fast spectral method...
 """
 function kernel_mode(
     M::I,
@@ -105,6 +79,9 @@ function kernel_mode(
 
 end
 
+"""
+$(TYPEDSIGNATURES)
+"""
 function kernel_mode(
     M::I,
     umax::R,
@@ -166,6 +143,9 @@ function kernel_mode(
 
 end
 
+"""
+$(TYPEDSIGNATURES)
+"""
 function kernel_mode(
     M::TI,
     umax::TR,
@@ -208,8 +188,9 @@ end
 
 
 """
-Create pre-computed kernel for fast spectral method
+$(TYPEDSIGNATURES)
 
+Create pre-computed kernel for fast spectral method
 """
 function fsm_kernel(vs::AbstractVelocitySpace, μ, nm = 5, α = 1.0)
     kn_bz = hs_boltz_kn(μ, α)
@@ -233,10 +214,9 @@ end
 
 
 """
-    boltzmann_fft(f, Kn, M, ϕ, ψ, χ)
+$(TYPEDSIGNATURES)
 
-Calculate collision operator with FFT-based fast spectral method
-
+Calculate collision operator with FFT-based fast spectral method...
 """
 function boltzmann_fft(
     f0::AA{<:Real,3},
@@ -283,14 +263,16 @@ function boltzmann_fft(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 boltzmann_fft(f, p) = boltzmann_fft(f, p.Kn, p.nm, p.ϕ, p.ψ, p.χ)
 
 
 """
-    boltzmann_fft!(Q, f, Kn, M, ϕ, ψ, χ)
+$(TYPEDSIGNATURES)
 
-Calculate collision operator with FFT-based fast spectral method
-
+Calculate collision operator with FFT-based fast spectral method...
 """
 function boltzmann_fft!(
     Q::AA{<:Real,3},
@@ -336,4 +318,7 @@ function boltzmann_fft!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 boltzmann_fft!(Q, f, p) = boltzmann_fft!(Q, f, p.Kn, p.nm, p.ϕ, p.ψ, p.χ)

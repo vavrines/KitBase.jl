@@ -81,13 +81,17 @@ begin
     h = KitBase.maxwellian(u, prim)
     b = h .* inK ./ (2.0 * prim[end])
     x = Float64(x0) # x & dx should be of same type
-    dx = x0 / nx
+    dx = (x1 - x0) / nx
 end
 
 fw = (args...) -> [1.0, 0.0, rand()]
 KitBase.IB(fw, gas) |> show
 
 #--- control volume ---#
+KitBase.ControlVolume{typeof(w),typeof(w),1}(w, prim, zero(w)) |> show
+KitBase.ControlVolume1F{typeof(w),typeof(w),typeof(h),typeof(h),1}(w, prim, zero(w), h, zero(h)) |> show
+KitBase.ControlVolume2F{typeof(w),typeof(w),typeof(h),typeof(h),1}(w, prim, zero(w), h, b, zero(h), zero(b)) |> show
+
 KitBase.ControlVolume1D(w, prim) |> show
 KitBase.ControlVolume1D1F(w, prim, h) |> show
 KitBase.ControlVolume1D2F(w, prim, h, b) |> show

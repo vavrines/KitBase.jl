@@ -20,6 +20,7 @@ using Dates
 using DiffEqOperators
 using Distributed
 using Distributions
+using DocStringExtensions
 using FastGaussQuadrature
 using FFTW
 using FileIO
