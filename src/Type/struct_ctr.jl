@@ -16,16 +16,16 @@ Control volume with no distribution function
 
 $(FIELDS)
 """
-mutable struct ControlVolume{T1,T2,ND} <: AbstractControlVolume
+mutable struct ControlVolume{T1,T2,T3,ND} <: AbstractControlVolume
     w::T1
-    prim::T1
-    sw::T2
+    prim::T2
+    sw::T3
 end
 
-function Base.show(io::IO, ctr::ControlVolume{A,B,N}) where {A,B,N}
+function Base.show(io::IO, ctr::ControlVolume{A,B,C,N}) where {A,B,C,N}
     print(
         io,
-        "ControlVolume$(N)D{$A,$B}\n",
+        "ControlVolume$(N)D{$A,$B,$C}\n",
         "conservative vars: $(ctr.w)\n",
         "primitive vars: $(ctr.prim)\n",
         "conservative slopes: $(ctr.sw)\n",
@@ -111,7 +111,7 @@ function ControlVolume(W, PRIM, ND)
         end
     end
 
-    return ControlVolume{typeof(w),typeof(sw),ND}(w, prim, sw)
+    return ControlVolume{typeof(w),typeof(prim),typeof(sw),ND}(w, prim, sw)
 end
 
 """
