@@ -1,45 +1,14 @@
 """
-    solve!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        simTime,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{<:AbstractControlVolume,1},
-        Z<:AA{<:AbstractInterface1D,1},
-    }
-
-    solve!(
-        KS::X,
-        ctr::Y,
-        a1face::Z,
-        a2face::Z,
-        simTime,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{<:AbstractControlVolume,2},
-        Z<:AA{<:AbstractInterface2D,2},
-    }
+$(TYPEDSIGNATURES)
 
 Solution algorithm
-
-- @args: solver setup
-- @args: array of control volumes
-- @args: array of interfaces
-- @args & return: time instant
-
 """
 function solve!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{T},
+    face::AV{<:AbstractInterface1D},
     simTime,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{<:Union{ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},1},
-    Z<:AA{<:AbstractInterface1D,1},
-}
+) where {T<:Union{ControlVolume,ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F}}
 
     #--- initial checkpoint ---#
     write_jld(KS, ctr, simTime)

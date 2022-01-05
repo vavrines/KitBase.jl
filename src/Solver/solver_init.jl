@@ -85,7 +85,7 @@ function init_fvm(
 
     if KS.set.space[3:4] == "0f"
 
-        ctr = OffsetArray{ControlVolume1D}(undef, eachindex(KS.pSpace.x))
+        ctr = OffsetArray{ControlVolume}(undef, eachindex(KS.pSpace.x))
         face = Array{Interface1D}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
@@ -98,7 +98,7 @@ function init_fvm(
                 end
             end
 
-            ctr[i] = ControlVolume1D(funcar(w), funcar(prim))
+            ctr[i] = ControlVolume(funcar(w), funcar(prim), 1)
         end
 
         for i = 1:KS.pSpace.nx+1

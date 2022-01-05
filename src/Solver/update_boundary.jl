@@ -1,43 +1,16 @@
 """
-    update_boundary!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        dt,
-        residual;
-        coll::Symbol,
-        bc::Symbol,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{<:AbstractControlVolume1D,1},
-        Z<:AA{<:AbstractInterface1D,1},
-    }
-
-    update_boundary!(
-        KS::X,
-        ctr::Y,
-        a1face::Z,
-        a2face::Z,
-        dt,
-        residual;
-        coll::Symbol,
-        bc::Symbol,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{<:AbstractControlVolume2D,2},
-        Z<:AA{<:AbstractInterface2D,2},
-    }
+$(TYPEDSIGNATURES)
 
 Update solver for boundary cells
 """
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{T},
+    face::AV{Interface1D},
     dt,
     residual;
     bc,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D,1},Z<:AA{Interface1D,1}}
+) where {T<:Union{ControlVolume,ControlVolume1D}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)

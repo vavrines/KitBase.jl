@@ -1,3 +1,4 @@
+cd(@__DIR__)
 ks, ctr, face, simTime = KitBase.initialize("config_1d0f.txt")
 
 using KitBase.JLD2

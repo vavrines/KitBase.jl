@@ -94,6 +94,12 @@ function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}
     )
 end
 
+
+"""
+$(SIGNATURES)
+
+Construct control volume...
+"""
 function ControlVolume(W, PRIM, ND)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -108,6 +114,9 @@ function ControlVolume(W, PRIM, ND)
     return ControlVolume{typeof(w),typeof(sw),ND}(w, prim, sw)
 end
 
+"""
+$(SIGNATURES)
+"""
 function ControlVolume(W, PRIM, F, ND)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
@@ -123,6 +132,9 @@ function ControlVolume(W, PRIM, F, ND)
     return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),ND}(w, prim, sw, f, sf)
 end
 
+"""
+$(SIGNATURES)
+"""
 function ControlVolume(W, PRIM, H, B, ND)
     w = deepcopy(W)
     prim = deepcopy(PRIM)

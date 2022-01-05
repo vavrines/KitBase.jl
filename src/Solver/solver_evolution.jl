@@ -1,40 +1,16 @@
 """
-    evolve!(
-        KS::SolverSet,
-        ctr::T1,
-        face::T2,
-        dt;
-        mode = Symbol(KS.set.flux)::Symbol,
-        bc = :fix::Symbol,
-    ) where {
-        T1<:AA{<:AbstractControlVolume1D,1},
-        T2<:AA{<:AbstractInterface1D,1},
-    }
-    
-    evolve!(
-        KS::SolverSet,
-        ctr::T1,
-        a1face::T2,
-        a2face::T2,
-        dt;
-        mode = Symbol(KS.set.flux)::Symbol,
-        bc = :fix::Symbol,
-    ) where {
-        T1<:AA{<:AbstractControlVolume2D,2},
-        T2<:AA{<:AbstractInterface2D,2},
-    }
+$(TYPEDSIGNATURES)
 
 Evolution of boundary fluxes
-
 """
 function evolve!(
     KS::SolverSet,
-    ctr::T1,
-    face::T2,
+    ctr::AV{T},
+    face::AV{Interface1D},
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T1<:AA{ControlVolume1D,1},T2<:AA{Interface1D,1}}
+) where {T<:Union{ControlVolume,ControlVolume1D}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1

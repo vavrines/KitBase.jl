@@ -3,7 +3,7 @@
 
 Reconstruct solutions in cells
 """
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D,1}}
+function reconstruct!(KS::SolverSet, ctr::AV{T}) where {T<:Union{ControlVolume,ControlVolume1D}}
 
     if KS.set.interpOrder == 1
         return
