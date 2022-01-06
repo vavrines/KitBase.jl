@@ -3,7 +3,7 @@
 # ============================================================
 
 export prim_conserve, conserve_prim, mixture_prim_conserve, mixture_conserve_prim
-export advection_flux, burgers_flux, euler_flux, euler_jacobi, em_coefficients 
+export advection_flux, burgers_flux, euler_flux, euler_jacobi, em_coefficients
 export gauss_moments, mixture_gauss_moments, discrete_moments
 export moments_conserve, diatomic_moments_conserve, mixture_moments_conserve
 export pdf_slope, mixture_pdf_slope, moments_conserve_slope, mixture_moments_conserve_slope

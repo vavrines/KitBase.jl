@@ -19,7 +19,8 @@ export Setup
 export Scalar, Radiation, Gas, DiatomicGas, Mixture, Plasma1D, Plasma2D
 export IB, IB1F, IB2F, IB3F, IB4F
 export ControlVolume, ControlVolume1F, ControlVolume2F
-export ControlVolume1D, ControlVolume1D1F, ControlVolume1D2F, ControlVolume1D3F, ControlVolume1D4F
+export ControlVolume1D, ControlVolume1D1F, ControlVolume1D2F
+export ControlVolume1D3F, ControlVolume1D4F
 export ControlVolume2D, ControlVolume2D1F, ControlVolume2D2F, ControlVolume2D3F
 export ControlVolumeUS, ControlVolumeUS1F, ControlVolumeUS2F
 export Interface, Interface1F, Interface2F
