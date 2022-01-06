@@ -125,28 +125,40 @@ function PSpace2D(
     for j in axes(x, 2), i in axes(x, 1)
         n1 = unit_normal(vertices[i, j, 1, :], vertices[i, j, 2, :])
         n1 .= ifelse(
-            dot(n1, [x[i, j], y[i, j]] .- (vertices[i, j, 1, :] .+ vertices[i, j, 2, :]) ./ 2) <= 0,
+            dot(
+                n1,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 1, :] .+ vertices[i, j, 2, :]) ./ 2,
+            ) <= 0,
             n1,
             -n1,
         )
 
         n2 = unit_normal(vertices[i, j, 2, :], vertices[i, j, 3, :])
         n2 .= ifelse(
-            dot(n2, [x[i, j], y[i, j]] .- (vertices[i, j, 2, :] .+ vertices[i, j, 3, :]) ./ 2) <= 0,
+            dot(
+                n2,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 2, :] .+ vertices[i, j, 3, :]) ./ 2,
+            ) <= 0,
             n2,
             -n2,
         )
 
         n3 = unit_normal(vertices[i, j, 3, :], vertices[i, j, 4, :])
         n3 .= ifelse(
-            dot(n3, [x[i, j], y[i, j]] .- (vertices[i, j, 3, :] .+ vertices[i, j, 4, :]) ./ 2) <= 0,
+            dot(
+                n3,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 3, :] .+ vertices[i, j, 4, :]) ./ 2,
+            ) <= 0,
             n3,
             -n3,
         )
 
         n4 = unit_normal(vertices[i, j, 4, :], vertices[i, j, 1, :])
         n4 .= ifelse(
-            dot(n4, [x[i, j], y[i, j]] .- (vertices[i, j, 4, :] .+ vertices[i, j, 1, :]) ./ 2) <= 0,
+            dot(
+                n4,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 4, :] .+ vertices[i, j, 1, :]) ./ 2,
+            ) <= 0,
             n4,
             -n4,
         )
@@ -272,28 +284,40 @@ function CSpace2D(
     for j in axes(x, 2), i in axes(x, 1)
         n1 = unit_normal(vertices[i, j, 1, :], vertices[i, j, 2, :])
         n1 .= ifelse(
-            dot(n1, [x[i, j], y[i, j]] .- (vertices[i, j, 1, :] .+ vertices[i, j, 2, :]) ./ 2) <= 0,
+            dot(
+                n1,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 1, :] .+ vertices[i, j, 2, :]) ./ 2,
+            ) <= 0,
             n1,
             -n1,
         )
 
         n2 = unit_normal(vertices[i, j, 2, :], vertices[i, j, 3, :])
         n2 .= ifelse(
-            dot(n2, [x[i, j], y[i, j]] .- (vertices[i, j, 2, :] .+ vertices[i, j, 3, :]) ./ 2) <= 0,
+            dot(
+                n2,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 2, :] .+ vertices[i, j, 3, :]) ./ 2,
+            ) <= 0,
             n2,
             -n2,
         )
 
         n3 = unit_normal(vertices[i, j, 3, :], vertices[i, j, 4, :])
         n3 .= ifelse(
-            dot(n3, [x[i, j], y[i, j]] .- (vertices[i, j, 3, :] .+ vertices[i, j, 4, :]) ./ 2) <= 0,
+            dot(
+                n3,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 3, :] .+ vertices[i, j, 4, :]) ./ 2,
+            ) <= 0,
             n3,
             -n3,
         )
 
         n4 = unit_normal(vertices[i, j, 4, :], vertices[i, j, 1, :])
         n4 .= ifelse(
-            dot(n4, [x[i, j], y[i, j]] .- (vertices[i, j, 4, :] .+ vertices[i, j, 1, :]) ./ 2) <= 0,
+            dot(
+                n4,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 4, :] .+ vertices[i, j, 1, :]) ./ 2,
+            ) <= 0,
             n4,
             -n4,
         )

@@ -148,7 +148,15 @@ function ControlVolume(W, PRIM, H, B, ND)
         end
     end
 
-    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),ND}(w, prim, sw, h, b, sh, sb)
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),ND}(
+        w,
+        prim,
+        sw,
+        h,
+        b,
+        sh,
+        sb,
+    )
 end
 
 # ------------------------------------------------------------

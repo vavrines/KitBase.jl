@@ -2,11 +2,7 @@
 # Initial & Boundary Conditions of Specific Problems
 # ============================================================
 
-export config_ib,
-       ib_rh,
-       ib_sod,
-       ib_briowu,
-       ib_cavity
+export config_ib, ib_rh, ib_sod, ib_briowu, ib_cavity
 
 include("cfg_rh.jl")
 include("cfg_sod.jl")

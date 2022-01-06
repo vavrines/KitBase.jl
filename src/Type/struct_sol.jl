@@ -43,7 +43,15 @@ function Solution1D(w::AA, prim::AA, h::AA, b::AA)
     sw = zero(w)
     sh = zero(h)
     sb = zero(b)
-    return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),1}(w, prim, sw, h, b, sh, sb)
+    return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),1}(
+        w,
+        prim,
+        sw,
+        h,
+        b,
+        sh,
+        sb,
+    )
 end
 
 
@@ -74,5 +82,13 @@ function Solution2D(w::AA, prim::AA, h::AA, b::AA)
         end
     end
     sb = zero(sh)
-    return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),2}(w, prim, sw, h, b, sh, sb)
+    return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),2}(
+        w,
+        prim,
+        sw,
+        h,
+        b,
+        sh,
+        sb,
+    )
 end

@@ -4,7 +4,7 @@ Develop automatic differentiation (AD) support in Kinetic.jl
 
 using KitBase, ForwardDiff, ReverseDiff, BenchmarkTools, Plots
 
-prim = [1., 0., 1.]
+prim = [1.0, 0.0, 1.0]
 vs = VSpace1D(-5, 5, 100)
 
 # We build a unary Maxwellian function for testing.

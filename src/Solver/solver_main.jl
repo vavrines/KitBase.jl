@@ -8,8 +8,10 @@ function solve!(
     ctr::AV{TC},
     face::AV{TF},
     simTime,
-) where {TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},
-TF<:Union{Interface,Interface1D,Interface1D1F,Interface1D2F}}
+) where {
+    TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},
+    TF<:Union{Interface,Interface1D,Interface1D1F,Interface1D2F},
+}
 
     #--- initial checkpoint ---#
     write_jld(KS, ctr, simTime)
@@ -221,7 +223,8 @@ function timestep(
                     if KS.vs isa Nothing
                         abs(prim[2]) + sos, abs(prim[3]) + sos
                     else
-                        max(KS.vSpace.u1, abs(prim[2])) + sos, max(KS.vSpace.v1, abs(prim[3])) + sos
+                        max(KS.vSpace.u1, abs(prim[2])) + sos,
+                        max(KS.vSpace.v1, abs(prim[3])) + sos
                     end
                 end
                 tmax = max(tmax, umax / dx[i, j] + vmax / dy[i, j])

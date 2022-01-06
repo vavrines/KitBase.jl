@@ -8,8 +8,8 @@ function ∂maxwellian(u::Real, ρ, U, λ)
 end
 
 ∂maxwellian(u::Real, prim::AV) = ∂maxwellian(u, prim[1], prim[2], prim[end])
-    
-function ∂maxwellian(u::AV,ρ, U, λ)
+
+function ∂maxwellian(u::AV, ρ, U, λ)
     ∂maxwellian.(u::AV, ρ, U, λ)
 end
 

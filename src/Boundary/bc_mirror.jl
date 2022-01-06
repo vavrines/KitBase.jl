@@ -42,7 +42,11 @@ function bc_mirror!(ctr::T, ctr0::T, dirc) where {T<:Union{ControlVolume,Control
     return nothing
 end
 
-function bc_mirror!(ctr::T, ctr0::T, dirc) where {T<:Union{ControlVolume1F,ControlVolume2D1F}}
+function bc_mirror!(
+    ctr::T,
+    ctr0::T,
+    dirc,
+) where {T<:Union{ControlVolume1F,ControlVolume2D1F}}
     copy_ctr!(ctr, ctr0)
 
     nu = size(ctr.f, 1)
@@ -69,7 +73,11 @@ function bc_mirror!(ctr::T, ctr0::T, dirc) where {T<:Union{ControlVolume1F,Contr
     return nothing
 end
 
-function bc_mirror!(ctr::T, ctr0::T, dirc) where {T<:Union{ControlVolume2F,ControlVolume2D2F}}
+function bc_mirror!(
+    ctr::T,
+    ctr0::T,
+    dirc,
+) where {T<:Union{ControlVolume2F,ControlVolume2D2F}}
     copy_ctr!(ctr, ctr0)
 
     nu = size(ctr.h, 1)
