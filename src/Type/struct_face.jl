@@ -4,6 +4,56 @@
 # ============================================================
 
 # ------------------------------------------------------------
+# General
+# ------------------------------------------------------------
+
+"""
+$(TYPEDEF)
+
+Cell interface with no distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+mutable struct Interface{T,ND} <: AbstractInterface
+    fw::T
+end
+
+
+"""
+$(TYPEDEF)
+
+Cell interface with no distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+struct Interface1F{T1,T2,ND} <: AbstractInterface
+    fw::T1
+    ff::T2
+end
+
+
+"""
+$(TYPEDEF)
+
+Cell interface with no distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+struct Interface2F{T1,T2,ND} <: AbstractInterface
+    fw::T1
+    fh::T2
+    fb::T2
+end
+
+# ------------------------------------------------------------
+# The dimension-dependent structures are in archive mode only
+# ------------------------------------------------------------
 # 1D
 # ------------------------------------------------------------
 
