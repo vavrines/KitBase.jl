@@ -1,17 +1,14 @@
 """
-$(TYPEDSIGNATURES)
+$(SIGNATURES)
 
 Solution algorithm
 """
 function solve!(
     KS::AbstractSolverSet,
-    ctr::AV{TC},
-    face::AV{TF},
+    ctr::AV{<:AbstractControlVolume},
+    face::AV{<:AbstractInterface},
     simTime,
-) where {
-    TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},
-    TF<:Union{Interface,Interface1D,Interface1D1F,Interface1D2F},
-}
+)
 
     #--- initial checkpoint ---#
     write_jld(KS, ctr, simTime)
@@ -70,16 +67,12 @@ function solve!(
 end
 
 function solve!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{<:AbstractControlVolume},
+    a1face::T,
+    a2face::T,
     simTime,
-) where {
-    X<:AbstractSolverSet,
-    Y<:AA{<:AbstractControlVolume,2},
-    Z<:AA{<:AbstractInterface2D,2},
-}
+) where {T<:AA{<:AbstractInterface,2}}
 
     #--- initial checkpoint ---#
     write_jld(KS, ctr, simTime)
@@ -132,16 +125,16 @@ end
 
 
 """
-    timestep(KS, ctr, simTime)
+$(SIGNATURES)
 
 Calculate timestep based on current solutions
 
 """
 function timestep(
-    KS::X,
-    ctr::Y,
+    KS::AbstractSolverSet,
+    ctr::AV{<:AbstractControlVolume},
     simTime,
-) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,1}}
+)
 
     tmax = 0.0
 
@@ -198,10 +191,10 @@ function timestep(
 end
 
 function timestep(
-    KS::X,
-    ctr::Y,
+    KS::AbstractSolverSet,
+    ctr::AM{<:AbstractControlVolume},
     simTime,
-) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,2}}
+)
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -262,10 +255,10 @@ function timestep(
 end
 
 function timestep(
-    KS::X,
-    ctr::Y,
+    KS::AbstractSolverSet,
+    ctr::AV{<:AbstractUnstructControlVolume},
     simTime,
-) where {X<:AbstractSolverSet,Y<:AV{<:AbstractUnstructControlVolume}}
+)
 
     tmax = 0.0
 

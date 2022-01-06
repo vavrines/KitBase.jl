@@ -111,13 +111,13 @@ end
 
 function update!(
     KS::AbstractSolverSet,
-    ctr::Y,
-    face::Z,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {Y<:AA{ControlVolume1D1F,1},Z<:AA{Interface1D1F,1}}
+) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -213,14 +213,14 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D2F,1},Z<:AA{Interface1D2F,1}}
+) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -299,15 +299,15 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D3F,1},Z<:AA{Interface1D3F,1}}
+) where {TC<:ControlVolume1D3F,TF<:Interface1D3F}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -415,15 +415,15 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D4F,1},Z<:AA{Interface1D4F,1}}
+) where {TC<:ControlVolume1D4F,TF<:Interface1D4F}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -456,15 +456,15 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D,2},Z<:AA{Interface2D,2}}
+) where {TC<:Union{ControlVolume,ControlVolume2D},TF<:Union{Interface,Interface2D}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -523,15 +523,15 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D1F,2},Z<:AA{Interface2D1F,2}}
+) where {TC<:Union{ControlVolume1F,ControlVolume2D1F},TF<:Union{Interface1F,Interface2D1F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -603,15 +603,15 @@ end
 
 #--- 2d2f ---#
 function update!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D2F,2},Z<:AA{Interface2D2F,2}}
+) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -688,14 +688,14 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{ControlVolumeUS},
+    face::AV{T},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolumeUS,1},Z<:AA{Interface2D,1}}
+) where {T<:Union{Interface,Interface2D}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -730,14 +730,14 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{ControlVolumeUS1F},
+    face::AV{T},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolumeUS1F,1},Z<:AA{Interface2D1F,1}}
+) where {T<:Union{Interface1F,Interface2D1F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -785,14 +785,14 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{ControlVolumeUS2F},
+    face::AV{T},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolumeUS2F,1},Z<:AA{Interface2D2F,1}}
+) where {T<:Union{Interface2F,Interface2D2F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
