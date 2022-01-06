@@ -5,13 +5,13 @@ Update flow variables over control volumes
 """
 function update!(
     KS::AbstractSolverSet,
-    ctr::AV{T},
-    face::AV{Interface1D},
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual::FN; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {T<:Union{ControlVolume,ControlVolume1D}}
+) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -50,13 +50,13 @@ end
 
 function update!(
     KS::AbstractSolverSet,
-    ctr::AV{T},
-    face::AV{Interface1D},
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual::AA{<:FN}; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {T<:Union{ControlVolume,ControlVolume1D}}
+) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -110,14 +110,14 @@ function update!(
 end
 
 function update!(
-    KS::X,
+    KS::AbstractSolverSet,
     ctr::Y,
     face::Z,
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D1F,1},Z<:AA{Interface1D1F,1}}
+) where {Y<:AA{ControlVolume1D1F,1},Z<:AA{Interface1D1F,1}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)

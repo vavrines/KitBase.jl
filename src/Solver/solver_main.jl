@@ -5,10 +5,11 @@ Solution algorithm
 """
 function solve!(
     KS::AbstractSolverSet,
-    ctr::AV{T},
-    face::AV{<:AbstractInterface1D},
+    ctr::AV{TC},
+    face::AV{TF},
     simTime,
-) where {T<:Union{ControlVolume,ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F}}
+) where {TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1D1F,ControlVolume1D2F},
+TF<:Union{Interface,Interface1D,Interface1D1F,Interface1D2F}}
 
     #--- initial checkpoint ---#
     write_jld(KS, ctr, simTime)

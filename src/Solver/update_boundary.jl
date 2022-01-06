@@ -1,16 +1,16 @@
 """
-$(TYPEDSIGNATURES)
+$(SIGNATURES)
 
 Update solver for boundary cells
 """
 function update_boundary!(
     KS::AbstractSolverSet,
-    ctr::AV{T},
-    face::AV{Interface1D},
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     bc,
-) where {T<:Union{ControlVolume,ControlVolume1D}}
+) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)

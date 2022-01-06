@@ -5,12 +5,12 @@ Evolution of boundary fluxes
 """
 function evolve!(
     KS::SolverSet,
-    ctr::AV{T},
-    face::AV{Interface1D},
+    ctr::AV{TC},
+    face::AV{TF},
     dt;
     mode = symbolize(KS.set.flux)::Symbol,
     bc = symbolize(KS.set.boundary),
-) where {T<:Union{ControlVolume,ControlVolume1D}}
+) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     if firstindex(KS.pSpace.x) < 1
         idx0 = 1

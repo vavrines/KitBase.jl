@@ -51,6 +51,39 @@ struct Interface2F{T1,T2,ND} <: AbstractInterface
     fb::T2
 end
 
+
+"""
+$(SIGNATURES)
+
+Construct cell interface
+"""
+function Interface(W, ND)
+    fw = zero(W)
+
+    return Interface{typeof(fw),ND}(fw)
+end
+
+"""
+$(SIGNATURES)
+"""
+function Interface(W, F, ND)
+    fw = zero(W)
+    ff = zero(F)
+
+    return Interface{typeof(fw),typeof(ff),ND}(fw, ff)
+end
+
+"""
+$(SIGNATURES)
+"""
+function Interface(W, H, B, ND)
+    fw = deepcopy(W)
+    fh = zero(H)
+    fb = zero(B)
+
+    return Interface{typeof(fw),typeof(fh),ND}(fw, fh, fb)
+end
+
 # ------------------------------------------------------------
 # The dimension-dependent structures are in archive mode only
 # ------------------------------------------------------------

@@ -86,7 +86,7 @@ function init_fvm(
     if KS.set.space[3:4] == "0f"
 
         ctr = OffsetArray{ControlVolume}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface1D}(undef, KS.pSpace.nx + 1)
+        face = Array{Interface}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i])
@@ -103,7 +103,7 @@ function init_fvm(
 
         for i = 1:KS.pSpace.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
-            face[i] = Interface1D(fw)
+            face[i] = Interface(fw, 1)
         end
 
     elseif KS.set.space[3:4] == "1f"
