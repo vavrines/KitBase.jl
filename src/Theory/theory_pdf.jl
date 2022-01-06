@@ -1,11 +1,13 @@
 """
-    pdf_slope(u, Δ)
-    pdf_slope(prim, sw, inK)
+$(SIGNATURES)
 
 Calculate slope of particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 """
 pdf_slope(u, Δ) = Δ / (u + 1e-7)
 
+"""
+$(SIGNATURES)
+"""
 function pdf_slope(prim::AV, sw::AV, inK)
     sl = similar(sw, axes(prim))
 
@@ -56,7 +58,7 @@ end
 
 
 """
-    mixture_pdf_slope(prim, sw, inK)
+$(SIGNATURES)
 
 Calculate slope of multi-component particle distribution function `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
@@ -73,14 +75,12 @@ end
 
 
 """
-    reduce_distribution(f, weights, dim)
-    reduce_distribution(f, v, w, weights, dim)
+$(SIGNATURES)
 
 Reduced distribution function
 
 * @arg : particle distribution function with full velocity space
 * @arg : quadrature weights with reduced velocity setting (v & w by default)
-
 """
 function reduce_distribution(f::AM, weights::AV, dim = 1)
     if dim == 1
@@ -100,6 +100,9 @@ function reduce_distribution(f::AM, weights::AV, dim = 1)
     return h
 end
 
+"""
+$(SIGNATURES)
+"""
 function reduce_distribution(f::AA{T1,3}, weights::AM, dim = 1) where {T1}
     if dim == 1
         h = similar(f, axes(f, 1))
@@ -122,6 +125,9 @@ function reduce_distribution(f::AA{T1,3}, weights::AM, dim = 1) where {T1}
     return h
 end
 
+"""
+$(SIGNATURES)
+"""
 function reduce_distribution(
     f::AA{X,3},
     v::Y,
@@ -159,8 +165,7 @@ end
 
 
 """
-    full_distribution(h, b, u, weights, v, w, ρ, γ)
-    full_distribution(h, b, u, weights, v, w, prim, γ)
+$(SIGNATURES)
 
 Recover full distribution function from reduced ones
 
@@ -169,7 +174,6 @@ Recover full distribution function from reduced ones
 * @arg weights : quadrature weights in 1D velocity space
 * @arg v & w : quadrature nodes in the rest velocity space (with 3D setting)
 * @return f : particle distribution function with 3D velocity space
-
 """
 function full_distribution(
     h::X,
@@ -198,6 +202,9 @@ function full_distribution(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 full_distribution(
     h::X,
     b::X,
@@ -212,7 +219,7 @@ full_distribution(
 
 
 """
-    shift_pdf!(f, a, du, dt)
+$(SIGNATURES)
 
 Shift distribution function by external force
 """
@@ -254,7 +261,11 @@ function shift_pdf!(f::AV{T}, a, du, dt) where {T<:Real}
 
 end
 
-#--- multi-component gas ---#
+"""
+$(SIGNATURES)
+
+Multi-component gas
+"""
 function shift_pdf!(f::AM{X}, a::AV{Y}, du::AV{Z}, dt) where {X<:Real,Y<:Real,Z<:Real}
 
     for j in axes(f, 2)
@@ -268,8 +279,7 @@ end
 
 
 """
-    chapman_enskog(u, prim, sw, K, τ)
-    chapman_enskog(u, v, prim, swx, swy, K, τ)
+$(SIGNATURES)
 
 Recover discrete Chapman-Enskog expansion
 """
@@ -291,6 +301,9 @@ function chapman_enskog(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function chapman_enskog(
     u::AV{T1},
     prim::AV{<:RN},
@@ -308,6 +321,9 @@ function chapman_enskog(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
@@ -329,6 +345,9 @@ function chapman_enskog(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
@@ -353,6 +372,9 @@ function chapman_enskog(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
@@ -396,6 +418,9 @@ function chapman_enskog(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function chapman_enskog(
     u::AA{T1},
     v::AA{T1},

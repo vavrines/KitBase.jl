@@ -1,8 +1,7 @@
 """
-    ref_vhs_vis(Kn, alpha, omega)
+$(SIGNATURES)
 
 Calculate reference viscosity with variable hard sphere (VHS) model
-
 """
 ref_vhs_vis(Kn, alpha, omega) =
     5.0 * (alpha + 1.0) * (alpha + 2.0) * √π /
@@ -10,31 +9,27 @@ ref_vhs_vis(Kn, alpha, omega) =
 
 
 """
-    vhs_collision_time(ρ, λ, μᵣ, ω)
-    vhs_collision_time(prim::AV{T}, muRef, omega) where {T<:Real}
+$(SIGNATURES)
 
 Calculate collision time with variable hard sphere (VHS) model
-
 """
 vhs_collision_time(ρ, λ, μᵣ, ω) = μᵣ * 2.0 * λ^(1.0 - ω) / ρ
 
-vhs_collision_time(prim::AV{T}, muRef, omega) where {T<:Real} =
+"""
+$(SIGNATURES)
+
+For Rykov model prim[end] should be λₜ
+"""
+vhs_collision_time(prim::AV, muRef, omega) =
     muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov model prim[end] should be λₜ
 
 
 """
-    aap_hs_collision_time(
-        prim::AA{<:Real,2},
-        mi::Real,
-        ni::Real,
-        me::Real,
-        ne::Real,
-        kn::Real,
-    )
+$(SIGNATURES)
 
 Calculate mixture collision time from AAP model
 """
-function aap_hs_collision_time(prim::AM{T}, mi, ni, me, ne, kn) where {T<:Real}
+function aap_hs_collision_time(prim::AM, mi, ni, me, ne, kn)
 
     ν = similar(prim, 2)
 
@@ -55,7 +50,7 @@ end
 
 
 """
-    aap_hs_diffeq!(du, u, p, t)
+$(SIGNATURES)
 
 Source term of AAP model in DifferentialEquations.jl
 """
@@ -131,7 +126,7 @@ end
 
 
 """
-    boltzmann_ode!(df, f, p, t)
+$(SIGNATURES)
 
 RHS-ODE of Boltzmann equation
 """
@@ -142,7 +137,7 @@ end
 
 
 """
-    boltzmann_nuode!(df, f, p, t)
+$(SIGNATURES)
 
 RHS-ODE of Boltzmann equation with non-uniform velocity
 """
@@ -166,7 +161,7 @@ end
 
 
 """
-    bgk_ode!(df, f, p, t)
+$(SIGNATURES)
     
 RHS-ODE of BGK equation
 """

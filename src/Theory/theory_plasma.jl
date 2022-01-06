@@ -1,5 +1,5 @@
 """
-    em_coefficients(prim, E, B, mr, ld, rL, dt)
+$(SIGNATURES)
 
 Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
 """
