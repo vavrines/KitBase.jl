@@ -28,18 +28,7 @@ const bcfn = Dict(
 
 
 """
-    finite_difference(
-        y,
-        x,
-        coeff = nothing,
-        uL = first(y),
-        uR = last(y);
-        method = :Centered,
-        dimension = 1,
-        derivative = 1,
-        truncation = 2,
-        bc = :Periodic,
-    )
+$(SIGNATURES)
 
 Finite difference operation
 
@@ -92,8 +81,7 @@ end
 
 
 """
-    central_diff(y, x)
-    central_diff(y, dx)
+$(SIGNATURES)
 
 Central difference
 """
@@ -113,6 +101,9 @@ function central_diff(y::T, x::T) where {T<:AV{<:Number}}
     return dy
 end
 
+"""
+$(SIGNATURES)
+"""
 function central_diff(y::AV{T}, dx) where {T}
     x = linspace(0, length(y) - 1, length(y)) .* dx
     dy = central_diff(y, x)
@@ -122,8 +113,7 @@ end
 
 
 """
-    central_diff2(y, x)
-    central_diff2(y, dx)
+$(SIGNATURES)
 
 Central difference for second-order derivatives
 """
@@ -140,6 +130,9 @@ function central_diff2(y::T, x::T) where {T<:AV{<:Number}}
     return dy
 end
 
+"""
+$(SIGNATURES)
+"""
 function central_diff2(y::AV{T}, dx) where {T}
     x = linspace(0, length(y) - 1, length(y)) .* dx
     dy = central_diff2(y, x)
@@ -149,8 +142,7 @@ end
 
 
 """
-    central_diff!(dy, y, x)
-    central_diff!(dy, y, dx)
+$(SIGNATURES)
 
 Central difference
 """
@@ -170,6 +162,9 @@ function central_diff!(dy::AV{T1}, y::T2, x::T2) where {T1,T2<:AV{<:Number}}
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function central_diff!(dy::AV{T1}, y::AV{T2}, dx) where {T1,T2}
     x = linspace(0, length(y) - 1, length(y)) .* dx
     central_diff!(dy, y, x)
@@ -179,8 +174,7 @@ end
 
 
 """
-    central_diff2!(dy, y, x)
-    central_diff2!(dy, y, dx)
+$(SIGNATURES)
     
 Central difference
 """
@@ -199,6 +193,9 @@ function central_diff2!(dy::AV{T1}, y::T2, x::T2) where {T1,T2<:AV{<:Number}}
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function central_diff2!(dy::AV{T1}, y::AV{T2}, dx) where {T1,T2}
     x = ones(eltype(y), axes(y)) .* dx
     central_diff2!(dy, y, x)
@@ -208,8 +205,7 @@ end
 
 
 """
-    upwind_diff(y, x; stream)
-    upwind_diff(y, dx; stream)
+$(SIGNATURES)
 
 Upwind difference
 """
@@ -237,6 +233,9 @@ function upwind_diff(y::AV{T1}, x::AV{T2}; stream = :right::Symbol) where {T1,T2
     return dy
 end
 
+"""
+$(SIGNATURES)
+"""
 function upwind_diff(y::AV{T}, dx; stream = :right::Symbol) where {T}
     x = linspace(0, length(y) - 1, length(y)) .* dx
     dy = upwind_diff(y, x, stream = stream)
@@ -246,8 +245,7 @@ end
 
 
 """
-    upwind_diff!(dy, y, x; stream)
-    upwind_diff!(dy, y, dx; stream)
+$(SIGNATURES)
 
 Upwind difference
 """
@@ -282,6 +280,9 @@ function upwind_diff!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function upwind_diff!(dy::AV{T1}, y::AV{T2}, dx; stream = :right::Symbol) where {T1,T2}
     x = linspace(0, length(y) - 1, length(y)) .* dx
     upwind_diff!(dy, y, x, stream = stream)
@@ -291,8 +292,7 @@ end
 
 
 """
-    unstruct_diff(u, x, nx; mode)
-    unstruct_diff(u, x, nx, dim; mode)
+$(SIGNATURES)
 
 Finite difference for pseudo-unstructured mesh
 """
@@ -321,6 +321,9 @@ function unstruct_diff(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function unstruct_diff(
     u::Function,
     x::AV{T},

@@ -1,10 +1,5 @@
 """
-    1D1F1V: flux_kcu!(fw, ff, wL, fL, wR, fR, u, ω, inK, γ, visRef, visIdx, Pr, dt)
-    1D2F1V: flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, ω, inK, γ, visRef, visIdx, Pr, dt)
-    1D4F1V: flux_kcu!(fw, fh0, fh1, fh2, fh3, wL, h0L, h1L, h2L, h3L, wR, h0R, h1R, h2R, h3R, u, ω, inK, γ, visRef, visIdx, Pr, dt)
-    2D1F2V: flux_kcu!(fw, ff, wL, fL, wR, fR, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
-    2D2F2V: flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
-    2D3F2V: flux_kcu!(fw, fh0, fh1, fh2, wL, h0L, h1L, h2L, wR, h0R, h1R, h2R, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
+$(SIGNATURES)
 
 Kinetic central-upwind (KCU) method
 
@@ -12,6 +7,7 @@ Kinetic central-upwind (KCU) method
 - @args: particle velocity quadrature points and weights
 - @args: time step and cell size
 
+1D1F1V
 """
 function flux_kcu!(
     fw::X,
@@ -78,7 +74,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::X,
     ff::Y,
@@ -153,9 +153,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 1D1F3V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D1F3V
+"""
 function flux_kcu!(
     fw::X,
     ff::Y,
@@ -225,9 +227,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 1D2F1V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D2F1V
+"""
 function flux_kcu!(
     fw::X,
     fh::Y,
@@ -298,7 +302,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::T1,
     fh::T2,
@@ -386,9 +394,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 1D4F1V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D4F1V
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,
@@ -474,7 +484,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,
@@ -582,9 +596,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 2D1F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D1F2V
+"""
 function flux_kcu!(
     fw::X,
     ff::Y,
@@ -651,9 +667,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 2D2F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D2F2V
+"""
 function flux_kcu!(
     fw::T1,
     fh::T2,
@@ -726,9 +744,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 2D3F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D3F2V
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,
@@ -809,7 +829,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,

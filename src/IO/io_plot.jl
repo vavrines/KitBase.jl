@@ -1,8 +1,3 @@
-"""
-    plot_line(KS, ctr)
-
-Plot solution profiles
-"""
 plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot instead."
 
 @recipe function plot_line_backend(
@@ -49,11 +44,6 @@ plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot i
 end
 
 
-"""
-    plot_line(KS, ctr)
-
-Plot solution profiles
-"""
 plot_contour(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot instead."
 
 @recipe function plot_contour_backend(

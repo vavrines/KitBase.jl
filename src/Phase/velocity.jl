@@ -3,17 +3,13 @@
 # ============================================================
 
 """
-    struct VSpace1D
-        u0::TR
-        u1::TR
-        nu::TI
-        u::TA
-        du::TA
-        weights::TB
-    end
+$(TYPEDEF)
 
 1D velocity space
 
+# Fields
+
+$(FIELDS)
 """
 struct VSpace1D{TR<:Real,TI<:Integer,TA<:AA{<:Real},TB<:AV{<:Real}} <:
        AbstractVelocitySpace1D
@@ -76,22 +72,13 @@ VSpace1D(U0::T, U1::T) where {T<:Real} = VSpace1D(U0, U1, 50)
 
 
 """
-    struct VSpace2D
-        u0::TR
-        u1::TR
-        nu::TI
-        v0::TR
-        v1::TR
-        nv::TI
-        u::TA
-        v::TA
-        du::TA
-        dv::TA
-        weights::TA
-    end
+$(TYPEDEF)
 
 2D velocity space
 
+# Fields
+
+$(FIELDS)
 """
 struct VSpace2D{TR<:Real,TI<:Integer,TA<:AA{<:Real}} <: AbstractVelocitySpace2D
     u0::TR
@@ -232,27 +219,13 @@ VSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = VSpace2D(U0, U1, 28, V0, 
 
 
 """
-    struct VSpace3D
-        u0::TR
-        u1::TR
-        nu::TI
-        v0::TR
-        v1::TR
-        nv::TI
-        w0::TR
-        w1::TR
-        nw::TI
-        u::TA
-        v::TA
-        w::TA
-        du::TA
-        dv::TA
-        dw::TA
-        weights::TA
-    end
+$(TYPEDEF)
 
 3D velocity space
 
+# Fields
+
+$(FIELDS)
 """
 struct VSpace3D{TR<:Real,TI<:Integer,TA<:AA{<:Real}} <: AbstractVelocitySpace3D
     u0::TR
@@ -390,17 +363,13 @@ VSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 
 
 """
-    struct MVSpace1D
-        u0::TR
-        u1::TR
-        nu::TI
-        u::TA
-        du::TA
-        weights::TA
-    end
+$(TYPEDEF)
 
 1D multi-component velocity space
 
+# Fields
+
+$(FIELDS)
 """
 struct MVSpace1D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,2}} <: AbstractVelocitySpace1D
     u0::TR
@@ -460,22 +429,13 @@ MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1
 
 
 """
-    struct MVSpace2D
-        u0::TR
-        u1::TR
-        nu::TI
-        v0::TR
-        v1::TR
-        nv::TI
-        u::TA
-        v::TA
-        du::TA
-        dv::TA
-        weights::TA
-    end
+$(TYPEDEF)
 
 2D multi-component velocity space
 
+# Fields
+
+$(FIELDS)
 """
 struct MVSpace2D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{Float64,3}} <: AbstractVelocitySpace2D
     u0::TR
@@ -560,27 +520,13 @@ MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
 
 
 """
-    struct MVSpace3D
-        u0::TR
-        u1::TR
-        nu::TI
-        v0::TR
-        v1::TR
-        nv::TI
-        w0::TR
-        w1::TR
-        nw::TI
-        u::TA
-        v::TA
-        w::TA
-        du::TA
-        dv::TA
-        dw::TA
-        weights::TA
-    end
+$(TYPEDEF)
 
 3D multi-component velocity space
 
+# Fields
+
+$(FIELDS)
 """
 struct MVSpace3D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,4}} <: AbstractVelocitySpace3D
     u0::TR
@@ -705,16 +651,13 @@ MVSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 
 
 """
-    struct UnstructVSpace
-        u0::TR
-        u1::TR
-        nu::TI
-        u::TA
-        weights::TB
-    end
+$(TYPEDEF)
 
 Unstructured velocity space
 
+# Fields
+
+$(FIELDS)
 """
 struct UnstructVSpace{TR<:Union{Real,AV},TI<:Union{Integer,AV},TA<:AA,TB<:AV{<:Real}} <:
        AbstractVelocitySpace
@@ -727,7 +670,7 @@ end
 
 
 """
-    newton_cotes(idx::T, num::T) where {T<:Integer}
+$(SIGNATURES)
 
 Evaluate quadrature weight from Newton-Cotes rule
 """

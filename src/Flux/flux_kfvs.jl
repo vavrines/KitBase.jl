@@ -1,11 +1,26 @@
 """
-    DOM: flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)
-    1D1F1V: flux_kfvs!(fw, ff, fL, fR, u, ω, dt, sfL, sfR)
-    1D1F3V: flux_kfvs!(fw, ff, fL, fR, u, v, w, ω, dt, sfL, sfR)
-    1D2F1V: flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, ω, dt, shL, sbL, shR, sbR)
-    1D4F1V: flux_kfvs!(fw, fh0, fh1, fh2, fh3, h0L, h1L, h2L, h3L, h0R, h1R, h2R, h3R, u, ω, dt, sh0L, sh1L, sh2L, sh3L, sh0R, sh1R, sh2R, sh3R)
-    2D1F2V: flux_kfvs!(fw, ff, fL, fR, u, v, ω, dt, len, sfL, sfR)
-    2D2F2V: flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, v, ω, dt, len, shL, sbL, shR, sbR)
+$(SIGNATURES)
+
+Kinetic flux vector splitting (KFVS) flux
+"""
+function flux_kfvs(
+    fL::Y,
+    fR::Y,
+    u::AV{<:FN},
+    dt,
+    sfL = zero(fL)::Y,
+    sfR = zero(fR)::Y,
+) where {Y<:AV{<:FN}}
+
+    ff = similar(fL)
+    flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)
+
+    return ff
+
+end
+
+"""
+$(SIGNATURES)
 
 Kinetic flux vector splitting (KFVS) flux
 
@@ -13,6 +28,7 @@ Kinetic flux vector splitting (KFVS) flux
 - @args: particle velocity quadrature points and weights
 - @args: time step and cell size
 
+1F1V for pure DOM
 """
 function flux_kfvs!(
     ff::AV{<:FN},
@@ -37,25 +53,11 @@ function flux_kfvs!(
 
 end
 
-function flux_kfvs(
-    fL::Y,
-    fR::Y,
-    u::AV{<:FN},
-    dt,
-    sfL = zero(fL)::Y,
-    sfR = zero(fR)::Y,
-) where {Y<:AV{<:FN}}
+"""
+$(SIGNATURES)
 
-    ff = similar(fL)
-    flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)
-
-    return ff
-
-end
-
-# ------------------------------------------------------------
-# 1F1V flux
-# ------------------------------------------------------------
+1F1V
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     ff::AV{<:FN},
@@ -85,7 +87,11 @@ function flux_kfvs!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kfvs!(
     fw::AM{<:FN},
     ff::AM{<:FN},
@@ -115,9 +121,11 @@ function flux_kfvs!(
 
 end
 
-# ------------------------------------------------------------
-# 2F1V flux
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2F1V
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     fh::Y,
@@ -158,7 +166,11 @@ function flux_kfvs!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kfvs!(
     fw::AM{<:FN},
     fh::Y,
@@ -198,9 +210,11 @@ function flux_kfvs!(
 
 end
 
-# ------------------------------------------------------------
-# 3F1V flux (Rykov)
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+3F1V @ Rykov
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     fh::Y,
@@ -251,9 +265,11 @@ function flux_kfvs!(
 
 end
 
-# ------------------------------------------------------------
-# 1F3V flux
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1F3V
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     ff::AA{<:FN,3},
@@ -289,6 +305,9 @@ function flux_kfvs!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     ff::AA{<:FN,3},
@@ -326,9 +345,11 @@ function flux_kfvs!(
 
 end
 
-# ------------------------------------------------------------
-# 4F1V flux
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+4F1V
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     fh0::Y,
@@ -387,7 +408,11 @@ function flux_kfvs!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kfvs!(
     fw::AM{<:FN},
     fh0::Y,
@@ -454,9 +479,11 @@ function flux_kfvs!(
 
 end
 
-# ------------------------------------------------------------
-# 1F2V flux
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1F2V
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     ff::Union{AV{<:FN},AM{<:FN}},
@@ -492,9 +519,11 @@ function flux_kfvs!(
 
 end
 
-# ------------------------------------------------------------
-# 2F2V flux
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2F2V
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     fh::Y,
@@ -545,9 +574,11 @@ function flux_kfvs!(
 
 end
 
-# ------------------------------------------------------------
-# 3F2V flux
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+3F2V
+"""
 function flux_kfvs!(
     fw::AV{<:FN},
     fh0::Y,
@@ -603,7 +634,11 @@ function flux_kfvs!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kfvs!(
     fw::AM{<:FN},
     fh0::Y,

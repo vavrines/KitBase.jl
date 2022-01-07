@@ -1,5 +1,5 @@
 """
-    linspace(start, stop, n)
+$(SIGNATURES)
 
 Python linspace function
 """
@@ -8,7 +8,7 @@ linspace(start, stop, n::T) where {T<:Integer} =
 
 
 """
-    heaviside(x)
+$(SIGNATURES)
 
 Heaviside step function
 """
@@ -16,7 +16,7 @@ heaviside(x::T) where {T<:Real} = ifelse(x >= 0, one(x), zero(x))
 
 
 """
-    fortsign(x, y)
+$(SIGNATURES)
 
 Fortran sign function
 """
@@ -24,7 +24,7 @@ fortsign(x, y) = abs(x) * sign(y)
 
 
 """
-    mat_split(m)
+$(SIGNATURES)
 
 Split matrix into row vectors
 """
@@ -47,7 +47,7 @@ end
 
 
 """
-    lgwt(, a, b)
+$(SIGNATURES)
 
 Gauss Legendre integral for fast spectral method
 
@@ -98,7 +98,7 @@ end
 
 
 """
-    extract_last(a, idx; mode)
+$(SIGNATURES)
 
 Extract subarray except the last column
 """

@@ -1,6 +1,5 @@
 """
-    ib_rh(set, ps, vs, gas)
-    ib_rh(Ma, gam)
+$(SIGNATURES)
 
 Initialize Rankine-Hugoniot relation
 """
@@ -140,6 +139,9 @@ function ib_rh(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function ib_rh(Ma::Real, gam::Real)
     MaL = Ma
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))

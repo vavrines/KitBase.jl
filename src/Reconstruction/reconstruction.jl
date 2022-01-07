@@ -14,18 +14,20 @@ include("recon_filter.jl")
 # ------------------------------------------------------------
 
 """
-    reconstruct2(wL, wR, Δx)
-    reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,1}}
-    reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,2}}
-    reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,3}}
+$(SIGNATURES)
 
 Two-cell reconstruction
-
 """
 reconstruct2(wL, wR, Δx) = (wR - wL) / Δx
 
+"""
+$(SIGNATURES)
+"""
 reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,1}} = (wR .- wL) ./ Δx
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,2}}
 
     s = zeros(axes(wL))
@@ -37,6 +39,9 @@ function reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,2}}
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,3}}
 
     s = zeros(axes(wL))
@@ -50,34 +55,17 @@ end
 
 
 """
-    reconstruct2!(
-        sw::X,
-        wL::Y,
-        wR::Y,
-        Δx,
-    ) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
-
-    reconstruct2!(
-        sw::X,
-        wL::Y,
-        wR::Y,
-        Δx,
-    ) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
-
-    reconstruct2!(
-        sw::X,
-        wL::Y,
-        wR::Y,
-        Δx,
-    ) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
+$(SIGNATURES)
 
 Two-cell reconstruction
-
 """
 function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
     sw .= (wR .- wL) ./ Δx
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
     for j in axes(sw, 2)
         swj = @view sw[:, j]
@@ -85,6 +73,9 @@ function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,2},Y<:AA{<:Re
     end
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
     for k in axes(sw, 3), j in axes(sw, 2)
         swjk = @view sw[:, j, k]
@@ -94,44 +85,9 @@ end
 
 
 """
-    reconstruct3(
-        wL::T,
-        wN::T,
-        wR::T,
-        ΔxL::T,
-        ΔxR::T,
-        limiter = :vanleer::Symbol,
-    ) where {T}
-
-    reconstruct3(
-        wL::T,
-        wN::T,
-        wR::T,
-        ΔxL,
-        ΔxR,
-        limiter = :vanleer::Symbol,
-    ) where {T<:AA{<:Real,1}}
-
-    reconstruct3(
-        wL::T,
-        wN::T,
-        wR::T,
-        ΔxL,
-        ΔxR,
-        limiter = :vanleer::Symbol,
-    ) where {T<:AA{<:Real,2}}
-
-    function reconstruct3(
-        wL::T,
-        wN::T,
-        wR::T,
-        ΔxL,
-        ΔxR,
-        limiter = :vanleer::Symbol,
-    ) where {T<:AA{<:Real,3}}
+$(SIGNATURES)
 
 Three-cell reconstruction
-
 """
 function reconstruct3(
     wL::T,
@@ -147,6 +103,9 @@ function reconstruct3(
     return eval(limiter)(sL, sR)
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct3(
     wL::T,
     wN::T,
@@ -161,6 +120,9 @@ function reconstruct3(
     return eval(limiter).(sL, sR)
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct3(
     wL::T,
     wN::T,
@@ -179,6 +141,9 @@ function reconstruct3(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct3(
     wL::T,
     wN::T,
@@ -199,48 +164,9 @@ end
 
 
 """
-    reconstruct3!(
-        sw::X,
-        wL::Y,
-        wN::Y,
-        wR::Y,
-        ΔxL,
-        ΔxR,
-        limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
-
-    reconstruct3!(
-        sw::X,
-        wL::Y,
-        wN::Y,
-        wR::Y,
-        ΔxL,
-        ΔxR,
-        limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
-
-    reconstruct3!(
-        sw::X,
-        wL::Y,
-        wN::Y,
-        wR::Y,
-        ΔxL,
-        ΔxR,
-        limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
-
-    reconstruct3!(
-        sw::X,
-        wL::Y,
-        wN::Y,
-        wR::Y,
-        ΔxL,
-        ΔxR,
-        limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:FN,4},Y<:AA{<:Real,4}}
+$(SIGNATURES)
 
 Three-cell reconstruction
-
 """
 function reconstruct3!(
     sw::X,
@@ -257,6 +183,9 @@ function reconstruct3!(
     sw .= eval(limiter).(sL, sR)
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct3!(
     sw::X,
     wL::Y,
@@ -274,6 +203,9 @@ function reconstruct3!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct3!(
     sw::X,
     wL::Y,
@@ -291,6 +223,9 @@ function reconstruct3!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct3!(
     sw::X,
     wL::Y,
@@ -318,32 +253,9 @@ end
 
 
 """
-    function reconstruct4!(
-        sw::X,
-        wN::Y
-        w1::Y,
-        w2::Y,
-        w3::Y,
-        Δx1,
-        Δx2,
-        Δx3,
-        limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
-
-    function reconstruct4!(
-        sw::X,
-        wN::Y
-        w1::Y,
-        w2::Y,
-        w3::Y,
-        Δx1,
-        Δx2,
-        Δx3,
-        limiter = :vanleer::Symbol,
-    ) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
+$(SIGNATURES)
 
 Four-cell reconstruction for triangular mesh
-
 """
 function reconstruct4!(
     sw::X,
@@ -363,6 +275,9 @@ function reconstruct4!(
     sw .= eval(limiter).(s1, s2, s3)
 end
 
+"""
+$(SIGNATURES)
+"""
 function reconstruct4!(
     sw::X,
     wN::Y,

@@ -1,10 +1,7 @@
 """
-    ib_briowu(set, ps, vs, gas)
-    ib_briowu(gam, mi, me, uspace)
-    ib_briowu(gam, mi, me, uspace, vspace)
+$(SIGNATURES)
 
 Initialize Brio-Wu MHD shock tube
-
 """
 function ib_briowu(
     set::AbstractSetup,
@@ -155,6 +152,9 @@ function ib_briowu(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function ib_briowu(gam, mi, me, uspace::AM{T}) where {T<:FN}
 
     # upstream
@@ -243,6 +243,9 @@ function ib_briowu(gam, mi, me, uspace::AM{T}) where {T<:FN}
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function ib_briowu(gam, mi, me, uspace::T, vspace::T) where {T<:AA{<:FN,3}}
     # upstream
     primL = zeros(5, 2)

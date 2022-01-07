@@ -3,22 +3,13 @@
 # ============================================================
 
 """
-    struct Setup{S,I<:Integer,E,F<:Real,G<:Real} <: AbstractSetup
-        matter::S
-        case::S
-        space::S
-        flux::S
-        collision::S
-        nSpecies::I
-        interpOrder::I
-        limiter::S
-        boundary::E
-        cfl::F
-        maxTime::G
-    end
+$(TYPEDEF)
 
 Computational setup
 
+# Fields
+
+$(FIELDS)
 """
 @kwdef struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
     matter::S = "gas"
@@ -72,12 +63,13 @@ end
 
 
 """
-    mutable struct Scalar{TA,TB} <: AbstractProperty
-        a::TA
-        μᵣ::TB
-    end
+$(TYPEDEF)
 
 Fluid property for scalar conservation laws
+
+# Fields
+
+$(FIELDS)
 """
 @kwdef mutable struct Scalar{TA,TB} <: AbstractProperty
     a::TA = 1.0
@@ -86,12 +78,13 @@ end
 
 
 """
-    mutable struct Radiation{T1,T2} <: AbstractProperty
-        Kn::T1
-    end
+$(TYPEDEF)
 
 Radiation property for linear Boltzmann equation
 
+# Fields
+
+$(FIELDS)
 """
 @kwdef mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
     Kn::T1 = 1.0
@@ -113,22 +106,13 @@ end
 
 
 """
-    mutable struct Gas{A,B,C,D,E,F,G,H,I,J,K<:Integer} <: AbstractProperty
-        Kn::A
-        Ma::B
-        Pr::C
-        K::D
-        γ::E
-        ω::F
-        αᵣ::G
-        ωᵣ::H
-        μᵣ::I
-        m::J
-        np::K
-    end
+$(TYPEDEF)
 
 Gas property
 
+# Fields
+
+$(FIELDS)
 """
 @kwdef mutable struct Gas{T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11<:Integer,T12} <: AbstractGas
     Kn::T1 = 1e-2
@@ -147,26 +131,13 @@ end
 
 
 """
-    struct DiatomicGas{TA,TI,TF} <: AbstractProperty
-        Kn::TA
-        Ma::TA
-        Pr::TA
-        K::TI
-        Kr::TI
-        γ::TF
-        ω::TF
-        αᵣ::TF
-        ωᵣ::TF
-        μᵣ::TF
-        T₀::TF
-        Z₀::TF
-        σ::TF
-        ω₁::TF
-        ω₂::TF
-    end
+$(TYPEDEF)
 
 Diatomic gas property
 
+# Fields
+
+$(FIELDS)
 """
 @kwdef struct DiatomicGas{TA,TI,TF} <: AbstractGas
     Kn::TA = 1e-2
@@ -188,20 +159,13 @@ end
 
 
 """
-    struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractProperty
-        Kn::A
-        Ma::B
-        Pr::C
-        K::D
-        γ::E
-        mi::F
-        ni::G
-        me::H
-        ne::I
-    end
+$(TYPEDEF)
 
 Multi-component gas property
 
+# Fields
+
+$(FIELDS)
 """
 @kwdef struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractGas
     Kn::A = 1e-2
@@ -217,28 +181,13 @@ end
 
 
 """
-    struct Plasma1D <: AbstractPlasma
-        Kn
-        Ma
-        Pr
-        K
-        γ
-        mi
-        ni
-        me
-        ne
-        lD
-        rL
-        sol
-        χ
-        ν
-        Ap
-        An
-        D
-    end
+$(TYPEDEF)
 
 1D plasma property
 
+# Fields
+
+$(FIELDS)
 """
 @kwdef struct Plasma1D{A,B,C,TD,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2
@@ -362,31 +311,13 @@ end
 
 
 """
-    struct Plasma2D <: AbstractPlasma
-        Kn
-        Ma
-        Pr
-        K
-        γ
-        mi
-        ni
-        me
-        ne
-        lD
-        rL
-        sol
-        χ
-        ν
-        A1p
-        A1n
-        A2p
-        A2n
-        D1
-        D2
-    end
+$(TYPEDEF)
 
 2D plasma property
 
+# Fields
+
+$(FIELDS)
 """
 @kwdef struct Plasma2D{A,B,C,D,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2

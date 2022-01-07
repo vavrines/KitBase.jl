@@ -1,5 +1,5 @@
 """
-    ib_cavity(set, ps, vs, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
+$(SIGNATURES)
 
 Initialize lid-driven cavity
 """

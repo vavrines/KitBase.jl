@@ -4,10 +4,9 @@
 # ============================================================
 
 """
-    flux_upwind(uL, uR, Ω::T, n::T, dt) where {T<:AV}
+$(SIGNATURES)
 
 Upwind flux
-
 """
 function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AV}
     ip = dot(Ω, n) # inner product
@@ -21,13 +20,12 @@ end
 
 
 """
-    flux_lax!(fw::AA{<:Real,1}, wL::AA{<:Real,1}, wR::AA{<:Real,1}, γ::Real, dt::Real, dx::Real)
+$(SIGNATURES)
 
 Lax-Friedrichs flux
 
 _P. D. Lax, Weak Solutions of Nonlinear Hyperbolic Equations and Their Numerical Computation,
 Commun. Pure and Applied Mathematics, 7, 159-193, 1954._
-
 """
 function flux_lax!(fw::X, wL::Y, wR::Y, γ, dt, dx) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
     fw .= 0.5 * dt .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1] - dx / dt .* (wR - wL))
@@ -36,13 +34,12 @@ end
 
 
 """
-    flux_hll!(fw::AA{<:Real,1}, wL::AA{<:Real,1}, wR::AA{<:Real,1}, γ::Real, dt::Real)
+$(SIGNATURES)
 
 HLL flux for the Euler equations
 
 - @args: variables at left & right sides of interface
 - @args: specific heat ratio
-
 """
 function flux_hll!(fw::X, wL::Y, wR::Y, γ, dt) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
     primL = conserve_prim(wL, γ)
@@ -74,8 +71,7 @@ end
 
 
 """
-    flux_roe!(fw::AA{<:Real,1}, wL::AA{<:Real,1}, wR::AA{<:Real,1},
-    γ::Real, dt::Real, n = [1.0, 0.0]::AA{<:Real,1})
+$(SIGNATURES)
 
 Roe's flux with entropy fix    
 
@@ -86,7 +82,6 @@ _P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Scheme
 * @args primR[1:4] = right state (rhoR, uR, vR, pR)
 * @args γ: specific heat ratio
 * @args n[2]: unit face normal (L -> R)
-
 """
 function flux_roe!(
     fw::X,

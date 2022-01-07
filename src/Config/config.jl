@@ -9,6 +9,11 @@ include("cfg_sod.jl")
 include("cfg_briowu.jl")
 include("cfg_cavity.jl")
 
+"""
+$(SIGNATURES)
+
+Config initial and boundary conditions
+"""
 function config_ib(args...; case = args[1].case)
     func = begin
         if case in ("shock", :shock)

@@ -1,5 +1,5 @@
 """
-    maxwell_boltzmann(f)
+$(SIGNATURES)
 
 Maxwell Boltzmann entropy
 """
@@ -7,7 +7,7 @@ maxwell_boltzmann(f) = f * log(f) - f
 
 
 """
-    maxwell_boltzmann_prime(x)
+$(SIGNATURES)
 
 Prim of Maxwell Boltzmann entropy
 """
@@ -15,7 +15,7 @@ maxwell_boltzmann_prime(x) = log(x)
 
 
 """
-    maxwell_boltzmann_dual(f)
+$(SIGNATURES)
 
 Dual of Maxwell Boltzmann entropy
 """
@@ -23,7 +23,7 @@ maxwell_boltzmann_dual(f) = exp(f)
 
 
 """
-    maxwell_boltzmann_dual_prime(f)
+$(SIGNATURES)
 
 Dual prim of Maxwell Boltzmann entropy
 """
@@ -31,7 +31,7 @@ maxwell_boltzmann_dual_prime(f) = exp(f)
 
 
 """
-    kinetic_entropy(α, m, weights)
+$(SIGNATURES)
 
 Reconstruct mathematical entropy from Legendre dual
 """

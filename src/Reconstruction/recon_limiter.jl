@@ -3,7 +3,7 @@
 # ------------------------------------------------------------
 
 """
-    linear(sL, sR)
+$(SIGNATURES)
 
 linear average of slopes
 """
@@ -11,8 +11,7 @@ linear(sL, sR) = 0.5 * (sL + sR)
 
 
 """
-    vanleer(sL, sR)
-    vanleer(sL, s, sR, connect = 2)
+$(SIGNATURES)
 
 van Leer limiter
 """
@@ -20,7 +19,11 @@ vanleer(sL, sR) =
     (fortsign(1.0, sL) + fortsign(1.0, sR)) * abs(sL) * abs(sR) /
     (abs(sL) + abs(sR) + 1.e-7)
 
-#--- triangle ---#
+"""
+$(SIGNATURES)
+
+Triangle
+"""
 function vanleer(sL, s, sR, connect = 2)
     δ = begin
         if connect == 2
@@ -49,14 +52,17 @@ end
 
 
 """
-    minmod(sL, sR)
-    minmod(sL, s, sR, connect = 2)
+$(SIGNATURES)
 
 MinMod limiter
 """
 minmod(sL, sR) = 0.5 * (fortsign(1.0, sL) + fortsign(1.0, sR)) * min(abs(sR), abs(sL))
 
-#--- triangle ---#
+"""
+$(SIGNATURES)
+
+Triangle
+"""
 function minmod(sL, s, sR, connect = 2)
     δ = begin
         if connect == 2
@@ -80,7 +86,7 @@ end
 
 
 """
-    superbee(sL, sR)
+$(SIGNATURES)
 
 SuperBee limiter
 """
@@ -96,7 +102,7 @@ end
 
 
 """
-    vanalbaba(sL, sR)
+$(SIGNATURES)
 
 van Albaba limiter
 """
@@ -104,7 +110,7 @@ vanalbaba(sL, sR) = (sL^2 * sR + sL * sR^2) / (sL^2 + sR^2 + 1.e-7)
 
 
 """
-    weno5(wL2, wL1, wN, wR1, wR2)
+$(SIGNATURES)
 
 5th-order WENO-JS interpolation
 """

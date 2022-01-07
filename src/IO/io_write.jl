@@ -1,5 +1,5 @@
 """
-    write_jld(KS, ctr, t)
+$(SIGNATURES)
 
 Write data into JLD2
 """
@@ -14,7 +14,7 @@ end
 
 
 """
-    write_vtk(points, cells, cdata, pdata = zeros(axes(points, 1)))
+$(SIGNATURES)
 
 Write data into VTK
 """
@@ -43,8 +43,7 @@ end
 
 
 """
-    write_tec(x, sol)
-    write_tec(x, y, sol)
+$(SIGNATURES)
 
 Write data into tecplot data file
 """
@@ -90,6 +89,9 @@ function write_tec(x::AV, sol)
     end
 end
 
+"""
+$(SIGNATURES)
+"""
 function write_tec(x::AM, y::AM, sol)
     open("sol.dat", "w") do f
         nx = size(x, 1)
@@ -152,8 +154,7 @@ end
 
 
 """
-
-Write data into tecplot data file
+$(SIGNATURES)
 """
 function write_num(io, xs::AA)
     for x in xs

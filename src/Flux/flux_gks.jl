@@ -3,8 +3,7 @@
 # ============================================================
 
 """
-    flux_gks(u, μ, dt, a = 0::T, su = 0.0) where {T<:Real}
-    flux_gks(uL::T, uR::T, μ, dt, dxL, dxR, a = 0, suL = 0.0, suR = 0.0) where {T<:Real}
+$(SIGNATURES)
 
 Gas kinetic scalar flux
 
@@ -40,6 +39,9 @@ function flux_gks(u, μ, dt, a = 0, su = 0.0)
     return fw / dt
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_gks(
     uL::T,
     uR::T,
@@ -122,12 +124,15 @@ end
 
 
 """
+$(SIGNATURES)
+
 Gas kinetic Navier-Stokes flux
 
 * @args: conservative variables and their left/right slopes
 * @args: molecular and thermodynamic parameters
 * @args: time step and cell size
 
+Continuous case
 """
 function flux_gks!(
     fw::X,
@@ -173,9 +178,11 @@ function flux_gks!(
 
 end
 
-# ------------------------------------------------------------
-# 1D
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D
+"""
 function flux_gks!(
     fw::X,
     wL::Y,
@@ -267,7 +274,11 @@ function flux_gks!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Gas mixture
+"""
 function flux_gks!(
     fw::X,
     wL::Y,
@@ -373,7 +384,11 @@ function flux_gks!(
 
 end
 
-#--- 1D1F1V ---#
+"""
+$(SIGNATURES)
+
+1D1F1V
+"""
 function flux_gks!(
     fw::T1,
     fh::T2,
@@ -498,7 +513,11 @@ function flux_gks!(
 
 end
 
-#--- 1D2F1V ---#
+"""
+$(SIGNATURES)
+
+1D2F1V
+"""
 function flux_gks!(
     fw::T1,
     fh::T2,
@@ -667,6 +686,11 @@ end
 # 2D & 3D
 # ------------------------------------------------------------
 
+"""
+$(SIGNATURES)
+
+2D & 2D
+"""
 function flux_gks!(
     fw::X,
     wL::Y,
@@ -761,7 +785,11 @@ function flux_gks!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_gks!(
     fw::X,
     wL::Y,
@@ -873,7 +901,11 @@ function flux_gks!(
 
 end
 
-#--- 2D1F2V ---#
+"""
+$(SIGNATURES)
+
+2D1F2V
+"""
 function flux_gks!(
     fw::T1,
     ff::T2,
@@ -1032,7 +1064,11 @@ function flux_gks!(
 
 end
 
-#--- 2D2F2V ---#
+"""
+$(SIGNATURES)
+
+2D2F2V
+"""
 function flux_gks!(
     fw::T1,
     fh::T2,
@@ -1278,7 +1314,11 @@ function flux_gks!(
 
 end
 
-#--- FR ---#
+"""
+$(SIGNATURES)
+
+Flux reconstruction
+"""
 function flux_gks!(
     fw::X,
     wL::Y,
@@ -1331,119 +1371,13 @@ end
 
 
 """
-    flux_ugks!(
-        fw::T1,
-        fh::T2,
-        fb::T2,
-        wL::T3,
-        hL::T4,
-        bL::T4,
-        wR::T3,
-        hR::T4,
-        bR::T4,
-        u::T5,
-        ω::T5,
-        inK,
-        γ,
-        visRef,
-        visIdx,
-        pr,
-        dt,
-        dxL,
-        dxR,
-        shL = zeros(eltype(hL), axes(hL))::T4,
-        sbL = zeros(eltype(bL), axes(bL))::T4,
-        shR = zeros(eltype(hR), axes(hR))::T4,
-        sbR = zeros(eltype(bR), axes(bR))::T4,
-    ) where {
-        T1<:AA{<:FN,1},
-        T2<:AA{<:FN,1},
-        T3<:AA{<:Real,1},
-        T4<:AA{<:FN,1},
-        T5<:AA{<:FN,1},
-    }
-
-    flux_ugks!(
-        fw::T1,
-        fh::T2,
-        fb::T2,
-        wL::T3,
-        hL::T4,
-        bL::T4,
-        wR::T3,
-        hR::T4,
-        bR::T4,
-        u::T5,
-        v::T5,
-        ω::T5,
-        inK,
-        γ,
-        visRef,
-        visIdx,
-        pr,
-        dt,
-        dxL,
-        dxR,
-        len,
-        shL = zeros(eltype(hL), axes(hL))::T4,
-        sbL = zeros(eltype(bL), axes(bL))::T4,
-        shR = zeros(eltype(hR), axes(hR))::T4,
-        sbR = zeros(eltype(bR), axes(bR))::T4,
-    ) where {
-        T1<:AA{<:FN,1},
-        T2<:AA{<:FN,2},
-        T3<:AA{<:Real,1},
-        T4<:AA{<:FN,2},
-        T5<:AA{<:FN,2},
-    }
-
-    flux_ugks!(
-        fw::T1,
-        fh0::T2,
-        fh1::T2,
-        fh2::T2,
-        wL::T3,
-        h0L::T4,
-        h1L::T4,
-        h2L::T4,
-        wR::T3,
-        h0R::T4,
-        h1R::T4,
-        h2R::T4,
-        u::T5,
-        v::T5,
-        ω::T5,
-        inK,
-        γ,
-        mi,
-        ni,
-        me,
-        ne,
-        Kn,
-        dt,
-        dxL,
-        dxR,
-        len,
-        sh0L = zeros(eltype(h0L), axes(h0L))::T4,
-        sh1L = zeros(eltype(h1L), axes(h1L))::T4,
-        sh2L = zeros(eltype(h2L), axes(h2L))::T4,
-        sh0R = zeros(eltype(h0R), axes(h0R))::T4,
-        sh1R = zeros(eltype(h1R), axes(h1R))::T4,
-        sh2R = zeros(eltype(h2R), axes(h2R))::T4,
-    ) where {
-        T1<:AA{<:FN,2},
-        T2<:AA{<:FN,3},
-        T3<:AA{<:Real,2},
-        T4<:AA{<:FN,3},
-        T5<:AA{<:FN,3},
-    }
+$(SIGNATURES)
 
 Unified gas kinetic scheme (UGKS)
 
 * @args: particle distribution functions and their slopes at left/right sides of interface
 * @args: particle velocity quadrature points and weights
 * @args: time step
-
 """
 function flux_ugks!(
     fw::T1,
@@ -1554,6 +1488,9 @@ function flux_ugks!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_ugks!(
     fw::T1,
     fh::T2,
@@ -1695,9 +1632,11 @@ function flux_ugks!(
 
 end
 
-# ------------------------------------------------------------
-# 3F2V with AAP model
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+3F2V with AAP model
+"""
 function flux_ugks!(
     fw::T1,
     fh0::T2,

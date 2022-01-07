@@ -1,10 +1,5 @@
 """
-    flux_boundary_maxwell!(fw, bc, w, inK, γ, dt, rot)
-    flux_boundary_maxwell!(fw, bc, w, inK, γ, dt, len, rot)
-    flux_boundary_maxwell!(fw, fh, fb, bc, h, b, u, ω, inK, dt, rot)
-    flux_boundary_maxwell!(fw, ff, bc, f, u, v, ω, dt, len, rot)
-    flux_boundary_maxwell!(fw, fh, fb, bc, h, b, u, v, ω, inK, dt, len, rot)
-    flux_boundary_maxwell!(fw, ff, bc, f, u, v, w, ω, dt, area, rot)
+$(SIGNATURES)
 
 Maxwell's diffusive boundary flux
 
@@ -12,6 +7,7 @@ Maxwell's diffusive boundary flux
 - @args: particle velocity quadrature points and weights
 - @args: time step
 
+1D continuum
 """
 function flux_boundary_maxwell!(
     fw::AV{T1},
@@ -21,7 +17,7 @@ function flux_boundary_maxwell!(
     γ,
     dt,
     rot, # 1 / -1
-) where {T1<:FN,T2<:Real,T3<:Real} # 1D continuum
+) where {T1<:FN,T2<:Real,T3<:Real}
 
     @assert length(bc) == 3
 
@@ -41,7 +37,11 @@ function flux_boundary_maxwell!(
 
 end
 
-#--- 1D2F1V ---#
+"""
+$(SIGNATURES)
+
+1D2F1V
+"""
 function flux_boundary_maxwell!(
     fw::AV{T1},
     fh::T2,
@@ -84,7 +84,11 @@ function flux_boundary_maxwell!(
 
 end
 
-#--- 2D Continuum ---#
+"""
+$(SIGNATURES)
+
+2D Continuum
+"""
 function flux_boundary_maxwell!(
     fw::AV{T1},
     bc::AV{T2},
@@ -114,9 +118,11 @@ function flux_boundary_maxwell!(
 
 end
 
-# ------------------------------------------------------------
-# 2D1F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D1F2V
+"""
 function flux_boundary_maxwell!(
     fw::AV{T1},
     fh::AM{T2},
@@ -155,9 +161,11 @@ function flux_boundary_maxwell!(
 
 end
 
-# ------------------------------------------------------------
-# 2D2F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D2F2V
+"""
 function flux_boundary_maxwell!(
     fw::AV{T1},
     fh::T2,
@@ -208,9 +216,11 @@ function flux_boundary_maxwell!(
 
 end
 
-# ------------------------------------------------------------
-# 1F3V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1F3V
+"""
 function flux_boundary_maxwell!(
     fw::AV{T1},
     ff::AA{T2,3},
@@ -256,8 +266,7 @@ end
 
 
 """
-    flux_boundary_specular!(fw, ff, f, u, ω, dt)
-    flux_boundary_specular!(fw, fh, fb, h, b, u, ω, dt)
+$(SIGNATURES)
 
 Specular reflection boundary flux
 
@@ -265,7 +274,6 @@ Specular reflection boundary flux
 - @args: distribution functions
 - @args: velocity quadrature points and weights
 - @args: time step
-
 """
 function flux_boundary_specular!(
     fw::AV{T1},
@@ -291,9 +299,11 @@ function flux_boundary_specular!(
 
 end
 
-# ------------------------------------------------------------
-# 1D2F1V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D2F1V
+"""
 function flux_boundary_specular!(
     fw::AV{T1},
     fh::T2,

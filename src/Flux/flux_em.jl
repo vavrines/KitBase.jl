@@ -1,5 +1,5 @@
 """
-    flux_em!(femL, femR, ELL, BLL, EL, BL, ER, BR, ERR, BRR, ϕL, ϕR, ψL, ψR, dxL, dxR, Ap, An, D, sol, χ, ν, dt)
+$(SIGNATURES)
 
 Wave propagation method for Maxwell's equations
 
@@ -108,9 +108,7 @@ end
 
 
 """
-    flux_emx!(femL, femR, femLU, femLD, femRU, femRD,
-    ELL, BLL, EL, BL, ER, BR, ERR, BRR, ϕL, ϕR, ψL, ψR,
-    dxL, dxR, A1p, A1n, A2p, A2n, D, sol, χ, ν, dt)
+$(SIGNATURES)
 
 Wave propagation method for 2D Maxwell's equations
 
@@ -119,7 +117,6 @@ Wave propagation method for 2D Maxwell's equations
 * @args: full size of left & right cells
 * @args: speed of light (sol)
 * @args: auxiliary parameters (χₑ, νᵦ)
-
 """
 function flux_emx!(
     femL::X,
@@ -244,9 +241,7 @@ end
 
 
 """
-    flux_emx!(femL, femR, femLU, femLD, femRU, femRD,
-    ELL, BLL, EL, BL, ER, BR, ERR, BRR, ϕL, ϕR, ψL, ψR,
-    dxL, dxR, A1p, A1n, A2p, A2n, D, sol, χ, ν, dt)
+$(SIGNATURES)
 
 Wave propagation method for 2D Maxwell's equations
 
@@ -255,7 +250,6 @@ Wave propagation method for 2D Maxwell's equations
 * @args: full size of left & right cells
 * @args: speed of light (sol)
 * @args: auxiliary parameters (χₑ, νᵦ)
-
 """
 function flux_emy!(
     femL::AA{<:Real,1},

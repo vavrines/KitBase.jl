@@ -795,15 +795,9 @@ end
 
 
 """
-    init_ptc!(
-        KS::SolverSet,
-        ctr::T;
-        mode = :soa::Symbol,
-        factor = 1::Real,
-    ) where {T<:AA{<:AbstractControlVolume1D,1}}
+$(SIGNATURES)
 
 Initialize particles based on flow conditions
-
 """
 function init_ptc!(
     KS::SolverSet,
@@ -820,14 +814,9 @@ end
 
 
 """
-    init_ptc_aos!(
-        KS::SolverSet,
-        ctr::T,
-        factor = 1,
-    ) where {T<:AA{<:AbstractControlVolume1D,1}}
+$(SIGNATURES)
 
 Initialize particles with array of structs
-
 """
 function init_ptc_aos!(
     KS::SolverSet,
@@ -870,14 +859,9 @@ end
 
 
 """
-    init_ptc_soa!(
-        KS::SolverSet,
-        ctr::T,
-        factor = 1,
-    ) where {T<:AA{<:AbstractControlVolume1D,1}}
+$(SIGNATURES)
 
 Initialize particles with struct of arrays
-
 """
 function init_ptc_soa!(
     KS::SolverSet,
