@@ -103,6 +103,8 @@ maxwellian!(M::AA, u::T, v::T, prim::AV) where {T<:AA} =
     maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
 
 """
+$(SIGNATURES)
+
 Rykov model
 """
 function maxwellian!(
