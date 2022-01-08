@@ -52,6 +52,11 @@ struct Interface2F{T1,T2,ND} <: AbstractInterface
 end
 
 
+struct Interface3F{T1,T2,ND} <: AbstractInterface end
+
+struct Interface4F{T1,T2,ND} <: AbstractInterface end
+
+
 """
 $(SIGNATURES)
 
@@ -70,7 +75,7 @@ function Interface(W, F, ND)
     fw = zero(W)
     ff = zero(F)
 
-    return Interface{typeof(fw),typeof(ff),ND}(fw, ff)
+    return Interface1F{typeof(fw),typeof(ff),ND}(fw, ff)
 end
 
 """
@@ -81,7 +86,7 @@ function Interface(W, H, B, ND)
     fh = zero(H)
     fb = zero(B)
 
-    return Interface{typeof(fw),typeof(fh),ND}(fw, fh, fb)
+    return Interface2F{typeof(fw),typeof(fh),ND}(fw, fh, fb)
 end
 
 # ------------------------------------------------------------

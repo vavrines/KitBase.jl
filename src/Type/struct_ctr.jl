@@ -95,6 +95,11 @@ function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}
 end
 
 
+struct ControlVolume3F{T1,T2,T3,T4,ND} <: AbstractControlVolume end
+
+struct ControlVolume4F{T1,T2,T3,T4,ND} <: AbstractControlVolume end
+
+
 """
 $(SIGNATURES)
 

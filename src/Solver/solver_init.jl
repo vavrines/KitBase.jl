@@ -97,7 +97,6 @@ function init_fvm(
                     funcprim(w, γ)
                 end
             end
-
             ctr[i] = ControlVolume(funcar(w), funcar(prim), 1)
         end
 
@@ -108,40 +107,38 @@ function init_fvm(
 
     elseif KS.set.space[3:4] == "1f"
 
-        ctr = OffsetArray{ControlVolume1D1F}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface1D1F}(undef, KS.pSpace.nx + 1)
+        ctr = OffsetArray{ControlVolume1F}(undef, eachindex(KS.pSpace.x))
+        face = Array{Interface1F}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i])
             prim = funcprim(w, γ)
             f = KS.ib.ff(KS.ps.x[i])
-
-            ctr[i] = ControlVolume1D1F(funcar(w), funcar(prim), funcar(f))
+            ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(f), 1)
         end
 
         for i = 1:KS.pSpace.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1])) |> funcar
-            face[i] = Interface1D1F(fw, ff)
+            face[i] = Interface(fw, ff, 1)
         end
 
     elseif KS.set.space[3:4] == "2f"
 
-        ctr = OffsetArray{ControlVolume1D2F}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface1D2F}(undef, KS.pSpace.nx + 1)
+        ctr = OffsetArray{ControlVolume2F}(undef, eachindex(KS.pSpace.x))
+        face = Array{Interface2F}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i])
             prim = funcprim(w, γ)
             h, b = KS.ib.ff(KS.ps.x[i])
-
-            ctr[i] = ControlVolume1D2F(funcar(w), funcar(prim), funcar(h), funcar(b))
+            ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(h), funcar(b), 1)
         end
 
         for i = 1:KS.pSpace.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1])[1]) |> funcar
-            face[i] = Interface1D2F(fw, ff)
+            face[i] = Interface(fw, ff, ff, 1)
         end
 
     elseif KS.set.space[3:4] == "3f"
@@ -236,191 +233,62 @@ function init_fvm(
     if KS.set.space[3:4] == "0f"
 
         ctr =
-            OffsetArray{ControlVolume2D}(undef, axes(KS.pSpace.x, 1), axes(KS.pSpace.y, 2))
-        a1face = Array{Interface2D}(undef, nx + 1, ny)
-        a2face = Array{Interface2D}(undef, nx, ny + 1)
+            OffsetArray{ControlVolume}(undef, axes(KS.pSpace.x, 1), axes(KS.pSpace.y, 2))
+        a1face = Array{Interface}(undef, nx + 1, ny)
+        a2face = Array{Interface}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
             w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j])
             prim = funcprim(w, KS.gas.γ)
 
-            ctr[i, j] = ControlVolume2D(funcar(w), funcar(prim))
+            ctr[i, j] = ControlVolume(funcar(w), funcar(prim), 2)
         end
 
         for j = 1:ny
-            for i = 1:nx
-                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
-                n .= ifelse(
-                    dot(
-                        n,
-                        [ps.x[i, j], ps.y[i, j]] .-
-                        (ps.vertices[i, j, 1, :] .+ ps.vertices[i, j, 4, :]) ./ 2,
-                    ) >= 0,
-                    n,
-                    -n,
-                )
-
-                a1face[i, j] = Interface2D(
-                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
-                    n[1],
-                    n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                )
+            for i = 1:nx+1
+                a1face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])), 2)
             end
-            n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
-            n .= ifelse(
-                dot(
-                    n,
-                    (ps.vertices[nx, j, 2, :] .+ ps.vertices[nx, j, 3, :]) ./ 2 .-
-                    [ps.x[nx, j], ps.y[nx, j]],
-                ) >= 0,
-                n,
-                -n,
-            )
-
-            a1face[nx+1, j] = Interface2D(
-                point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
-                n[1],
-                n[2],
-                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-            )
         end
         for i = 1:nx
-            for j = 1:ny
-                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
-                n .= ifelse(
-                    dot(
-                        n,
-                        [ps.x[i, j], ps.y[i, j]] .-
-                        (ps.vertices[i, j, 1, :] .+ ps.vertices[i, j, 2, :]) ./ 2,
-                    ) >= 0,
-                    n,
-                    -n,
-                )
-
-                a2face[i, j] = Interface2D(
-                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
-                    n[1],
-                    n[2],
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                )
+            for j = 1:ny+1
+                a2face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])), 2)
             end
-            n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
-            n .= ifelse(
-                dot(
-                    n,
-                    (ps.vertices[i, ny, 3, :] .+ ps.vertices[i, ny, 4, :]) ./ 2 .-
-                    [ps.x[i, ny], ps.y[i, ny]],
-                ) >= 0,
-                n,
-                -n,
-            )
-
-            a2face[i, ny+1] = Interface2D(
-                point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
-                n[1],
-                n[2],
-                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-            )
         end
 
     elseif KS.set.space[3:4] == "1f"
 
-        ctr = OffsetArray{ControlVolume2D1F}(
+        ctr = OffsetArray{ControlVolume1F}(
             undef,
             axes(KS.pSpace.x, 1),
             axes(KS.pSpace.y, 2),
         )
-        a1face = Array{Interface2D1F}(undef, nx + 1, ny)
-        a2face = Array{Interface2D1F}(undef, nx, ny + 1)
+        a1face = Array{Interface1F}(undef, nx + 1, ny)
+        a2face = Array{Interface1F}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
             w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j])
             prim = funcprim(w, KS.gas.γ)
             h = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j])
-
-            ctr[i, j] = ControlVolume2D1F(funcar(w), funcar(prim), funcar(h))
+            ctr[i, j] = ControlVolume(funcar(w), funcar(prim), funcar(h), 2)
         end
 
         for j = 1:ny
-            for i = 1:nx
-                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
-                n .= ifelse(
-                    dot(
-                        n,
-                        [ps.x[i, j], ps.y[i, j]] .-
-                        (ps.vertices[i, j, 1, :] .+ ps.vertices[i, j, 4, :]) ./ 2,
-                    ) >= 0,
-                    n,
-                    -n,
-                )
-
-                a1face[i, j] = Interface2D1F(
-                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
-                    n[1],
-                    n[2],
+            for i = 1:nx+1
+                a1face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
+                    2,
                 )
             end
-            n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
-            n .= ifelse(
-                dot(
-                    n,
-                    (ps.vertices[nx, j, 2, :] .+ ps.vertices[nx, j, 3, :]) ./ 2 .-
-                    [ps.x[nx, j], ps.y[nx, j]],
-                ) >= 0,
-                n,
-                -n,
-            )
-
-            a1face[nx+1, j] = Interface2D1F(
-                point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
-                n[1],
-                n[2],
-                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
-            )
         end
         for i = 1:nx
-            for j = 1:ny
-                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
-                n .= ifelse(
-                    dot(
-                        n,
-                        [ps.x[i, j], ps.y[i, j]] .-
-                        (ps.vertices[i, j, 1, :] .+ ps.vertices[i, j, 2, :]) ./ 2,
-                    ) >= 0,
-                    n,
-                    -n,
-                )
-
-                a2face[i, j] = Interface2D1F(
-                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
-                    n[1],
-                    n[2],
+            for j = 1:ny+1
+                a2face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
+                    2,
                 )
             end
-            n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
-            n .= ifelse(
-                dot(
-                    n,
-                    (ps.vertices[i, ny, 3, :] .+ ps.vertices[i, ny, 4, :]) ./ 2 .-
-                    [ps.x[i, ny], ps.y[i, ny]],
-                ) >= 0,
-                n,
-                -n,
-            )
-
-            a2face[i, ny+1] = Interface2D1F(
-                point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
-                n[1],
-                n[2],
-                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
-            )
         end
 
     elseif KS.set.space[3:4] == "2f"
@@ -801,10 +669,10 @@ Initialize particles based on flow conditions
 """
 function init_ptc!(
     KS::SolverSet,
-    ctr::T;
+    ctr::AV{T};
     mode = :soa::Symbol,
     factor = 1::Real,
-) where {T<:AA{<:AbstractControlVolume1D,1}}
+) where {T<:AbstractControlVolume}
     if mode == :soa
         init_ptc_soa!(KS, ctr, factor)
     elseif mode == :aos
@@ -820,9 +688,9 @@ Initialize particles with array of structs
 """
 function init_ptc_aos!(
     KS::SolverSet,
-    ctr::T,
+    ctr::AV{T},
     factor = 1,
-) where {T<:AA{<:AbstractControlVolume1D,1}}
+) where {T<:AbstractControlVolume}
 
     np = 0
     for i in eachindex(ctr)
@@ -865,9 +733,9 @@ Initialize particles with struct of arrays
 """
 function init_ptc_soa!(
     KS::SolverSet,
-    ctr::T,
+    ctr::AV{T},
     factor = 1,
-) where {T<:AA{<:AbstractControlVolume1D,1}}
+) where {T<:AbstractControlVolume}
 
     np = 0
     for i in eachindex(ctr)

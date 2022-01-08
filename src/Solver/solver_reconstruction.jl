@@ -51,7 +51,10 @@ function reconstruct!(
 
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D1F,1}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AV{T},
+) where {T<:Union{ControlVolume1F,ControlVolume1D1F}}
 
     if KS.set.interpOrder == 1
         return
@@ -91,9 +94,14 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D1F,1}}
         )
     end
 
+    return nothing
+
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D2F,1}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AV{T},
+) where {T<:Union{ControlVolume2F,ControlVolume1D2F}}
 
     if KS.set.interpOrder == 1
         return
@@ -142,9 +150,14 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D2F,1}}
         )
     end
 
+    return nothing
+
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D3F,1}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AV{T},
+) where {T<:Union{ControlVolume3F,ControlVolume1D3F}}
 
     if KS.set.interpOrder == 1
         return
@@ -202,9 +215,14 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D3F,1}}
         )
     end
 
+    return nothing
+
 end
 
-function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D4F,1}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AV{T},
+) where {T<:Union{ControlVolume4F,ControlVolume1D4F}}
 
     if KS.set.interpOrder == 1
         return
@@ -271,12 +289,18 @@ function reconstruct!(KS::SolverSet, ctr::T) where {T<:AA{ControlVolume1D4F,1}}
         )
     end
 
+    return nothing
+
 end
 
 # ------------------------------------------------------------
 # 2D1F
 # ------------------------------------------------------------
-function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D,2}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AM{T},
+) where {T<:Union{ControlVolume,ControlVolume2D}}
+
     if KS.set.interpOrder == 1
         return
     end
@@ -337,9 +361,16 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVo
             )
         end
     end
+
+    return nothing
+
 end
 
-function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D1F,2}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AM{T},
+) where {T<:Union{ControlVolume1F,ControlVolume2D1F}}
+
     if KS.set.interpOrder == 1
         return
     end
@@ -449,9 +480,16 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVo
             )
         end
     end
+
+    return nothing
+
 end
 
-function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D2F,2}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AM{T},
+) where {T<:Union{ControlVolume2F,ControlVolume2D2F}}
+
     if KS.set.interpOrder == 1
         return
     end
@@ -591,9 +629,16 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVo
             )
         end
     end
+
+    return nothing
+
 end
 
-function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D3F,2}}
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AM{T},
+) where {T<:Union{ControlVolume3F,ControlVolume2D3F}}
+
     if KS.set.interpOrder == 1
         return
     end
@@ -773,6 +818,9 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AA{ControlVo
             )
         end
     end
+
+    return nothing
+
 end
 
 function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS}}
@@ -799,6 +847,8 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
         reconstruct3!(swx, wL, ctr[i].w, wR, dxL, dxR, Symbol(KS.set.limiter))
         reconstruct3!(swy, wL, ctr[i].w, wR, dyL, dyR, Symbol(KS.set.limiter))
     end
+
+    return nothing
 end
 
 function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS1F}}
@@ -831,6 +881,8 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
         reconstruct3!(sfx, fL, ctr[i].f, fR, dxL, dxR, Symbol(KS.set.limiter))
         reconstruct3!(sfy, fL, ctr[i].f, fR, dyL, dyR, Symbol(KS.set.limiter))
     end
+
+    return nothing
 end
 
 function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS2F}}
@@ -1047,4 +1099,6 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
             )=#
         end
     end
+
+    return nothing
 end
