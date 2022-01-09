@@ -3,6 +3,137 @@ $(SIGNATURES)
 
 Kinetic flux vector splitting (KFVS) flux
 """
+function flux_kfvs!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    vs::VSpace1D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dxL, dxR = p
+
+    flux_kfvs!(
+        face.fw,
+        face.ff,
+        ctrL.f + ctrL.sf * dxL,
+        ctrR.f - ctrR.sf * dxR,
+        vs.u,
+        vs.weights,
+        dt,
+        ctrL.sf,
+        ctrR.sf,
+    )
+
+    return nothing
+
+end
+
+function flux_kfvs!(
+    face::Interface2F,
+    ctrL::T,
+    ctrR::T,
+    vs::VSpace1D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume2F}
+
+    dxL, dxR = p
+
+    flux_kfvs!(
+        face.fw,
+        face.fh,
+        face.fb,
+        ctrL.h .+ ctrL.sb .* dxL,
+        ctrL.b .+ ctrL.sb .* dxL,
+        ctrR.h .- ctrR.sb .* dxR,
+        ctrR.b .- ctrR.sb .* dxR,
+        vs.u,
+        vs.weights,
+        dt,
+        ctrL.sh,
+        ctrL.sb,
+        ctrR.sh,
+        ctrR.sb,
+    )
+
+    return nothing
+
+end
+
+function flux_kfvs!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    vs::VSpace2D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dxL, dxR, len = p
+
+    flux_kfvs!(
+        face.fw,
+        face.ff,
+        ctrL.f + ctrL.sf * dxL,
+        ctrR.f - ctrR.sf * dxR,
+        vs.u,
+        vs.v,
+        vs.weights,
+        dt,
+        len,
+        ctrL.sf,
+        ctrR.sf,
+    )
+
+    return nothing
+
+end
+
+function flux_kfvs!(
+    face::Interface2F,
+    ctrL::T,
+    ctrR::T,
+    vs::VSpace2D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume2F}
+
+    dxL, dxR, len = p
+
+    flux_kfvs!(
+        face.fw,
+        face.fh,
+        face.fb,
+        ctrL.h .+ ctrL.sb .* dxL,
+        ctrL.b .+ ctrL.sb .* dxL,
+        ctrR.h .- ctrR.sb .* dxR,
+        ctrR.b .- ctrR.sb .* dxR,
+        vs.u,
+        vs.v,
+        vs.weights,
+        dt,
+        len,
+        ctrL.sh,
+        ctrL.sb,
+        ctrR.sh,
+        ctrR.sb,
+    )
+
+    return nothing
+
+end
+
+# ------------------------------------------------------------
+# Low-level backends
+# ------------------------------------------------------------
+
+"""
+$(SIGNATURES)
+
+Kinetic flux vector splitting (KFVS) flux
+"""
 function flux_kfvs(
     fL::Y,
     fR::Y,
@@ -280,45 +411,7 @@ function flux_kfvs!(
     w::A,
     ω::A,
     dt::Real,
-    sfL = zero(fL)::Z,
-    sfR = zero(fR)::Z,
-) where {Z<:AA{<:FN,3},A<:AA{<:FN,3}}
-
-    # upwind reconstruction
-    δ = heaviside.(u)
-
-    f = @. fL * δ + fR * (1.0 - δ)
-    sf = @. sfL * δ + sfR * (1.0 - δ)
-
-    # calculate fluxes
-    fw[1] = dt * sum(ω .* u .* f) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* sf)
-    fw[2] = dt * sum(ω .* u .^ 2 .* f) - 0.5 * dt^2 * sum(ω .* u .^ 3 .* sf)
-    fw[3] = dt * sum(ω .* u .* v .* f) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* v .* sf)
-    fw[4] = dt * sum(ω .* u .* w .* f) - 0.5 * dt^2 * sum(ω .* u .^ 2 .* w .* sf)
-    fw[5] =
-        dt * 0.5 * sum(ω .* u .* (u .^ 2 .+ v .^ 2 .+ w .^ 2) .* f) -
-        0.5 * dt^2 * 0.5 * sum(ω .* u .^ 2 .* (u .^ 2 .+ v .^ 2 .+ w .^ 2) .* sf)
-
-    @. ff = dt * u * f - 0.5 * dt^2 * u^2 * sf
-
-    return nothing
-
-end
-
-"""
-$(SIGNATURES)
-"""
-function flux_kfvs!(
-    fw::AV{<:FN},
-    ff::AA{<:FN,3},
-    fL::Z,
-    fR::Z,
-    u::A,
-    v::A,
-    w::A,
-    ω::A,
-    dt::Real,
-    len::Real,
+    len = 1.0::Real,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
 ) where {Z<:AA{<:FN,3},A<:AA{<:FN,3}}

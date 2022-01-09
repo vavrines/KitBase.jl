@@ -119,15 +119,12 @@ function evolve!(
         if mode == :kfvs
             @inbounds Threads.@threads for i = idx0:idx1
                 flux_kfvs!(
-                    face[i].fw,
-                    face[i].ff,
-                    ctr[i-1].f .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sf,
-                    ctr[i].f .- 0.5 .* KS.ps.dx[i] .* ctr[i].sf,
-                    KS.vSpace.u,
-                    KS.vSpace.weights,
+                    face[i],
+                    ctr[i-1],
+                    ctr[i],
+                    KS.vs,
+                    (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
                     dt,
-                    ctr[i-1].sf,
-                    ctr[i].sf,
                 )
             end
         elseif mode == :kcu
@@ -165,6 +162,7 @@ function evolve!(
                     KS.vSpace.w,
                     KS.vSpace.weights,
                     dt,
+                    1.0,
                     ctr[i-1].sf,
                     ctr[i].sf,
                 )
@@ -217,20 +215,12 @@ function evolve!(
 
         @inbounds Threads.@threads for i = idx0:idx1
             flux_kfvs!(
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
-                ctr[i-1].h .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sh,
-                ctr[i-1].b .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sb,
-                ctr[i].h .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh,
-                ctr[i].b .- 0.5 .* KS.ps.dx[i] .* ctr[i].sb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                face[i],
+                ctr[i-1],
+                ctr[i],
+                KS.vs,
+                (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
                 dt,
-                ctr[i-1].sh,
-                ctr[i-1].sb,
-                ctr[i].sh,
-                ctr[i].sb,
             )
         end
 
