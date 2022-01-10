@@ -12,7 +12,7 @@ function flux_kfvs!(
     dt = 1.0,
 ) where {T<:ControlVolume1F}
 
-    dxL, dxR = p
+    dxL, dxR = p[1:2]
 
     flux_kfvs!(
         face.fw,
@@ -39,7 +39,7 @@ function flux_kfvs!(
     dt = 1.0,
 ) where {T<:ControlVolume2F}
 
-    dxL, dxR = p
+    dxL, dxR = p[1:2]
 
     flux_kfvs!(
         face.fw,
@@ -71,21 +71,25 @@ function flux_kfvs!(
     dt = 1.0,
 ) where {T<:ControlVolume1F}
 
-    dxL, dxR, len = p
+    dirc, dxL, dxR, len, n = p
+    sfL = @view ctrL.sf[:, :, dirc]
+    sfR = @view ctrR.sf[:, :, dirc]
 
     flux_kfvs!(
         face.fw,
         face.ff,
-        ctrL.f + ctrL.sf * dxL,
-        ctrR.f - ctrR.sf * dxR,
-        vs.u,
-        vs.v,
+        ctrL.f + sfL * dxL,
+        ctrR.f - sfR * dxR,
+        vs.u .* n[1] .+ vs.v .* n[2],
+        vs.v .* n[1] .- vs.u .* n[2],
         vs.weights,
         dt,
         len,
-        ctrL.sf,
-        ctrR.sf,
+        sfL,
+        sfR,
     )
+
+    face.fw .= global_frame(face.fw, n)
 
     return nothing
 
@@ -100,18 +104,22 @@ function flux_kfvs!(
     dt = 1.0,
 ) where {T<:ControlVolume2F}
 
-    dxL, dxR, len = p
+    dirc, dxL, dxR, len, n = p
+    shL = @view ctrL.sh[:, :, dirc]
+    sbL = @view ctrL.sb[:, :, dirc]
+    shR = @view ctrR.sh[:, :, dirc]
+    sbR = @view ctrR.sb[:, :, dirc]
 
     flux_kfvs!(
         face.fw,
         face.fh,
         face.fb,
-        ctrL.h .+ ctrL.sb .* dxL,
-        ctrL.b .+ ctrL.sb .* dxL,
-        ctrR.h .- ctrR.sb .* dxR,
-        ctrR.b .- ctrR.sb .* dxR,
-        vs.u,
-        vs.v,
+        ctrL.h .+ shL .* dxL,
+        ctrL.b .+ sbL .* dxL,
+        ctrR.h .- shR .* dxR,
+        ctrR.b .- sbR .* dxR,
+        vs.u .* n[1] .+ vs.v .* n[2],
+        vs.v .* n[1] .- vs.u .* n[2],
         vs.weights,
         dt,
         len,
@@ -120,6 +128,57 @@ function flux_kfvs!(
         ctrR.sh,
         ctrR.sb,
     )
+
+    face.fw .= global_frame(face.fw, n)
+
+    return nothing
+
+end
+
+function flux_kfvs!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    vs::AbstractVelocitySpace3D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dxL, dxR = p[1:2]
+
+    if length(p) == 2 || p[3] == 1
+        flux_kfvs!(
+            face.fw,
+            face.ff,
+            ctrL.f + ctrL.sf * dxL,
+            ctrR.f - ctrR.sf * dxR,
+            vs.u,
+            vs.v,
+            vs.w,
+            vs.weights,
+            dt,
+            1.0,
+            ctrL.sf,
+            ctrR.sf,
+        )
+    else
+        len, n = p[3:4]
+        flux_kfvs!(
+            face.fw,
+            face.ff,
+            ctrL.f + ctrL.sf * dxL,
+            ctrR.f - ctrR.sf * dxR,
+            vs.u .* n[1] .+ vs.v .* n[2],
+            vs.v .* n[1] .- vs.u .* n[2],
+            vs.w,
+            vs.weights,
+            dt,
+            len,
+            ctrL.sf,
+            ctrR.sf,
+        )
+        face.fw .= global_frame(face.fw, n[1], n[2])
+    end
 
     return nothing
 

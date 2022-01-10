@@ -3,8 +3,7 @@ $(SIGNATURES)
 
 Transform local flow variables to global frame
 """
-function global_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
-
+function global_frame(w::AV, cosa, sina)
     if eltype(w) <: Int
         G = similar(w, Float64)
     else
@@ -24,13 +23,14 @@ function global_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
     end
 
     return G
-
 end
+
+global_frame(w::AV, n::AV) = global_frame(w, n[1], n[2])
 
 """
 $(SIGNATURES)
 """
-function global_frame(w::T, dirccos::X) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
+function global_frame(w::AV, dirccos::AM)
     if eltype(w) <: Int
         G = similar(w, Float64)
     else
@@ -60,8 +60,7 @@ $(SIGNATURES)
 
 Transform global flow variables to local frame
 """
-function local_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
-
+function local_frame(w::AV, cosa, sina)
     if eltype(w) <: Int
         L = similar(w, Float64)
     else
@@ -81,13 +80,14 @@ function local_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
     end
 
     return L
-
 end
+
+local_frame(w::AV, n) = local_frame(w::AV, n[1], n[2])
 
 """
 $(SIGNATURES)
 """
-function local_frame(w::T, dirccos::X) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
+function local_frame(w::AV, dirccos::AM)
     if eltype(w) <: Int
         L = similar(w, Float64)
     else

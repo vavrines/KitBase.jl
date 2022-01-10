@@ -1,6 +1,142 @@
 """
 $(SIGNATURES)
 
+Kinetic central-upwind (KCU) flux
+"""
+function flux_kcu!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    vs::AbstractVelocitySpace1D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dxL, dxR, gas = p
+
+    flux_kcu!(
+        face.fw,
+        face.ff,
+        ctrL.w + ctrL.sw * dxL,
+        ctrL.f + ctrL.sf * dxL,
+        ctrR.w - ctrR.sw * dxR,
+        ctrR.f - ctrR.sf * dxR,
+        vs.u,
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dt,
+    )
+
+    return nothing
+
+end
+
+function flux_kcu!(
+    face::Interface2F,
+    ctrL::T,
+    ctrR::T,
+    vs::AbstractVelocitySpace1D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume2F}
+
+    dxL, dxR, gas = p
+
+    if gas isa Mixture
+        flux_kcu!(
+            face.fw,
+            face.fh,
+            face.fb,
+            ctrL.w + ctrL.sw * dxL,
+            ctrL.h + ctrL.sh * dxL,
+            ctrL.b + ctrL.sb * dxL,
+            ctrR.w - ctrR.sw * dxR,
+            ctrR.h - ctrR.sh * dxR,
+            ctrR.b - ctrR.sb * dxR,
+            vs.u,
+            vs.weights,
+            gas.K,
+            gas.γ,
+            gas.mi,
+            gas.ni,
+            gas.me,
+            gas.ne,
+            gas.Kn[1],
+            dt,
+        )
+    else
+        flux_kcu!(
+            face.fw,
+            face.fh,
+            face.fb,
+            ctrL.w + ctrL.sw * dxL,
+            ctrL.h + ctrL.sh * dxL,
+            ctrL.b + ctrL.sb * dxL,
+            ctrR.w - ctrR.sw * dxR,
+            ctrR.h - ctrR.sh * dxR,
+            ctrR.b - ctrR.sb * dxR,
+            vs.u,
+            vs.weights,
+            gas.K,
+            gas.γ,
+            gas.μᵣ,
+            gas.ω,
+            gas.Pr,
+            dt,
+        )
+    end
+
+    return nothing
+
+end
+
+function flux_kcu!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    vs::AbstractVelocitySpace2D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dirc, dxL, dxR, len, n, gas = p
+
+    flux_kcu!(
+        a1face[i, j].fw,
+        a1face[i, j].ff,
+        local_frame(wL .+ dxL .* ctrL.sw[:, 1], n),
+        ctrL.f .+ dxL .* ctrL.sf[:, :, 1],
+        local_frame(wR .- dxR .* ctrR.sw[:, 1], n),
+        ctrR.f .- dxR .* ctrR.sf[:, :, 1],
+        vs.u .* n[1] .+ vs.v .* n[2],
+        vs.v .* n[1] .- vs.u .* n[2],
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dt,
+        len,
+    )
+
+    face.fw .= global_frame(face.fw, n)
+
+    return nothing
+
+end
+
+
+
+
+
+"""
+$(SIGNATURES)
+
 Kinetic central-upwind (KCU) method
 
 - @args: particle distribution functions and their slopes at left/right sides of interface
@@ -175,6 +311,7 @@ function flux_kcu!(
     visIdx,
     Pr,
     dt,
+    len = 1.0,
 ) where {X<:AA{<:FN,1},Y<:AA{<:FN,3},Z<:AA{<:Real,1},A<:AA{<:FN,3},B<:AA{<:FN,3}} # 1D1F1V
 
     # upwind reconstruction
@@ -221,7 +358,8 @@ function flux_kcu!(
     fw[4] += Mt[2] * sum(ω .* uVelo .* wVelo .* f)
     fw[5] += Mt[2] * 0.5 * sum(ω .* uVelo .* (uVelo .^ 2 .+ vVelo .^ 2 .+ wVelo .^ 2) .* f)
 
-    @. ff = Mt[1] * uVelo * g + Mt[2] * uVelo * f
+    @. fw .*= len
+    @. ff = (Mt[1] * uVelo * g + Mt[2] * uVelo * f) * len
 
     return nothing
 
