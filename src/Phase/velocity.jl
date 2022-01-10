@@ -11,8 +11,7 @@ $(TYPEDEF)
 
 $(FIELDS)
 """
-struct VSpace1D{TR<:Real,TI<:Integer,TA<:AA{<:Real},TB<:AV{<:Real}} <:
-       AbstractVelocitySpace1D
+struct VSpace1D{TR,TI,TA,TB} <: AbstractVelocitySpace1D
     u0::TR
     u1::TR
     nu::TI
@@ -70,6 +69,57 @@ end
 VSpace1D() = VSpace1D(-5, 5, 50)
 VSpace1D(U0::T, U1::T) where {T<:Real} = VSpace1D(U0, U1, 50)
 
+# ------------------------------------------------------------
+# Multi-component
+# ------------------------------------------------------------
+
+function MVSpace1D(
+    Ui0,
+    Ui1,
+    Ue0,
+    Ue1,
+    NU::TI,
+    TYPE = "rectangle",
+    NG = zero(NU)::TI,
+    PRECISION = Float64,
+) where {TI<:Integer}
+
+    u0 = PRECISION.([Ui0, Ue0])
+    u1 = PRECISION.([Ui1, Ue1])
+    δ = (u1 .- u0) ./ NU
+    u = begin
+        if NG > 0
+            OffsetArray{PRECISION}(undef, 1-NG:NU+NG, 1:2)
+        else
+            Array{PRECISION}(undef, NU, 2)
+        end
+    end
+    du = similar(u)
+    weights = similar(u)
+
+    if TYPE == "rectangle" # rectangular
+        for j in axes(u, 2), i in axes(u, 1)
+            u[i, j] = u0[j] + (i - 0.5) * δ[j]
+            du[i, j] = δ[j]
+            weights[i, j] = δ[j]
+        end
+    elseif TYPE == "newton" # newton-cotes
+        for j in axes(u, 2), i in axes(u, 1)
+            u[i, j] = u0[j] + (i - 0.5) * δ[j]
+            du[i, j] = δ[j]
+            weights[i, j] = newton_cotes(i + NG, NU + NG * 2) * δ[j]
+        end
+    else
+        throw("No velocity quadrature available")
+    end
+
+    return VSpace1D{typeof(u0),TI,typeof(u),typeof(weights)}(u0, u1, NU, u, du, weights)
+
+end
+
+MVSpace1D() = MVSpace1D(-5, 5, -10, 10, 28)
+MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1, 28)
+
 
 """
 $(TYPEDEF)
@@ -80,7 +130,7 @@ $(TYPEDEF)
 
 $(FIELDS)
 """
-struct VSpace2D{TR<:Real,TI<:Integer,TA<:AA{<:Real}} <: AbstractVelocitySpace2D
+struct VSpace2D{TR,TI,TA} <: AbstractVelocitySpace2D
     u0::TR
     u1::TR
     nu::TI
@@ -217,6 +267,77 @@ end
 VSpace2D() = VSpace2D(-5, 5, 28, -5, 5, 28)
 VSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = VSpace2D(U0, U1, 28, V0, V1, 28)
 
+# ------------------------------------------------------------
+# Multi-component
+# ------------------------------------------------------------
+
+function MVSpace2D(
+    Ui0,
+    Ui1,
+    Ue0,
+    Ue1,
+    NU::TI,
+    Vi0,
+    Vi1,
+    Ve0,
+    Ve1,
+    NV::TI,
+    TYPE = "rectangle",
+    NGU = zero(NU)::TI,
+    NGV = zero(NV)::TI,
+    PRECISION = Float64,
+) where {TI<:Integer}
+
+    u0 = PRECISION.([Ui0, Ue0])
+    u1 = PRECISION.([Ui1, Ue1])
+    δu = (u1 .- u0) ./ NU
+    v0 = PRECISION.([Vi0, Ve0])
+    v1 = PRECISION.([Vi1, Ve1])
+    δv = (v1 .- v0) ./ NV
+    u = begin
+        if NGU > 0 || NGV > 0
+            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1:2)
+        else
+            Array{PRECISION}(undef, NU, NV, 2)
+        end
+    end
+    v = similar(u)
+    du = similar(u)
+    dv = similar(u)
+    weights = similar(u)
+
+    if TYPE == "rectangle" # rectangular
+        for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
+            u[i, j, k] = u0[k] + (i - 0.5) * δu[k]
+            v[i, j, k] = v0[k] + (j - 0.5) * δv[k]
+            du[i, j, k] = δu[k]
+            dv[i, j, k] = δv[k]
+            weights[i, j, k] = δu[k] * δv[k]
+        end
+    elseif TYPE == "newton" # newton-cotes
+        for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
+            u[i, j, k] = u0[k] + (i - 0.5) * δu[k]
+            v[i, j, k] = v0[k] + (j - 0.5) * δv[k]
+            du[i, j, k] = δu[k]
+            dv[i, j, k] = δv[k]
+            weights[i, j, k] =
+                newton_cotes(i + NGU, NU + NGU * 2) *
+                δu[k] *
+                newton_cotes(j + NGV, NV + NGV * 2) *
+                δv[k]
+        end
+    else
+        throw("No velocity quadrature available")
+    end
+
+    return VSpace2D{typeof(u0),TI,typeof(u)}(u0, u1, NU, v0, v1, NV, u, v, du, dv, weights)
+
+end
+
+MVSpace2D() = MVSpace2D(-5, 5, -10, 10, 28, -5, 5, -10, 10, 28)
+MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
+    MVSpace2D(U0, U1, U0, U1, 28, V0, V1, V0, V1, 28)
+
 
 """
 $(TYPEDEF)
@@ -227,7 +348,7 @@ $(TYPEDEF)
 
 $(FIELDS)
 """
-struct VSpace3D{TR<:Real,TI<:Integer,TA<:AA{<:Real}} <: AbstractVelocitySpace3D
+struct VSpace3D{TR,TI,TA} <: AbstractVelocitySpace3D
     u0::TR
     u1::TR
     nu::TI
@@ -361,191 +482,9 @@ VSpace3D() = VSpace3D(-5, 5, 28, -5, 5, 28, -5, 5, 28)
 VSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
     VSpace3D(U0, U1, 28, V0, V1, 28, W0, W1, 28)
 
-
-"""
-$(TYPEDEF)
-
-1D multi-component velocity space
-
-# Fields
-
-$(FIELDS)
-"""
-struct MVSpace1D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,2}} <: AbstractVelocitySpace1D
-    u0::TR
-    u1::TR
-    nu::TI
-    u::TA
-    du::TA
-    weights::TA
-end
-
-function MVSpace1D(
-    Ui0,
-    Ui1,
-    Ue0,
-    Ue1,
-    NU::TI,
-    TYPE = "rectangle",
-    NG = zero(NU)::TI,
-    PRECISION = Float64,
-) where {TI<:Integer}
-
-    u0 = PRECISION.([Ui0, Ue0])
-    u1 = PRECISION.([Ui1, Ue1])
-    δ = (u1 .- u0) ./ NU
-    u = begin
-        if NG > 0
-            OffsetArray{PRECISION}(undef, 1-NG:NU+NG, 1:2)
-        else
-            Array{PRECISION}(undef, NU, 2)
-        end
-    end
-    du = similar(u)
-    weights = similar(u)
-
-    if TYPE == "rectangle" # rectangular
-        for j in axes(u, 2), i in axes(u, 1)
-            u[i, j] = u0[j] + (i - 0.5) * δ[j]
-            du[i, j] = δ[j]
-            weights[i, j] = δ[j]
-        end
-    elseif TYPE == "newton" # newton-cotes
-        for j in axes(u, 2), i in axes(u, 1)
-            u[i, j] = u0[j] + (i - 0.5) * δ[j]
-            du[i, j] = δ[j]
-            weights[i, j] = newton_cotes(i + NG, NU + NG * 2) * δ[j]
-        end
-    else
-        throw("No velocity quadrature available")
-    end
-
-    return MVSpace1D{typeof(u0),TI,typeof(u)}(u0, u1, NU, u, du, weights)
-
-end
-
-MVSpace1D() = MVSpace1D(-5, 5, -10, 10, 28)
-MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1, 28)
-
-
-"""
-$(TYPEDEF)
-
-2D multi-component velocity space
-
-# Fields
-
-$(FIELDS)
-"""
-struct MVSpace2D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{Float64,3}} <: AbstractVelocitySpace2D
-    u0::TR
-    u1::TR
-    nu::TI
-    v0::TR
-    v1::TR
-    nv::TI
-    u::TA
-    v::TA
-    du::TA
-    dv::TA
-    weights::TA
-end
-
-function MVSpace2D(
-    Ui0,
-    Ui1,
-    Ue0,
-    Ue1,
-    NU::TI,
-    Vi0,
-    Vi1,
-    Ve0,
-    Ve1,
-    NV::TI,
-    TYPE = "rectangle",
-    NGU = zero(NU)::TI,
-    NGV = zero(NV)::TI,
-    PRECISION = Float64,
-) where {TI<:Integer}
-
-    u0 = PRECISION.([Ui0, Ue0])
-    u1 = PRECISION.([Ui1, Ue1])
-    δu = (u1 .- u0) ./ NU
-    v0 = PRECISION.([Vi0, Ve0])
-    v1 = PRECISION.([Vi1, Ve1])
-    δv = (v1 .- v0) ./ NV
-    u = begin
-        if NGU > 0 || NGV > 0
-            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1:2)
-        else
-            Array{PRECISION}(undef, NU, NV, 2)
-        end
-    end
-    v = similar(u)
-    du = similar(u)
-    dv = similar(u)
-    weights = similar(u)
-
-    if TYPE == "rectangle" # rectangular
-        for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
-            u[i, j, k] = u0[k] + (i - 0.5) * δu[k]
-            v[i, j, k] = v0[k] + (j - 0.5) * δv[k]
-            du[i, j, k] = δu[k]
-            dv[i, j, k] = δv[k]
-            weights[i, j, k] = δu[k] * δv[k]
-        end
-    elseif TYPE == "newton" # newton-cotes
-        for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
-            u[i, j, k] = u0[k] + (i - 0.5) * δu[k]
-            v[i, j, k] = v0[k] + (j - 0.5) * δv[k]
-            du[i, j, k] = δu[k]
-            dv[i, j, k] = δv[k]
-            weights[i, j, k] =
-                newton_cotes(i + NGU, NU + NGU * 2) *
-                δu[k] *
-                newton_cotes(j + NGV, NV + NGV * 2) *
-                δv[k]
-        end
-    else
-        throw("No velocity quadrature available")
-    end
-
-    return MVSpace2D{typeof(u0),TI,typeof(u)}(u0, u1, NU, v0, v1, NV, u, v, du, dv, weights)
-
-end
-
-MVSpace2D() = MVSpace2D(-5, 5, -10, 10, 28, -5, 5, -10, 10, 28)
-MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
-    MVSpace2D(U0, U1, U0, U1, 28, V0, V1, V0, V1, 28)
-
-
-"""
-$(TYPEDEF)
-
-3D multi-component velocity space
-
-# Fields
-
-$(FIELDS)
-"""
-struct MVSpace3D{TR<:AA{<:Real,1},TI<:Integer,TA<:AA{<:Real,4}} <: AbstractVelocitySpace3D
-    u0::TR
-    u1::TR
-    nu::TI
-    v0::TR
-    v1::TR
-    nv::TI
-    w0::TR
-    w1::TR
-    nw::TI
-    u::TA
-    v::TA
-    w::TA
-    du::TA
-    dv::TA
-    dw::TA
-    weights::TA
-end
+# ------------------------------------------------------------
+# Multi-component
+# ------------------------------------------------------------
 
 function MVSpace3D(
     Ui0,
@@ -624,7 +563,7 @@ function MVSpace3D(
         throw("No velocity quadrature available")
     end
 
-    return MVSpace3D{typeof(u0),TI,typeof(u)}(
+    return VSpace3D{typeof(u0),TI,typeof(u)}(
         u0,
         u1,
         NU,
@@ -688,17 +627,16 @@ function newton_cotes(idx::T, num::T) where {T<:Integer}
     return nc_coeff
 end
 
-
 # ------------------------------------------------------------
 # Extended Base.show()
 # ------------------------------------------------------------
+
 function Base.show(io::IO, vs::VSpace1D{TR,TI,TA,TB}) where {TR,TI,TA,TB}
     print(
         io,
         "VelocitySpace1D{$TR,$TI,$TA,$TB}\n",
         "domain: ($(vs.u0),$(vs.u1))\n",
         "resolution: $(vs.nu)\n",
-        "ghost: $(1-firstindex(vs.u))\n",
     )
 end
 
@@ -708,8 +646,6 @@ function Base.show(io::IO, vs::VSpace2D{TR,TI,TA}) where {TR,TI,TA}
         "VelocitySpace2D{$TR,$TI,$TA}\n",
         "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1))\n",
         "resolution: $(vs.nu) × $(vs.nv)\n",
-        "ghost in u: $(1-firstindex(vs.u[:, 1]))\n",
-        "ghost in v: $(1-firstindex(vs.v[1, :]))\n",
     )
 end
 
@@ -719,9 +655,6 @@ function Base.show(io::IO, vs::VSpace3D{TR,TI,TA}) where {TR,TI,TA}
         "VelocitySpace3D{$TR,$TI,$TA}\n",
         "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1)) × ($(vs.w0),$(vs.w1))\n",
         "resolution: $(vs.nu) × $(vs.nv) × $(vs.nw)\n",
-        "ghost in u: $(1-firstindex(vs.u[:, 1, 1]))\n",
-        "ghost in v: $(1-firstindex(vs.v[1, :, 1]))\n",
-        "ghost in w: $(1-firstindex(vs.w[1, 1, :]))\n",
     )
 end
 
