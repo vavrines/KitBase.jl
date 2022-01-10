@@ -7,7 +7,7 @@ function flux_kfvs!(
     face::Interface1F,
     ctrL::T,
     ctrR::T,
-    vs::VSpace1D,
+    vs::AbstractVelocitySpace1D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume1F}
@@ -34,7 +34,7 @@ function flux_kfvs!(
     face::Interface2F,
     ctrL::T,
     ctrR::T,
-    vs::VSpace1D,
+    vs::AbstractVelocitySpace1D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume2F}
@@ -66,7 +66,7 @@ function flux_kfvs!(
     face::Interface1F,
     ctrL::T,
     ctrR::T,
-    vs::VSpace2D,
+    vs::AbstractVelocitySpace2D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume1F}
@@ -95,7 +95,7 @@ function flux_kfvs!(
     face::Interface2F,
     ctrL::T,
     ctrR::T,
-    vs::VSpace2D,
+    vs::AbstractVelocitySpace2D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume2F}
