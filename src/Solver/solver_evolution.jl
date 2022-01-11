@@ -588,8 +588,9 @@ function evolve!(
                     a1face[i, j],
                     ctr[i-1, j],
                     ctr[i, j],
+                    KS.gas,
                     KS.vs,
-                    (1, 0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n),
+                    (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
                     dt,
                 )
             end
@@ -605,8 +606,9 @@ function evolve!(
                     a2face[i, j],
                     ctr[i, j-1],
                     ctr[i, j],
+                    KS.gas,
                     KS.vs,
-                    (2, 0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n),
+                    (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
                     dt,
                 )
             end
