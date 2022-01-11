@@ -116,62 +116,19 @@ function evolve!(
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-    if KS.set.space[5:end] == "1v"
-
-        @inbounds Threads.@threads for i = idx0:idx1
-            fn(
-                face[i],
-                ctr[i-1],
-                ctr[i],
-                KS.vs,
-                (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i], KS.gas),
-                dt,
-            )
-        end
-
-    elseif KS.set.space[5:end] == "3v"
-
-        if mode == :kfvs
-            @inbounds Threads.@threads for i = idx0:idx1
-                flux_kfvs!(
-                    face[i].fw,
-                    face[i].ff,
-                    ctr[i-1].f .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sf,
-                    ctr[i].f .- 0.5 .* KS.ps.dx[i] .* ctr[i].sf,
-                    KS.vSpace.u,
-                    KS.vSpace.v,
-                    KS.vSpace.w,
-                    KS.vSpace.weights,
-                    dt,
-                    1.0,
-                    ctr[i-1].sf,
-                    ctr[i].sf,
-                )
-            end
-        elseif mode == :kcu
-            @inbounds Threads.@threads for i = idx0:idx1
-                flux_kcu!(
-                    face[i].fw,
-                    face[i].ff,
-                    ctr[i-1].w .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sw,
-                    ctr[i-1].f .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sf,
-                    ctr[i].w .- 0.5 .* KS.ps.dx[i] .* ctr[i].sw,
-                    ctr[i].f .- 0.5 .* KS.ps.dx[i] .* ctr[i].sf,
-                    KS.vSpace.u,
-                    KS.vSpace.v,
-                    KS.vSpace.w,
-                    KS.vSpace.weights,
-                    KS.gas.K,
-                    KS.gas.γ,
-                    KS.gas.μᵣ,
-                    KS.gas.ω,
-                    KS.gas.Pr,
-                    dt,
-                )
-            end
-        end
-
+    @inbounds Threads.@threads for i = idx0:idx1
+        fn(
+            face[i],
+            ctr[i-1],
+            ctr[i],
+            KS.gas,
+            KS.vs,
+            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
+            dt,
+        )
     end
+
+    return nothing
 
 end
 
@@ -199,6 +156,7 @@ function evolve!(
             face[i],
             ctr[i-1],
             ctr[i],
+            KS.gas,
             KS.vs,
             (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i], KS.gas),
             dt,

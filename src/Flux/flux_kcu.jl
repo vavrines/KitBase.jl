@@ -7,12 +7,13 @@ function flux_kcu!(
     face::Interface1F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume1F}
 
-    dxL, dxR, gas = p
+    dxL, dxR = p[1:2]
 
     flux_kcu!(
         face.fw,
@@ -39,12 +40,13 @@ function flux_kcu!(
     face::Interface2F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume2F}
 
-    dxL, dxR, gas = p
+    dxL, dxR = p[1:2]
 
     if gas isa Mixture
         flux_kcu!(
@@ -98,6 +100,7 @@ function flux_kcu!(
     face::Interface1F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace2D,
     p,
     dt = 1.0,
@@ -130,7 +133,44 @@ function flux_kcu!(
 
 end
 
+function flux_kcu!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    gas::AbstractProperty,
+    vs::AbstractVelocitySpace3D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
 
+    dxL, dxR = p[1:2]
+
+    if length(p) == 2 || p[3] == 1
+        flux_kcu!(
+            face.fw,
+            face.ff,
+            ctrL.w .+ dxL .* ctrL.sw,
+            ctrL.f .+ dxL .* ctrL.sf,
+            ctrR.w .- dxR .* ctrR.sw,
+            ctrR.f .- dxR .* ctrR.sf,
+            vs.u,
+            vs.v,
+            vs.w,
+            vs.weights,
+            gas.K,
+            gas.γ,
+            gas.μᵣ,
+            gas.ω,
+            gas.Pr,
+            dt,
+        )
+    else
+        
+    end
+
+    return nothing
+
+end
 
 
 

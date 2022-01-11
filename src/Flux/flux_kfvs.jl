@@ -7,6 +7,7 @@ function flux_kfvs!(
     face::Interface1F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
     dt = 1.0,
@@ -34,6 +35,7 @@ function flux_kfvs!(
     face::Interface2F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
     dt = 1.0,
@@ -66,12 +68,13 @@ function flux_kfvs!(
     face::Interface1F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace2D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume1F}
 
-    dirc, dxL, dxR, len, n = p
+    dxL, dxR, len, n, dirc = p[1:5]
     sfL = @view ctrL.sf[:, :, dirc]
     sfR = @view ctrR.sf[:, :, dirc]
 
@@ -99,12 +102,13 @@ function flux_kfvs!(
     face::Interface2F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace2D,
     p,
     dt = 1.0,
 ) where {T<:ControlVolume2F}
 
-    dirc, dxL, dxR, len, n = p
+    dxL, dxR, len, n, dirc = p[1:5]
     shL = @view ctrL.sh[:, :, dirc]
     sbL = @view ctrL.sb[:, :, dirc]
     shR = @view ctrR.sh[:, :, dirc]
@@ -139,6 +143,7 @@ function flux_kfvs!(
     face::Interface1F,
     ctrL::T,
     ctrR::T,
+    gas::AbstractProperty,
     vs::AbstractVelocitySpace3D,
     p,
     dt = 1.0,
@@ -162,20 +167,23 @@ function flux_kfvs!(
             ctrR.sf,
         )
     else
-        len, n = p[3:4]
+        len, n, dirc = p[3:5]
+        sfL = @view ctrL.sf[:, :, :, dirc]
+        sfR = @view ctrR.sf[:, :, :, dirc]
+
         flux_kfvs!(
             face.fw,
             face.ff,
-            ctrL.f + ctrL.sf * dxL,
-            ctrR.f - ctrR.sf * dxR,
+            ctrL.f + sfL * dxL,
+            ctrR.f - sfR * dxR,
             vs.u .* n[1] .+ vs.v .* n[2],
             vs.v .* n[1] .- vs.u .* n[2],
             vs.w,
             vs.weights,
             dt,
             len,
-            ctrL.sf,
-            ctrR.sf,
+            sfL,
+            sfR,
         )
         face.fw .= global_frame(face.fw, n[1], n[2])
     end
