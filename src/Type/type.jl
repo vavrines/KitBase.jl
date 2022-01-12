@@ -35,6 +35,7 @@ export ControlVolumeParticle1D, ControlVolumeParticle2D
 
 include("abstract.jl")
 include("struct_general.jl")
+include("struct_property.jl")
 include("struct_ib.jl")
 include("struct_ctr.jl")
 include("struct_face.jl")

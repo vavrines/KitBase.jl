@@ -84,11 +84,38 @@ _P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Scheme
 * @args n[2]: unit face normal (L -> R)
 """
 function flux_roe!(
+    face::Interface,
+    ctrL::T,
+    ctrR::T,
+    gas::Gas,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume}
+
+    dxL, dxR = p[1:2]
+
+    if size(ctrL.w, 1) == 3
+        flux_roe!(
+            face.fw,
+            ctrL.w .+ dxL .* ctrL.sw,
+            ctrR.w .- dxR .* ctrR.sw,
+            gas.γ,
+            dt,
+        )
+    else
+    end
+
+    return nothing
+
+end
+
+function flux_roe!(
     fw::X,
     wL::Y,
     wR::Y,
     γ,
     dt,
+    δs = 1.0,
     n = [1.0, 0.0],
 ) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
 
@@ -274,7 +301,7 @@ function flux_roe!(
             rhoR * unR * HR,
         ]
 
-        @. fw = 0.5 * dt * (fL + fR - diss)
+        @. fw = 0.5 * dt * (fL + fR - diss) * δs
 
     end
 

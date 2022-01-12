@@ -20,80 +20,37 @@ function evolve!(
         idx1 = KS.pSpace.nx
     end
 
-    if mode == :gks
+    fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-        if KS.set.nSpecies == 1
-
-            if KS.set.matter == "scalar"
-                @inbounds Threads.@threads for i = idx0:idx1
-                    face[i].fw = KitBase.flux_gks(
-                        ctr[i-1].w + 0.5 * KS.ps.dx[i-1] * ctr[i-1].sw,
-                        ctr[i].w - 0.5 * KS.ps.dx[i] * ctr[i].sw,
-                        KS.gas.μᵣ,
-                        dt,
-                        0.5 * KS.ps.dx[i-1],
-                        0.5 * KS.ps.dx[i],
-                        KS.gas.a,
-                        ctr[i-1].sw,
-                        ctr[i].sw,
-                    )
-                end
-            else
-                @inbounds Threads.@threads for i = idx0:idx1
-                    flux_gks!(
-                        face[i].fw,
-                        ctr[i-1].w .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sw,
-                        ctr[i].w .- 0.5 .* KS.ps.dx[i] .* ctr[i].sw,
-                        KS.gas.γ,
-                        KS.gas.K,
-                        KS.gas.μᵣ,
-                        KS.gas.ω,
-                        dt,
-                        0.5 * KS.ps.dx[i-1],
-                        0.5 * KS.ps.dx[i],
-                        ctr[i-1].sw,
-                        ctr[i].sw,
-                    )
-                end
-            end
-
-        elseif KS.set.nSpecies == 2
-
-            @inbounds Threads.@threads for i = idx0:idx1
-                flux_gks!(
-                    face[i].fw,
-                    ctr[i-1].w .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sw,
-                    ctr[i].w .- 0.5 .* KS.ps.dx[i] .* ctr[i].sw,
-                    KS.gas.γ,
-                    KS.gas.K,
-                    KS.gas.mi,
-                    KS.gas.ni,
-                    KS.gas.me,
-                    KS.gas.ne,
-                    KS.gas.Kn[1],
-                    dt,
-                    0.5 * KS.ps.dx[i-1],
-                    0.5 * KS.ps.dx[i],
-                    ctr[i-1].sw,
-                    ctr[i].sw,
-                )
-            end
-
-        end
-
-    elseif mode == :roe
-
+    # scalar is treated specially since there is no in-place operation
+    if KS.set.matter == "scalar"
         @inbounds Threads.@threads for i = idx0:idx1
-            flux_roe!(
-                face[i].fw,
-                ctr[i-1].w .+ 0.5 .* KS.ps.dx[i-1] .* ctr[i-1].sw,
-                ctr[i].w .- 0.5 .* KS.ps.dx[i] .* ctr[i].sw,
-                KS.gas.γ,
+            face[i].fw = KitBase.flux_gks(
+                ctr[i-1].w + 0.5 * KS.ps.dx[i-1] * ctr[i-1].sw,
+                ctr[i].w - 0.5 * KS.ps.dx[i] * ctr[i].sw,
+                KS.gas.μᵣ,
+                dt,
+                0.5 * KS.ps.dx[i-1],
+                0.5 * KS.ps.dx[i],
+                KS.gas.a,
+                ctr[i-1].sw,
+                ctr[i].sw,
+            )
+        end
+    else
+        @inbounds Threads.@threads for i = idx0:idx1
+            fn(
+                face[i],
+                ctr[i-1],
+                ctr[i],
+                KS.gas,
+                (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
                 dt,
             )
         end
-
     end
+
+    return nothing
 
 end
 

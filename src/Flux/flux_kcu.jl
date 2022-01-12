@@ -106,7 +106,7 @@ function flux_kcu!(
     dt = 1.0,
 ) where {T<:ControlVolume1F}
 
-    dirc, dxL, dxR, len, n, gas = p
+    dxL, dxR, len, n, dirc = p
 
     flux_kcu!(
         a1face[i, j].fw,
