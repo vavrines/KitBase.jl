@@ -446,57 +446,43 @@ function evolve!(
         idy1 = ny
     end
 
-    if mode == :hll
+    fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-        # x direction
-        @inbounds Threads.@threads for j = 1:ny
-            for i = idx0:idx1
-                flux_hll!(
-                    a1face[i, j].fw,
-                    local_frame(
-                        ctr[i-1, j].w .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
-                        a1face[i, j].n[1],
-                        a1face[i, j].n[2],
-                    ),
-                    local_frame(
-                        ctr[i, j].w .- 0.5 .* dx[i, j] .* ctr[i, j].sw[:, 1],
-                        a1face[i, j].n[1],
-                        a1face[i, j].n[2],
-                    ),
-                    KS.gas.γ,
-                    dt,
-                )
-                a1face[i, j].fw .=
-                    global_frame(a1face[i, j].fw, a1face[i, j].n[1], a1face[i, j].n[2]) .*
-                    a1face[i, j].len
-            end
+    # x direction
+    @inbounds Threads.@threads for j = 1:ny
+        for i = idx0:idx1
+            n = KS.ps.n[i-1, j, 2]
+            len = KS.ps.areas[i-1, j, 2]
+
+            fn(
+                a1face[i, j],
+                ctr[i-1, j],
+                ctr[i, j],
+                KS.gas,
+                (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
+                dt,
+            )
         end
-
-        # y direction
-        @inbounds Threads.@threads for j = idy0:idy1
-            for i = 1:nx
-                flux_hll!(
-                    a2face[i, j].fw,
-                    local_frame(
-                        ctr[i, j-1].w .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
-                        a2face[i, j].n[1],
-                        a2face[i, j].n[2],
-                    ),
-                    local_frame(
-                        ctr[i, j].w .- 0.5 .* dy[i, j] .* ctr[i, j].sw[:, 2],
-                        a2face[i, j].n[1],
-                        a2face[i, j].n[2],
-                    ),
-                    KS.gas.γ,
-                    dt,
-                )
-                a2face[i, j].fw .=
-                    global_frame(a2face[i, j].fw, a2face[i, j].n[1], a2face[i, j].n[2]) .*
-                    a2face[i, j].len
-            end
-        end
-
     end
+
+    # y direction
+    @inbounds Threads.@threads for j = idy0:idy1
+        for i = 1:nx
+            n = KS.ps.n[i, j-1, 3]
+            len = KS.ps.areas[i, j-1, 3]
+
+            fn(
+                a2face[i, j],
+                ctr[i, j-1],
+                ctr[i, j],
+                KS.gas,
+                (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
+                dt,
+            )
+        end
+    end
+
+    return nothing
 
 end
 
@@ -533,124 +519,42 @@ function evolve!(
         idy1 = ny
     end
 
-    if mode == :kfvs
+    fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-        # x direction
-        @inbounds Threads.@threads for j = 1:ny
-            for i = idx0:idx1
-                n = KS.ps.n[i-1, j, 2]
-                len = KS.ps.areas[i-1, j, 2]
+    # x direction
+    @inbounds Threads.@threads for j = 1:ny
+        for i = idx0:idx1
+            n = KS.ps.n[i-1, j, 2]
+            len = KS.ps.areas[i-1, j, 2]
 
-                flux_kfvs!(
-                    a1face[i, j],
-                    ctr[i-1, j],
-                    ctr[i, j],
-                    KS.gas,
-                    KS.vs,
-                    (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
-                    dt,
-                )
-            end
+            fn(
+                a1face[i, j],
+                ctr[i-1, j],
+                ctr[i, j],
+                KS.gas,
+                KS.vs,
+                (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
+                dt,
+            )
         end
+    end
 
-        # y direction
-        @inbounds Threads.@threads for j = idy0:idy1
-            for i = 1:nx
-                n = KS.ps.n[i, j-1, 3]
-                len = KS.ps.areas[i, j-1, 3]
+    # y direction
+    @inbounds Threads.@threads for j = idy0:idy1
+        for i = 1:nx
+            n = KS.ps.n[i, j-1, 3]
+            len = KS.ps.areas[i, j-1, 3]
 
-                flux_kfvs!(
-                    a2face[i, j],
-                    ctr[i, j-1],
-                    ctr[i, j],
-                    KS.gas,
-                    KS.vs,
-                    (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
-                    dt,
-                )
-            end
+            fn(
+                a2face[i, j],
+                ctr[i, j-1],
+                ctr[i, j],
+                KS.gas,
+                KS.vs,
+                (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
+                dt,
+            )
         end
-
-    elseif mode == :kcu
-
-        # x direction
-        @inbounds Threads.@threads for j = 1:ny
-            for i = idx0:idx1
-                n = KS.ps.n[i-1, j, 2]
-                len = KS.ps.areas[i-1, j, 2]
-                vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-                vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
-
-                flux_kcu!(
-                    a1face[i, j].fw,
-                    a1face[i, j].ff,
-                    local_frame(
-                        ctr[i-1, j].w .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i-1, j].f .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sf[:, :, 1],
-                    local_frame(
-                        ctr[i, j].w .- 0.5 .* dx[i, j] .* ctr[i, j].sw[:, 1],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i, j].f .- 0.5 .* dx[i, j] .* ctr[i, j].sf[:, :, 1],
-                    vn,
-                    vt,
-                    KS.vSpace.weights,
-                    KS.gas.K,
-                    KS.gas.γ,
-                    KS.gas.μᵣ,
-                    KS.gas.ω,
-                    KS.gas.Pr,
-                    dt,
-                    len,
-                )
-                a1face[i, j].fw .=
-                    global_frame(a1face[i, j].fw, n[1], n[2])
-            end
-        end
-
-        # y direction
-        @inbounds Threads.@threads for j = idy0:idy1
-            for i = 1:nx
-                n = KS.ps.n[i, j-1, 3]
-                len = KS.ps.areas[i, j-1, 3]
-                vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-                vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
-
-                flux_kcu!(
-                    a2face[i, j].fw,
-                    a2face[i, j].ff,
-                    local_frame(
-                        ctr[i, j-1].w .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i, j-1].f .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sf[:, :, 2],
-                    local_frame(
-                        ctr[i, j].w .- 0.5 .* dy[i, j] .* ctr[i, j].sw[:, 2],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i, j].f .- 0.5 .* dy[i, j] .* ctr[i, j].sf[:, :, 2],
-                    vn,
-                    vt,
-                    KS.vSpace.weights,
-                    KS.gas.K,
-                    KS.gas.γ,
-                    KS.gas.μᵣ,
-                    KS.gas.ω,
-                    KS.gas.Pr,
-                    dt,
-                    len,
-                )
-                a2face[i, j].fw .=
-                    global_frame(a2face[i, j].fw, n[1], n[2])
-            end
-        end
-
     end
 
     bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
@@ -794,156 +698,42 @@ function evolve!(
         idy1 = ny
     end
 
-    if mode == :kfvs
+    fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-        # x direction
-        @inbounds Threads.@threads for j = 1:ny
-            for i = idx0:idx1
-                n = KS.ps.n[i-1, j, 2]
-                len = KS.ps.areas[i-1, j, 2]
-                vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-                vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+    # x direction
+    @inbounds Threads.@threads for j = 1:ny
+        for i = idx0:idx1
+            n = KS.ps.n[i-1, j, 2]
+            len = KS.ps.areas[i-1, j, 2]
 
-                flux_kfvs!(
-                    a1face[i, j].fw,
-                    a1face[i, j].fh,
-                    a1face[i, j].fb,
-                    ctr[i-1, j].h .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
-                    ctr[i-1, j].b .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
-                    ctr[i, j].h .- 0.5 .* dx[i, j] .* ctr[i, j].sh[:, :, 1],
-                    ctr[i, j].b .- 0.5 .* dx[i, j] .* ctr[i, j].sb[:, :, 1],
-                    vn,
-                    vt,
-                    KS.vSpace.weights,
-                    dt,
-                    len,
-                    ctr[i-1, j].sh[:, :, 1],
-                    ctr[i-1, j].sb[:, :, 1],
-                    ctr[i, j].sh[:, :, 1],
-                    ctr[i, j].sb[:, :, 1],
-                )
-                a1face[i, j].fw .=
-                    global_frame(a1face[i, j].fw, n[1], n[2])
-            end
+            fn(
+                a1face[i, j],
+                ctr[i-1, j],
+                ctr[i, j],
+                KS.gas,
+                KS.vs,
+                (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
+                dt,
+            )
         end
+    end
 
-        # y direction
-        @inbounds Threads.@threads for j = idy0:idy1
-            for i = 1:nx
-                n = KS.ps.n[i, j-1, 3]
-                len = KS.ps.areas[i, j-1, 3]
-                vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-                vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+    # y direction
+    @inbounds Threads.@threads for j = idy0:idy1
+        for i = 1:nx
+            n = KS.ps.n[i, j-1, 3]
+            len = KS.ps.areas[i, j-1, 3]
 
-                flux_kfvs!(
-                    a2face[i, j].fw,
-                    a2face[i, j].fh,
-                    a2face[i, j].fb,
-                    ctr[i, j-1].h .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
-                    ctr[i, j-1].b .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
-                    ctr[i, j].h .- 0.5 .* dy[i, j] .* ctr[i, j].sh[:, :, 2],
-                    ctr[i, j].b .- 0.5 .* dy[i, j] .* ctr[i, j].sb[:, :, 2],
-                    vn,
-                    vt,
-                    KS.vSpace.weights,
-                    dt,
-                    len,
-                    ctr[i, j-1].sh[:, :, 2],
-                    ctr[i, j-1].sb[:, :, 2],
-                    ctr[i, j].sh[:, :, 2],
-                    ctr[i, j].sb[:, :, 2],
-                )
-                a2face[i, j].fw .=
-                    global_frame(a2face[i, j].fw, n[1], n[2])
-            end
+            fn(
+                a2face[i, j],
+                ctr[i, j-1],
+                ctr[i, j],
+                KS.gas,
+                KS.vs,
+                (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
+                dt,
+            )
         end
-
-    elseif mode == :kcu
-
-        # x direction
-        @inbounds Threads.@threads for j = 1:ny
-            for i = idx0:idx1
-                n = KS.ps.n[i-1, j, 2]
-                len = KS.ps.areas[i-1, j, 2]
-                vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-                vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
-
-                flux_kcu!(
-                    a1face[i, j].fw,
-                    a1face[i, j].fh,
-                    a1face[i, j].fb,
-                    local_frame(
-                        ctr[i-1, j].w .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sw[:, 1],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i-1, j].h .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sh[:, :, 1],
-                    ctr[i-1, j].b .+ 0.5 .* dx[i-1, j] .* ctr[i-1, j].sb[:, :, 1],
-                    local_frame(
-                        ctr[i, j].w .- 0.5 .* dx[i, j] .* ctr[i, j].sw[:, 1],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i, j].h .- 0.5 .* dx[i, j] .* ctr[i, j].sh[:, :, 1],
-                    ctr[i, j].b .- 0.5 .* dx[i, j] .* ctr[i, j].sb[:, :, 1],
-                    vn,
-                    vt,
-                    KS.vSpace.weights,
-                    KS.gas.K,
-                    KS.gas.γ,
-                    KS.gas.μᵣ,
-                    KS.gas.ω,
-                    KS.gas.Pr,
-                    dt,
-                    len,
-                )
-                a1face[i, j].fw .=
-                    global_frame(a1face[i, j].fw, n[1], n[2])
-            end
-        end
-
-        # y direction
-        @inbounds Threads.@threads for j = idy0:idy1
-            for i = 1:nx
-                n = KS.ps.n[i, j-1, 3]
-                len = KS.ps.areas[i, j-1, 3]
-                vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-                vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
-
-                flux_kcu!(
-                    a2face[i, j].fw,
-                    a2face[i, j].fh,
-                    a2face[i, j].fb,
-                    local_frame(
-                        ctr[i, j-1].w .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sw[:, 2],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i, j-1].h .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sh[:, :, 2],
-                    ctr[i, j-1].b .+ 0.5 .* dy[i, j-1] .* ctr[i, j-1].sb[:, :, 2],
-                    local_frame(
-                        ctr[i, j].w .- 0.5 .* dy[i, j] .* ctr[i, j].sw[:, 2],
-                        n[1],
-                        n[2],
-                    ),
-                    ctr[i, j].h .- 0.5 .* dy[i, j] .* ctr[i, j].sh[:, :, 2],
-                    ctr[i, j].b .- 0.5 .* dy[i, j] .* ctr[i, j].sb[:, :, 2],
-                    vn,
-                    vt,
-                    KS.vSpace.weights,
-                    KS.gas.K,
-                    KS.gas.γ,
-                    KS.gas.μᵣ,
-                    KS.gas.ω,
-                    KS.gas.Pr,
-                    dt,
-                    len,
-                )
-                a2face[i, j].fw .=
-                    global_frame(a2face[i, j].fw, n[1], n[2])
-            end
-        end
-
     end
 
     evolve_boundary!(KS, ctr, a1face, a2face, dt, mode, bc)

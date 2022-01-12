@@ -107,14 +107,64 @@ function flux_kcu!(
 ) where {T<:ControlVolume1F}
 
     dxL, dxR, len, n, dirc = p
+    swL = @view ctrL.sw[:, dirc]
+    swR = @view ctrR.sw[:, dirc]
+    sfL = @view ctrL.sf[:, :, dirc]
+    sfR = @view ctrR.sf[:, :, dirc]
 
     flux_kcu!(
         a1face[i, j].fw,
         a1face[i, j].ff,
-        local_frame(wL .+ dxL .* ctrL.sw[:, 1], n),
-        ctrL.f .+ dxL .* ctrL.sf[:, :, 1],
-        local_frame(wR .- dxR .* ctrR.sw[:, 1], n),
-        ctrR.f .- dxR .* ctrR.sf[:, :, 1],
+        local_frame(wL .+ dxL .* swL, n),
+        ctrL.f .+ dxL .* sfL,
+        local_frame(wR .- dxR .* swR, n),
+        ctrR.f .- dxR .* sfR,
+        vs.u .* n[1] .+ vs.v .* n[2],
+        vs.v .* n[1] .- vs.u .* n[2],
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dt,
+        len,
+    )
+
+    face.fw .= global_frame(face.fw, n)
+
+    return nothing
+
+end
+
+function flux_kcu!(
+    face::Interface2F,
+    ctrL::T,
+    ctrR::T,
+    gas::AbstractProperty,
+    vs::AbstractVelocitySpace2D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume2F}
+
+    dxL, dxR, len, n, dirc = p
+    swL = @view ctrL.sw[:, dirc]
+    swR = @view ctrR.sw[:, dirc]
+    shL = @view ctrL.sh[:, :, dirc]
+    sbL = @view ctrL.sb[:, :, dirc]
+    shR = @view ctrR.sh[:, :, dirc]
+    sbR = @view ctrR.sb[:, :, dirc]
+
+    flux_kcu!(
+        a1face[i, j].fw,
+        a1face[i, j].fh,
+        a1face[i, j].fb,
+        local_frame(wL .+ dxL .* swL, n),
+        ctrL.h .+ dxL .* shL,
+        ctrL.b .+ dxL .* sbL,
+        local_frame(wR .- dxR .* swR, n),
+        ctrR.h .- dxR .* shR,
+        ctrR.b .- dxR .* sbR,
         vs.u .* n[1] .+ vs.v .* n[2],
         vs.v .* n[1] .- vs.u .* n[2],
         vs.weights,

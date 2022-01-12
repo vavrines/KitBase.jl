@@ -41,7 +41,45 @@ HLL flux for the Euler equations
 - @args: variables at left & right sides of interface
 - @args: specific heat ratio
 """
-function flux_hll!(fw::X, wL::Y, wR::Y, γ, dt) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
+function flux_hll!(
+    face::Interface,
+    ctrL::T,
+    ctrR::T,
+    gas::Gas,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume}
+
+    dxL, dxR = p[1:2]
+
+    if size(ctrL.w, 1) == 3
+        flux_hll!(
+            face.fw,
+            ctrL.w .+ dxL .* ctrL.sw,
+            ctrR.w .- dxR .* ctrR.sw,
+            gas.γ,
+            dt,
+        )
+    elseif size(ctrL.w, 1) == 4
+        len, n, dirc = p[3:5]
+        swL = @view ctrL.sw[:, dirc]
+        swR = @view ctrR.sw[:, dirc]
+        flux_hll!(
+            face.fw,
+            local_frame(ctrL.w .+ dxL .* swL, n),
+            local_frame(ctrR.w .- dxR .* swR, n),
+            gas.γ,
+            dt,
+            len,
+        )
+        face.fw .= global_frame(face.fw, n)
+    end
+
+    return nothing
+
+end
+
+function flux_hll!(fw::AV, wL::T, wR::T, γ, dt, len = 1.0) where {T<:AV}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -64,7 +102,7 @@ function flux_hll!(fw::X, wL::Y, wR::Y, γ, dt) where {X<:AA{<:Real,1},Y<:AA{<:R
         @. fw = factor * (λmax * flux1 - λmin * flux2 + λmax * λmin * (wR - wL))
     end
 
-    fw .*= dt
+    @. fw *= dt * len
 
     return nothing
 end
