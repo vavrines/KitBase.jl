@@ -158,7 +158,7 @@ function evolve!(
             ctr[i],
             KS.gas,
             KS.vs,
-            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i], KS.gas),
+            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
             dt,
         )
     end
