@@ -293,101 +293,41 @@ function init_fvm(
 
     elseif KS.set.space[3:4] == "2f"
 
-        ctr = OffsetArray{ControlVolume2D2F}(
+        ctr = OffsetArray{ControlVolume2F}(
             undef,
             axes(KS.pSpace.x, 1),
             axes(KS.pSpace.y, 2),
         )
-        a1face = Array{Interface2D2F}(undef, nx + 1, ny)
-        a2face = Array{Interface2D2F}(undef, nx, ny + 1)
+        a1face = Array{Interface2F}(undef, nx + 1, ny)
+        a2face = Array{Interface2F}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
             w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j])
             prim = funcprim(w, KS.gas.γ)
             h, b = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j])
 
-            ctr[i, j] = ControlVolume2D2F(funcar(w), funcar(prim), funcar(h), funcar(b))
+            ctr[i, j] = ControlVolume(funcar(w), funcar(prim), funcar(h), funcar(b), 2)
         end
 
         for j = 1:ny
-            for i = 1:nx
-                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :])
-                n .= ifelse(
-                    dot(
-                        n,
-                        [ps.x[i, j], ps.y[i, j]] .-
-                        (ps.vertices[i, j, 1, :] .+ ps.vertices[i, j, 4, :]) ./ 2,
-                    ) >= 0,
-                    n,
-                    -n,
-                )
-
-                a1face[i, j] = Interface2D2F(
-                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 4, :]),
-                    n[1],
-                    n[2],
+            for i = 1:nx+1
+                a1face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[2]),
+                    2,
                 )
             end
-            n = unit_normal(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :])
-            n .= ifelse(
-                dot(
-                    n,
-                    (ps.vertices[nx, j, 2, :] .+ ps.vertices[nx, j, 3, :]) ./ 2 .-
-                    [ps.x[nx, j], ps.y[nx, j]],
-                ) >= 0,
-                n,
-                -n,
-            )
-
-            a1face[nx+1, j] = Interface2D2F(
-                point_distance(ps.vertices[nx, j, 2, :], ps.vertices[nx, j, 3, :]),
-                n[1],
-                n[2],
-                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
-            )
         end
         for i = 1:nx
-            for j = 1:ny
-                n = unit_normal(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :])
-                n .= ifelse(
-                    dot(
-                        n,
-                        [ps.x[i, j], ps.y[i, j]] .-
-                        (ps.vertices[i, j, 1, :] .+ ps.vertices[i, j, 2, :]) ./ 2,
-                    ) >= 0,
-                    n,
-                    -n,
-                )
-
-                a2face[i, j] = Interface2D2F(
-                    point_distance(ps.vertices[i, j, 1, :], ps.vertices[i, j, 2, :]),
-                    n[1],
-                    n[2],
+            for j = 1:ny+1
+                a2face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[2]),
+                    2,
                 )
             end
-            n = unit_normal(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :])
-            n .= ifelse(
-                dot(
-                    n,
-                    (ps.vertices[i, ny, 3, :] .+ ps.vertices[i, ny, 4, :]) ./ 2 .-
-                    [ps.x[i, ny], ps.y[i, ny]],
-                ) >= 0,
-                n,
-                -n,
-            )
-
-            a2face[i, ny+1] = Interface2D2F(
-                point_distance(ps.vertices[i, ny, 3, :], ps.vertices[i, ny, 4, :]),
-                n[1],
-                n[2],
-                funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
-            )
         end
 
     end

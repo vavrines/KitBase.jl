@@ -113,11 +113,11 @@ function flux_kcu!(
     sfR = @view ctrR.sf[:, :, dirc]
 
     flux_kcu!(
-        a1face[i, j].fw,
-        a1face[i, j].ff,
-        local_frame(wL .+ dxL .* swL, n),
+        face.fw,
+        face.ff,
+        local_frame(ctrL.w .+ dxL .* swL, n),
         ctrL.f .+ dxL .* sfL,
-        local_frame(wR .- dxR .* swR, n),
+        local_frame(ctrR.w .- dxR .* swR, n),
         ctrR.f .- dxR .* sfR,
         vs.u .* n[1] .+ vs.v .* n[2],
         vs.v .* n[1] .- vs.u .* n[2],
@@ -156,13 +156,13 @@ function flux_kcu!(
     sbR = @view ctrR.sb[:, :, dirc]
 
     flux_kcu!(
-        a1face[i, j].fw,
-        a1face[i, j].fh,
-        a1face[i, j].fb,
-        local_frame(wL .+ dxL .* swL, n),
+        face.fw,
+        face.fh,
+        face.fb,
+        local_frame(ctrL.w .+ dxL .* swL, n),
         ctrL.h .+ dxL .* shL,
         ctrL.b .+ dxL .* sbL,
-        local_frame(wR .- dxR .* swR, n),
+        local_frame(ctrR.w .- dxR .* swR, n),
         ctrR.h .- dxR .* shR,
         ctrR.b .- dxR .* sbR,
         vs.u .* n[1] .+ vs.v .* n[2],

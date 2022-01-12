@@ -454,6 +454,63 @@ end
 """
 $(SIGNATURES)
 
+Calculate conservative moments from microscopic moments
+"""
+function flux_conserve!(fw, args...)
+    if length(fw) == 3
+        return flux_conserve_1d!(fw, args...)
+    elseif length(fw) == 4
+        return flux_conserve_2d!(fw, args...)
+    elseif length(fw) == 5
+        return flux_conserve_3d!(fw, args...)
+    end
+
+    return nothing
+end
+
+#--- 1f1v ---#
+function flux_conserve_1d!(fw, ff, u, ω)
+    fw[1] = sum(ω .* ff)
+    fw[2] = sum(u .* ω .* ff)
+    fw[end] = sum(0.5 .* u.^2 .* ω .* ff)
+end
+
+#--- 2f1v ---#
+function flux_conserve_1d!(fw, fh, fb, u, ω)
+    fw[1] = sum(ω .* fh)
+    fw[2] = sum(u .* ω .* fh)
+    fw[end] = sum(0.5 .* u.^2 .* ω .* fh) + sum(ω .* fb)
+end
+
+#--- 1f2v ---#
+function flux_conserve_2d!(fw, ff, u, v, ω)
+    fw[1] = sum(ω .* ff)
+    fw[2] = sum(u .* ω .* ff)
+    fw[3] = sum(v .* ω .* ff)
+    fw[end] = sum(0.5 .* u.^2 .* ω .* ff)
+end
+
+#--- 2f2v ---#
+function flux_conserve_2d!(fw, fh, fb, u, v, ω)
+    fw[1] = sum(ω .* fh)
+    fw[2] = sum(u .* ω .* fh)
+    fw[3] = sum(v .* ω .* fh)
+    fw[end] = sum(0.5 .* (u.^2 .+ v.^2) .* ω .* fh) + sum(ω .* fb)
+end
+
+#--- 1f3v ---#
+function flux_conserve_3d!(fw, ff, u, v, w, ω)
+    fw[1] = sum(ω .* ff)
+    fw[2] = sum(u .* ω .* ff)
+    fw[3] = sum(v .* ω .* ff)
+    fw[4] = sum(w .* ω .* ff)
+    fw[end] = sum(0.5 .* (u.^2 .+ v.^2 + w.^2) .* ω .* ff)
+end
+
+
+"""
+$(SIGNATURES)
+
 Discrete moments of particle distribution
 """
 discrete_moments(f, ω) = sum(@. ω * f)

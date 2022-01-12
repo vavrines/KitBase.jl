@@ -1,12 +1,12 @@
 function evolve_boundary!(
     KS::SolverSet,
-    ctr::T1,
-    a1face::T2,
-    a2face::T2,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     mode,
     bc,
-) where {T1<:AA{ControlVolume2D2F,2},T2<:AA{Interface2D2F,2}}
+) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -20,11 +20,12 @@ function evolve_boundary!(
 
     if bcs[1] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
-            vn = KS.vSpace.u .* a1face[1, j].n[1] .+ KS.vSpace.v .* a1face[1, j].n[2]
-            vt = KS.vSpace.v .* a1face[1, j].n[1] .- KS.vSpace.u .* a1face[1, j].n[2]
+            n = -KS.ps.n[1, j, 4]
+            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
+            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
             xc = (KS.ps.vertices[1, j, 1, 1] + KS.ps.vertices[1, j, 4, 1]) / 2
             yc = (KS.ps.vertices[1, j, 1, 2] + KS.ps.vertices[1, j, 4, 2]) / 2
-            bcL = local_frame(KS.ib.bc(xc, yc), a1face[1, j].n[1], a1face[1, j].n[2])
+            bcL = local_frame(KS.ib.bc(xc, yc), n)
             flux_boundary_maxwell!(
                 a1face[1, j].fw,
                 a1face[1, j].fh,
@@ -40,18 +41,18 @@ function evolve_boundary!(
                 dy[1, j],
                 1,
             )
-            a1face[1, j].fw .=
-                global_frame(a1face[1, j].fw, a1face[1, j].n[1], a1face[1, j].n[2])
+            a1face[1, j].fw .= global_frame(a1face[1, j].fw, n)
         end
     end
 
     if bcs[2] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
-            vn = KS.vSpace.u .* a1face[nx+1, j].n[1] .+ KS.vSpace.v .* a1face[nx+1, j].n[2]
-            vt = KS.vSpace.v .* a1face[nx+1, j].n[1] .- KS.vSpace.u .* a1face[nx+1, j].n[2]
+            n = KS.ps.n[nx, j, 2]
+            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
+            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
             xc = (KS.ps.vertices[nx, j, 2, 1] + KS.ps.vertices[nx, j, 3, 1]) / 2
             yc = (KS.ps.vertices[nx, j, 2, 2] + KS.ps.vertices[nx, j, 3, 2]) / 2
-            bcR = local_frame(KS.ib.bc(xc, yc), a1face[nx+1, j].n[1], a1face[nx+1, j].n[2])
+            bcR = local_frame(KS.ib.bc(xc, yc), n)
             flux_boundary_maxwell!(
                 a1face[nx+1, j].fw,
                 a1face[nx+1, j].fh,
@@ -67,18 +68,18 @@ function evolve_boundary!(
                 dy[nx, j],
                 -1,
             )
-            a1face[nx+1, j].fw .=
-                global_frame(a1face[nx+1, j].fw, a1face[nx+1, j].n[1], a1face[nx+1, j].n[2])
+            a1face[nx+1, j].fw .= global_frame(a1face[nx+1, j].fw, n)
         end
     end
 
     if bcs[3] == :maxwell
         @inbounds Threads.@threads for i = 1:nx
-            vn = KS.vSpace.u .* a2face[i, 1].n[1] .+ KS.vSpace.v .* a2face[i, 1].n[2]
-            vt = KS.vSpace.v .* a2face[i, 1].n[1] .- KS.vSpace.u .* a2face[i, 1].n[2]
+            n = -KS.ps.n[i, 1, 1]
+            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
+            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
             xc = (KS.ps.vertices[i, 1, 1, 1] + KS.ps.vertices[i, 1, 2, 1]) / 2
             yc = (KS.ps.vertices[i, 1, 1, 2] + KS.ps.vertices[i, 1, 2, 2]) / 2
-            bcD = local_frame(KS.ib.bc(xc, yc), a2face[i, 1].n[1], a2face[i, 1].n[2])
+            bcD = local_frame(KS.ib.bc(xc, yc), n)
 
             flux_boundary_maxwell!(
                 a2face[i, 1].fw,
@@ -95,18 +96,17 @@ function evolve_boundary!(
                 dx[i, 1],
                 1,
             )
-            a2face[i, 1].fw .=
-                global_frame(a2face[i, 1].fw, a2face[i, 1].n[1], a2face[i, 1].n[2])
+            a2face[i, 1].fw .= global_frame(a2face[i, 1].fw, n)
         end
     end
 
     if bcs[4] == :maxwell
         @inbounds Threads.@threads for i = 1:nx
-            vn = KS.vSpace.u .* a2face[i, ny+1].n[1] .+ KS.vSpace.v .* a2face[i, ny+1].n[2]
-            vt = KS.vSpace.v .* a2face[i, ny+1].n[1] .- KS.vSpace.u .* a2face[i, ny+1].n[2]
+            n = KS.ps.n[i, ny, 3]
+            vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[i, ny, 3, 1] + KS.ps.vertices[i, ny, 4, 1]) / 2
             yc = (KS.ps.vertices[i, ny, 3, 2] + KS.ps.vertices[i, ny, 4, 2]) / 2
-            bcU = local_frame(KS.ib.bc(xc, yc), a2face[i, ny+1].n[1], a2face[i, ny+1].n[2])
+            bcU = local_frame(KS.ib.bc(xc, yc), n)
 
             flux_boundary_maxwell!(
                 a2face[i, ny+1].fw,
@@ -123,8 +123,7 @@ function evolve_boundary!(
                 dx[i, ny],
                 -1,
             )
-            a2face[i, ny+1].fw .=
-                global_frame(a2face[i, ny+1].fw, a2face[i, ny+1].n[1], a2face[i, ny+1].n[2])
+            a2face[i, ny+1].fw .= global_frame(a2face[i, ny+1].fw, n)
         end
     end
 

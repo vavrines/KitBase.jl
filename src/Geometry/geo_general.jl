@@ -114,6 +114,19 @@ end
 
 """
 $(SIGNATURES)
+"""
+function local_velocity(u, v, cosa, sina)
+    vn = @. u * cosa + v * sina
+    vt = @. v * cosa - u * sina
+
+    return vn, vt
+end
+
+local_velocity(u, v, n) = local_velocity(u, v, n[1], n[2])
+
+
+"""
+$(SIGNATURES)
 
 Calculate unit normal vector
 """

@@ -7,7 +7,7 @@ export advection_flux, burgers_flux, euler_flux, euler_jacobi, em_coefficients
 export gauss_moments, mixture_gauss_moments, discrete_moments
 export moments_conserve, diatomic_moments_conserve, mixture_moments_conserve
 export pdf_slope, mixture_pdf_slope, moments_conserve_slope, mixture_moments_conserve_slope
-export pressure, stress, heat_flux
+export flux_conserve!, pressure, stress, heat_flux
 export maxwellian, maxwellian!, mixture_maxwellian, mixture_maxwellian!
 export shakhov, shakhov!, rykov!
 export reduce_distribution, full_distribution
