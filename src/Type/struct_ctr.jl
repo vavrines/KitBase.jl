@@ -22,6 +22,11 @@ mutable struct ControlVolume{T1,T2,T3,ND} <: AbstractControlVolume
     sw::T3
 end
 
+function ControlVolume(w, prim, sw)
+    n = size(w, 1) - 2
+    return ControlVolume{typeof(w),typeof(prim),typeof(sw),n}(w, prim, sw)
+end
+
 function Base.show(io::IO, ctr::ControlVolume{A,B,C,N}) where {A,B,C,N}
     print(
         io,
@@ -48,6 +53,11 @@ struct ControlVolume1F{T1,T2,T3,T4,ND} <: AbstractControlVolume
     sw::T2
     f::T3
     sf::T4
+end
+
+function ControlVolume1F(w, prim, sw, f, sf)
+    n = size(w, 1) - 2
+    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),n}(w, prim, sw, f, sf)
 end
 
 function Base.show(io::IO, ctr::ControlVolume1F{A,B,C,D,N}) where {A,B,C,D,N}
@@ -82,6 +92,11 @@ struct ControlVolume2F{T1,T2,T3,T4,ND} <: AbstractControlVolume
     sb::T4
 end
 
+function ControlVolume2F(w, prim, sw, h, b, sh, sb)
+    n = size(w, 1) - 2
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),n}(w, prim, sw, h, b, sh, sb)
+end
+
 function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}
     print(
         io,
@@ -105,7 +120,7 @@ $(SIGNATURES)
 
 Construct control volume...
 """
-function ControlVolume(W, PRIM, ND)
+function ControlVolume(W, PRIM, ND::Integer)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = begin
@@ -122,7 +137,7 @@ end
 """
 $(SIGNATURES)
 """
-function ControlVolume(W, PRIM, F, ND)
+function ControlVolume(W, PRIM, F, ND::Integer)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     f = deepcopy(F)
@@ -140,7 +155,7 @@ end
 """
 $(SIGNATURES)
 """
-function ControlVolume(W, PRIM, H, B, ND)
+function ControlVolume(W, PRIM, H, B, ND::Integer)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     h = deepcopy(H)

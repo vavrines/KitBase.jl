@@ -20,6 +20,11 @@ mutable struct Interface{T,ND} <: AbstractInterface
     fw::T
 end
 
+function Interface(fw)
+    n = size(fw, 1) - 2
+    return Interface{typeof(fw),n}(fw)
+end
+
 
 """
 $(TYPEDEF)
@@ -33,6 +38,11 @@ $(FIELDS)
 struct Interface1F{T1,T2,ND} <: AbstractInterface
     fw::T1
     ff::T2
+end
+
+function Interface1F(fw, ff)
+    n = size(fw, 1) - 2
+    return Interface1F{typeof(fw),typeof(ff),n}(fw, ff)
 end
 
 
@@ -51,6 +61,11 @@ struct Interface2F{T1,T2,ND} <: AbstractInterface
     fb::T2
 end
 
+function Interface2F(fw, fh, fb)
+    n = size(fw, 1) - 2
+    return Interface2F{typeof(fw),typeof(fh),n}(fw, fh, fb)
+end
+
 
 struct Interface3F{T1,T2,ND} <: AbstractInterface end
 
@@ -62,7 +77,7 @@ $(SIGNATURES)
 
 Construct cell interface
 """
-function Interface(W, ND)
+function Interface(W, ND::Integer)
     fw = zero(W)
 
     return Interface{typeof(fw),ND}(fw)
@@ -71,7 +86,7 @@ end
 """
 $(SIGNATURES)
 """
-function Interface(W, F, ND)
+function Interface(W, F, ND::Integer)
     fw = zero(W)
     ff = zero(F)
 
@@ -81,7 +96,7 @@ end
 """
 $(SIGNATURES)
 """
-function Interface(W, H, B, ND)
+function Interface(W, H, B, ND::Integer)
     fw = deepcopy(W)
     fh = zero(H)
     fb = zero(B)
