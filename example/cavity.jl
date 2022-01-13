@@ -1,4 +1,4 @@
-import KitBase
+using KitBase
 
 cd(@__DIR__)
 ks, ctr, a1face, a2face, simTime = KitBase.initialize("cavity.txt")
@@ -18,7 +18,6 @@ end
 
 # lower-level backend 
 @showprogress for iter = 1:nt
-    # horizontal flux
     @inbounds Threads.@threads for j = 1:ks.pSpace.ny
         for i = 2:ks.pSpace.nx
             KitBase.flux_kfvs!(
@@ -33,7 +32,7 @@ end
                 ks.vSpace.v,
                 ks.vSpace.weights,
                 dt,
-                a1face[i, j].len,
+                ks.ps.dy[i, j],
             )
         end
     end
@@ -55,7 +54,7 @@ end
                 vt,
                 ks.vSpace.weights,
                 dt,
-                a2face[i, j].len,
+                ks.ps.dy[i, j],
             )
             a2face[i, j].fw .= KitBase.global_frame(a2face[i, j].fw, 0.0, 1.0)
         end
@@ -67,7 +66,7 @@ end
             a1face[1, j].fw,
             a1face[1, j].fh,
             a1face[1, j].fb,
-            ks.ib.bcL,
+            [1.0, 0.0, 0.0, 1.0],
             ctr[1, j].h,
             ctr[1, j].b,
             ks.vSpace.u,
@@ -75,7 +74,7 @@ end
             ks.vSpace.weights,
             ks.gas.K,
             dt,
-            ctr[1, j].dy,
+            ks.ps.dy[1, j],
             1.0,
         )
 
@@ -83,7 +82,7 @@ end
             a1face[ks.pSpace.nx+1, j].fw,
             a1face[ks.pSpace.nx+1, j].fh,
             a1face[ks.pSpace.nx+1, j].fb,
-            ks.ib.bcR,
+            [1.0, 0.0, 0.0, 1.0],
             ctr[ks.pSpace.nx, j].h,
             ctr[ks.pSpace.nx, j].b,
             ks.vSpace.u,
@@ -91,7 +90,7 @@ end
             ks.vSpace.weights,
             ks.gas.K,
             dt,
-            ctr[ks.pSpace.nx, j].dy,
+            ks.ps.dy[ks.pSpace.nx, j],
             -1.0,
         )
     end
@@ -101,7 +100,7 @@ end
             a2face[i, 1].fw,
             a2face[i, 1].fh,
             a2face[i, 1].fb,
-            ks.ib.bcD,
+            [1.0, 0.0, 0.0, 1.0],
             ctr[i, 1].h,
             ctr[i, 1].b,
             vn,
@@ -109,7 +108,7 @@ end
             ks.vSpace.weights,
             ks.gas.K,
             dt,
-            ctr[i, 1].dx,
+            ks.ps.dx[i, 1],
             1,
         )
         a2face[i, 1].fw .= KitBase.global_frame(a2face[i, 1].fw, 0.0, 1.0)
@@ -126,7 +125,7 @@ end
             ks.vSpace.weights,
             ks.gas.K,
             dt,
-            ctr[i, ks.pSpace.ny].dy,
+            ks.ps.dy[i, ks.pSpace.ny],
             -1,
         )
         a2face[i, ks.pSpace.ny+1].fw .=
@@ -134,7 +133,7 @@ end
     end
 
     # update
-    @inbounds for j = 1:ks.pSpace.ny
+    @inbounds Threads.@threads for j = 1:ks.pSpace.ny
         for i = 1:ks.pSpace.nx
             KitBase.step!(
                 ctr[i, j].w,
@@ -161,7 +160,7 @@ end
                 ks.gas.μᵣ,
                 ks.gas.ω,
                 ks.gas.Pr,
-                ctr[i, j].dx * ctr[i, j].dy,
+                ks.ps.dx[i, j] * ks.ps.dy[i, j],
                 dt,
                 zeros(4),
                 zeros(4),
@@ -172,18 +171,19 @@ end
 end
 
 # visulization
-KitBase.plot_contour(ks, ctr)
 using Plots
-savefig("cavity.png")
+plot(ks, ctr)
+#savefig("cavity.png")
+
 # low-level backend
 begin
     using Plots
     sol = zeros(4, ks.pSpace.nx, ks.pSpace.ny)
-    for i in axes(ρ, 1)
-        for j in axes(ρ, 2)
+    for i in axes(sol, 2)
+        for j in axes(sol, 3)
             sol[1:3, i, j] .= ctr[i, j].prim[1:3]
             sol[4, i, j] = 1.0 / ctr[i, j].prim[4]
         end
     end
-    contourf(ks.pSpace.x[1:ks.pSpace.nx, 1], ks.pSpace.y[1, 1:ks.pSpace.ny], sol[3, :, :]')
+    contourf(ks.pSpace.x[1:ks.pSpace.nx, 1], ks.pSpace.y[1, 1:ks.pSpace.ny], sol[4, :, :]')
 end

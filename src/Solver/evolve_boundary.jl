@@ -21,8 +21,7 @@ function evolve_boundary!(
     if bcs[1] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
             n = -KS.ps.n[1, j, 4]
-            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+            vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[1, j, 1, 1] + KS.ps.vertices[1, j, 4, 1]) / 2
             yc = (KS.ps.vertices[1, j, 1, 2] + KS.ps.vertices[1, j, 4, 2]) / 2
             bcL = local_frame(KS.ib.bc(xc, yc), n)
@@ -48,8 +47,7 @@ function evolve_boundary!(
     if bcs[2] == :maxwell
         @inbounds Threads.@threads for j = 1:ny
             n = KS.ps.n[nx, j, 2]
-            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+            vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[nx, j, 2, 1] + KS.ps.vertices[nx, j, 3, 1]) / 2
             yc = (KS.ps.vertices[nx, j, 2, 2] + KS.ps.vertices[nx, j, 3, 2]) / 2
             bcR = local_frame(KS.ib.bc(xc, yc), n)
@@ -75,8 +73,7 @@ function evolve_boundary!(
     if bcs[3] == :maxwell
         @inbounds Threads.@threads for i = 1:nx
             n = -KS.ps.n[i, 1, 1]
-            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+            vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[i, 1, 1, 1] + KS.ps.vertices[i, 1, 2, 1]) / 2
             yc = (KS.ps.vertices[i, 1, 1, 2] + KS.ps.vertices[i, 1, 2, 2]) / 2
             bcD = local_frame(KS.ib.bc(xc, yc), n)

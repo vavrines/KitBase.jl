@@ -39,7 +39,7 @@ nvg = 0
 
 # gas
 knudsen = 0.075
-mach = 2.0
+mach = 0.0
 prandtl = 1.0
 inK = 1.0
 omega = 0.72
