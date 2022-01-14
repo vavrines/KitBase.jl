@@ -92,8 +92,20 @@ begin
     pSpace = KitBase.PSpace1D(x0, x1, nx, nxg)
     vSpace = KitBase.VSpace1D(umin, umax, nu, vMeshType, nug)
     μᵣ = KitBase.ref_vhs_vis(knudsen, alphaRef, omegaRef)
-    gas =
-        KitBase.Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ, mass, 0, ())
+    gas = KitBase.Gas(
+        knudsen,
+        mach,
+        prandtl,
+        inK,
+        γ,
+        omega,
+        alphaRef,
+        omegaRef,
+        μᵣ,
+        mass,
+        0,
+        (),
+    )
 
     primL = [1.0, 0.0, -1.0, 1.0] # left wall
     primR = [1.0, 0.0, 1.0, 1.0] # right wall

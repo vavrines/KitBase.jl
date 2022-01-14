@@ -1,10 +1,13 @@
 """
-    slope_array(w; reduction = true)
+$(SIGNATURES)
 
 Generate array to store spatial slopes of solutions
 """
 slope_array(w::Number; kwargs...) = deepcopy(w)
 
+"""
+$(SIGNATURES)
+"""
 function slope_array(w::AA; reduction = true)
     nd = ndims(w)
     ids = []

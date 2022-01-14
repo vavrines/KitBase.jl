@@ -1,5 +1,5 @@
 """
-    symbolize(x)
+$(SIGNATURES)
 
 Generalized surrogate function of `Symbol`
 """
@@ -8,7 +8,7 @@ symbolize(x::AA{T}) where {T<:AbstractString} = [symbolize(y) for y in x]
 
 
 """
-    static_array(x)
+$(SIGNATURES)
 
 Transform to static array
 """
@@ -78,7 +78,7 @@ end
 
 
 """
-    dynamic_array(x)
+$(SIGNATURES)
 
 Transform to dynamic array
 """

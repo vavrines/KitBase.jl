@@ -1,94 +1,22 @@
 """
-    update!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        dt,
-        residual; # 1D / 2D
-        coll = :bgk::Symbol,
-        bc = :fix::Symbol,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{ControlVolume1D1F,1},
-        Z<:AA{Interface1D1F,1},
-    }
-
-    update!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        dt,
-        residual; # 1D / 2D
-        coll = :bgk::Symbol,
-        bc = :extra::Symbol,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{ControlVolume1D2F,1},
-        Z<:AA{Interface1D2F,1},
-    }
-
-    update!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        dt,
-        residual; # 1D / 2D
-        coll = :bgk::Symbol,
-        bc = :extra::Symbol,
-        isMHD = true::Bool,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{ControlVolume1D3F,1},
-        Z<:AA{Interface1D3F,1},
-    }
-
-    update!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        dt,
-        residual; # 1D / 2D
-        coll = :bgk::Symbol,
-        bc = :extra::Symbol,
-        isMHD = true::Bool,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{ControlVolume1D4F,1},
-        Z<:AA{Interface1D4F,1},
-    }
-
-    update!(
-        KS::X,
-        ctr::Y,
-        a1face::Z,
-        a2face::Z,
-        dt,
-        residual; # 1D / 2D
-        coll = :bgk::Symbol,
-        bc = :fix::Symbol,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{ControlVolume2D2F,2},
-        Z<:AA{Interface2D2F,2},
-    }
+$(TYPEDSIGNATURES)
 
 Update flow variables over control volumes
-
 """
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
-    residual::T; # 1D / 2D
+    residual::FN; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D,1},Z<:AA{Interface1D,1},T<:FN}
+) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+    @inbounds @threads for i = 1:KS.pSpace.nx
         ctr[i].w, sumRes, sumAvg = step!(
             face[i].fw,
             ctr[i].w,
@@ -121,20 +49,20 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
-    residual::AA{T}; # 1D / 2D
+    residual::AA{<:FN}; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D,1},Z<:AA{Interface1D,1},T<:FN}
+) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 ctr[i].w,
@@ -147,7 +75,7 @@ function update!(
             )
         end
     elseif ndims(sumRes) == 2
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 ctr[i].w,
@@ -182,21 +110,21 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D1F,1},Z<:AA{Interface1D1F,1}}
+) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     phase = KS.set.space[3:end]
     if phase == "1f1v"
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 face[i].ff,
@@ -220,7 +148,7 @@ function update!(
         end
     elseif phase == "1f3v"
         if KS.set.collision == "fsm"
-            @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+            @inbounds @threads for i = 2:KS.pSpace.nx-1
                 step!(
                     face[i].fw,
                     face[i].ff,
@@ -243,7 +171,7 @@ function update!(
                 )
             end
         else
-            @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+            @inbounds @threads for i = 2:KS.pSpace.nx-1
                 step!(
                     face[i].fw,
                     face[i].ff,
@@ -285,20 +213,20 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D2F,1},Z<:AA{Interface1D2F,1}}
+) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 face[i].fh,
@@ -325,7 +253,7 @@ function update!(
             )
         end
     elseif ndims(sumRes) == 2
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 face[i].fh,
@@ -371,20 +299,20 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D3F,1},Z<:AA{Interface1D3F,1}}
+) where {TC<:ControlVolume1D3F,TF<:Interface1D3F}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+    @inbounds @threads for i = 2:KS.pSpace.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
@@ -487,20 +415,20 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D4F,1},Z<:AA{Interface1D4F,1}}
+) where {TC<:ControlVolume1D4F,TF<:Interface1D4F}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+    @inbounds @threads for i = 2:KS.pSpace.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
@@ -528,15 +456,15 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D,2},Z<:AA{Interface2D,2}}
+) where {TC<:Union{ControlVolume,ControlVolume2D},TF<:Union{Interface,Interface2D}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -551,7 +479,7 @@ function update!(
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:ny-1
+        @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
@@ -595,15 +523,15 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D1F,2},Z<:AA{Interface2D1F,2}}
+) where {TC<:Union{ControlVolume1F,ControlVolume2D1F},TF<:Union{Interface1F,Interface2D1F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -618,7 +546,7 @@ function update!(
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:ny-1
+        @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
@@ -675,15 +603,15 @@ end
 
 #--- 2d2f ---#
 function update!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D2F,2},Z<:AA{Interface2D2F,2}}
+) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -698,7 +626,7 @@ function update!(
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:ny-1
+        @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
@@ -760,19 +688,19 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{ControlVolumeUS},
+    face::AV{T},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolumeUS,1},Z<:AA{Interface2D,1}}
+) where {T<:Union{Interface,Interface2D}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
@@ -802,19 +730,19 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{ControlVolumeUS1F},
+    face::AV{T},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolumeUS1F,1},Z<:AA{Interface2D1F,1}}
+) where {T<:Union{Interface1F,Interface2D1F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
@@ -857,19 +785,19 @@ function update!(
 end
 
 function update!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{ControlVolumeUS2F},
+    face::AV{T},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolumeUS2F,1},Z<:AA{Interface2D2F,1}}
+) where {T<:Union{Interface2F,Interface2D2F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 

@@ -1,5 +1,5 @@
 """
-    ib_cavity(set, ps, vs, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
+$(SIGNATURES)
 
 Initialize lid-driven cavity
 """
@@ -17,9 +17,7 @@ function ib_cavity(
 
         prim = [1.0, 0.0, 0.0, 1.0]
         w = prim_conserve(prim, gas.γ)
-        h = maxwellian(vs.u, vs.v, prim)
-        b = h .* gas.K / 2.0 / prim[end]
-
+        
         primU = [1.0, Um, Vm, Tm]
         primD = deepcopy(prim)
         primL = deepcopy(prim)
@@ -40,12 +38,15 @@ function ib_cavity(
         if set.space[1:4] == "2d0f"
             return fw, bc
         elseif set.space == "2d1f2v"
+            h = maxwellian(vs.u, vs.v, prim)
             ff = function (args...)
                 return h
             end
 
             return fw, ff, bc
         elseif set.space == "2d2f2v"
+            h = maxwellian(vs.u, vs.v, prim)
+            b = h .* gas.K / 2.0 / prim[end]
             ff = function (args...)
                 return h, b
             end

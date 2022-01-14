@@ -1,16 +1,13 @@
 """
-    struct PSpace1D{TR,TI<:Integer,TA<:AA} <: AbstractPhysicalSpace
-        x0::TR
-        x1::TR
-        nx::TI
-        x::TA
-        dx::TA
-    end
+$(TYPEDEF)
 
 1D physical space with structured mesh
 
+# Fields
+
+$(FIELDS)
 """
-struct PSpace1D{TR,TI<:Integer,TA<:AA} <: AbstractPhysicalSpace1D
+struct PSpace1D{TR<:Real,TI<:Integer,TA<:AA} <: AbstractPhysicalSpace1D
     x0::TR
     x1::TR
     nx::TI
@@ -45,24 +42,15 @@ PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 
 
 """
-    struct PSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <: AbstractPhysicalSpace2D
-        x0::TR
-        x1::TR
-        nx::TI
-        y0::TR
-        y1::TR
-        ny::TI
-        x::TA
-        y::TA
-        dx::TA
-        dy::TA
-        vertices::TB
-    end
+$(TYPEDEF)
 
-2D Physical space with structured mesh
+2D physical space with structured mesh
 
+# Fields
+
+$(FIELDS)
 """
-struct PSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <:
+struct PSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4},TC,TD} <:
        AbstractPhysicalSpace2D
     x0::TR
     x1::TR
@@ -75,6 +63,8 @@ struct PSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <:
     dx::TA
     dy::TA
     vertices::TB
+    areas::TC
+    n::TD
 end
 
 function PSpace2D(
@@ -123,7 +113,63 @@ function PSpace2D(
         vertices[i, j, 4, 2] = y[i, j] + 0.5 * dy[i, j]
     end
 
-    return PSpace2D{TR,TI,typeof(x),typeof(vertices)}(
+    areas = [0.0 for i in axes(x, 1), j in axes(x, 2), k = 1:4]
+    for j in axes(x, 2), i in axes(x, 1)
+        areas[i, j, 1] = point_distance(vertices[i, j, 1, :], vertices[i, j, 2, :])
+        areas[i, j, 2] = point_distance(vertices[i, j, 2, :], vertices[i, j, 3, :])
+        areas[i, j, 3] = point_distance(vertices[i, j, 3, :], vertices[i, j, 4, :])
+        areas[i, j, 4] = point_distance(vertices[i, j, 4, :], vertices[i, j, 1, :])
+    end
+
+    n = [zeros(2) for i in axes(x, 1), j in axes(x, 2), k = 1:4]
+    for j in axes(x, 2), i in axes(x, 1)
+        n1 = unit_normal(vertices[i, j, 1, :], vertices[i, j, 2, :])
+        n1 .= ifelse(
+            dot(
+                n1,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 1, :] .+ vertices[i, j, 2, :]) ./ 2,
+            ) <= 0,
+            n1,
+            -n1,
+        )
+
+        n2 = unit_normal(vertices[i, j, 2, :], vertices[i, j, 3, :])
+        n2 .= ifelse(
+            dot(
+                n2,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 2, :] .+ vertices[i, j, 3, :]) ./ 2,
+            ) <= 0,
+            n2,
+            -n2,
+        )
+
+        n3 = unit_normal(vertices[i, j, 3, :], vertices[i, j, 4, :])
+        n3 .= ifelse(
+            dot(
+                n3,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 3, :] .+ vertices[i, j, 4, :]) ./ 2,
+            ) <= 0,
+            n3,
+            -n3,
+        )
+
+        n4 = unit_normal(vertices[i, j, 4, :], vertices[i, j, 1, :])
+        n4 .= ifelse(
+            dot(
+                n4,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 4, :] .+ vertices[i, j, 1, :]) ./ 2,
+            ) <= 0,
+            n4,
+            -n4,
+        )
+
+        n[i, j, 1] .= n1
+        n[i, j, 2] .= n2
+        n[i, j, 3] .= n3
+        n[i, j, 4] .= n4
+    end
+
+    return PSpace2D{TR,TI,typeof(x),typeof(vertices),typeof(areas),typeof(n)}(
         X0,
         X1,
         NX,
@@ -135,6 +181,8 @@ function PSpace2D(
         dx,
         dy,
         vertices,
+        areas,
+        n,
     )
 end
 
@@ -143,11 +191,15 @@ PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45
 
 
 """
+$(TYPEDEF)
 
 2D Circular space in polar coordinates
 
+# Fields
+
+$(FIELDS)
 """
-struct CSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <:
+struct CSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4},TC,TD} <:
        AbstractPhysicalSpace2D
     r0::TR
     r1::TR
@@ -163,6 +215,8 @@ struct CSpace2D{TR<:Real,TI<:Integer,TA<:AM{<:Real},TB<:AA{<:Real,4}} <:
     dθ::TA
     darc::TA
     vertices::TB
+    areas::TC
+    n::TD
 end
 
 function CSpace2D(
@@ -218,7 +272,63 @@ function CSpace2D(
         vertices[i, j, 4, 2] = (r[i, j] - 0.5 * dr[i, j]) * sin(θ[i, j] + 0.5 * dθ[i, j])
     end
 
-    return CSpace2D{TR,TI,typeof(x),typeof(vertices)}(
+    areas = [0.0 for i in axes(x, 1), j in axes(x, 2), k = 1:4]
+    for j in axes(x, 2), i in axes(x, 1)
+        areas[i, j, 1] = point_distance(vertices[i, j, 1, :], vertices[i, j, 2, :])
+        areas[i, j, 2] = point_distance(vertices[i, j, 2, :], vertices[i, j, 3, :])
+        areas[i, j, 3] = point_distance(vertices[i, j, 3, :], vertices[i, j, 4, :])
+        areas[i, j, 4] = point_distance(vertices[i, j, 4, :], vertices[i, j, 1, :])
+    end
+
+    n = [zeros(2) for i in axes(x, 1), j in axes(x, 2), k = 1:4]
+    for j in axes(x, 2), i in axes(x, 1)
+        n1 = unit_normal(vertices[i, j, 1, :], vertices[i, j, 2, :])
+        n1 .= ifelse(
+            dot(
+                n1,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 1, :] .+ vertices[i, j, 2, :]) ./ 2,
+            ) <= 0,
+            n1,
+            -n1,
+        )
+
+        n2 = unit_normal(vertices[i, j, 2, :], vertices[i, j, 3, :])
+        n2 .= ifelse(
+            dot(
+                n2,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 2, :] .+ vertices[i, j, 3, :]) ./ 2,
+            ) <= 0,
+            n2,
+            -n2,
+        )
+
+        n3 = unit_normal(vertices[i, j, 3, :], vertices[i, j, 4, :])
+        n3 .= ifelse(
+            dot(
+                n3,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 3, :] .+ vertices[i, j, 4, :]) ./ 2,
+            ) <= 0,
+            n3,
+            -n3,
+        )
+
+        n4 = unit_normal(vertices[i, j, 4, :], vertices[i, j, 1, :])
+        n4 .= ifelse(
+            dot(
+                n4,
+                [x[i, j], y[i, j]] .- (vertices[i, j, 4, :] .+ vertices[i, j, 1, :]) ./ 2,
+            ) <= 0,
+            n4,
+            -n4,
+        )
+
+        n[i, j, 1] .= n1
+        n[i, j, 2] .= n2
+        n[i, j, 3] .= n3
+        n[i, j, 4] .= n4
+    end
+
+    return CSpace2D{TR,TI,typeof(x),typeof(vertices),typeof(areas),typeof(n)}(
         R0,
         R1,
         NR,
@@ -233,16 +343,18 @@ function CSpace2D(
         dθ,
         darc,
         vertices,
+        areas,
+        n,
     )
 end
 
 
 """
-    uniform_mesh(x0::Real, xnum::Int, dx::Real)
+$(SIGNATURES)
 
 Generate uniform mesh
 """
-function uniform_mesh(x0, xnum::T, dx) where {T<:Int}
+function uniform_mesh(x0, xnum::Integer, dx)
     points = zeros(xnum)
     for i = 1:xnum
         points[i] = x0 + (i - 0.5) * dx
@@ -253,14 +365,15 @@ end
 
 
 """
-    ndgrid(v::AV)
-    ndgrid(v1::AV{T}, v2::AV{T}) where T
-    ndgrid(vs::AV{T}...) where T
+$(SIGNATURES)
 
 Equivalent N-dimensional mesh generator as matlab
 """
 ndgrid(v::AV) = copy(v)
 
+"""
+$(SIGNATURES)
+"""
 function ndgrid(v1::AV{T}, v2::AV{T}) where {T}
     m, n = length(v1), length(v2)
     v1 = reshape(v1, m, 1)
@@ -269,6 +382,9 @@ function ndgrid(v1::AV{T}, v2::AV{T}) where {T}
     return (repeat(v1, 1, n), repeat(v2, m, 1))
 end
 
+"""
+$(SIGNATURES)
+"""
 function ndgrid(vs::AV{T}...) where {T}
     ndgrid_fill(a, v, s, snext) = begin
         for j = 1:length(a)
@@ -293,13 +409,15 @@ end
 
 
 """
-    2D: meshgrid(x::AA{<:Real,1}, y::AA{<:Real,1})
-    3D: meshgrid(x::AA{<:Real,1}, y::AA{<:Real,1}, z::AA{<:Real,1})
+$(SIGNATURES)
 
-Equivalent structured mesh generator as matlab
+Equivalent structured mesh generator as matlab...
 """
 meshgrid(v::AV{T}) where {T} = meshgrid(v, v)
 
+"""
+$(SIGNATURES)
+"""
 function meshgrid(x::T, y::T) where {T<:AV{<:Real}}
     X = [i for j in y, i in x]
     Y = [j for j in y, i in x]
@@ -307,6 +425,9 @@ function meshgrid(x::T, y::T) where {T<:AV{<:Real}}
     return X, Y
 end
 
+"""
+$(SIGNATURES)
+"""
 function meshgrid(x::T, y::T, z::T) where {T<:AV{<:Real}}
     X = [i for k in z, j in y, i in x]
     Y = [j for k in z, j in y, i in x]
@@ -317,16 +438,11 @@ end
 
 
 """
-    find_idx(x::AA{<:Real,1}, p::Real; mode = :nonuniform::Symbol)
+$(SIGNATURES)
 
 Find the location index of a point in mesh
-
-- @arg x: center locations of 1D mesh
-- @arg p: point location
-- @arg mode: choose uniform / nonuniform formulations
-
 """
-function find_idx(x::T, p::Real; mode = :nonuniform::Symbol) where {T<:AA{<:Real,1}}
+function find_idx(x::AV{<:Real}, p::Real; mode = :nonuniform::Symbol)
     if mode == :uniform
         dx = x[2] - x[1]
         return Int(ceil((p - x[1] + 0.5 * dx) / dx)) # point location

@@ -2,7 +2,7 @@
 # Period Functions
 # ============================================================
 
-function bc_period!(ctr::AV{T}, ng = 1) where {T<:AbstractControlVolume}
+function bc_period!(ctr::AV, ng = 1)
     nx = length(ctr) - 2 * ng
 
     for i = 1:ng
@@ -13,7 +13,7 @@ function bc_period!(ctr::AV{T}, ng = 1) where {T<:AbstractControlVolume}
     return nothing
 end
 
-function bc_period!(ctr::AM{T}, ng; dirc) where {T<:AbstractControlVolume}
+function bc_period!(ctr::AM, ng; dirc)
     if dirc == :x
         nx = size(ctr, 1) - 2 * ng
         for j in axes(ctr, 2), i = 1:ng

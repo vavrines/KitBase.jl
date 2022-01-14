@@ -1,20 +1,11 @@
 """
-    struct UnstructPSpace{A,B,C,D,E,F,G,H,I,J,K,L} <: AbstractPhysicalSpace
-        cells::A # all information: cell, line, vertex
-        points::B # locations of vertex points
-        cellid::C # node indices of elements
-        cellType::D # inner/boundary cell
-        cellNeighbors::E # neighboring cells id
-        cellFaces::F # cell edges id
-        cellCenter::G # cell center location
-        cellArea::H # cell size
-        facePoints::I # ids of two points at edge
-        faceCells::J # ids of two cells around edge
-        faceCenter::K # edge center location
-        faceType::L
-    end
+$(TYPEDEF)
 
 Physical space with unstructured mesh
+
+# Fields
+
+$(FIELDS)
 """
 struct UnstructPSpace{
     A,

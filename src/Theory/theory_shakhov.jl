@@ -1,16 +1,11 @@
 """
-    shakhov(u, M, q, prim, Pr)
-    shakhov(u, H, B, q, prim, Pr, K)
-    shakhov(u, v, M, q, prim, Pr)
-    shakhov(u, v, H, B, q, prim, Pr, K)
-    shakhov(u, v, w, M, q, prim, Pr)
+$(SIGNATURES)
 
 Shakhov non-equilibrium part
 
 * @arg: particle velocity quadrature points
 * @arg: discrete Maxwellian
 * @arg: primitive variables, Prandtl number, heat flux, inner degree of freedom
-
 """
 function shakhov(u::AV{X}, M::AV{Y}, q, prim::AV{Z}, Pr) where {X<:FN,Y<:FN,Z<:Real} # 1F1V
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *

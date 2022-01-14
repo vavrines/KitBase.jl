@@ -1,9 +1,7 @@
 """
+$(SIGNATURES)
+
 Calculate moments of Gaussian distribution `G = (λ / π)^(D / 2) * exp[-λ(c^2 + ξ^2)]`
-
-* internality: `gauss_moments(prim::T) where {T<:AA{<:Real,1}}`
-* no internality: `gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}`
-
 """
 function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
 
@@ -62,10 +60,11 @@ function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
 
 end
 
-# ------------------------------------------------------------
-# A more general function
-# deal with absent internality by setting inK = 0
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+A more general function dealing with internal energy
+"""
 function gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}
 
     if eltype(prim) <: Int
@@ -135,19 +134,15 @@ end
 
 
 """
-    moments_conserve(Mu::OffsetArray{<:FN,1}, alpha::Integer)
-
-    moments_conserve(Mu::OffsetArray{<:Real,1}, Mxi::OffsetArray{<:Real,1},
-        alpha::Integer, delta::Integer)
-
-    moments_conserve(Mu::OffsetArray{<:Real,1}, Mv::OffsetArray{<:Real,1},
-        Mw::OffsetArray{<:Real,1}, alpha::Integer, beta::Integer, delta::Integer)
+$(SIGNATURES)
 
 Calculate conservative moments of particle distribution
-
 """
 moments_conserve(Mu::T, alpha::I) where {T<:OffsetArray{<:FN,1},I<:Integer} = Mu[alpha]
 
+"""
+$(SIGNATURES)
+"""
 function moments_conserve(
     Mu::T,
     Mxi::T,
@@ -164,6 +159,9 @@ function moments_conserve(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function moments_conserve(
     Mu::T,
     Mv::T,
@@ -202,10 +200,13 @@ function moments_conserve(
 
 end
 
-# ------------------------------------------------------------
-# Discrete moments of conservative variables
-# ------------------------------------------------------------
-#--- 1F1V ---#
+"""
+$(SIGNATURES)
+
+Discrete moments of conservative variables
+
+1F1V
+"""
 function moments_conserve(f::X, u::T, ω::T) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
     w = similar(f, 3)
     w[1] = discrete_moments(f, u, ω, 0)
@@ -215,7 +216,11 @@ function moments_conserve(f::X, u::T, ω::T) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
     return w
 end
 
-#--- 2F1V ---#
+"""
+$(SIGNATURES)
+
+2F1V
+"""
 function moments_conserve(h::X, b::X, u::T, ω::T) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
     w = similar(h, 3)
     w[1] = discrete_moments(h, u, ω, 0)
@@ -225,7 +230,11 @@ function moments_conserve(h::X, b::X, u::T, ω::T) where {X<:AA{<:FN,1},T<:AA{<:
     return w
 end
 
-#--- 1F2V ---#
+"""
+$(SIGNATURES)
+
+1F2V
+"""
 function moments_conserve(f::X, u::T, v::T, ω::T) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(f, 4)
     w[1] = discrete_moments(f, u, ω, 0)
@@ -236,7 +245,11 @@ function moments_conserve(f::X, u::T, v::T, ω::T) where {X<:AA{<:FN,2},T<:AA{<:
     return w
 end
 
-#--- 2F2V ---#
+"""
+$(SIGNATURES)
+
+2F2V
+"""
 function moments_conserve(h::X, b::X, u::T, v::T, ω::T) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
@@ -252,7 +265,11 @@ function moments_conserve(h::X, b::X, u::T, v::T, ω::T) where {X<:AA{<:FN,2},T<
     return w
 end
 
-#--- 3F2V ---#
+"""
+$(SIGNATURES)
+
+3F2V
+"""
 function moments_conserve(
     h0::X,
     h1::X,
@@ -276,7 +293,11 @@ function moments_conserve(
     return w
 end
 
-#--- 1F3V ---#
+"""
+$(SIGNATURES)
+
+1F3V
+"""
 function moments_conserve(f::X, u::T, v::T, w::T, ω::T) where {X<:AA{<:FN,3},T<:AA{<:FN,3}}
     moments = similar(f, 5)
 
@@ -294,7 +315,11 @@ function moments_conserve(f::X, u::T, v::T, w::T, ω::T) where {X<:AA{<:FN,3},T<
     return moments
 end
 
-#--- 4F1V ---#
+"""
+$(SIGNATURES)
+
+4F1V
+"""
 function moments_conserve(
     h0::X,
     h1::X,
@@ -316,24 +341,9 @@ end
 
 
 """
+$(SIGNATURES)
+
 Calculate conservative moments of diatomic particle distribution
-
-- 1D: `diatomic_moments_conserve(
-    h::X,
-    b::X,
-    r::X,
-    u::T,
-    ω::T,
-) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}`
-- 2D: `diatomic_moments_conserve(
-    h0::X,
-    h1::X,
-    h2::X,
-    u::T,
-    v::T,
-    ω::T,
-) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}`
-
 """
 function diatomic_moments_conserve(
     h::X,
@@ -356,7 +366,9 @@ function diatomic_moments_conserve(
     return w
 end
 
-#--- 3F2V ---#
+"""
+$(SIGNATURES)
+"""
 function diatomic_moments_conserve(
     h0::X,
     h1::X,
@@ -383,6 +395,8 @@ end
 
 
 """
+$(SIGNATURES)
+
 Calculate slope-related conservative moments
 `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
@@ -390,6 +404,9 @@ Calculate slope-related conservative moments
 moments_conserve_slope(a, Mu::T, alpha::I) where {T<:OffsetArray{<:Real,1},I<:Int} =
     a * moments_conserve(Mu, alpha)
 
+"""
+$(SIGNATURES)
+"""
 moments_conserve_slope(
     a::X,
     Mu::Y,
@@ -401,6 +418,9 @@ moments_conserve_slope(
     0.5 * a[3] .* moments_conserve(Mu, Mxi, alpha + 2, 0) .+
     0.5 * a[3] .* moments_conserve(Mu, Mxi, alpha + 0, 2)
 
+"""
+$(SIGNATURES)
+"""
 function moments_conserve_slope(
     a::X,
     Mu::Y,
@@ -432,43 +452,105 @@ end
 
 
 """
-    * direct quadrature
-    discrete_moments(f, ω)
+$(SIGNATURES)
 
-    * velocity moments
-    discrete_moments(f, u, ω, n)
+Calculate conservative moments from microscopic moments
+"""
+function flux_conserve!(fw, args...)
+    if length(fw) == 3
+        return flux_conserve_1d!(fw, args...)
+    elseif length(fw) == 4
+        return flux_conserve_2d!(fw, args...)
+    elseif length(fw) == 5
+        return flux_conserve_3d!(fw, args...)
+    end
+
+    return nothing
+end
+
+#--- 1f1v ---#
+function flux_conserve_1d!(fw, ff, u, ω)
+    fw[1] = sum(ω .* ff)
+    fw[2] = sum(u .* ω .* ff)
+    fw[end] = 0.5 * sum(u.^2 .* ω .* ff)
+end
+
+#--- 2f1v ---#
+function flux_conserve_1d!(fw, fh, fb, u, ω)
+    fw[1] = sum(ω .* fh)
+    fw[2] = sum(u .* ω .* fh)
+    fw[end] = 0.5 * (sum(u.^2 .* ω .* fh) + sum(ω .* fb))
+end
+
+#--- 1f2v ---#
+function flux_conserve_2d!(fw, ff, u, v, ω)
+    fw[1] = sum(ω .* ff)
+    fw[2] = sum(u .* ω .* ff)
+    fw[3] = sum(v .* ω .* ff)
+    fw[end] = 0.5 * sum(u.^2 .* ω .* ff)
+end
+
+#--- 2f2v ---#
+function flux_conserve_2d!(fw, fh, fb, u, v, ω)
+    fw[1] = sum(ω .* fh)
+    fw[2] = sum(u .* ω .* fh)
+    fw[3] = sum(v .* ω .* fh)
+    fw[end] = 0.5 * (sum((u.^2 .+ v.^2) .* ω .* fh) + sum(ω .* fb))
+end
+
+#--- 1f3v ---#
+function flux_conserve_3d!(fw, ff, u, v, w, ω)
+    fw[1] = sum(ω .* ff)
+    fw[2] = sum(u .* ω .* ff)
+    fw[3] = sum(v .* ω .* ff)
+    fw[4] = sum(w .* ω .* ff)
+    fw[end] = 0.5 * sum((u.^2 .+ v.^2 + w.^2) .* ω .* ff)
+end
+
+
+"""
+$(SIGNATURES)
 
 Discrete moments of particle distribution
-
 """
 discrete_moments(f, ω) = sum(@. ω * f)
 
+"""
+$(SIGNATURES)
+"""
 discrete_moments(f, u, ω, n) = sum(@. ω * u^n * f)
 
 
 """
-    pressure(f, prim, u, ω)
-    pressure(h, b, prim, u, ω, K)
-    pressure(h, b, prim, u, v, ω, K)
+$(SIGNATURES)
 
 Calculate pressure from particle distribution function
-
 """
 pressure(f, prim, u, ω) = sum(@. ω * (u - prim[2])^2 * f)
 
+"""
+$(SIGNATURES)
+"""
 pressure(h, b, prim, u, ω, K) =
     (sum(@. ω * (u - prim[2])^2 * h) + sum(@. ω * b)) / (K + 1.0)
 
+"""
+$(SIGNATURES)
+"""
 pressure(h, b, prim, u, v, ω, K) =
     (sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2) * h) + sum(@. ω * b)) / (K + 2.0)
 
 
 """
-Calculate stress tensor from particle distribution function
+$(SIGNATURES)
 
+Calculate stress tensor from particle distribution function
 """
 stress(f, prim, u, ω) = sum(@. ω * (u - prim[2]) * (u - prim[2]) * f)
 
+"""
+$(SIGNATURES)
+"""
 function stress(f, prim, u, v, ω)
     P = similar(prim, 2, 2)
 
@@ -482,23 +564,22 @@ end
 
 
 """
-    heat_flux(f, prim, u, ω)
-    heat_flux(h, b, prim, u, ω)
-    heat_flux(h, b, r, prim, u, ω)
-    heat_flux(f, prim, u, v, ω)
-    heat_flux(h, b, prim, u, v, ω)
-    heat_flux(h, b, r, prim, u, v, ω)
-    heat_flux(f, prim, u, v, w, ω)
+$(SIGNATURES)
 
 Calculate heat flux from particle distribution function
 
 Multiple dispatch doesn't consider unstructured multi-dimensional velocity space.
 In that case a new method needs to be defined.
 
+1F1V
 """
 heat_flux(f, prim, u, ω) = 0.5 * sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * f) # 1F1V
 
-#--- 2F1V ---#
+"""
+$(SIGNATURES)
+
+2F1V
+"""
 heat_flux(
     h::X,
     b::X,
@@ -508,7 +589,11 @@ heat_flux(
 ) where {X<:AA{<:FN,1},Y<:AA{<:Real,1},Z<:AA{<:FN,1}} =
     0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
 
-#--- 3F1V Rykov ---#
+"""
+$(SIGNATURES)
+
+3F1V Rykov model
+"""
 function heat_flux(
     h::X,
     b::X,
@@ -529,7 +614,11 @@ function heat_flux(
 
 end
 
-#--- 1F2V ---#
+"""
+$(SIGNATURES)
+
+1F2V
+"""
 function heat_flux(
     h::X,
     prim::Y,
@@ -546,7 +635,11 @@ function heat_flux(
 
 end
 
-#--- 2F2V ---#
+"""
+$(SIGNATURES)
+
+2F2V
+"""
 function heat_flux(
     h::X,
     b::X,
@@ -573,7 +666,11 @@ function heat_flux(
 
 end
 
-#--- 3F2V Rykov ---#
+"""
+$(SIGNATURES)
+
+3F2V Rykov model
+"""
 function heat_flux(
     h::X,
     b::X,
@@ -603,7 +700,11 @@ function heat_flux(
 
 end
 
-#--- 1F3V ---#
+"""
+$(SIGNATURES)
+
+1F3V
+"""
 function heat_flux(
     f::X,
     prim::Y,

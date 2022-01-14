@@ -1,11 +1,9 @@
 """
-    2D: global_frame(w::AA{<:Real,1}, cosa, sina)
-    3D: global_frame(w::AA{<:Real,1}, dirccos::AA{<:Real,2})
+$(SIGNATURES)
 
 Transform local flow variables to global frame
 """
-function global_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
-
+function global_frame(w::AV, cosa, sina)
     if eltype(w) <: Int
         G = similar(w, Float64)
     else
@@ -25,10 +23,14 @@ function global_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
     end
 
     return G
-
 end
 
-function global_frame(w::T, dirccos::X) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
+global_frame(w::AV, n::AV) = global_frame(w, n[1], n[2])
+
+"""
+$(SIGNATURES)
+"""
+function global_frame(w::AV, dirccos::AM)
     if eltype(w) <: Int
         G = similar(w, Float64)
     else
@@ -54,13 +56,11 @@ end
 
 
 """
-    2D: local_frame(w::AA{<:Real,1}, cosa, sina)
-    3D: local_frame(w::AA{<:Real,1}, dirccos::AA{<:Real,2})
+$(SIGNATURES)
 
 Transform global flow variables to local frame
 """
-function local_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
-
+function local_frame(w::AV, cosa, sina)
     if eltype(w) <: Int
         L = similar(w, Float64)
     else
@@ -80,10 +80,14 @@ function local_frame(w::T, cosa, sina) where {T<:AA{<:Real,1}}
     end
 
     return L
-
 end
 
-function local_frame(w::T, dirccos::X) where {T<:AA{<:Real,1},X<:AA{<:Real,2}}
+local_frame(w::AV, n) = local_frame(w::AV, n[1], n[2])
+
+"""
+$(SIGNATURES)
+"""
+function local_frame(w::AV, dirccos::AM)
     if eltype(w) <: Int
         L = similar(w, Float64)
     else
@@ -109,8 +113,20 @@ end
 
 
 """
-    2D: unit_normal(p1::T, p2::T) where {T<:AV}
-    3D: unit_normal(p1::T, p2::T, p3::T) where {T<:AV}
+$(SIGNATURES)
+"""
+function local_velocity(u, v, cosa, sina)
+    vn = @. u * cosa + v * sina
+    vt = @. v * cosa - u * sina
+
+    return vn, vt
+end
+
+local_velocity(u, v, n) = local_velocity(u, v, n[1], n[2])
+
+
+"""
+$(SIGNATURES)
 
 Calculate unit normal vector
 """
@@ -121,6 +137,9 @@ function unit_normal(p1::T, p2::T) where {T<:AV}
     return [-Δ[2], Δ[1]] ./ l
 end
 
+"""
+$(SIGNATURES)
+"""
 function unit_normal(p1::T, p2::T, p3::T) where {T<:AV}
     v1 = p2 .- p1
     v2 = p3 .- p1
@@ -133,13 +152,15 @@ end
 
 
 """
-    point_distance(p1::T, p2::T) where {T<:AV}
-    point_distance(p::T, p1::T, p2::T) where {T<:AV}
+$(SIGNATURES)
 
 Calculate point-point/line/surface distance
 """
 point_distance(p1::T, p2::T) where {T<:AV} = norm(p1 .- p2)
 
+"""
+$(SIGNATURES)
+"""
 function point_distance(p::T, p1::T, p2::T) where {T<:AV}
     x0, y0 = p
     x1, y1 = p1

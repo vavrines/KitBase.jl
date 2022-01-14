@@ -1,5 +1,5 @@
 """
-    mixture_gauss_moments(prim::AM{T}, inK) where {T<:Real}
+$(SIGNATURES)
 
 Calculate moments of Gaussian distribution in multi-component gas
 """
@@ -65,21 +65,7 @@ end
 
 
 """
-    mixture_moments_conserve(
-        Mu::T,
-        Mxi::T,
-        alpha::I,
-        delta::I,
-    ) where {T<:OffsetArray{<:Real,2},I<:Int}
-
-    function mixture_moments_conserve(
-        Mu::T,
-        Mv::T,
-        Mw::T,
-        alpha::I,
-        beta::I,
-        delta::I,
-    ) where {T<:OffsetArray{<:Real,2},I<:Int}
+$(SIGNATURES)
 
 Calculate conservative moments of particle distribution in multi-component gas
 """
@@ -99,6 +85,9 @@ function mixture_moments_conserve(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function mixture_moments_conserve(
     Mu::T,
     Mv::T,
@@ -117,10 +106,13 @@ function mixture_moments_conserve(
 
 end
 
-# ------------------------------------------------------------
-# Discrete moments of conservative variables
-# ------------------------------------------------------------
-#--- 1F1V ---#
+"""
+$(SIGNATURES)
+
+Discrete moments of conservative variables
+
+1F1V
+"""
 function mixture_moments_conserve(f::X, u::T, ω::T) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
     w = similar(f, 3, size(f, 2))
     for j in axes(w, 2)
@@ -130,7 +122,11 @@ function mixture_moments_conserve(f::X, u::T, ω::T) where {X<:AA{<:FN,2},T<:AA{
     return w
 end
 
-#--- 2F1V ---#
+"""
+$(SIGNATURES)
+
+2F1V
+"""
 function mixture_moments_conserve(
     h::X,
     b::X,
@@ -147,7 +143,11 @@ function mixture_moments_conserve(
 
 end
 
-#--- 4F1V ---#
+"""
+$(SIGNATURES)
+
+4F1V
+"""
 function mixture_moments_conserve(
     h0::X,
     h1::X,
@@ -167,7 +167,11 @@ function mixture_moments_conserve(
 
 end
 
-#--- 1F2V ---#
+"""
+$(SIGNATURES)
+
+1F2V
+"""
 function mixture_moments_conserve(
     f::X,
     u::T,
@@ -184,7 +188,11 @@ function mixture_moments_conserve(
 
 end
 
-#--- 2F2V ---#
+"""
+$(SIGNATURES)
+
+2F2V
+"""
 function mixture_moments_conserve(
     h::X,
     b::X,
@@ -203,7 +211,11 @@ function mixture_moments_conserve(
 
 end
 
-#--- 3F2V ---#
+"""
+$(SIGNATURES)
+
+3F2V
+"""
 function mixture_moments_conserve(
     h0::X,
     h1::X,
@@ -229,7 +241,11 @@ function mixture_moments_conserve(
 
 end
 
-#--- 1F3V ---#
+"""
+$(SIGNATURES)
+
+1F3V
+"""
 function mixture_moments_conserve(
     f::X,
     u::T,
@@ -255,35 +271,10 @@ end
 
 
 """
-mixture_moments_conserve_slope(
-    a::X,
-    Mu::Y,
-    Mxi::Y,
-    alpha::I,
-) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
-
-mixture_moments_conserve_slope(
-    a::X,
-    Mu::Y,
-    Mv::Y,
-    Mxi::Y,
-    alpha::I,
-    beta::I,
-) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
-
-mixture_moments_conserve_slope(
-    a::X,
-    Mu::Y,
-    Mv::Y,
-    Mw::Y,
-    alpha::I,
-    beta::I,
-    delta::I,
-) where {X<:AA{<:Real,2},Y<:OffsetArray{<:Real,2},I<:Integer}
+$(SIGNATURES)
 
 Calculate slope-related conservative moments under the assumption
 `a = a1 + u * a2 + 0.5 * u^2 * a3`
-
 """
 function mixture_moments_conserve_slope(
     a::X,
@@ -301,6 +292,9 @@ function mixture_moments_conserve_slope(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function mixture_moments_conserve_slope(
     a::X,
     Mu::Y,
@@ -320,6 +314,9 @@ function mixture_moments_conserve_slope(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function mixture_moments_conserve_slope(
     a::X,
     Mu::Y,

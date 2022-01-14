@@ -81,13 +81,20 @@ begin
     h = KitBase.maxwellian(u, prim)
     b = h .* inK ./ (2.0 * prim[end])
     x = Float64(x0) # x & dx should be of same type
-    dx = x0 / nx
+    dx = (x1 - x0) / nx
 end
 
 fw = (args...) -> [1.0, 0.0, rand()]
 KitBase.IB(fw, gas) |> show
 
 #--- control volume ---#
+KitBase.ControlVolume(w, prim, 1)
+KitBase.ControlVolume(w, prim, 2)
+KitBase.ControlVolume(w, prim, h, 1)
+KitBase.ControlVolume(w, prim, h, 2)
+KitBase.ControlVolume(w, prim, h, h, 1)
+KitBase.ControlVolume(w, prim, h, h, 2)
+
 KitBase.ControlVolume1D(w, prim) |> show
 KitBase.ControlVolume1D1F(w, prim, h) |> show
 KitBase.ControlVolume1D2F(w, prim, h, b) |> show
@@ -165,44 +172,30 @@ KitBase.Interface2D3F(dx, cosa, sina, w, h, zeros(3, 7)) |> show
 KitBase.Interface2D3F(dx, cosa, sina, w, h) |> show
 
 #--- solution ---#
-sol_w = [w for i = 1:2]
-sol_prim = [prim for i = 1:2]
-sol_h = [h for i = 1:2]
+sol_w = rand(4, 3)
+sol_prim = rand(4, 3)
+sol_h = rand(6, 3)
 KitBase.Solution1D(sol_w, sol_prim)
-KitBase.Solution1D1F(sol_w, sol_prim, sol_h)
-KitBase.Solution1D1F(sol_w, sol_prim, similar(sol_w), sol_h, similar(sol_h))
-KitBase.Solution1D2F(sol_w, sol_prim, sol_h, sol_h)
-KitBase.Solution1D2F(
-    sol_w,
-    sol_prim,
-    similar(sol_w),
-    sol_h,
-    sol_h,
-    similar(sol_h),
-    similar(sol_h),
-)
+KitBase.Solution1D(sol_w, sol_prim, sol_h)
+KitBase.Solution1D(sol_w, sol_prim, sol_h, sol_h)
 
-sol_w = [w for i = 1:2, j = 1:2]
-sol_prim = [prim for i = 1:2, j = 1:2]
-sol_h = [h for i = 1:2, j = 1:2]
+sol_w = rand(4, 3, 2)
+sol_prim = rand(4, 3, 2)
+sol_h = rand(6, 3, 2)
 KitBase.Solution2D(sol_w, sol_prim)
-KitBase.Solution2D1F(sol_w, sol_prim, sol_h)
-KitBase.Solution2D1F(sol_w, sol_prim, similar(sol_w), sol_h, similar(sol_h))
-KitBase.Solution2D2F(sol_w, sol_prim, sol_h, sol_h)
-KitBase.Solution2D2F(
-    sol_w,
-    sol_prim,
-    similar(sol_w),
-    sol_h,
-    sol_h,
-    similar(sol_h),
-    similar(sol_h),
-)
+KitBase.Solution2D(sol_w, sol_prim, sol_h)
+KitBase.Solution2D(sol_w, sol_prim, sol_h, sol_h)
 
 #--- flux ---#
-KitBase.Flux1D(w, w)
-KitBase.Flux1D1F(w, w, h)
-KitBase.Flux1D2F(w, w, h, h)
-KitBase.Flux2D(zeros(2), w, w, zeros(2), w, w)
-KitBase.Flux2D1F(zeros(2), w, w, h, zeros(2), w, w, h)
-KitBase.Flux2D2F(zeros(2), w, w, h, h, zeros(2), w, w, h, h)
+sol_w = rand(4, 3)
+sol_h = rand(6, 3)
+KitBase.Flux1D(sol_w)
+KitBase.Flux1D(sol_w, sol_h)
+KitBase.Flux1D(sol_w, sol_h, sol_h)
+
+sol_w = rand(4, 3, 2)
+sol_h = rand(6, 3, 2)
+n = [rand(2) for i = 1:3, j = 1:2]
+KitBase.Flux2D(n, sol_w)
+KitBase.Flux2D(n, sol_w, sol_h)
+KitBase.Flux2D(n, sol_w, sol_h, sol_h)

@@ -1,19 +1,5 @@
 """
-    wrapper: step!(ks, faceL, cell, faceR, dt, res, avg, collision=:bgk, isMHD=:true)
-
-    1d0f: step!(fwL, w, prim, fwR, γ, dx, RES, AVG)
-
-    1d1f1v: step!(fwL, ffL, w, prim, f, fwR, ffR, u, weights,
-    γ, μᵣ, ω, Pr, dx, dt, RES, AVG, collision=:bgk)
-
-    1d1f3v: step!(fwL, ffL, w, prim, f, fwR, ffR, uVelo, vVelo, wVelo, weights,
-    γ, μᵣ, ω, Pr, dx, dt, RES, AVG, collision=:bgk)
-
-    1d2f1v: step!(fwL, fhL, fbL, w, prim, h, b, fwR, fhR, fbR, u, weights,
-    K, γ, μᵣ, ω, Pr, dx, dt, RES, AVG, collision=:bgk)
-
-    1d2f1v2s: step!(fwL, fhL, fbL, w, prim, h, b, fwR, fhR, fbR, u, weights, K, γ, mi, ni, me, ne,
-    Kn, Pr, dx, dt, RES, AVG, collision=:bgk)
+$(SIGNATURES)
 
 Update flow variables with finite volume formulation
 """
@@ -32,6 +18,9 @@ function step!(fwL::X, w::X, prim::AV{X}, fwR::X, a, dx, RES, AVG) where {X<:FN}
     return w, RES, AVG
 end
 
+"""
+$(SIGNATURES)
+"""
 function step!(
     fwL::X,
     w::Y,
@@ -58,7 +47,11 @@ function step!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function step!(
     fwL::T1,
     w::T2,
@@ -112,9 +105,11 @@ function step!(
 
 end
 
-# ------------------------------------------------------------
-# 1D1F1V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D1F1V
+"""
 function step!(
     fwL::T1,
     ffL::T2,
@@ -167,9 +162,11 @@ function step!(
 
 end
 
-# ------------------------------------------------------------
-# 1D1F3V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D1F3V
+"""
 function step!(
     fwL::T1,
     ffL::T2,
@@ -226,6 +223,11 @@ function step!(
 
 end
 
+"""
+$(SIGNATURES)
+
+1D1F3V @ FSM
+"""
 function step!(
     fwL::T1,
     ffL::T2,
@@ -265,7 +267,11 @@ function step!(
 
 end
 
-#--- 1D2F1V ---#
+"""
+$(SIGNATURES)
+
+1D2F1V
+"""
 function step!(
     fwL::T1,
     fhL::T2,
@@ -327,7 +333,11 @@ function step!(
 
 end
 
-#--- 1D2F1V mixture ---#
+"""
+$(SIGNATURES)
+
+1D2F1V @ Mixture
+"""
 function step!(
     fwL::T1,
     fhL::T2,
@@ -432,7 +442,11 @@ function step!(
 
 end
 
-#--- 1D3F1V (Rykov) ---#
+"""
+$(SIGNATURES)
+
+1D3F1V @ Rykov
+"""
 function step!(
     fwL::T1,
     fhL::T2,
@@ -543,7 +557,11 @@ function step!(
 
 end
 
-#--- 1D4F1V ---#
+"""
+$(SIGNATURES)
+
+1D4F1V
+"""
 function step!(
     KS::T,
     faceL::Interface1D4F,
@@ -775,7 +793,11 @@ function step!(
 
 end
 
-#--- 1D3F2V ---#
+"""
+$(SIGNATURES)
+
+1D3F2V
+"""
 function step!(
     KS::T,
     faceL::Interface1D3F,
@@ -1020,11 +1042,11 @@ function step!(
 
 end
 
-# ------------------------------------------------------------
-# 2D0F
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
 
-#--- triangle ---#
+2D0F @ triangle
+"""
 function step!(
     w::T1,
     prim::T1,
@@ -1051,7 +1073,11 @@ function step!(
 
 end
 
-#--- quadrilateral ---#
+"""
+$(SIGNATURES)
+
+2D0F @ quadrilateral
+"""
 function step!(
     w::T1,
     prim::T1,
@@ -1079,9 +1105,11 @@ function step!(
 
 end
 
-# ------------------------------------------------------------
-# 2D1F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D1F2V
+"""
 function step!(
     w::T1,
     prim::T1,
@@ -1145,7 +1173,11 @@ function step!(
 
 end
 
-#--- triangle ---#
+"""
+$(SIGNATURES)
+
+2D1F2V @ triangle
+"""
 function step!(
     w::T1,
     prim::T1,
@@ -1209,7 +1241,11 @@ function step!(
 
 end
 
-#--- 2D2F2V ---#
+"""
+$(SIGNATURES)
+
+2D2F2V
+"""
 function step!(
     w::T1,
     prim::T1,
@@ -1289,7 +1325,11 @@ function step!(
 
 end
 
-#--- 2D2F2V triangle ---#
+"""
+$(SIGNATURES)
+
+2D2F2V @ triangle
+"""
 function step!(
     w::T1,
     prim::T1,
@@ -1367,6 +1407,9 @@ function step!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function step!(
     w::T3,
     prim::T3,

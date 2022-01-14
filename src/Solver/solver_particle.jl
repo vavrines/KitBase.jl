@@ -3,15 +3,9 @@
 # ============================================================
 
 """
-    sample_particle!(ptc::Particle1D, m, x, v, e, idx, flag, tc)
-    sample_particle!(ptc::Particle1D, m, prim::T, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AA{<:Real,1}}
-    sample_particle!(ptc::Particle1D, m, prim::T, umin, umax, x, dx, idx, μᵣ, ω, flag = 0) where {T<:AA{<:Real,1}}
-    sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx)
-    sample_particle!(ptc::Particle, ip, p)
-    sample_particle!(ptc::Particle, ip, KS::SolverSet, ctr, idx)
+$(SIGNATURES)
     
 Sample particles from local flow conditions
-
 """
 function sample_particle!(ptc::Particle1D, m, x, v, e, idx, flag, tc)
     ptc.m = m
@@ -25,6 +19,9 @@ function sample_particle!(ptc::Particle1D, m, x, v, e, idx, flag, tc)
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function sample_particle!(
     ptc::Particle1D,
     m,
@@ -48,6 +45,9 @@ function sample_particle!(
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function sample_particle!(
     ptc::Particle1D,
     m,
@@ -73,6 +73,9 @@ function sample_particle!(
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx, x, Δx)
     ptc.m = KS.gas.m
     ptc.x = x + (rand() - 0.5) * Δx
@@ -86,6 +89,9 @@ function sample_particle!(ptc::Particle1D, KS::SolverSet, ctr, idx, x, Δx)
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function sample_particle!(ptc::Particle, ip, p)
     m, x, v, e, idx, flag, tc = p
 
@@ -100,6 +106,9 @@ function sample_particle!(ptc::Particle, ip, p)
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function sample_particle!(ptc::Particle, ip, KS::SolverSet, ctr, idx)
     ptc.m[ip] = KS.gas.m
     ptc.x[ip] = ctr.x + (rand() - 0.5) * ctr.dx
@@ -115,10 +124,9 @@ end
 
 
 """
-    free_transport!(KS::SolverSet, x, v, flag, dt, np = length(x))
+$(SIGNATURES)
 
 Flight particles along trajectories
-
 """
 function free_transport!(KS::SolverSet, x, v, flag, dt, np = length(x))
 
@@ -292,10 +300,9 @@ end
 
 
 """
-    particle_boundary_maxwell!(x, v, p)
+$(SIGNATURES)
 
 Maxwell diffusive boundary for particle reflection
-
 """
 function maxwell_boundary!(x, v, p)
 
@@ -546,10 +553,9 @@ end
 
 
 """
+$(SIGNATURES)
+
 Update algorithm for particle transports
-
-    update_transport!(KS::AbstractSolverSet, ctr::ControlVolumeParticle1D, ptc::Particle1D, ptc_temp::Particle1D, dt)
-
 """
 function particle_transport!(
     KS::T1,
@@ -633,10 +639,9 @@ end
 
 
 """
+$(SIGNATURES)
+
 Update algorithm for particle collisions
-
-    update_collision!(KS::AbstractSolverSet, ctr::ControlVolumeParticle1D, ptc::Particle1D, ptc_temp::Particle1D, dt)
-
 """
 function particle_collision!(
     KS::T,
@@ -753,8 +758,9 @@ end
 
 
 """
-Duplicate particles: ptc_new -> ptc
+$(SIGNATURES)
 
+Duplicate particles: ptc_new -> ptc
 """
 function duplicate!(ptc, ptc_new, n = length(ptc))
     @inbounds Threads.@threads for i = 1:n

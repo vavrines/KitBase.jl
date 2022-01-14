@@ -1,11 +1,10 @@
 """
-    read_cfg(filename::T) where {T<:AbstractString}
+$(SIGNATURES)
 
 Read configuration into dictionary
 
 * @arg filename: configuration text file
 * @return vars: dictionary with values of variables
-
 """
 function read_cfg(filename::T) where {T<:AbstractString}
     D = read_dict(filename)
@@ -35,18 +34,15 @@ end
 
 
 """
-    read_dict(filename::T, allowed) where {T<:AbstractString}
-    read_dict(filename::T) where {T<:AbstractString}
+$(SIGNATURES)
 
 Read text into dictionary
 
 * @args filename: configuration text file
 * @args allowed: keywords in range
 * @return vars: dictionary with values of variables
-
 """
 function read_dict(filename::T, allowed) where {T<:AbstractString}
-
     @info "reading config from $filename"
     println("--------------------------------------------------------------")
     f = open(filename)
@@ -77,12 +73,14 @@ function read_dict(filename::T, allowed) where {T<:AbstractString}
     end
     println("--------------------------------------------------------------")
     println("")
-    return vars
 
+    return vars
 end
 
+"""
+$(SIGNATURES)
+"""
 function read_dict(filename::T) where {T<:AbstractString}
-
     @info "reading config from $filename"
     println("--------------------------------------------------------------")
     f = open(filename)
@@ -108,6 +106,6 @@ function read_dict(filename::T) where {T<:AbstractString}
     end
     println("--------------------------------------------------------------")
     println("")
+    
     return vars
-
 end

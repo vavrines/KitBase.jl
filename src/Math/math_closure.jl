@@ -1,5 +1,5 @@
 """
-    optimize_closure(α, m, ω, u, η::Function; optimizer=Newton())
+$(SIGNATURES)
 
 Optimizer for the entropy closure: `argmin(<η(α*m)> - α*u)`
 """
@@ -12,7 +12,7 @@ end
 
 
 """
-    realizable_reconstruct(α, m, ω, η_dual_prime::Function)
+$(SIGNATURES)
 
 Reconstruct realizable moments based on Lagrange multiplier α
 """

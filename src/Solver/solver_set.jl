@@ -1,28 +1,11 @@
 """
-    struct SolverSet{
-        TS<:AbstractSetup,
-        TP<:AbstractPhysicalSpace,
-        TV<:Union{AbstractVelocitySpace,Nothing},
-        TG<:AbstractProperty,
-        TI<:Union{AbstractCondition,Nothing},
-        TO<:AbstractString,
-    } <: AbstractSolverSet
-        # setup
-        set::TS
-        # physical space
-        pSpace::TP
-        # velocity space
-        vSpace::TV
-        # gas property
-        gas::TG
-        # initial and boundary condition
-        ib::TI
-        # file system
-        outputFolder::TO
-    end
+$(TYPEDEF)
 
 Structure of solver setup
 
+# Fields
+
+$(FIELDS)
 """
 struct SolverSet{
     TS<:AbstractSetup,
@@ -128,24 +111,9 @@ end
 
 
 """
-    set_setup(dict::T) where {T<:AbstractDict}
-    set_setup(;
-        matter,
-        case,
-        space,
-        flux,
-        collision,
-        nSpecies,
-        interpOrder,
-        limiter,
-        boundary,
-        cfl,
-        maxTime,
-        kwargs...,
-    )
+$(SIGNATURES)
 
 Generate AbstractPhysicalSpace
-
 """
 function set_setup(dict::T) where {T<:AbstractDict}
     set = Setup(
@@ -165,6 +133,9 @@ function set_setup(dict::T) where {T<:AbstractDict}
     return set
 end
 
+"""
+$(SIGNATURES)
+"""
 function set_setup(;
     matter,
     case,
@@ -198,22 +169,9 @@ end
 
 
 """
-    set_geometry(dict::T) where {T<:AbstractDict}
-    set_geometry(;
-        space,
-        x0,
-        x1,
-        nx,
-        nxg,
-        y0 = nothing,
-        y1 = nothing,
-        ny = nothing,
-        nyg = nothing,
-        kwargs...,
-    )
+$(SIGNATURES)
 
 Generate AbstractPhysicalSpace
-
 """
 function set_geometry(dict::T) where {T<:AbstractDict}
     try
@@ -240,6 +198,9 @@ function set_geometry(dict::T) where {T<:AbstractDict}
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function set_geometry(;
     space,
     x0,
@@ -268,30 +229,9 @@ end
 
 
 """
-    set_velocity(dict::T) where {T<:AbstractDict}
-    set_velocity(;
-        space,
-        nSpecies,
-        umin,
-        umax,
-        nu,
-        vMeshType,
-        nug,
-        mi = nothing,
-        me = nothing,
-        vmin = nothing,
-        vmax = nothing,
-        nv = nothing,
-        nvg = nothing,
-        wmin = nothing,
-        wmax = nothing,
-        nw = nothing,
-        nwg = nothing,
-        kwargs...,
-    )
+$(SIGNATURES)
 
 Generate AbstractVelocitySpace
-
 """
 function set_velocity(dict::T) where {T<:AbstractDict}
     for key in keys(dict)
@@ -391,6 +331,9 @@ function set_velocity(dict::T) where {T<:AbstractDict}
     return vSpace
 end
 
+"""
+$(SIGNATURES)
+"""
 function set_velocity(;
     space,
     nSpecies,
@@ -505,10 +448,9 @@ end
 
 
 """
-    set_property(dict::T) where {T<:AbstractDict}
+$(SIGNATURES)
 
 Generate AbstractProperty
-
 """
 function set_property(dict::T) where {T<:AbstractDict}
     for key in keys(dict)
@@ -636,11 +578,9 @@ end
 
 
 """
-    set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
-    set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
+$(SIGNATURES)
 
 Generate AbstractIB
-
 """
 function set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
     if haskey(dict, :uLid)
@@ -652,6 +592,9 @@ function set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
     return ib
 end
 
+"""
+$(SIGNATURES)
+"""
 function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
     fname = begin
         if set.case == "shock"

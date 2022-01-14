@@ -1,10 +1,231 @@
 """
-    1D1F1V: flux_kcu!(fw, ff, wL, fL, wR, fR, u, ω, inK, γ, visRef, visIdx, Pr, dt)
-    1D2F1V: flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, ω, inK, γ, visRef, visIdx, Pr, dt)
-    1D4F1V: flux_kcu!(fw, fh0, fh1, fh2, fh3, wL, h0L, h1L, h2L, h3L, wR, h0R, h1R, h2R, h3R, u, ω, inK, γ, visRef, visIdx, Pr, dt)
-    2D1F2V: flux_kcu!(fw, ff, wL, fL, wR, fR, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
-    2D2F2V: flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
-    2D3F2V: flux_kcu!(fw, fh0, fh1, fh2, wL, h0L, h1L, h2L, wR, h0R, h1R, h2R, u, v, ω, inK, γ, visRef, visIdx, Pr, dt, len)
+$(SIGNATURES)
+
+Kinetic central-upwind (KCU) flux
+"""
+function flux_kcu!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    gas::AbstractProperty,
+    vs::AbstractVelocitySpace1D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dxL, dxR = p[1:2]
+
+    flux_kcu!(
+        face.fw,
+        face.ff,
+        ctrL.w + ctrL.sw * dxL,
+        ctrL.f + ctrL.sf * dxL,
+        ctrR.w - ctrR.sw * dxR,
+        ctrR.f - ctrR.sf * dxR,
+        vs.u,
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dt,
+    )
+
+    return nothing
+
+end
+
+function flux_kcu!(
+    face::Interface2F,
+    ctrL::T,
+    ctrR::T,
+    gas::AbstractProperty,
+    vs::AbstractVelocitySpace1D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume2F}
+
+    dxL, dxR = p[1:2]
+
+    if gas isa Mixture
+        flux_kcu!(
+            face.fw,
+            face.fh,
+            face.fb,
+            ctrL.w + ctrL.sw * dxL,
+            ctrL.h + ctrL.sh * dxL,
+            ctrL.b + ctrL.sb * dxL,
+            ctrR.w - ctrR.sw * dxR,
+            ctrR.h - ctrR.sh * dxR,
+            ctrR.b - ctrR.sb * dxR,
+            vs.u,
+            vs.weights,
+            gas.K,
+            gas.γ,
+            gas.mi,
+            gas.ni,
+            gas.me,
+            gas.ne,
+            gas.Kn[1],
+            dt,
+        )
+    else
+        flux_kcu!(
+            face.fw,
+            face.fh,
+            face.fb,
+            ctrL.w + ctrL.sw * dxL,
+            ctrL.h + ctrL.sh * dxL,
+            ctrL.b + ctrL.sb * dxL,
+            ctrR.w - ctrR.sw * dxR,
+            ctrR.h - ctrR.sh * dxR,
+            ctrR.b - ctrR.sb * dxR,
+            vs.u,
+            vs.weights,
+            gas.K,
+            gas.γ,
+            gas.μᵣ,
+            gas.ω,
+            gas.Pr,
+            dt,
+        )
+    end
+
+    return nothing
+
+end
+
+function flux_kcu!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    gas::AbstractProperty,
+    vs::AbstractVelocitySpace2D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dxL, dxR, len, n, dirc = p
+    swL = @view ctrL.sw[:, dirc]
+    swR = @view ctrR.sw[:, dirc]
+    sfL = @view ctrL.sf[:, :, dirc]
+    sfR = @view ctrR.sf[:, :, dirc]
+
+    flux_kcu!(
+        face.fw,
+        face.ff,
+        local_frame(ctrL.w .+ dxL .* swL, n),
+        ctrL.f .+ dxL .* sfL,
+        local_frame(ctrR.w .- dxR .* swR, n),
+        ctrR.f .- dxR .* sfR,
+        vs.u .* n[1] .+ vs.v .* n[2],
+        vs.v .* n[1] .- vs.u .* n[2],
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dt,
+        len,
+    )
+
+    face.fw .= global_frame(face.fw, n)
+
+    return nothing
+
+end
+
+function flux_kcu!(
+    face::Interface2F,
+    ctrL::T,
+    ctrR::T,
+    gas::AbstractProperty,
+    vs::AbstractVelocitySpace2D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume2F}
+
+    dxL, dxR, len, n, dirc = p
+    swL = @view ctrL.sw[:, dirc]
+    swR = @view ctrR.sw[:, dirc]
+    shL = @view ctrL.sh[:, :, dirc]
+    sbL = @view ctrL.sb[:, :, dirc]
+    shR = @view ctrR.sh[:, :, dirc]
+    sbR = @view ctrR.sb[:, :, dirc]
+
+    flux_kcu!(
+        face.fw,
+        face.fh,
+        face.fb,
+        local_frame(ctrL.w .+ dxL .* swL, n),
+        ctrL.h .+ dxL .* shL,
+        ctrL.b .+ dxL .* sbL,
+        local_frame(ctrR.w .- dxR .* swR, n),
+        ctrR.h .- dxR .* shR,
+        ctrR.b .- dxR .* sbR,
+        vs.u .* n[1] .+ vs.v .* n[2],
+        vs.v .* n[1] .- vs.u .* n[2],
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dt,
+        len,
+    )
+
+    face.fw .= global_frame(face.fw, n)
+
+    return nothing
+
+end
+
+function flux_kcu!(
+    face::Interface1F,
+    ctrL::T,
+    ctrR::T,
+    gas::AbstractProperty,
+    vs::AbstractVelocitySpace3D,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume1F}
+
+    dxL, dxR = p[1:2]
+
+    if length(p) == 2 || p[3] == 1
+        flux_kcu!(
+            face.fw,
+            face.ff,
+            ctrL.w .+ dxL .* ctrL.sw,
+            ctrL.f .+ dxL .* ctrL.sf,
+            ctrR.w .- dxR .* ctrR.sw,
+            ctrR.f .- dxR .* ctrR.sf,
+            vs.u,
+            vs.v,
+            vs.w,
+            vs.weights,
+            gas.K,
+            gas.γ,
+            gas.μᵣ,
+            gas.ω,
+            gas.Pr,
+            dt,
+        )
+    else
+        
+    end
+
+    return nothing
+
+end
+
+
+
+"""
+$(SIGNATURES)
 
 Kinetic central-upwind (KCU) method
 
@@ -12,6 +233,7 @@ Kinetic central-upwind (KCU) method
 - @args: particle velocity quadrature points and weights
 - @args: time step and cell size
 
+1D1F1V
 """
 function flux_kcu!(
     fw::X,
@@ -78,7 +300,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::X,
     ff::Y,
@@ -153,9 +379,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 1D1F3V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D1F3V
+"""
 function flux_kcu!(
     fw::X,
     ff::Y,
@@ -173,6 +401,7 @@ function flux_kcu!(
     visIdx,
     Pr,
     dt,
+    len = 1.0,
 ) where {X<:AA{<:FN,1},Y<:AA{<:FN,3},Z<:AA{<:Real,1},A<:AA{<:FN,3},B<:AA{<:FN,3}} # 1D1F1V
 
     # upwind reconstruction
@@ -219,15 +448,18 @@ function flux_kcu!(
     fw[4] += Mt[2] * sum(ω .* uVelo .* wVelo .* f)
     fw[5] += Mt[2] * 0.5 * sum(ω .* uVelo .* (uVelo .^ 2 .+ vVelo .^ 2 .+ wVelo .^ 2) .* f)
 
-    @. ff = Mt[1] * uVelo * g + Mt[2] * uVelo * f
+    @. fw .*= len
+    @. ff = (Mt[1] * uVelo * g + Mt[2] * uVelo * f) * len
 
     return nothing
 
 end
 
-# ------------------------------------------------------------
-# 1D2F1V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D2F1V
+"""
 function flux_kcu!(
     fw::X,
     fh::Y,
@@ -298,7 +530,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::T1,
     fh::T2,
@@ -386,9 +622,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 1D4F1V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+1D4F1V
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,
@@ -474,7 +712,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,
@@ -582,9 +824,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 2D1F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D1F2V
+"""
 function flux_kcu!(
     fw::X,
     ff::Y,
@@ -651,9 +895,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 2D2F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D2F2V
+"""
 function flux_kcu!(
     fw::T1,
     fh::T2,
@@ -726,9 +972,11 @@ function flux_kcu!(
 
 end
 
-# ------------------------------------------------------------
-# 2D3F2V
-# ------------------------------------------------------------
+"""
+$(SIGNATURES)
+
+2D3F2V
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,
@@ -809,7 +1057,11 @@ function flux_kcu!(
 
 end
 
-#--- mixture ---#
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_kcu!(
     fw::X,
     fh0::Y,

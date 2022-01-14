@@ -4,18 +4,195 @@
 # ============================================================
 
 # ------------------------------------------------------------
+# General
+# ------------------------------------------------------------
+
+"""
+$(TYPEDEF)
+
+Control volume with no distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+mutable struct ControlVolume{T1,T2,T3,ND} <: AbstractControlVolume
+    w::T1
+    prim::T2
+    sw::T3
+end
+
+function ControlVolume(w, prim, sw)
+    n = size(w, 1) - 2
+    return ControlVolume{typeof(w),typeof(prim),typeof(sw),n}(w, prim, sw)
+end
+
+function Base.show(io::IO, ctr::ControlVolume{A,B,C,N}) where {A,B,C,N}
+    print(
+        io,
+        "ControlVolume$(N)D{$A,$B,$C}\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+    )
+end
+
+
+"""
+$(TYPEDEF)
+
+Control volume with 1 distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+struct ControlVolume1F{T1,T2,T3,T4,ND} <: AbstractControlVolume
+    w::T1
+    prim::T1
+    sw::T2
+    f::T3
+    sf::T4
+end
+
+function ControlVolume1F(w, prim, sw, f, sf)
+    n = size(w, 1) - 2
+    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),n}(w, prim, sw, f, sf)
+end
+
+function Base.show(io::IO, ctr::ControlVolume1F{A,B,C,D,N}) where {A,B,C,D,N}
+    print(
+        io,
+        "ControlVolume$(N)D1F{$A,$B,$C,$D}\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: f\n",
+        "pdf slopes: sf\n",
+    )
+end
+
+
+"""
+$(TYPEDEF)
+
+Control volume with 2 distribution functions
+
+# Fields
+
+$(FIELDS)
+"""
+struct ControlVolume2F{T1,T2,T3,T4,ND} <: AbstractControlVolume
+    w::T1
+    prim::T1
+    sw::T2
+    h::T3
+    b::T3
+    sh::T4
+    sb::T4
+end
+
+function ControlVolume2F(w, prim, sw, h, b, sh, sb)
+    n = size(w, 1) - 2
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),n}(w, prim, sw, h, b, sh, sb)
+end
+
+function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}
+    print(
+        io,
+        "ControlVolume$(N)D2F{$A,$B,$C,$D}\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
+        "pdf vars: f\n",
+        "pdf slopes: sf\n",
+    )
+end
+
+
+struct ControlVolume3F{T1,T2,T3,T4,ND} <: AbstractControlVolume end
+
+struct ControlVolume4F{T1,T2,T3,T4,ND} <: AbstractControlVolume end
+
+
+"""
+$(SIGNATURES)
+
+Construct control volume...
+"""
+function ControlVolume(W, PRIM, ND::Integer)
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    sw = begin
+        if ND == 1
+            zero(w)
+        elseif ND == 2
+            slope_array(w)
+        end
+    end
+
+    return ControlVolume{typeof(w),typeof(prim),typeof(sw),ND}(w, prim, sw)
+end
+
+"""
+$(SIGNATURES)
+"""
+function ControlVolume(W, PRIM, F, ND::Integer)
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    f = deepcopy(F)
+    sw, sf = begin
+        if ND == 1
+            zero(w), zero(f)
+        elseif ND == 2
+            slope_array(w), slope_array(f)
+        end
+    end
+
+    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),ND}(w, prim, sw, f, sf)
+end
+
+"""
+$(SIGNATURES)
+"""
+function ControlVolume(W, PRIM, H, B, ND::Integer)
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    h = deepcopy(H)
+    b = deepcopy(B)
+    sw, sh, sb = begin
+        if ND == 1
+            zero(w), zero(h), zero(b)
+        elseif ND == 2
+            slope_array(w), slope_array(h), slope_array(b)
+        end
+    end
+
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),ND}(
+        w,
+        prim,
+        sw,
+        h,
+        b,
+        sh,
+        sb,
+    )
+end
+
+# ------------------------------------------------------------
+# The dimension-dependent structures are in archive mode only
+# ------------------------------------------------------------
 # 1D
 # ------------------------------------------------------------
 
 """
-    mutable struct ControlVolume1D{A,B} <: AbstractControlVolume1D
-        w::A
-        prim::B
-        sw::A
-    end
+$(TYPEDEF)
 
 1D control volume with no distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolume1D{A,B} <: AbstractControlVolume1D
     w::A
@@ -43,17 +220,13 @@ end
 
 
 """
-    mutable struct ControlVolume1D1F{A,B} <: AbstractControlVolume1D
-        w::A
-        prim::A
-        sw::A
-
-        f::B
-        sf::B
-    end
+$(TYPEDEF)
 
 1D control volume with 1 distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolume1D1F{A,B} <: AbstractControlVolume1D
     w::A
@@ -89,21 +262,15 @@ end
 
 
 """
-    mutable struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
-        w::A
-        prim::A
-        sw::A
-
-        h::B
-        b::B
-        sh::B
-        sb::B
-    end
+$(TYPEDEF)
 
 1D control volume with 2 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
-mutable struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
+struct ControlVolume1D2F{A,B} <: AbstractControlVolume1D
     w::A
     prim::A
     sw::A
@@ -141,27 +308,13 @@ end
 
 
 """
-    mutable struct ControlVolume1D3F{A,B,C,D,E} <: AbstractControlVolume1D
-        w::A
-        prim::A
-        sw::A
-
-        h0::B
-        h1::B
-        h2::B
-        sh0::B
-        sh1::B
-        sh2::B
-
-        E::C
-        B::C
-        ϕ::D
-        ψ::D
-        lorenz::E
-    end
+$(TYPEDEF)
 
 1D control volume with 3 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolume1D3F{A,B,C,D,E} <: AbstractControlVolume1D
     w::A
@@ -334,29 +487,13 @@ end
 
 
 """
-    mutable struct ControlVolume1D4F{A,B,C,D,E} <: AbstractControlVolume1D
-        w::A
-        prim::A
-        sw::A
-
-        h0::B
-        h1::B
-        h2::B
-        h3::B
-        sh0::B
-        sh1::B
-        sh2::B
-        sh3::B
-
-        E::C
-        B::C
-        ϕ::D
-        ψ::D
-        lorenz::E
-    end
+$(TYPEDEF)
 
 1D control volume with 4 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolume1D4F{A,B,C,D,E} <: AbstractControlVolume1D
     w::A
@@ -505,14 +642,13 @@ end
 # ------------------------------------------------------------
 
 """
-    mutable struct ControlVolume2D{A,B} <: AbstractControlVolume2D
-        w::A
-        prim::A
-        sw::B
-    end
+$(TYPEDEF)
 
 2D control volume with no distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolume2D{A,B} <: AbstractControlVolume2D
     w::A
@@ -541,17 +677,13 @@ end
 
 
 """
-    mutable struct ControlVolume2D1F{A,B,C,D} <: AbstractControlVolume2D
-        w::A
-        prim::A
-        sw::B
-
-        f::C
-        sf::D
-    end
+$(TYPEDEF)
 
 2D control volume with 1 distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolume2D1F{A,B,C,D} <: AbstractControlVolume2D
     w::A
@@ -589,21 +721,15 @@ end
 
 
 """
-    mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
-        w::A
-        prim::A
-        sw::B
-
-        h::C
-        b::C
-        sh::D
-        sb::D
-    end
+$(TYPEDEF)
 
 2D control volume with 2 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
-mutable struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
+struct ControlVolume2D2F{A,B,C,D} <: AbstractControlVolume2D
     w::A
     prim::A
     sw::B
@@ -652,27 +778,13 @@ end
 
 
 """
-    mutable struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
-        w::T2
-        prim::T2
-        sw::T3
-
-        h0::T4
-        h1::T4
-        h2::T4
-        sh0::T5
-        sh1::T5
-        sh2::T5
-
-        E::T6
-        B::T6
-        ϕ::T7
-        ψ::T7
-        lorenz::T8
-    end
+$(TYPEDEF)
 
 2D control volume with 3 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolume2D3F{T2,T3,T4,T5,T6,T7,T8} <: AbstractControlVolume2D
     w::T2
@@ -823,18 +935,13 @@ end
 # ------------------------------------------------------------
 
 """
-    mutable struct ControlVolumeUS{E,F,A,B,C} <: AbstractUnstructControlVolume
-        n::E
-        x::F
-        dx::F
-
-        w::A
-        prim::B
-        sw::C
-    end
+$(TYPEDEF)
 
 Unstructured control volume with no distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct ControlVolumeUS{E,F,A,B,C} <: AbstractUnstructControlVolume
     n::E
@@ -872,23 +979,15 @@ end
 
 
 """
-    mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
-        n::E
-        x::F
-        dx::F
-
-        w::A
-        prim::A
-        sw::B
-
-        f::C
-        sf::D
-    end
+$(TYPEDEF)
 
 Unstructured control volume with 1 distribution function
 
+# Fields
+
+$(FIELDS)
 """
-mutable struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+struct ControlVolumeUS1F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     n::E
     x::F
     dx::F
@@ -937,25 +1036,15 @@ end
 
 
 """
-    mutable struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
-        n::E
-        x::F
-        dx::F
-
-        w::A
-        prim::A
-        sw::B
-
-        h::C
-        b::C
-        sh::D
-        sb::D
-    end
+$(TYPEDEF)
 
 Unstructured control volume with 2 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
-mutable struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
+struct ControlVolumeUS2F{E,F,A,B,C,D} <: AbstractUnstructControlVolume
     n::E
     x::F
     dx::F

@@ -1,60 +1,5 @@
 """
-    rykov!(
-        Ht_plus::T1,
-        Bt_plus::T1,
-        Rt_plus::T1,
-        Hr_plus::T1,
-        Br_plus::T1,
-        Rr_plus::T1,
-        u::T2,
-        Ht::T1,
-        Bt::T1,
-        Rt::T1,
-        Hr::T1,
-        Br::T1,
-        Rr::T1,
-        q::T3,
-        prim::T4,
-        Pr,
-        K,
-        σ,
-        ω0,
-        ω1,
-    ) where {
-        T1<:AA{<:Real,1},
-        T2<:AA{<:Real,1},
-        T3<:AA{<:Real,1},
-        T4<:AA{<:Real,1},
-    }
-
-    rykov!(
-        Ht_plus::T1,
-        Bt_plus::T1,
-        Rt_plus::T1,
-        Hr_plus::T1,
-        Br_plus::T1,
-        Rr_plus::T1,
-        u::T2,
-        v::T2,
-        Ht::T1,
-        Bt::T1,
-        Rt::T1,
-        Hr::T1,
-        Br::T1,
-        Rr::T1,
-        q::T3,
-        prim::T4,
-        Pr,
-        K,
-        σ,
-        ω0,
-        ω1,
-    ) where {
-        T1<:AA{<:Real,2},
-        T2<:AA{<:Real,2},
-        T3<:AA{<:Real,1},
-        T4<:AA{<:Real,1},
-    }
+$(SIGNATURES)
 
 Rykov non-equilibrium part 
 
@@ -138,6 +83,9 @@ function rykov!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function rykov!(
     Ht_plus::T1,
     Bt_plus::T1,
@@ -212,7 +160,7 @@ end
 
 
 """
-    rykov_zr(Tₜ, T₀, Z₀)
+$(SIGNATURES)
 
 Calculate dimensionless rotationa number in Rykov model
 

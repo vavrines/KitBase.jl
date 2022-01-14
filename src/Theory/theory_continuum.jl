@@ -3,14 +3,11 @@
 # ============================================================
 
 """
-    prim_conserve(prim::AV{T}, γ) where {T<:Real}
-    prim_conserve(ρ, U, λ, γ)
-    prim_conserve(ρ, U, V, λ, γ)
-    prim_conserve(ρ, U, V, W, λ, γ)
+$(SIGNATURES)
 
 Transform primitive -> conservative variables
 """
-function prim_conserve(prim::AV{T}, γ) where {T<:Real}
+function prim_conserve(prim::AV, γ)
     if eltype(prim) <: Integer
         W = similar(prim, Float64)
     else
@@ -41,14 +38,27 @@ function prim_conserve(prim::AV{T}, γ) where {T<:Real}
     return W
 end
 
+"""
+$(SIGNATURES)
+"""
 prim_conserve(ρ, U, λ, γ) = prim_conserve([ρ, U, λ], γ)
 
+"""
+$(SIGNATURES)
+"""
 prim_conserve(ρ, U, V, λ, γ) = prim_conserve([ρ, U, V, λ], γ)
 
+"""
+$(SIGNATURES)
+"""
 prim_conserve(ρ, U, V, W, λ, γ) = prim_conserve([ρ, U, V, W, λ], γ)
 
-#--- Rykov ---#
-function prim_conserve(prim::AV{T}, γ, Kr) where {T<:Real}
+"""
+$(SIGNATURES)
+
+Rykov model
+"""
+function prim_conserve(prim::AV, γ, Kr)
     if eltype(prim) <: Integer
         W = similar(prim, Float64, length(prim) - 1)
     else
@@ -75,11 +85,11 @@ end
 
 
 """
-    mixture_prim_conserve(prim::AM{T}, γ) where {T<:Real}
+$(SIGNATURES)
 
 Transform multi-component primitive -> conservative variables
 """
-function mixture_prim_conserve(prim::AM{T}, γ) where {T<:Real}
+function mixture_prim_conserve(prim::AM, γ)
     if eltype(prim) <: Integer
         w = similar(prim, Float64)
     else
@@ -95,27 +105,25 @@ end
 
 
 """
-* scalar: pseudo primitive vector for scalar conservation laws
-
-    conserve_prim(u)
-
-    conserve_prim(u, a)
-
-* vector: primitive vector for Euler, Navier-Stokes and extended equations
-
-    conserve_prim(W::T, γ) where {T<:AA{<:Real,1}}
-
-    conserve_prim(ρ, M, E, γ)
-
-    conserve_prim(ρ, MX, MY, E, γ)
+$(SIGNATURES)
 
 Transform conservative -> primitive variables
+
+scalar: pseudo primitive vector for scalar conservation laws
 """
 conserve_prim(u) = [u, 0.5 * u, 1.0]
 
+"""
+$(SIGNATURES)
+"""
 conserve_prim(u, a) = [u, a, 1.0]
 
-function conserve_prim(W::AV{T}, γ) where {T<:Real}
+"""
+$(SIGNATURES)
+
+vector: primitive vector for Euler, Navier-Stokes and extended equations
+"""
+function conserve_prim(W::AV, γ)
     if eltype(W) <: Integer
         prim = similar(W, Float64)
     else
@@ -144,14 +152,27 @@ function conserve_prim(W::AV{T}, γ) where {T<:Real}
     return prim
 end
 
+"""
+$(SIGNATURES)
+"""
 conserve_prim(ρ, M, E, γ) = conserve_prim([ρ, M, E], γ)
 
+"""
+$(SIGNATURES)
+"""
 conserve_prim(ρ, MX, MY, E, γ) = conserve_prim([ρ, MX, MY, E], γ)
 
+"""
+$(SIGNATURES)
+"""
 conserve_prim(ρ, MX, MY, MZ, E, γ) = conserve_prim([ρ, MX, MY, MZ, E], γ)
 
-#--- Rykov ---#
-function conserve_prim(w::AV{T}, K, Kr) where {T<:Real}
+"""
+$(SIGNATURES)
+
+Rykov model
+"""
+function conserve_prim(w::AV, K, Kr)
     if eltype(w) <: Integer
         prim = similar(w, Float64, length(w) + 1)
     else
@@ -180,11 +201,11 @@ end
 
 
 """
-    mixture_conserve_prim(W::T, γ) where {T<:AA{<:Real,2}}
+$(SIGNATURES)
 
 Transform multi-component conservative -> primitive variables
 """
-function mixture_conserve_prim(W::AM{T}, γ) where {T<:Real}
+function mixture_conserve_prim(W::AM, γ)
     if eltype(W) <: Integer
         prim = similar(W, Float64)
     else
@@ -200,27 +221,19 @@ end
 
 
 """
-    aap_hs_prim(
-        prim::AA{<:Real,2},
-        tau::AA{<:Real,1},
-        mi::Real,
-        ni::Real,
-        me::Real,
-        ne::Real,
-        kn::Real,
-    )
+$(SIGNATURES)
 
 Calculate mixture primitive variables from AAP model
 """
 function aap_hs_prim(
-    prim::AM{T1},
-    tau::AV{T2},
+    prim::AM,
+    tau::AV,
     mi,
     ni,
     me,
     ne,
     kn,
-) where {T1<:Real,T2<:Real}
+)
 
     mixprim = similar(prim)
 
@@ -434,7 +447,7 @@ end
 
 
 """
-    advection_flux(u, a)
+$(SIGNATURES)
 
 Theoretical flux of linear advection equation
 """
@@ -442,7 +455,7 @@ advection_flux(u, a) = a * u
 
 
 """
-    burgers_flux(u)
+$(SIGNATURES)
 
 Theoretical flux of Burgers' equation
 """
@@ -450,14 +463,11 @@ burgers_flux(u) = 0.5 * u^2
 
 
 """
-    euler_flux(w::AV{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
+$(SIGNATURES)
 
 Theoretical fluxes of Euler Equations
-
-* @return: flux tuple
-
 """
-function euler_flux(w::AV{T}, γ; frame = :cartesian::Symbol) where {T<:Real}
+function euler_flux(w::AV, γ; frame = :cartesian::Symbol)
     prim = conserve_prim(w, γ)
     p = 0.5 * prim[1] / prim[end]
 
@@ -514,14 +524,11 @@ end
 
 
 """
-    euler_jacobi(w::AV{T}, γ) where {T<:Real}
+$(SIGNATURES)
 
 Flux Jacobian of Euler Equations
-
-* @return: Jacobian matrix A
-
 """
-function euler_jacobi(w::AV{T}, γ) where {T<:Real}
+function euler_jacobi(w::AV, γ)
     if eltype(w) <: Integer
         A = similar(w, Float64, 3, 3)
     else

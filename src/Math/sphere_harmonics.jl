@@ -29,7 +29,7 @@ end
 
 
 """
-    ylm(l, m, x, y, z)
+$(SIGNATURES)
 
 Calculation of the spherical harmonic for a given order (l,m) in Cartesian coordinates
 
@@ -37,7 +37,6 @@ Calculation of the spherical harmonic for a given order (l,m) in Cartesian coord
 - @arg m: order of spherical harmonics
 - @arg x, y, z: Cartesian coordinates
 - @return: spherical harmonic polynomial
-
 """
 function ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
     if abs(m) > l
@@ -62,7 +61,7 @@ end
 
 
 """
-    rlylm(l, m, x, y, z)
+$(SIGNATURES)
 
 Calculate `r^l * Ylm(x,y,z)``
 """
@@ -81,7 +80,7 @@ end
 
 
 """
-    eval_spherharmonic(points, L)
+$(SIGNATURES)
 
 Evaluate spherical harmonics basis at given quadrature points
 """

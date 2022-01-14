@@ -1,5 +1,5 @@
 """
-    ib_sod(set, ps, vs, gas)
+$(SIGNATURES)
 
 Initialize Sod shock tube
 """

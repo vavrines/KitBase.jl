@@ -5,7 +5,7 @@
 # setup
 matter = gas
 case = cavity
-space = 2d1f2v
+space = 2d0f0v
 flux = kfvs
 collision = bgk
 nSpecies = 1

@@ -1,43 +1,16 @@
 """
-    update_boundary!(
-        KS::X,
-        ctr::Y,
-        face::Z,
-        dt,
-        residual;
-        coll::Symbol,
-        bc::Symbol,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{<:AbstractControlVolume1D,1},
-        Z<:AA{<:AbstractInterface1D,1},
-    }
-
-    update_boundary!(
-        KS::X,
-        ctr::Y,
-        a1face::Z,
-        a2face::Z,
-        dt,
-        residual;
-        coll::Symbol,
-        bc::Symbol,
-    ) where {
-        X<:AbstractSolverSet,
-        Y<:AA{<:AbstractControlVolume2D,2},
-        Z<:AA{<:AbstractInterface2D,2},
-    }
+$(SIGNATURES)
 
 Update solver for boundary cells
 """
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     bc,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D,1},Z<:AA{Interface1D,1}}
+) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -127,17 +100,20 @@ function update_boundary!(
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
+    return nothing
+
 end
 
+
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D1F,1},Z<:AA{Interface1D1F,1}}
+) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -262,17 +238,19 @@ function update_boundary!(
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D2F,1},Z<:AA{Interface1D2F,1}}
+) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -413,18 +391,20 @@ function update_boundary!(
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
     isMHD = false::Bool,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D3F,1},Z<:AA{Interface1D3F,1}}
+) where {TC<:Union{ControlVolume3F,ControlVolume1D3F},TF<:Union{Interface3F,Interface1D3F}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -459,18 +439,20 @@ function update_boundary!(
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
     isMHD = false::Bool,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume1D4F,1},Z<:AA{Interface1D4F,1}}
+) where {TC<:Union{ControlVolume4F,ControlVolume1D4F},TF<:Union{Interface4F,Interface1D4F}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -505,18 +487,20 @@ function update_boundary!(
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D,2},Z<:AA{Interface2D,2}}
+) where {TC<:Union{ControlVolume,ControlVolume2D},TF<:Union{Interface,Interface2D}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -637,18 +621,20 @@ function update_boundary!(
         bcfun(ctr, ngy; dirc = :yr)
     end
 
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D1F,2},Z<:AA{Interface2D1F,2}}
+) where {TC<:Union{ControlVolume1F,ControlVolume2D1F},TF<:Union{Interface1F,Interface2D1F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -814,18 +800,20 @@ function update_boundary!(
         bcfun(ctr, ngy; dirc = :yr)
     end
 
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    a1face::Z,
-    a2face::Z,
+    KS::AbstractSolverSet,
+    ctr::AM{TC},
+    a1face::AM{TF},
+    a2face::AM{TF},
     dt,
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
-) where {X<:AbstractSolverSet,Y<:AA{ControlVolume2D2F,2},Z<:AA{Interface2D2F,2}}
+) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -1015,17 +1003,20 @@ function update_boundary!(
         bcfun(ctr, ngy; dirc = :yr)
     end
 
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     coll::Symbol,
     bc,
-) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS},Z<:AV{Interface2D}}
+) where {TC<:ControlVolumeUS,TF<:Interface2D}
+    
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
@@ -1035,17 +1026,21 @@ function update_boundary!(
             ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
         end
     end
+
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     coll::Symbol,
     bc,
-) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS1F},Z<:AV{Interface2D1F}}
+) where {TC<:ControlVolumeUS1F,TF<:Interface2D1F}
+
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
@@ -1056,17 +1051,21 @@ function update_boundary!(
             ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
         end
     end
+
+    return nothing
+
 end
 
 function update_boundary!(
-    KS::X,
-    ctr::Y,
-    face::Z,
+    KS::AbstractSolverSet,
+    ctr::AV{TC},
+    face::AV{TF},
     dt,
     residual;
     coll::Symbol,
     bc,
-) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS2F},Z<:AV{Interface2D2F}}
+) where {TC<:ControlVolumeUS2F,TF<:Interface2D2F}
+    
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
@@ -1078,4 +1077,7 @@ function update_boundary!(
             ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
         end
     end
+
+    return nothing
+
 end

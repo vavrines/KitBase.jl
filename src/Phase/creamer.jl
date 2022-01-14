@@ -3,7 +3,7 @@
 # ============================================================
 
 """
-    slerp(pt1, pt2, n)
+$(SIGNATURES)
 
 Spherical linear interpolation
 """
@@ -21,7 +21,7 @@ end
 
 
 """
-    unique(Points, Triangles)
+$(SIGNATURES)
 
 Cleaner for all duplicate (non unique) entries of quadrature points and triangles
 
@@ -138,8 +138,9 @@ end
 
 
 """
-Args order (B,A,C) isn't a mistake
+$(SIGNATURES)
 
+Args order (B,A,C) isn't a mistake
 """
 function angle(B::T, A::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
     if geometry == :plane

@@ -4,6 +4,109 @@
 # ============================================================
 
 # ------------------------------------------------------------
+# General
+# ------------------------------------------------------------
+
+"""
+$(TYPEDEF)
+
+Cell interface with no distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+mutable struct Interface{T,ND} <: AbstractInterface
+    fw::T
+end
+
+function Interface(fw)
+    n = size(fw, 1) - 2
+    return Interface{typeof(fw),n}(fw)
+end
+
+
+"""
+$(TYPEDEF)
+
+Cell interface with no distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+struct Interface1F{T1,T2,ND} <: AbstractInterface
+    fw::T1
+    ff::T2
+end
+
+function Interface1F(fw, ff)
+    n = size(fw, 1) - 2
+    return Interface1F{typeof(fw),typeof(ff),n}(fw, ff)
+end
+
+
+"""
+$(TYPEDEF)
+
+Cell interface with no distribution function
+
+# Fields
+
+$(FIELDS)
+"""
+struct Interface2F{T1,T2,ND} <: AbstractInterface
+    fw::T1
+    fh::T2
+    fb::T2
+end
+
+function Interface2F(fw, fh, fb)
+    n = size(fw, 1) - 2
+    return Interface2F{typeof(fw),typeof(fh),n}(fw, fh, fb)
+end
+
+
+struct Interface3F{T1,T2,ND} <: AbstractInterface end
+
+struct Interface4F{T1,T2,ND} <: AbstractInterface end
+
+
+"""
+$(SIGNATURES)
+
+Construct cell interface
+"""
+function Interface(W, ND::Integer)
+    fw = zero(W)
+
+    return Interface{typeof(fw),ND}(fw)
+end
+
+"""
+$(SIGNATURES)
+"""
+function Interface(W, F, ND::Integer)
+    fw = zero(W)
+    ff = zero(F)
+
+    return Interface1F{typeof(fw),typeof(ff),ND}(fw, ff)
+end
+
+"""
+$(SIGNATURES)
+"""
+function Interface(W, H, B, ND::Integer)
+    fw = deepcopy(W)
+    fh = zero(H)
+    fb = zero(B)
+
+    return Interface2F{typeof(fw),typeof(fh),ND}(fw, fh, fb)
+end
+
+# ------------------------------------------------------------
+# The dimension-dependent structures are in archive mode only
+# ------------------------------------------------------------
 # 1D
 # ------------------------------------------------------------
 
@@ -51,7 +154,7 @@ end
 
 
 """
-    mutable struct Interface1D2F{A,B} <: AbstractInterface1D
+    struct Interface1D2F{A,B} <: AbstractInterface1D
         fw::A
         fh::B
         fb::B
@@ -68,7 +171,7 @@ end
 1D cell interface with 2 distribution functions
 
 """
-mutable struct Interface1D2F{A,B<:AA} <: AbstractInterface1D
+struct Interface1D2F{A,B<:AA} <: AbstractInterface1D
     fw::A
     fh::B
     fb::B
@@ -93,7 +196,7 @@ end
 
 
 """
-    mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
+    struct Interface1D3F{A,B,C} <: AbstractInterface1D
         fw::A
         fh0::B
         fh1::B
@@ -105,7 +208,7 @@ end
 1D cell interface with 3 distribution functions
 
 """
-mutable struct Interface1D3F{A,B,C} <: AbstractInterface1D
+struct Interface1D3F{A,B,C} <: AbstractInterface1D
     fw::A
     fh0::B
     fh1::B
@@ -162,7 +265,7 @@ end
 
 
 """
-    mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
+    struct Interface1D4F{A,B,C} <: AbstractInterface1D
         fw::A
         fh0::B
         fh1::B
@@ -175,7 +278,7 @@ end
 1D cell interface with 4 distribution functions
 
 """
-mutable struct Interface1D4F{A,B,C} <: AbstractInterface1D
+struct Interface1D4F{A,B,C} <: AbstractInterface1D
     fw::A
     fh0::B
     fh1::B
@@ -321,7 +424,7 @@ end
 
 
 """
-    mutable struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
+    struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
         len::A
         n::B
         fw::C
@@ -343,7 +446,7 @@ end
 2D cell interface with 2 distribution functions
 
 """
-mutable struct Interface2D2F{A,B<:AV,C,D} <: AbstractInterface2D
+struct Interface2D2F{A,B<:AV,C,D} <: AbstractInterface2D
     len::A
     n::B
     fw::C
@@ -375,7 +478,7 @@ end
 
 
 """
-    mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
+    struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
         len::A
         n::B
         fw::C
@@ -393,7 +496,7 @@ end
 2D cell interface with 3 distribution functions
 
 """
-mutable struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
+struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
     len::A
     n::B
     fw::C

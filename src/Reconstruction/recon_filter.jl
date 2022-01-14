@@ -3,7 +3,7 @@
 # ------------------------------------------------------------
 
 """
-    modal_filter!(u, args...; filter)
+$(SIGNATURES)
 
 Filter of modal solutions
 
@@ -192,7 +192,7 @@ end
 
 
 """
-    filter_exp1d(N, s, Nc)
+$(SIGNATURES)
 
 Construct exponential filter for modal solution
 

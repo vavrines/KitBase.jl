@@ -6,7 +6,7 @@ function bc_balance!(
     ctr::T,
     ctr0::T,
     ctr1::T,
-) where {T<:Union{ControlVolume1D,ControlVolume2D,ControlVolumeUS}}
+) where {T<:Union{ControlVolume,ControlVolume1D,ControlVolume2D,ControlVolumeUS}}
     ctr.w = 2.0 * ctr0.w - ctr1.w
     @. ctr.prim = 2.0 * ctr0.prim - ctr1.prim
 
@@ -17,7 +17,7 @@ function bc_balance!(
     ctr::T,
     ctr0::T,
     ctr1::T,
-) where {T<:Union{ControlVolume1D1F,ControlVolume2D1F,ControlVolumeUS1F}}
+) where {T<:Union{ControlVolume1F,ControlVolume1D1F,ControlVolume2D1F,ControlVolumeUS1F}}
     @. ctr.w = 2.0 * ctr0.w - ctr1.w
     @. ctr.prim = 2.0 * ctr0.prim - ctr1.prim
     @. ctr.f = 2.0 * ctr0.f - ctr1.f
@@ -29,7 +29,7 @@ function bc_balance!(
     ctr::T,
     ctr0::T,
     ctr1::T,
-) where {T<:Union{ControlVolume1D2F,ControlVolume2D2F,ControlVolumeUS2F}}
+) where {T<:Union{ControlVolume2F,ControlVolume1D2F,ControlVolume2D2F,ControlVolumeUS2F}}
     @. ctr.w = 2.0 * ctr0.w - ctr1.w
     @. ctr.prim = 2.0 * ctr0.prim - ctr1.prim
     @. ctr.h = 2.0 * ctr0.h - ctr1.h

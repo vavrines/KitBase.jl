@@ -3,13 +3,13 @@
 # ============================================================
 
 """
-    mutable struct IB{T} <: AbstractCondition
-        fw::Function
-        bc::T
-    end
+$(TYPEDEF)
 
 Initial & boundary conditions with no distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct IB{T<:Union{Function,AA}} <: AbstractCondition
     fw::Function
@@ -46,14 +46,13 @@ end
 
 
 """
-    mutable struct IB1F{T} <: AbstractCondition
-        fw::Function
-        ff::Function
-        bc::T
-    end
+$(TYPEDEF)
 
-Initial & boundary condition with 1 distribution function
+Initial & boundary conditions with 1 distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct IB1F{T} <: AbstractCondition
     fw::Function
@@ -108,14 +107,13 @@ end
 
 
 """
-    mutable struct IB2F{T} <: AbstractCondition
-        fw::Function
-        ff::Function
-        bc::T
-    end
+$(TYPEDEF)
 
-Initial & boundary condition with 2 distribution functions
+Initial & boundary conditions with 2 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct IB2F{T} <: AbstractCondition
     fw::Function
@@ -183,17 +181,13 @@ end
 
 
 """
-    mutable struct IB3F{T} <: AbstractCondition
-        fw::Function
-        ff::Function
-        fE::Function
-        fB::Function
-        fL::Function
-        bc::T
-    end
+$(TYPEDEF)
 
-Initial & boundary condition with 3 distribution functions
+Initial & boundary conditions with 3 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct IB3F{T} <: AbstractCondition
     fw::Function
@@ -206,17 +200,13 @@ end
 
 
 """
-    mutable struct IB4F{T} <: AbstractCondition
-        fw::Function
-        ff::Function
-        fE::Function
-        fB::Function
-        fL::Function
-        bc::T
-    end
+$(TYPEDEF)
 
-Initial & boundary condition with 4 distribution functions
+Initial & boundary conditions with 4 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct IB4F{T} <: AbstractCondition
     fw::Function

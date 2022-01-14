@@ -3,11 +3,9 @@
 # ============================================================
 
 """
-    heat_capacity_ratio(K, D)
-    heat_capacity_ratio(K, Nr, D)
+$(SIGNATURES)
 
-Calculate heat capacity ratio
-
+Calculate heat capacity ratio (monatomic gas)
 """
 function heat_capacity_ratio(K, D::T) where {T<:Integer}
     γ = begin
@@ -23,7 +21,11 @@ function heat_capacity_ratio(K, D::T) where {T<:Integer}
     return γ
 end
 
-#--- diatomic ---#
+"""
+$(SIGNATURES)
+
+Calculate heat capacity ratio (diatomic gas)
+"""
 function heat_capacity_ratio(K, Nr, D::T) where {T<:Integer}
     γ = begin
         if D == 1
@@ -40,18 +42,23 @@ end
 
 
 """
-    sound_speed(λ, γ)
-    sound_speed(prim, γ)
+$(SIGNATURES)
 
 Calculate speed of sound
-
 """
 sound_speed(λ::Real, γ::Real) = (0.5 * γ / λ)^0.5
 
-sound_speed(prim::AV{T}, γ) where {T<:Real} = sound_speed(prim[end], γ)
+"""
+$(SIGNATURES)
+"""
+sound_speed(prim::AV, γ) = sound_speed(prim[end], γ)
 
-#--- mixture ---#
-function sound_speed(prim::AM{T}, γ) where {T<:Real}
+"""
+$(TYPEDSIGNATURES)
+
+Calculate sound speed in mixture
+"""
+function sound_speed(prim::AM, γ)
     c = similar(prim, axes(prim, 2))
     for j in eachindex(c)
         c[j] = sound_speed(prim[end, j], γ)

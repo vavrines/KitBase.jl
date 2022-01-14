@@ -6,19 +6,19 @@ begin
     set = Setup(
         "gas",
         "cylinder",
-        "2d2f",
+        "2d2f2v",
         "kfvs",
         "bgk",
         1, # species
         2, # order of accuracy
         "vanleer", # limiter
         ["maxwell", "extra", "mirrror", "mirror"],
-        0.5, # cfl
+        0.3, # cfl
         10.0, # time
     )
-    ps = CSpace2D(1.0, 6.0, 30, 0.0, π, 50, 1, 1)
-    vs = VSpace2D(-10.0, 10.0, 48, -10.0, 10.0, 48)
-    gas = Gas(5e-2, 3.0, 1.0, 1.0)
+    ps = CSpace2D(1.0, 6.0, 20, 0.0, π, 40, 1, 1)
+    vs = VSpace2D(-10.0, 10.0, 36, -10.0, 10.0, 36)
+    gas = Gas(Kn = 5e-2, Ma = 5.0, Pr = 1.0, K = 1.0)
 
     prim0 = [1.0, 0.0, 0.0, 1.0]
     prim1 = [1.0, gas.Ma * sound_speed(1.0, gas.γ), 0.0, 1.0]
@@ -46,7 +46,7 @@ ctr, a1face, a2face = init_fvm(ks, ks.pSpace)
 t = 0.0
 dt = timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
-@showprogress for iter = 1:1000#nt
+@showprogress for iter = 1:500#nt
     evolve!(ks, ctr, a1face, a2face, dt; bc = [:maxwell, :extra, :mirror, :mirror])
     update!(
         ks,
