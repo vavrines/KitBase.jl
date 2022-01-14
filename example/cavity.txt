@@ -13,7 +13,7 @@ interpOrder = 2
 limiter = vanleer
 boundary = maxwell
 cfl = 0.8
-maxTime = 0.5#5.0
+maxTime = 5.0
 
 # phase space
 x0 = 0.0

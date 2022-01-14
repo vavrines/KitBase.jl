@@ -16,7 +16,7 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+    @inbounds @threads for i = 1:KS.pSpace.nx
         ctr[i].w, sumRes, sumAvg = step!(
             face[i].fw,
             ctr[i].w,
@@ -62,7 +62,7 @@ function update!(
     sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 ctr[i].w,
@@ -75,7 +75,7 @@ function update!(
             )
         end
     elseif ndims(sumRes) == 2
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 ctr[i].w,
@@ -124,7 +124,7 @@ function update!(
 
     phase = KS.set.space[3:end]
     if phase == "1f1v"
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 face[i].ff,
@@ -148,7 +148,7 @@ function update!(
         end
     elseif phase == "1f3v"
         if KS.set.collision == "fsm"
-            @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+            @inbounds @threads for i = 2:KS.pSpace.nx-1
                 step!(
                     face[i].fw,
                     face[i].ff,
@@ -171,7 +171,7 @@ function update!(
                 )
             end
         else
-            @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+            @inbounds @threads for i = 2:KS.pSpace.nx-1
                 step!(
                     face[i].fw,
                     face[i].ff,
@@ -226,7 +226,7 @@ function update!(
     sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 face[i].fh,
@@ -253,7 +253,7 @@ function update!(
             )
         end
     elseif ndims(sumRes) == 2
-        @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.pSpace.nx-1
             step!(
                 face[i].fw,
                 face[i].fh,
@@ -312,7 +312,7 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+    @inbounds @threads for i = 2:KS.pSpace.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
@@ -428,7 +428,7 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i = 2:KS.pSpace.nx-1
+    @inbounds @threads for i = 2:KS.pSpace.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
@@ -479,7 +479,7 @@ function update!(
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:ny-1
+        @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
@@ -546,7 +546,7 @@ function update!(
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:ny-1
+        @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
@@ -626,7 +626,7 @@ function update!(
 
     if ndims(sumRes) == 1
 
-        @inbounds for j = 2:ny-1
+        @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
                 step!(
                     ctr[i, j].w,
@@ -700,7 +700,7 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
@@ -742,7 +742,7 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
@@ -797,7 +797,7 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
