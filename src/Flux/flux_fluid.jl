@@ -9,9 +9,7 @@ $(SIGNATURES)
 Upwind flux
 """
 function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AV}
-    ip = dot(Ω, n) # inner product
-
-    if ip > 0
+    if dot(Ω, n) > 0
         return dt * ip * uL
     else
         return dt * ip * uR
@@ -27,7 +25,7 @@ Lax-Friedrichs flux
 _P. D. Lax, Weak Solutions of Nonlinear Hyperbolic Equations and Their Numerical Computation,
 Commun. Pure and Applied Mathematics, 7, 159-193, 1954._
 """
-function flux_lax!(fw::X, wL::Y, wR::Y, γ, dt, dx) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
+function flux_lax!(fw::AV, wL::T, wR::T, γ, dt, dx) where {T<:AV}
     fw .= 0.5 * dt .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1] - dx / dt .* (wR - wL))
     return nothing
 end
@@ -148,14 +146,14 @@ function flux_roe!(
 end
 
 function flux_roe!(
-    fw::X,
-    wL::Y,
-    wR::Y,
+    fw::AV,
+    wL::T,
+    wR::T,
     γ,
     dt,
     δs = 1.0,
     n = [1.0, 0.0],
-) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
+) where {T<:AV}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
