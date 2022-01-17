@@ -9,7 +9,9 @@ $(SIGNATURES)
 Upwind flux
 """
 function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AV}
-    if dot(Ω, n) > 0
+    ip = dot(Ω, n)
+    
+    if ip > 0
         return dt * ip * uL
     else
         return dt * ip * uR
