@@ -580,8 +580,7 @@ function evolve!(
                 len,
                 1,
             )
-            a1face[1, j].fw .=
-                global_frame(a1face[1, j].fw, n[1], n[2])
+            a1face[1, j].fw .= global_frame(a1face[1, j].fw, n[1], n[2])
         end
     end
     if bcs[2] == :maxwell
@@ -606,8 +605,7 @@ function evolve!(
                 len,
                 -1,
             )
-            a1face[nx+1, j].fw .=
-                global_frame(a1face[nx+1, j].fw, n[1], n[2])
+            a1face[nx+1, j].fw .= global_frame(a1face[nx+1, j].fw, n[1], n[2])
         end
     end
     if bcs[3] == :maxwell
@@ -632,8 +630,7 @@ function evolve!(
                 len,
                 1,
             )
-            a2face[i, 1].fw .=
-                global_frame(a2face[i, 1].fw, n[1], n[2])
+            a2face[i, 1].fw .= global_frame(a2face[i, 1].fw, n[1], n[2])
         end
     end
     if bcs[4] == :maxwell
@@ -658,8 +655,7 @@ function evolve!(
                 len,
                 -1,
             )
-            a2face[i, ny+1].fw .=
-                global_frame(a2face[i, ny+1].fw, n[1], n[2])
+            a2face[i, ny+1].fw .= global_frame(a2face[i, ny+1].fw, n[1], n[2])
         end
     end
 

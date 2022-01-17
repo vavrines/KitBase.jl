@@ -20,8 +20,7 @@ $(SIGNATURES)
 
 For Rykov model prim[end] should be λₜ
 """
-vhs_collision_time(prim::AV, muRef, omega) =
-    muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov model prim[end] should be λₜ
+vhs_collision_time(prim::AV, muRef, omega) = muRef * 2.0 * prim[end]^(1.0 - omega) / prim[1] # for rykov model prim[end] should be λₜ
 
 
 """

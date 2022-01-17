@@ -94,7 +94,15 @@ end
 
 function ControlVolume2F(w, prim, sw, h, b, sh, sb)
     n = size(w, 1) - 2
-    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),n}(w, prim, sw, h, b, sh, sb)
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),n}(
+        w,
+        prim,
+        sw,
+        h,
+        b,
+        sh,
+        sb,
+    )
 end
 
 function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}

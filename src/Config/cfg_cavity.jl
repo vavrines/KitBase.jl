@@ -17,7 +17,7 @@ function ib_cavity(
 
         prim = [1.0, 0.0, 0.0, 1.0]
         w = prim_conserve(prim, gas.γ)
-        
+
         primU = [1.0, Um, Vm, Tm]
         primD = deepcopy(prim)
         primL = deepcopy(prim)
