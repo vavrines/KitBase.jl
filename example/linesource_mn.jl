@@ -1,5 +1,5 @@
-using ProgressMeter, LinearAlgebra, Optim
-import KitBase
+using KitBase, LinearAlgebra, Optim
+using ProgressMeter: @showprogress
 
 # one-cell simplification
 begin

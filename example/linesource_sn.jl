@@ -1,4 +1,5 @@
-using ProgressMeter, KitBase, Plots
+using KitBase, Plots
+using ProgressMeter: @showprogress
 
 begin
     # space
