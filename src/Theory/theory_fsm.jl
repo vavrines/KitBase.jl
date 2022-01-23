@@ -140,7 +140,6 @@ function kernel_mode(
 
     return phi, psi, phipsi
 
-
 end
 
 """

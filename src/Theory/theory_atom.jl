@@ -29,7 +29,6 @@ $(SIGNATURES)
 Calculate mixture collision time from AAP model
 """
 function aap_hs_collision_time(prim::AM, mi, ni, me, ne, kn)
-
     ν = similar(prim, 2)
 
     ν[1] =
@@ -44,7 +43,6 @@ function aap_hs_collision_time(prim::AM, mi, ni, me, ne, kn)
         sqrt(1.0 / prim[end, 2] + 1.0 / prim[end, 2]) / (sqrt(2.0) * π * kn)
 
     return 1.0 ./ ν
-
 end
 
 
@@ -54,7 +52,6 @@ $(SIGNATURES)
 Source term of AAP model in DifferentialEquations.jl
 """
 function aap_hs_diffeq!(du, u, p, t)
-
     if length(u) == 6
         I₁, I₂, I₃, E₁, E₂, E₃ = u
         w = [
@@ -120,7 +117,6 @@ function aap_hs_diffeq!(du, u, p, t)
     end
 
     return nothing
-
 end
 
 

@@ -4,7 +4,6 @@ $(SIGNATURES)
 Calculate moments of Gaussian distribution `G = (λ / π)^(D / 2) * exp[-λ(c^2 + ξ^2)]`
 """
 function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
-
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
@@ -57,7 +56,6 @@ function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
         return Mu, Mv, Mw, MuL, MuR
 
     end
-
 end
 
 """
@@ -66,7 +64,6 @@ $(SIGNATURES)
 A more general function dealing with internal energy
 """
 function gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}
-
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
@@ -129,7 +126,6 @@ function gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}
         return Mu, Mv, Mw, MuL, MuR
 
     end
-
 end
 
 
