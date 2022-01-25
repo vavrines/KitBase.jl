@@ -1,5 +1,5 @@
-using ProgressMeter, OffsetArrays, Plots
-import KitBase
+using KitBase, OffsetArrays, Plots
+using ProgressMeter: @showprogress
 
 set = KitBase.Setup(
     "scalar", # matter
@@ -21,15 +21,13 @@ property = KitBase.Scalar(0, 1e-6)
 
 w0 = 1.0
 prim0 = KitBase.conserve_prim(w0)
-ib = KitBase.IB(w0, prim0, prim0, w0, prim0, prim0)
+ib = nothing
 ks = KitBase.SolverSet(set, pSpace, vSpace, property, ib, @__DIR__)
 
 ctr = OffsetArray{KitBase.ControlVolume1D}(undef, eachindex(ks.pSpace.x))
 for i in eachindex(ctr)
     u = sin(2π * ks.pSpace.x[i])
     ctr[i] = KitBase.ControlVolume1D(
-        ks.pSpace.x[i],
-        ks.pSpace.dx[i],
         u,
         KitBase.conserve_prim(u),
     )
@@ -53,13 +51,13 @@ anim = @animate for iter = 1:nt
             ctr[i].w,
             ks.gas.μᵣ,
             dt,
-            0.5 * ctr[i-1].dx,
-            0.5 * ctr[i].dx,
+            0.5 * ks.ps.dx[i-1],
+            0.5 * ks.ps.dx[i],
         )
     end
 
     for i = 1:ks.pSpace.nx
-        ctr[i].w += (face[i].fw - face[i+1].fw) / ctr[i].dx
+        ctr[i].w += (face[i].fw - face[i+1].fw) / ks.ps.dx[i]
         ctr[i].prim .= KitBase.conserve_prim(ctr[i].w)
     end
     ctr[0].w = ctr[ks.pSpace.nx].w
