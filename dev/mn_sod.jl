@@ -2,10 +2,10 @@ using KitBase, Plots, OffsetArrays
 using ProgressMeter: @showprogress
 using Base.Threads: @threads
 
-set = Setup(space = "1d1f1v", boundary = "fix", maxTime = 0.05)
+set = Setup(space = "1d1f1v", boundary = "fix", maxTime = 0.1)
 ps = PSpace1D(0, 1, 100, 1)
-vs = VSpace1D(-5, 5, 36)
-gas = Gas(Kn = 1e-3, K = 0.0, γ = 3.0)
+vs = VSpace1D(-5, 5, 28)
+gas = Gas(Kn = 5e-4, K = 0.0, γ = 3.0)
 ib = begin
     _fw = function (x)
         # wave
@@ -121,10 +121,14 @@ function up!(ks, ctr, face, p)
     m, dt = p
 
     @inbounds @threads for i = 1:ks.ps.nx
-        m = maxwellian(ks.vs.u, ctr[i].prim)
+        M = maxwellian(ks.vs.u, ctr[i].prim)
         τ = vhs_collision_time(ctr[i].prim, ks.gas.μᵣ, ks.gas.ω)
-        q = @. (m - ctr[i].f) / τ
-        Q = [sum(ks.vs.weights .* m[j, :] .* q) for j = 1:7]
+        q = @. (M - ctr[i].f) / τ
+
+        Q = zeros(size(m, 1))
+        for j = 4:size(m, 1)
+            @inbounds Q[j] = sum(ks.vs.weights .* m[j, :] .* q)
+        end
 
         @. ctr[i].w += (face[i].fw - face[i+1].fw) / ks.ps.dx[i] + Q * dt
         ctr[i].prim .= conserve_prim([ctr[i].w[1:2]; ctr[i].w[3] / 2], ks.gas.γ)
