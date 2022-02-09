@@ -3,13 +3,12 @@ $(SIGNATURES)
 
 Write data into JLD2
 """
-function write_jld(KS::X, ctr::Y, t = 0) where {X<:AbstractSolverSet,Y}
-
+function write_jld(KS::AbstractSolverSet, ctr, t = 0)
     strIter = string(t)
     fileOut = KS.outputFolder * "data/t=" * strIter * ".jld2"
-
     save(fileOut, Dict("set" => KS, "ctr" => ctr, "t" => t))
 
+    return nothing
 end
 
 
@@ -150,6 +149,8 @@ function write_tec(x::AM, y::AM, sol)
             end
         end
     end
+
+    return nothing
 end
 
 
@@ -161,4 +162,6 @@ function write_num(io, xs::AA)
         @printf(io, "%.6f ", x)
     end
     print(io, "\n")
+
+    return nothing
 end
