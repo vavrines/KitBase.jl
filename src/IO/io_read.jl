@@ -106,6 +106,6 @@ function read_dict(filename::T) where {T<:AbstractString}
     end
     println("--------------------------------------------------------------")
     println("")
-    
+
     return vars
 end

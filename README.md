@@ -5,7 +5,7 @@
 [![](https://img.shields.io/badge/docs-stable-green.svg)](https://xiaotianbai.com/Kinetic.jl/stable/)
 [![codecov](https://codecov.io/gh/vavrines/KitBase.jl/branch/main/graph/badge.svg?token=vGgQhyGJ6L)](https://codecov.io/gh/vavrines/KitBase.jl)
 [![deps](https://juliahub.com/docs/KitBase/deps.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS?t=2)
-[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/vavrines/KitBase.jl/v0.7.0.svg?style=social&logo=github)](https://github.com/vavrines/KitBase.jl)
+[![GitHub commits since tagged version](https://img.shields.io/github/commits-since/vavrines/KitBase.jl/v0.8.0.svg?style=social&logo=github)](https://github.com/vavrines/KitBase.jl)
 
 This lightweight module provides basic physical formulations and numerical methods for [Kinetic.jl](https://github.com/vavrines/Kinetic.jl) ecosystem.
 The finite volume method (FVM) is employed to perform 1-3 dimensional numerical simulations on CPUs and GPUs.

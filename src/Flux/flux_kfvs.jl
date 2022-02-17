@@ -359,7 +359,7 @@ function flux_kfvs!(
     fw[3] =
         dt * 0.5 * (sum(ω .* u .^ 3 .* h) + sum(ω .* u .* b)) -
         0.5 * dt^2 * 0.5 * (sum(ω .* u .^ 4 .* sh) + sum(ω .* u .^ 2 .* sb))=#
-    
+
     return nothing
 
 end

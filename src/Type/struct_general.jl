@@ -20,7 +20,7 @@ $(FIELDS)
     nSpecies::I = 1
     interpOrder::I = 2
     limiter::S = "vanleer"
-    boundary::E = "fix"
+    boundary::E = ["fix", "fix"]
     cfl::F = 0.5
     maxTime::G = 0.1
 end

@@ -6,17 +6,20 @@ Maxwellian in discrete form
 * @args: particle velocity quadrature points
 * @args: density, velocity and inverse of temperature
 * @return: Maxwellian distribution function
+
+1V
 """
-maxwellian(u, ρ, U, λ) = @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
+maxwellian(u, ρ, U, λ) = @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2)
 
 """
 $(SIGNATURES)
 """
 maxwellian(u, prim::AV) = maxwellian(u, prim[1], prim[2], prim[end]) # in case of input with length 4/5
 
-#--- 2V ---#
 """
 $(SIGNATURES)
+
+2V
 """
 maxwellian(u, v, ρ, U, V, λ) = @. ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
 
@@ -25,9 +28,10 @@ $(SIGNATURES)
 """
 maxwellian(u, v, prim::AV) = maxwellian(u, v, prim[1], prim[2], prim[3], prim[end]) # in case of input with length 5
 
-#--- 3V ---#
 """
 $(SIGNATURES)
+
+3V
 """
 maxwellian(u, v, w, ρ, U, V, W, λ) =
     @. ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
@@ -43,12 +47,12 @@ maxwellian(u, v, w, prim::AV) =
 $(SIGNATURES)
 
 In-place Maxwellian
+
+1V
 """
 function maxwellian!(M::AV, u::AV, ρ, U, λ)
-
-    @. M = ρ * sqrt(λ / π) * exp(-λ * (u - U)^2) # 1V
+    @. M = ρ * sqrt(λ / π) * exp(-λ * (u - U)^2)
     return nothing
-
 end
 
 """
@@ -83,17 +87,17 @@ function maxwellian!(
     @. Rr = Hr * Kr / (2.0 * prim[3])
 
     return nothing
+
 end
 
-#--- 2V ---#
 """
 $(SIGNATURES)
+
+2V
 """
 function maxwellian!(M::AA, u::T, v::T, ρ, U, V, λ) where {T<:AA}
-
     @. M = ρ * (λ / π) * exp(-λ * ((u - U)^2 + (v - V)^2))
     return nothing
-
 end
 
 """
@@ -120,6 +124,7 @@ function maxwellian!(
     K,
     Kr,
 ) where {T1<:AA,T2<:AA}
+
     @. Ht = prim[1] * (prim[5] / π) * exp(-prim[5] * ((u - prim[2])^2 + (v - prim[3])^2))
     @. Bt = Ht * K / (2.0 * prim[5])
     @. Rt = Ht * Kr / (2.0 * prim[6])
@@ -129,11 +134,13 @@ function maxwellian!(
     @. Rr = Hr * Kr / (2.0 * prim[4])
 
     return nothing
+
 end
 
-#--- 3V ---#
 """
 $(SIGNATURES)
+
+3V
 """
 function maxwellian!(M::AA, u::T, v::T, w::T, ρ, U, V, W, λ) where {T<:AA}
     @. M = ρ * sqrt((λ / π)^3) * exp(-λ * ((u - U)^2 + (v - V)^2 + (w - W)^2))
@@ -151,40 +158,38 @@ maxwellian!(M::AA, u::T, v::T, w::T, prim::AV) where {T<:AA} =
 $(SIGNATURES)
 
 Multi-component Maxwellian in discrete form
+
+1V
 """
 function mixture_maxwellian(u::AM, prim::AM)
-
     mixM = similar(u)
     mixture_maxwellian!(mixM, u, prim)
 
     return mixM
-
 end
 
-#--- 2V ---#
 """
 $(SIGNATURES)
+
+2V
 """
 function mixture_maxwellian(u::X, v::X, prim::AM) where {X<:AA}
-
     mixM = similar(u)
     mixture_maxwellian!(mixM, u, v, prim)
 
     return mixM
-
 end
 
-#--- 3V ---#
 """
 $(SIGNATURES)
+
+3V
 """
 function mixture_maxwellian(u::X, v::X, w::X, prim::AM) where {X<:AA}
-
     mixM = similar(u)
     mixture_maxwellian!(mixM, u, v, w, prim)
 
     return mixM
-
 end
 
 
@@ -192,21 +197,22 @@ end
 $(SIGNATURES)
 
 In-place multi-component Maxwellian
+
+1V
 """
 function mixture_maxwellian!(M::AM, u::AA{T,2}, prim::AM) where {T}
-
-    for j in axes(M, 2)
+    @inbounds for j in axes(M, 2)
         _M = @view M[:, j]
         maxwellian!(_M, u[:, j], prim[:, j])
     end
 
     return nothing
-
 end
 
-#--- 2V ---#
 """
 $(SIGNATURES)
+
+2V
 """
 function mixture_maxwellian!(
     M::AA{T1,3},
@@ -215,7 +221,7 @@ function mixture_maxwellian!(
     prim::AM,
 ) where {T1,T2<:AA{T3,3}} where {T3}
 
-    for k in axes(M, 3)
+    @inbounds for k in axes(M, 3)
         _M = @view M[:, :, k]
         maxwellian!(_M, u[:, :, k], v[:, :, k], prim[:, k])
     end
@@ -229,7 +235,7 @@ $(SIGNATURES)
 """
 function mixture_maxwellian!(M::AM, u::T, v::T, prim::AM) where {T<:AM}
 
-    for k in axes(M, 2)
+    @inbounds for k in axes(M, 2)
         _M = @view M[:, k]
         maxwellian!(_M, u[:, k], v[:, k], prim[:, k])
     end
@@ -238,9 +244,10 @@ function mixture_maxwellian!(M::AM, u::T, v::T, prim::AM) where {T<:AM}
 
 end
 
-#--- 3V ---#
 """
 $(SIGNATURES)
+
+3V
 """
 function mixture_maxwellian!(
     M::AA{T1,4},
@@ -250,7 +257,7 @@ function mixture_maxwellian!(
     prim::AM,
 ) where {T1,T2<:AA{T3,4}} where {T3}
 
-    for l in axes(M, 4)
+    @inbounds for l in axes(M, 4)
         _M = @view M[:, :, :, l]
         maxwellian!(_M, u[:, :, :, l], v[:, :, :, l], w[:, :, :, l], prim[:, l])
     end
@@ -261,7 +268,7 @@ end
 
 function mixture_maxwellian!(M::AM, u::T, v::T, w::T, prim::AM) where {T<:AM}
 
-    for l in axes(M, 2)
+    @inbounds for l in axes(M, 2)
         _M = @view M[:, l]
         maxwellian!(_M, u[:, l], v[:, l], w[:, l], prim[:, l])
     end

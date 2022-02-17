@@ -1016,7 +1016,7 @@ function update_boundary!(
     coll::Symbol,
     bc,
 ) where {TC<:ControlVolumeUS,TF<:Interface2D}
-    
+
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]
@@ -1065,7 +1065,7 @@ function update_boundary!(
     coll::Symbol,
     bc,
 ) where {TC<:ControlVolumeUS2F,TF<:Interface2D2F}
-    
+
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
             ids = KS.ps.cellNeighbors[i, :]

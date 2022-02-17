@@ -130,11 +130,7 @@ $(SIGNATURES)
 Calculate timestep based on current solutions
 
 """
-function timestep(
-    KS::AbstractSolverSet,
-    ctr::AV{<:AbstractControlVolume},
-    simTime,
-)
+function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime)
 
     tmax = 0.0
 
@@ -190,11 +186,7 @@ function timestep(
 
 end
 
-function timestep(
-    KS::AbstractSolverSet,
-    ctr::AM{<:AbstractControlVolume},
-    simTime,
-)
+function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime)
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -254,11 +246,7 @@ function timestep(
 
 end
 
-function timestep(
-    KS::AbstractSolverSet,
-    ctr::AV{<:AbstractUnstructControlVolume},
-    simTime,
-)
+function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime)
 
     tmax = 0.0
 

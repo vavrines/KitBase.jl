@@ -20,7 +20,6 @@ using Dates
 using DiffEqOperators
 using Distributed
 using Distributions
-using DocStringExtensions
 using FastGaussQuadrature
 using FFTW
 using FileIO
@@ -31,7 +30,6 @@ using MultivariatePolynomials
 using OffsetArrays
 using Optim
 using Printf
-using ProgressMeter
 using PyCall
 using RecipesBase
 using Reexport
@@ -41,6 +39,8 @@ using StructArrays
 using TypedPolynomials
 using WriteVTK
 @reexport using FiniteMesh
+using FiniteMesh.DocStringExtensions
+using FiniteMesh.ProgressMeter
 
 include("Data/data.jl")
 include("Macro/macro.jl")

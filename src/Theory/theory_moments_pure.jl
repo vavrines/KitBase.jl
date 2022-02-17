@@ -4,7 +4,6 @@ $(SIGNATURES)
 Calculate moments of Gaussian distribution `G = (λ / π)^(D / 2) * exp[-λ(c^2 + ξ^2)]`
 """
 function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
-
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
@@ -57,7 +56,6 @@ function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
         return Mu, Mv, Mw, MuL, MuR
 
     end
-
 end
 
 """
@@ -66,7 +64,6 @@ $(SIGNATURES)
 A more general function dealing with internal energy
 """
 function gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}
-
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
@@ -129,7 +126,6 @@ function gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}
         return Mu, Mv, Mw, MuL, MuR
 
     end
-
 end
 
 
@@ -472,14 +468,14 @@ end
 function flux_conserve_1d!(fw, ff, u, ω)
     fw[1] = sum(ω .* ff)
     fw[2] = sum(u .* ω .* ff)
-    fw[end] = 0.5 * sum(u.^2 .* ω .* ff)
+    fw[end] = 0.5 * sum(u .^ 2 .* ω .* ff)
 end
 
 #--- 2f1v ---#
 function flux_conserve_1d!(fw, fh, fb, u, ω)
     fw[1] = sum(ω .* fh)
     fw[2] = sum(u .* ω .* fh)
-    fw[end] = 0.5 * (sum(u.^2 .* ω .* fh) + sum(ω .* fb))
+    fw[end] = 0.5 * (sum(u .^ 2 .* ω .* fh) + sum(ω .* fb))
 end
 
 #--- 1f2v ---#
@@ -487,7 +483,7 @@ function flux_conserve_2d!(fw, ff, u, v, ω)
     fw[1] = sum(ω .* ff)
     fw[2] = sum(u .* ω .* ff)
     fw[3] = sum(v .* ω .* ff)
-    fw[end] = 0.5 * sum(u.^2 .* ω .* ff)
+    fw[end] = 0.5 * sum(u .^ 2 .* ω .* ff)
 end
 
 #--- 2f2v ---#
@@ -495,7 +491,7 @@ function flux_conserve_2d!(fw, fh, fb, u, v, ω)
     fw[1] = sum(ω .* fh)
     fw[2] = sum(u .* ω .* fh)
     fw[3] = sum(v .* ω .* fh)
-    fw[end] = 0.5 * (sum((u.^2 .+ v.^2) .* ω .* fh) + sum(ω .* fb))
+    fw[end] = 0.5 * (sum((u .^ 2 .+ v .^ 2) .* ω .* fh) + sum(ω .* fb))
 end
 
 #--- 1f3v ---#
@@ -504,7 +500,7 @@ function flux_conserve_3d!(fw, ff, u, v, w, ω)
     fw[2] = sum(u .* ω .* ff)
     fw[3] = sum(v .* ω .* ff)
     fw[4] = sum(w .* ω .* ff)
-    fw[end] = 0.5 * sum((u.^2 .+ v.^2 + w.^2) .* ω .* ff)
+    fw[end] = 0.5 * sum((u .^ 2 .+ v .^ 2 + w .^ 2) .* ω .* ff)
 end
 
 

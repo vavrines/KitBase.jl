@@ -9,8 +9,8 @@ $(SIGNATURES)
 Upwind flux
 """
 function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AV}
-    ip = dot(Ω, n) # inner product
-
+    ip = dot(Ω, n)
+    
     if ip > 0
         return dt * ip * uL
     else
@@ -27,7 +27,7 @@ Lax-Friedrichs flux
 _P. D. Lax, Weak Solutions of Nonlinear Hyperbolic Equations and Their Numerical Computation,
 Commun. Pure and Applied Mathematics, 7, 159-193, 1954._
 """
-function flux_lax!(fw::X, wL::Y, wR::Y, γ, dt, dx) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
+function flux_lax!(fw::AV, wL::T, wR::T, γ, dt, dx) where {T<:AV}
     fw .= 0.5 * dt .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1] - dx / dt .* (wR - wL))
     return nothing
 end
@@ -53,13 +53,7 @@ function flux_hll!(
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
-        flux_hll!(
-            face.fw,
-            ctrL.w .+ dxL .* ctrL.sw,
-            ctrR.w .- dxR .* ctrR.sw,
-            gas.γ,
-            dt,
-        )
+        flux_hll!(face.fw, ctrL.w .+ dxL .* ctrL.sw, ctrR.w .- dxR .* ctrR.sw, gas.γ, dt)
     elseif size(ctrL.w, 1) == 4
         len, n, dirc = p[3:5]
         swL = @view ctrL.sw[:, dirc]
@@ -133,13 +127,7 @@ function flux_roe!(
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
-        flux_roe!(
-            face.fw,
-            ctrL.w .+ dxL .* ctrL.sw,
-            ctrR.w .- dxR .* ctrR.sw,
-            gas.γ,
-            dt,
-        )
+        flux_roe!(face.fw, ctrL.w .+ dxL .* ctrL.sw, ctrR.w .- dxR .* ctrR.sw, gas.γ, dt)
     else
     end
 
@@ -147,15 +135,7 @@ function flux_roe!(
 
 end
 
-function flux_roe!(
-    fw::X,
-    wL::Y,
-    wR::Y,
-    γ,
-    dt,
-    δs = 1.0,
-    n = [1.0, 0.0],
-) where {X<:AA{<:Real,1},Y<:AA{<:Real,1}}
+function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs = 1.0, n = [1.0, 0.0]) where {T<:AV}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)

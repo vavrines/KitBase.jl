@@ -225,16 +225,7 @@ $(SIGNATURES)
 
 Calculate mixture primitive variables from AAP model
 """
-function aap_hs_prim(
-    prim::AM,
-    tau::AV,
-    mi,
-    ni,
-    me,
-    ne,
-    kn,
-)
-
+function aap_hs_prim(prim::AM, tau::AV, mi, ni, me, ne, kn)
     mixprim = similar(prim)
 
     if size(prim, 1) == 3
@@ -442,7 +433,6 @@ function aap_hs_prim(
     end
 
     return mixprim
-
 end
 
 
