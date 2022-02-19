@@ -1,3 +1,5 @@
+import KitBase.AA
+
 w = [1.0, 0.1, 0.3, 1.0]
 cosa = cos(0.5)
 sina = sin(0.5)
@@ -21,6 +23,26 @@ KitBase.PSpace1D(0.0, 1.0) |> show
 KitBase.PSpace2D()
 KitBase.PSpace2D(0.0, 1.0, 0.0, 1.0) |> show
 KitBase.CSpace2D(0.0, 1.0, 10, 0.0, π, 10) |> show
+KitBase.PSpace3D{Int,Int,AA{Float64,3},AA{Float64,5},AA{Float64,4},AA{Float64,4}}(
+    0,
+    1,
+    10,
+    0,
+    1,
+    10,
+    0,
+    1,
+    10,
+    zeros(10, 10, 10),
+    zeros(10, 10, 10),
+    zeros(10, 10, 10),
+    zeros(10, 10, 10),
+    zeros(10, 10, 10),
+    zeros(10, 10, 10),
+    zeros(10, 10, 10, 8, 3),
+    zeros(10, 10, 10, 6),
+    zeros(10, 10, 10, 6),
+) |> show
 
 x0 = 0.0
 nx = 15

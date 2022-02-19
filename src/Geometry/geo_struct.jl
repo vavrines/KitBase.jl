@@ -350,6 +350,52 @@ end
 
 
 """
+$(TYPEDEF)
+
+3D physical space with structured mesh
+
+  z  
+   |  
+   --- y  
+  /  
+x  
+     8 ----- 7  
+     /     /|  
+    /     / |  
+  5 ----- 6  
+   |     |  |  
+   |     | / 4  
+   |     |/  
+  2 ----- 3
+
+# Fields
+
+$(FIELDS)
+"""
+struct PSpace3D{TR<:Real,TI<:Integer,TA<:AA{<:Real,3},TB<:AA{<:Real,5},TC,TD} <:
+       AbstractPhysicalSpace3D
+    x0::TR
+    x1::TR
+    nx::TI
+    y0::TR
+    y1::TR
+    ny::TI
+    z0::TR
+    z1::TR
+    nz::TI
+    x::TA
+    y::TA
+    z::TA
+    dx::TA
+    dy::TA
+    dz::TA
+    vertices::TB
+    areas::TC
+    n::TD
+end
+
+
+"""
 $(SIGNATURES)
 
 Generate uniform mesh
