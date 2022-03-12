@@ -112,14 +112,21 @@ begin
     wL = KitBase.prim_conserve(primL, γ)
     wR = KitBase.prim_conserve(primR, γ)
 
-    fw = function (x)
+    fw = function (x, p)
         if x <= (pSpace.x0 + pSpace.x1) / 2
             wL
         else
             wR
         end
     end
-    ib = KitBase.IB(fw, gas)
+    bc = function (x, p)
+        if x <= (pSpace.x0 + pSpace.x1) / 2
+            primL
+        else
+            primR
+        end
+    end
+    ib = KitBase.IB(fw, bc)
 
     ks = KitBase.SolverSet(set, pSpace, vSpace, gas, ib, pwd())
 end

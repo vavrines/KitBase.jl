@@ -310,12 +310,12 @@ function maxwell_boundary!(x, v, p)
 
     if flag == 1
         xw = xwall[1]
-        primB = ib.bc(xw)
+        primB = ib.bc(xw, ib.p)
         bound = [0.0, Inf]
         vw = [primB[2]; zeros(2)]#ib.vL
     elseif flag == 2
         xw = xwall[2]
-        primB = ib.bc(xw)
+        primB = ib.bc(xw, ib.p)
         bound = [-Inf, 0.0]
         vw = [primB[2]; zeros(2)]#ib.vR
     end

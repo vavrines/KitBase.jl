@@ -84,8 +84,8 @@ begin
     dx = (x1 - x0) / nx
 end
 
-fw = (args...) -> [1.0, 0.0, rand()]
-KitBase.IB(fw, gas) |> show
+#fw = (args...) -> [1.0, 0.0, rand()]
+#KitBase.IB(fw, gas) |> show
 
 #--- control volume ---#
 KitBase.ControlVolume(w, prim, 1)

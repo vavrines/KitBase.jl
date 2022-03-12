@@ -126,7 +126,7 @@ function evolve!(
             face[1].fw,
             face[1].fh,
             face[1].fb,
-            KS.ib.bc(KS.ps.x0),
+            KS.ib.bc(KS.ps.x0, KS.ib.p),
             ctr[1].h,
             ctr[1].b,
             KS.vSpace.u,
@@ -141,7 +141,7 @@ function evolve!(
             face[KS.pSpace.nx+1].fw,
             face[KS.pSpace.nx+1].fh,
             face[KS.pSpace.nx+1].fb,
-            KS.ib.bc(KS.ps.x1),
+            KS.ib.bc(KS.ps.x1, KS.ib.p),
             ctr[KS.pSpace.nx].h,
             ctr[KS.pSpace.nx].b,
             KS.vSpace.u,
@@ -566,7 +566,7 @@ function evolve!(
             vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
             xc = (KS.ps.vertices[1, j, 1, 1] + KS.ps.vertices[1, j, 4, 1]) / 2
             yc = (KS.ps.vertices[1, j, 1, 2] + KS.ps.vertices[1, j, 4, 2]) / 2
-            bcL = local_frame(KS.ib.bc(xc, yc), n[1], n[2])
+            bcL = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
 
             flux_boundary_maxwell!(
                 a1face[1, j].fw,
@@ -591,7 +591,7 @@ function evolve!(
             vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
             xc = (KS.ps.vertices[nx, j, 2, 1] + KS.ps.vertices[nx, j, 3, 1]) / 2
             yc = (KS.ps.vertices[nx, j, 2, 2] + KS.ps.vertices[nx, j, 3, 2]) / 2
-            bcR = local_frame(KS.ib.bc(xc, yc), n[1], n[2])
+            bcR = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
 
             flux_boundary_maxwell!(
                 a1face[nx+1, j].fw,
@@ -616,7 +616,7 @@ function evolve!(
             vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
             xc = (KS.ps.vertices[i, 1, 1, 1] + KS.ps.vertices[i, 1, 2, 1]) / 2
             yc = (KS.ps.vertices[i, 1, 1, 2] + KS.ps.vertices[i, 1, 2, 2]) / 2
-            bcD = local_frame(KS.ib.bc(xc, yc), n[1], n[2])
+            bcD = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
 
             flux_boundary_maxwell!(
                 a2face[i, 1].fw,
@@ -641,7 +641,7 @@ function evolve!(
             vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
             xc = (KS.ps.vertices[i, ny, 3, 1] + KS.ps.vertices[i, ny, 4, 1]) / 2
             yc = (KS.ps.vertices[i, ny, 3, 2] + KS.ps.vertices[i, ny, 4, 2]) / 2
-            bcU = local_frame(KS.ib.bc(xc, yc), n[1], n[2])
+            bcU = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
 
             flux_boundary_maxwell!(
                 a2face[i, ny+1].fw,
@@ -782,7 +782,7 @@ function evolve!(
                         face[i].n[2],
                     )
                     #bc = copy(KS.ib.bcR)
-                    bc0 = KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2])
+                    bc0 = KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2], KS.ib.p)
                     bc = zero(bc)
                     bc[2] = -prim[2]
                     bc[3] = -prim[3]
@@ -860,7 +860,7 @@ function evolve!(
 
                 if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
                     bc = KitBase.local_frame(
-                        KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2]),
+                        KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2], KS.ib.p),
                         face[i].n[1],
                         face[i].n[2],
                     )
@@ -948,7 +948,7 @@ function evolve!(
 
                 if KS.ps.cellType[KS.ps.faceCells[i, idx]] == 2
                     bc = KitBase.local_frame(
-                        KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2]),
+                        KS.ib.bc(KS.ps.faceCenter[i, 1], KS.ps.faceCenter[i, 2], KS.ib.p),
                         face[i].n[1],
                         face[i].n[2],
                     )

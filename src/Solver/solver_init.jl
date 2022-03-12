@@ -89,7 +89,7 @@ function init_fvm(
         face = Array{Interface}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
             prim = begin
                 if γ == 0
                     funcprim(w)
@@ -101,7 +101,7 @@ function init_fvm(
         end
 
         for i = 1:KS.pSpace.nx+1
-            fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
+            fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface(fw, 1)
         end
 
@@ -111,15 +111,15 @@ function init_fvm(
         face = Array{Interface1F}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
             prim = funcprim(w, γ)
-            f = KS.ib.ff(KS.ps.x[i])
+            f = KS.ib.ff(KS.ps.x[i], KS.ib.p)
             ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(f), 1)
         end
 
         for i = 1:KS.pSpace.nx+1
-            fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
-            ff = deepcopy(KS.ib.ff(KS.ps.x[1])) |> funcar
+            fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
+            ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface(fw, ff, 1)
         end
 
@@ -129,15 +129,15 @@ function init_fvm(
         face = Array{Interface2F}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
             prim = funcprim(w, γ)
-            h, b = KS.ib.ff(KS.ps.x[i])
+            h, b = KS.ib.ff(KS.ps.x[i], KS.ib.p)
             ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(h), funcar(b), 1)
         end
 
         for i = 1:KS.pSpace.nx+1
-            fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
-            ff = deepcopy(KS.ib.ff(KS.ps.x[1])[1]) |> funcar
+            fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
+            ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
             face[i] = Interface(fw, ff, ff, 1)
         end
 
@@ -147,12 +147,12 @@ function init_fvm(
         face = Array{Interface1D3F}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
             prim = funcprim(w, γ)
-            h0, h1, h2 = KS.ib.ff(KS.ps.x[i])
-            E = KS.ib.fE(KS.ps.x[i])
-            B = KS.ib.fB(KS.ps.x[i])
-            L = KS.ib.fL(KS.ps.x[i])
+            h0, h1, h2 = KS.ib.ff(KS.ps.x[i], KS.ib.p)
+            E = KS.ib.fE(KS.ps.x[i], KS.ib.p)
+            B = KS.ib.fB(KS.ps.x[i], KS.ib.p)
+            L = KS.ib.fL(KS.ps.x[i], KS.ib.p)
 
             ctr[i] = ControlVolume1D3F(
                 funcar(w),
@@ -167,9 +167,9 @@ function init_fvm(
         end
 
         for i = 1:KS.pSpace.nx+1
-            fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
-            ff = deepcopy(KS.ib.ff(KS.ps.x[1])[1]) |> funcar
-            fe = deepcopy(KS.ib.fE(KS.ps.x[1])) |> funcar
+            fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
+            ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
+            fe = deepcopy(KS.ib.fE(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface1D3F(fw, ff, fe)
         end
 
@@ -179,12 +179,12 @@ function init_fvm(
         face = Array{Interface1D4F}(undef, KS.pSpace.nx + 1)
 
         for i in eachindex(ctr)
-            w = KS.ib.fw(KS.ps.x[i])
+            w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
             prim = funcprim(w, γ)
-            h0, h1, h2, h3 = KS.ib.ff(KS.ps.x[i])
-            E = KS.ib.fE(KS.ps.x[i])
-            B = KS.ib.fB(KS.ps.x[i])
-            L = KS.ib.fL(KS.ps.x[i])
+            h0, h1, h2, h3 = KS.ib.ff(KS.ps.x[i], KS.ib.p)
+            E = KS.ib.fE(KS.ps.x[i], KS.ib.p)
+            B = KS.ib.fB(KS.ps.x[i], KS.ib.p)
+            L = KS.ib.fL(KS.ps.x[i], KS.ib.p)
 
             ctr[i] = ControlVolume1D4F(
                 funcar(w),
@@ -200,9 +200,9 @@ function init_fvm(
         end
 
         for i = 1:KS.pSpace.nx+1
-            fw = deepcopy(KS.ib.fw(KS.ps.x[1])) |> funcar
-            ff = deepcopy(KS.ib.ff(KS.ps.x[1])[1]) |> funcar
-            fe = deepcopy(KS.ib.fE(KS.ps.x[1])) |> funcar
+            fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
+            ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
+            fe = deepcopy(KS.ib.fE(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface1D4F(fw, ff, fe)
         end
 
@@ -237,7 +237,7 @@ function init_fvm(
         a2face = Array{Interface}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
-            w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j])
+            w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
 
             ctr[i, j] = ControlVolume(funcar(w), funcar(prim), 2)
@@ -245,12 +245,12 @@ function init_fvm(
 
         for j = 1:ny
             for i = 1:nx+1
-                a1face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])), 2)
+                a1face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
             end
         end
         for i = 1:nx
             for j = 1:ny+1
-                a2face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])), 2)
+                a2face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
             end
         end
 
@@ -262,17 +262,17 @@ function init_fvm(
         a2face = Array{Interface1F}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
-            w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j])
+            w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
-            h = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j])
+            h = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
             ctr[i, j] = ControlVolume(funcar(w), funcar(prim), funcar(h), 2)
         end
 
         for j = 1:ny
             for i = 1:nx+1
                 a1face[i, j] = Interface(
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
                     2,
                 )
             end
@@ -280,8 +280,8 @@ function init_fvm(
         for i = 1:nx
             for j = 1:ny+1
                 a2face[i, j] = Interface(
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
                     2,
                 )
             end
@@ -295,9 +295,9 @@ function init_fvm(
         a2face = Array{Interface2F}(undef, nx, ny + 1)
 
         for j in axes(ctr, 2), i in axes(ctr, 1)
-            w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j])
+            w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
-            h, b = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j])
+            h, b = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
 
             ctr[i, j] = ControlVolume(funcar(w), funcar(prim), funcar(h), funcar(b), 2)
         end
@@ -305,9 +305,9 @@ function init_fvm(
         for j = 1:ny
             for i = 1:nx+1
                 a1face[i, j] = Interface(
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
-                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[2]),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)[1]),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)[2]),
                     2,
                 )
             end
@@ -315,9 +315,9 @@ function init_fvm(
         for i = 1:nx
             for j = 1:ny+1
                 a2face[i, j] = Interface(
-                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1])),
-                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[1]),
-                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1])[2]),
+                    funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)[1]),
+                    funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)[2]),
                     2,
                 )
             end
@@ -381,7 +381,7 @@ function init_fvm(
                     ),
                 ] |> funcar
 
-            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
+            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
 
             ctr[i] = KitBase.ControlVolumeUS(
@@ -415,7 +415,7 @@ function init_fvm(
                 n .= -n
             end
 
-            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2])) |> funcar
+            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2], KS.ib.p)) |> funcar
 
             face[i] = KitBase.Interface2D(len, n[1], n[2], fw)
         end
@@ -461,9 +461,9 @@ function init_fvm(
                     ),
                 ] |> funcar
 
-            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
+            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
-            h = KS.ib.ff(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
+            h = KS.ib.ff(ps.cellCenter[i, 1], ps.cellCenter[i, 2], KS.ib.p)
 
             ctr[i] = KitBase.ControlVolumeUS1F(
                 n,
@@ -498,8 +498,8 @@ function init_fvm(
                 n .= -n
             end
 
-            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2]))
-            ff = zero(KS.ib.ff(ctr[1].x[1], ctr[1].x[2]))
+            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2], KS.ib.p))
+            ff = zero(KS.ib.ff(ctr[1].x[1], ctr[1].x[2], KS.ib.p))
 
             face[i] = KitBase.Interface2D1F(len, n[1], n[2], funcar(fw), funcar(ff))
         end
@@ -545,9 +545,9 @@ function init_fvm(
                     ),
                 ] |> funcar
 
-            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
+            w = KS.ib.fw(ps.cellCenter[i, 1], ps.cellCenter[i, 2], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
-            h, b = KS.ib.ff(ps.cellCenter[i, 1], ps.cellCenter[i, 2])
+            h, b = KS.ib.ff(ps.cellCenter[i, 1], ps.cellCenter[i, 2], KS.ib.p)
 
             ctr[i] = KitBase.ControlVolumeUS2F(
                 n,
@@ -582,8 +582,8 @@ function init_fvm(
                 n .= -n
             end
 
-            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2]))
-            fh = zero(KS.ib.ff(ctr[1].x[1], ctr[1].x[2])[1])
+            fw = zero(KS.ib.fw(ctr[1].x[1], ctr[1].x[2], KS.ib.p))
+            fh = zero(KS.ib.ff(ctr[1].x[1], ctr[1].x[2], KS.ib.p)[1])
 
             face[i] = KitBase.Interface2D2F(len, n[1], n[2], funcar(fw), funcar(fh))
         end

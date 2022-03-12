@@ -21,52 +21,65 @@ function ib_sod(
         wL = prim_conserve(primL, gas.γ)
         wR = prim_conserve(primR, gas.γ)
 
-        fw = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return wL
+        p = (
+            x0 = ps.x0,
+            x1 = ps.x1,
+            wL = wL,
+            wR = wR,
+            primL = primL,
+            primR = primR,
+            γ = gas.γ,
+        )
+
+        fw = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.wL
             else
-                return wR
+                return p.wR
             end
         end
 
-        bc = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return primL
+        bc = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.primL
             else
-                return primR
+                return p.primR
             end
         end
 
         if set.space[1:4] == "1d0f"
-            return fw, bc
+            return fw, bc, p
         elseif set.space == "1d1f1v"
-            ff = function (x)
-                w = fw(x)
-                prim = conserve_prim(w, gas.γ)
-                h = maxwellian(vs.u, prim)
+            p = (p..., u = vs.u)
+            ff = function (x, p)
+                w = ifelse(x <= (p.x0 + p.x1) / 2, p.wL, p.wR)
+                prim = conserve_prim(w, p.γ)
+                h = maxwellian(p.u, prim)
                 return h
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         elseif set.space == "1d2f1v"
-            ff = function (x)
-                w = fw(x)
-                prim = conserve_prim(w, gas.γ)
-                h = maxwellian(vs.u, prim)
-                b = h * gas.K / 2 / prim[end]
+            p = (p..., u = vs.u, K = gas.K)
+            ff = function (x, p)
+                w = ifelse(x <= (p.x0 + p.x1) / 2, p.wL, p.wR)
+                prim = conserve_prim(w, p.γ)
+                h = maxwellian(p.u, prim)
+                b = h * p.K / 2 / prim[end]
                 return h, b
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         elseif set.space == "1d1f3v"
-            ff = function (x)
-                w = fw(x)
-                prim = conserve_prim(w, gas.γ)
-                h = maxwellian(vs.u, vs.v, vs.w, prim)
+            p = (p, u = vs.u, v = vs.v, w = vs.w)
+            ff = function (x, p)
+                w = ifelse(x <= (p.x0 + p.x1) / 2, p.wL, p.wR)
+                prim = conserve_prim(w, p.γ)
+                h = maxwellian(p.u, p.v, p.w, prim)
                 return h
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         end
 
     elseif set.nSpecies == 2
@@ -82,37 +95,47 @@ function ib_sod(
         wL = mixture_prim_conserve(primL, gas.γ)
         wR = mixture_prim_conserve(primR, gas.γ)
 
-        fw = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return wL
+        p = (
+            x0 = ps.x0,
+            x1 = ps.x1,
+            wL = wL,
+            wR = wR,
+            primL = primL,
+            primR = primR,
+            γ = gas.γ,
+        )
+
+        fw = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.wL
             else
-                return wR
+                return p.wR
             end
         end
 
-        bc = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return primL
+        bc = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.primL
             else
-                return primR
+                return p.primR
             end
         end
 
         if set.space[1:4] == "1d0f"
-            return fw, bc
+            return fw, bc, p
         elseif set.space == "1d1f1v"
             hL = mixture_maxwellian(vs.u, primL)
             hR = mixture_maxwellian(vs.u, primR)
-
-            ff = function (x)
-                if x <= (ps.x0 + ps.x1) / 2
-                    return hL
+            p = (p..., hL = hL, hR = hR)
+            ff = function (x, p)
+                if x <= (p.x0 + p.x1) / 2
+                    return p.hL
                 else
-                    return hR
+                    return p.hR
                 end
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         elseif set.space == "1d2f1v"
             hL = mixture_maxwellian(vs.u, primL)
             hR = mixture_maxwellian(vs.u, primR)
@@ -123,15 +146,17 @@ function ib_sod(
                 bR[:, j] .= hR[:, j] .* K ./ (2.0 .* primR[end, j])
             end
 
-            ff = function (x)
-                if x <= (ps.x0 + ps.x1) / 2
-                    return hL, bL
+            p = (p, hL = hL, hR = hR, bL = bL, bR = bR)
+
+            ff = function (x, p)
+                if x <= (p.x0 + p.x1) / 2
+                    return p.hL, p.bL
                 else
-                    return hR, bR
+                    return p.hR, p.bR
                 end
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         end
 
     end
