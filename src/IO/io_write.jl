@@ -1,6 +1,19 @@
 """
 $(SIGNATURES)
 
+Write solution data
+"""
+function write_sol(args...; mode = :bson)
+    fn = eval(Symbol("write_" * string(mode)))
+    fn(args...)
+
+    return nothing
+end
+
+
+"""
+$(SIGNATURES)
+
 Write data into JLD2
 """
 function write_jld(KS::AbstractSolverSet, ctr, t = 0)

@@ -13,6 +13,8 @@ end
 export KB
 
 import Base: *, @kwdef
+import BSON
+import JLD2
 using Base.Threads: @threads
 using CSV
 using CUDA
@@ -24,7 +26,6 @@ using FastGaussQuadrature
 using FFTW
 using FileIO
 using ForwardDiff
-using JLD2
 using LinearAlgebra
 using MultivariatePolynomials
 using OffsetArrays

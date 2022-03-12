@@ -1,9 +1,10 @@
 name = "KitBase"
 uuid = "86eed249-3a28-466f-8d3a-596821e1af9a"
 authors = ["Tianbai Xiao <tianbaixiao@gmail.com>"]
-version = "0.8.1"
+version = "0.8.2"
 
 [deps]
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -31,6 +32,7 @@ TypedPolynomials = "afbbf031-7a57-5f58-a1b9-b774a0fad08d"
 WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 
 [compat]
+BSON = "0.3"
 CSV = "0.8, 0.9, 0.10"
 CUDA = "^2, ^3"
 Conda = "^1"
@@ -56,6 +58,7 @@ WriteVTK = "^1"
 julia = "^1"
 
 [extras]
+CPUSummary = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"
 Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
