@@ -24,7 +24,7 @@ function evolve_boundary!(
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[1, j, 1, 1] + KS.ps.vertices[1, j, 4, 1]) / 2
             yc = (KS.ps.vertices[1, j, 1, 2] + KS.ps.vertices[1, j, 4, 2]) / 2
-            bcL = local_frame(KS.ib.bc(xc, yc), n)
+            bcL = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n)
             flux_boundary_maxwell!(
                 a1face[1, j].fw,
                 a1face[1, j].fh,
@@ -50,7 +50,7 @@ function evolve_boundary!(
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[nx, j, 2, 1] + KS.ps.vertices[nx, j, 3, 1]) / 2
             yc = (KS.ps.vertices[nx, j, 2, 2] + KS.ps.vertices[nx, j, 3, 2]) / 2
-            bcR = local_frame(KS.ib.bc(xc, yc), n)
+            bcR = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n)
             flux_boundary_maxwell!(
                 a1face[nx+1, j].fw,
                 a1face[nx+1, j].fh,
@@ -76,7 +76,7 @@ function evolve_boundary!(
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[i, 1, 1, 1] + KS.ps.vertices[i, 1, 2, 1]) / 2
             yc = (KS.ps.vertices[i, 1, 1, 2] + KS.ps.vertices[i, 1, 2, 2]) / 2
-            bcD = local_frame(KS.ib.bc(xc, yc), n)
+            bcD = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n)
 
             flux_boundary_maxwell!(
                 a2face[i, 1].fw,
@@ -103,7 +103,7 @@ function evolve_boundary!(
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[i, ny, 3, 1] + KS.ps.vertices[i, ny, 4, 1]) / 2
             yc = (KS.ps.vertices[i, ny, 3, 2] + KS.ps.vertices[i, ny, 4, 2]) / 2
-            bcU = local_frame(KS.ib.bc(xc, yc), n)
+            bcU = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n)
 
             flux_boundary_maxwell!(
                 a2face[i, ny+1].fw,

@@ -17,10 +17,10 @@ vSpace = nothing
 property = Scalar(1.0, 1e-6)
 w0 = 1.0
 prim0 = conserve_prim(w0, property.a)
-ib = IB(x -> sin(2π * x), property)
+ib = IB((x, y) -> sin(2π * x))
 ks = SolverSet(set, pSpace, vSpace, property, ib)
 
-ctr, face = init_fvm(ks, ks.ps)
+ctr, face = init_fvm(ks)
 for i in eachindex(ctr)
     ctr[i].w = sin(2π * ks.pSpace.x[i])
 end

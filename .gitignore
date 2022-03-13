@@ -3,3 +3,4 @@ dev/*.jld2
 dev/sol.vtu
 .vscode/*
 .vscode
+LocalPreferences.toml

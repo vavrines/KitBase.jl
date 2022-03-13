@@ -24,7 +24,6 @@ function ib_briowu(
     primL[5, 2] = gas.me / 1.0
 
     wL = mixture_prim_conserve(primL, gas.γ)
-
     EL = zeros(3)
     BL = zeros(3)
     BL[1] = 0.75
@@ -51,40 +50,53 @@ function ib_briowu(
     BR[2] = -1.0
     lorenzR = zeros(3, 2)
 
-    fw = function (x)
-        if x <= (ps.x0 + ps.x1) / 2
-            return wL
+    p = (
+        x0 = ps.x0,
+        x1 = ps.x1,
+        wL = wL,
+        EL = EL,
+        BL = BL,
+        lorenzL = lorenzL,
+        wR = wR,
+        ER = ER,
+        BR = BR,
+        lorenzR = lorenzR,
+    )
+
+    fw = function (x, p)
+        if x <= (p.x0 + p.x1) / 2
+            return p.wL
         else
-            return wR
+            return p.wR
         end
     end
-    fE = function (x)
-        if x <= (ps.x0 + ps.x1) / 2
-            return EL
+    fE = function (x, p)
+        if x <= (p.x0 + p.x1) / 2
+            return p.EL
         else
-            return ER
+            return p.ER
         end
     end
-    fB = function (x)
-        if x <= (ps.x0 + ps.x1) / 2
-            return BL
+    fB = function (x, p)
+        if x <= (p.x0 + p.x1) / 2
+            return p.BL
         else
-            return BR
+            return p.BR
         end
     end
-    fL = function (x)
-        if x <= (ps.x0 + ps.x1) / 2
-            return lorenzL
+    fL = function (x, p)
+        if x <= (p.x0 + p.x1) / 2
+            return p.lorenzL
         else
-            return lorenzR
+            return p.lorenzR
         end
     end
 
-    bc = function (x)
-        if x <= (ps.x0 + ps.x1) / 2
-            return primL
+    bc = function (x, p)
+        if x <= (p.x0 + p.x1) / 2
+            return p.primL
         else
-            return primR
+            return p.primR
         end
     end
 
@@ -111,15 +123,27 @@ function ib_briowu(
                 (primR[3, j]^2 + primR[4, j]^2 + 2.0 / (2.0 * primR[end, j])) .* h0R[:, j]
         end
 
-        ff = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return h0L, h1L, h2L, h3L
+        p = (
+            p...,
+            h0L = h0L,
+            h1L = h1L,
+            h2L = h2L,
+            h3L = h3L,
+            h0R = h0R,
+            h1R = h1R,
+            h2R = h2R,
+            h3R = h3R,
+        )
+
+        ff = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.h0L, p.h1L, p.h2L, p.h3L
             else
-                return h0R, h1R, h2R, h3R
+                return p.h0R, p.h1R, p.h2R, p.h3R
             end
         end
 
-        return fw, ff, fE, fB, fL, bc
+        return fw, ff, fE, fB, fL, bc, p
     elseif set.space[3:end] == "3f2v"
         h0L = mixture_maxwellian(vs.u, vs.v, primL)
         h1L = similar(h0L)
@@ -137,15 +161,25 @@ function ib_briowu(
             h2R[:, :, j] .= (primR[4, j]^2 + 1.0 / (2.0 * primR[end, j])) .* h0R[:, :, j]
         end
 
-        ff = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return h0L, h1L, h2L
+        p = (
+            p...,
+            h0L = h0L,
+            h1L = h1L,
+            h2L = h2L,
+            h0R = h0R,
+            h1R = h1R,
+            h2R = h2R,
+        )
+
+        ff = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.h0L, p.h1L, p.h2L
             else
-                return h0R, h1R, h2R
+                return p.h0R, p.h1R, p.h2R
             end
         end
 
-        return fw, ff, fE, fB, fL, bc
+        return fw, ff, fE, fB, fL, bc, p
     end
 
     return nothing

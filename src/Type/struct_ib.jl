@@ -11,37 +11,16 @@ Initial & boundary conditions with no distribution function
 
 $(FIELDS)
 """
-mutable struct IB{T<:Union{Function,AA}} <: AbstractCondition
+mutable struct IB{T} <: AbstractCondition
     fw::Function
     bc::T
+    p::NamedTuple
 end
 
-function IB(fw, gas::Scalar)
-    γ = gas.a
+IB(fw, bc = nothing) = IB{typeof(bc)}(fw, bc, NamedTuple())
 
-    bc = function (args...)
-        w = fw(args...)
-        return ifelse(γ == 0, conserve_prim(w), conserve_prim(w, γ))
-    end
-
-    return IB{typeof(bc)}(fw, bc)
-end
-
-function IB(fw, gas::AbstractGas)
-    bc = function (args...)
-        w = fw(args...)
-        prim = begin
-            if ndims(w) == 1
-                conserve_prim(w, gas.γ)
-            else
-                mixture_conserve_prim(w, gas.γ)
-            end
-        end
-
-        return prim
-    end
-
-    return IB{typeof(bc)}(fw, bc)
+(m::IB)(args...) = begin
+    m.fw(args..., m.p), m.bc(args..., m.p)
 end
 
 
@@ -58,8 +37,14 @@ mutable struct IB1F{T} <: AbstractCondition
     fw::Function
     ff::Function
     bc::T
+    p::NamedTuple
 end
 
+(m::IB1F)(args...) = begin
+    m.fw(args..., m.p), m.ff(args..., m.p), m.bc(args..., m.p)
+end
+
+#=
 function IB1F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
     bc = function (args...)
         w = fw(args...)
@@ -104,7 +89,7 @@ function IB1F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
 
     return IB1F{typeof(bc)}(fw, ff, bc)
 end
-
+=#
 
 """
 $(TYPEDEF)
@@ -119,8 +104,14 @@ mutable struct IB2F{T} <: AbstractCondition
     fw::Function
     ff::Function
     bc::T
+    p::NamedTuple
 end
 
+(m::IB2F)(args...) = begin
+    m.fw(args..., m.p), m.ff(args..., m.p)[1], m.ff(args..., m.p)[2], m.bc(args..., m.p)
+end
+
+#=
 function IB2F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
     bc = function (args...)
         w = fw(args...)
@@ -178,7 +169,7 @@ function IB2F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
 
     return IB2F{typeof(bc)}(fw, ff, bc)
 end
-
+=#
 
 """
 $(TYPEDEF)
@@ -196,6 +187,7 @@ mutable struct IB3F{T} <: AbstractCondition
     fB::Function
     fL::Function
     bc::T
+    p::NamedTuple
 end
 
 
@@ -215,4 +207,5 @@ mutable struct IB4F{T} <: AbstractCondition
     fB::Function
     fL::Function
     bc::T
+    p::NamedTuple
 end

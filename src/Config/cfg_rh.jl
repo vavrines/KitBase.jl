@@ -17,6 +17,8 @@ function ib_rh(
         (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
         (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
 
+    p = (x0 = ps.x0, x1 = ps.x1, u = vs.u, γ = gas.γ, K = gas.K)
+
     if set.nSpecies == 1
 
         primL = [1.0, MaL * sqrt(gam / 2.0), 1.0]
@@ -32,52 +34,55 @@ function ib_rh(
         wL = prim_conserve(primL, gam)
         wR = prim_conserve(primR, gam)
 
-        fw = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return wL
+        p = (p..., wL = wL, wR = wR, primL = primL, primR = primR)
+
+        fw = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.wL
             else
-                return wR
+                return p.wR
             end
         end
 
-        bc = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return primL
+        bc = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.primL
             else
-                return primR
+                return p.primR
             end
         end
 
         if set.space[1:4] == "1d0f"
-            return fw, bc
+            return fw, bc, p
         elseif set.space == "1d1f1v"
-            ff = function (x)
-                w = fw(x)
-                prim = conserve_prim(w, gas.γ)
-                h = maxwellian(vs.u, prim)
+            ff = function (x, p)
+                w = ifelse(x <= (p.x0 + p.x1) / 2, p.wL, p.wR)
+                prim = conserve_prim(w, p.γ)
+                h = maxwellian(p.u, prim)
                 return h
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         elseif set.space == "1d2f1v"
-            ff = function (x)
-                w = fw(x)
-                prim = conserve_prim(w, gas.γ)
-                h = maxwellian(vs.u, prim)
-                b = h * gas.K / 2 / prim[end]
+            ff = function (x, p)
+                w = ifelse(x <= (p.x0 + p.x1) / 2, p.wL, p.wR)
+                prim = conserve_prim(w, p.γ)
+                h = maxwellian(p.u, prim)
+                b = @. h * p.K / 2 / prim[end]
                 return h, b
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         elseif set.space == "1d1f3v"
-            ff = function (x)
-                w = fw(x)
-                prim = conserve_prim(w, gas.γ)
-                h = maxwellian(vs.u, vs.v, vs.w, prim)
+            p = (p..., v = vs.v, w = vs.w)
+            ff = function (x, p)
+                w = ifelse(x <= (p.x0 + p.x1) / 2, p.wL, p.wR)
+                prim = conserve_prim(w, p.γ)
+                h = maxwellian(p.u, p.v, p.w, prim)
                 return h
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         end
 
     elseif set.nSpecies == 2
@@ -96,19 +101,21 @@ function ib_rh(
         wL = mixture_prim_conserve(primL, gam)
         wR = mixture_prim_conserve(primR, gam)
 
-        fw = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return wL
+        p = (p..., wL = wL, wR = wR, primL = primL, primR = primR)
+
+        fw = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.wL
             else
-                return wR
+                return p.wR
             end
         end
 
-        bc = function (x)
-            if x <= (ps.x0 + ps.x1) / 2
-                return primL
+        bc = function (x, p)
+            if x <= (p.x0 + p.x1) / 2
+                return p.primL
             else
-                return primR
+                return p.primR
             end
         end
 
@@ -122,15 +129,17 @@ function ib_rh(
                 bR[:, j] .= hR[:, j] .* gas.K ./ (2.0 .* primR[end, j])
             end
 
-            ff = function (x)
+            p = (p..., hL = hL, bL = bL, hR = hR, bR = bR, K = gas.K)
+
+            ff = function (x, p)
                 if x <= (ps.x0 + ps.x1) / 2
-                    return hL, bL
+                    return p.hL, p.bL
                 else
-                    return hR, bR
+                    return p.hR, p.bR
                 end
             end
 
-            return fw, ff, bc
+            return fw, ff, bc, p
         end
 
     end

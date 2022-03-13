@@ -596,32 +596,22 @@ end
 $(SIGNATURES)
 """
 function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
-    fname = begin
-        if set.case == "shock"
-            "ib_rh"
-        elseif set.case == "brio-wu"
-            "ib_briowu"
-        else
-            "ib_" * string(set.case)
-        end
-    end
-
     ib = begin
         if parse(Int, set.space[3]) == 0
-            fw, bc = config_ib(set, pSpace, vSpace, gas)
-            IB(fw, bc)
+            fw, bc, p = config_ib(set, pSpace, vSpace, gas)
+            IB{typeof(bc)}(fw, bc, p)
         elseif parse(Int, set.space[3]) in [3, 4] && gas isa AbstractPlasma
-            fw, ff, fE, fB, fL, bc = config_ib(set, pSpace, vSpace, gas)
+            fw, ff, fE, fB, fL, bc, p = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
-            eval(Symbol(iname))(fw, ff, fE, fB, fL, bc)
+            eval(Symbol(iname)){typeof(bc)}(fw, ff, fE, fB, fL, bc, p)
         elseif set.case == "cavity"
-            fw, ff, bc = config_ib(set, pSpace, vSpace, gas, Um, Vm, Tm)
+            fw, ff, bc, p = config_ib(set, pSpace, vSpace, gas, Um, Vm, Tm)
             iname = "IB" * set.space[3] * "F"
-            eval(Symbol(iname))(fw, ff, bc)
+            eval(Symbol(iname)){typeof(bc)}(fw, ff, bc, p)
         else
-            fw, ff, bc = config_ib(set, pSpace, vSpace, gas)
+            fw, ff, bc, p = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
-            eval(Symbol(iname))(fw, ff, bc)
+            eval(Symbol(iname)){typeof(bc)}(fw, ff, bc, p)
         end
     end
 
