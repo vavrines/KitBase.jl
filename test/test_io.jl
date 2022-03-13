@@ -6,7 +6,8 @@ D = KitBase.read_dict("config.txt")
 ks, ctr, face, simTime = KitBase.initialize(D)
 
 ks, ctr, face, simTime = KitBase.initialize("config.txt")
-KitBase.write_jld(ks, ctr)
+KitBase.write_sol(ks, ctr)
+KitBase.write_sol(ks, ctr; mode = :jld)
 
 KitBase.plot_line(ks, ctr)
 plot(ks, ctr, legend = :none)

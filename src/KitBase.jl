@@ -1,7 +1,7 @@
 """
 KitBase.jl: The lightweight module of physical formulations in Kinetic.jl
 
-Copyright (c) 2020-2021 Tianbai Xiao <tianbaixiao@gmail.com>
+Copyright (c) 2020-2022 Tianbai Xiao <tianbaixiao@gmail.com>
 """
 
 module KitBase
