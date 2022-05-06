@@ -5,7 +5,7 @@ ks, ctr, a1face, a2face, simTime = KitBase.initialize("cavity.txt")
 simTime = KitBase.solve!(ks, ctr, a1face, a2face, simTime)
 
 # equivalent low-level procedures
-using ProgressMeter: @showprogress
+using KitBase.ProgressMeter: @showprogress
 simTime = 0.0
 res = zeros(4)
 dt = KitBase.timestep(ks, ctr, simTime)

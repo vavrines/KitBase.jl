@@ -1,5 +1,5 @@
 using KitBase, OffsetArrays, Plots
-using ProgressMeter: @showprogress
+using KitBase.ProgressMeter: @showprogress
 
 set = KitBase.Setup(
     "scalar", # matter

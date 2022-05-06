@@ -20,7 +20,7 @@ set = Setup(
 pSpace = PSpace1D(0.0, 1.0, 100, 1)
 vSpace = nothing
 property = Scalar(1.0, 1e-6)
-ib = IB(x -> sin(2π * x), property)
+ib = IB((x, args...) -> sin(2π * x))
 
 ks = SolverSet(set, pSpace, vSpace, property, ib)
 ctr, face = init_fvm(ks)
