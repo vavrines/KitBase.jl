@@ -245,12 +245,14 @@ function init_fvm(
 
         for j = 1:ny
             for i = 1:nx+1
-                a1face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
+                a1face[i, j] =
+                    Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
             end
         end
         for i = 1:nx
             for j = 1:ny+1
-                a2face[i, j] = Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
+                a2face[i, j] =
+                    Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
             end
         end
 

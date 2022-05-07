@@ -12,15 +12,15 @@ ib = begin
     primR = [0.125, 0.0, 1 / 0.625]
     p = (γ = gas.γ, u = vs.u, primL = primL, primR = primR)
     _fw = function (x, p)
-        prim = ifelse(x<0.5, p.primL, p.primR)
+        prim = ifelse(x < 0.5, p.primL, p.primR)
         return prim_conserve(prim, p.γ)
     end
     _ff = function (x, p)
-        prim = ifelse(x<0.5, p.primL, p.primR)
+        prim = ifelse(x < 0.5, p.primL, p.primR)
         return maxwellian(p.u, prim)
     end
     _bc = function (x, p)
-        prim = ifelse(x<0.5, p.primL, p.primR)
+        prim = ifelse(x < 0.5, p.primL, p.primR)
         return prim
     end
     IB1F(_fw, _ff, _bc, p)

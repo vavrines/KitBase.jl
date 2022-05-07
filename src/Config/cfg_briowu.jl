@@ -161,15 +161,7 @@ function ib_briowu(
             h2R[:, :, j] .= (primR[4, j]^2 + 1.0 / (2.0 * primR[end, j])) .* h0R[:, :, j]
         end
 
-        p = (
-            p...,
-            h0L = h0L,
-            h1L = h1L,
-            h2L = h2L,
-            h0R = h0R,
-            h1R = h1R,
-            h2R = h2R,
-        )
+        p = (p..., h0L = h0L, h1L = h1L, h2L = h2L, h0R = h0R, h1R = h1R, h2R = h2R)
 
         ff = function (x, p)
             if x <= (p.x0 + p.x1) / 2

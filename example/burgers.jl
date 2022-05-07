@@ -1,5 +1,5 @@
 using KitBase, OffsetArrays, Plots
-using ProgressMeter: @showprogress
+using KitBase.ProgressMeter: @showprogress
 
 set = KitBase.Setup(
     "scalar", # matter
@@ -27,10 +27,7 @@ ks = KitBase.SolverSet(set, pSpace, vSpace, property, ib, @__DIR__)
 ctr = OffsetArray{KitBase.ControlVolume1D}(undef, eachindex(ks.pSpace.x))
 for i in eachindex(ctr)
     u = sin(2π * ks.pSpace.x[i])
-    ctr[i] = KitBase.ControlVolume1D(
-        u,
-        KitBase.conserve_prim(u),
-    )
+    ctr[i] = KitBase.ControlVolume1D(u, KitBase.conserve_prim(u))
 end
 
 face = Array{KitBase.Interface1D}(undef, ks.pSpace.nx + 1)
