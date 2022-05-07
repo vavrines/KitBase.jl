@@ -87,9 +87,12 @@ function ib_rh(
 
     elseif set.nSpecies == 2
 
+        mi, me = gas.mi, gas.me
+        ni, ne = gas.ni, gas.ne
+
         primL = zeros(3, 2)
-        primL[:, 1] .= [mi, MaL * sqrt(gam / 2.0), mi / 1.0]
-        primL[:, 2] .= [me, MaL * sqrt(gam / 2.0), me / 1.0]
+        primL[:, 1] .= [mi, MaL * sqrt(gam / 2.0 / (mi * ni + me * ne)), mi / 1.0]
+        primL[:, 2] .= [me, MaL * sqrt(gam / 2.0 / (mi * ni + me * ne)), me / 1.0]
 
         primR = zeros(3, 2)
         for j = 1:2
