@@ -56,7 +56,7 @@ plot!(ks, ctr)
 m = zeros(7, length(vs.u))
 for j in axes(m, 2)
     for i in axes(m, 1)
-        m[i, j] = vs.u[j]^(i-1)
+        m[i, j] = vs.u[j]^(i - 1)
     end
 end
 α = zeros(size(m, 1)) # minimizer
