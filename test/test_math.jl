@@ -9,6 +9,11 @@ KitBase.fortsign(x0, x1)
 KitBase.mat_split(randn(2, 2))
 KitBase.mat_split(randn(3, 3))
 
+KB.convergence_order(1e-2, 1e-3)
+KB.L1_error(rand(3), rand(3), 1e-2)
+KB.L2_error(rand(3), rand(3), 1e-2)
+KB.L∞_error(rand(3), rand(3), 1e-2)
+
 u = Float64[0, 1, 2, 3, 2, 1, 0]
 dx = 1.0
 KitBase.finite_difference(u, dx; method = :central, bc = :period)
