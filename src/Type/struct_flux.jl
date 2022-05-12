@@ -50,7 +50,7 @@ function Flux1D(fw::AA, ff::AA)
         end
     end
 
-    return Flux1F{typeof(n),typeof(w),typeof(fw),1}(n, w, fw, ff)
+    return Flux1F{typeof(n),typeof(w),typeof(ff),1}(n, w, fw, ff)
 end
 
 function Flux1D(fw::AA, fh::AA, fb::AA)
@@ -64,7 +64,7 @@ function Flux1D(fw::AA, fh::AA, fb::AA)
         end
     end
 
-    return Flux2F{typeof(n),typeof(w),typeof(fw),1}(n, w, fw, fh, fb)
+    return Flux2F{typeof(n),typeof(w),typeof(fh),1}(n, w, fw, fh, fb)
 end
 
 
@@ -91,7 +91,7 @@ function Flux2D(n::AA, fw::AA, ff::AA)
         end
     end
 
-    return Flux1F{typeof(n),typeof(w),typeof(fw),2}(n, w, fw, ff)
+    return Flux1F{typeof(n),typeof(w),typeof(ff),2}(n, w, fw, ff)
 end
 
 function Flux2D(n::AA, fw::AA, fh::AA, fb::AA)
@@ -104,5 +104,5 @@ function Flux2D(n::AA, fw::AA, fh::AA, fb::AA)
         end
     end
     
-    return Flux2F{typeof(n),typeof(w),typeof(fw),2}(n, w, fw, fh, fb)
+    return Flux2F{typeof(n),typeof(w),typeof(fh),2}(n, w, fw, fh, fb)
 end
