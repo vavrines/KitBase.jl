@@ -27,34 +27,82 @@ end
 
 function Flux1D(fw::AA)
     n = ones(axes(fw)[end])
-    w = zero(fw)
+    w = deepcopy(fw)
+    if w[1] isa Number
+        w .= 0.0
+    else
+        for e in w
+            e .= 0.0
+        end
+    end
+
     return Flux{typeof(n),typeof(w),1}(n, w, fw)
 end
 
 function Flux1D(fw::AA, ff::AA)
     n = ones(axes(fw)[end])
-    w = zero(fw)
+    w = deepcopy(fw)
+    if w[1] isa Number
+        w .= 0.0
+    else
+        for e in w
+            e .= 0.0
+        end
+    end
+
     return Flux1F{typeof(n),typeof(w),typeof(fw),1}(n, w, fw, ff)
 end
 
 function Flux1D(fw::AA, fh::AA, fb::AA)
     n = ones(axes(fw)[end])
-    w = zero(fw)
+    w = deepcopy(fw)
+    if w[1] isa Number
+        w .= 0.0
+    else
+        for e in w
+            e .= 0.0
+        end
+    end
+
     return Flux2F{typeof(n),typeof(w),typeof(fw),1}(n, w, fw, fh, fb)
 end
 
 
 function Flux2D(n::AA, fw::AA)
-    w = zero(fw)
+    w = deepcopy(fw)
+    if w[1] isa Number
+        w .= 0.0
+    else
+        for e in w
+            e .= 0.0
+        end
+    end
+
     return Flux{typeof(n),typeof(w),2}(n, w, fw)
 end
 
 function Flux2D(n::AA, fw::AA, ff::AA)
-    w = zero(fw)
+    w = deepcopy(fw)
+    if w[1] isa Number
+        w .= 0.0
+    else
+        for e in w
+            e .= 0.0
+        end
+    end
+
     return Flux1F{typeof(n),typeof(w),typeof(fw),2}(n, w, fw, ff)
 end
 
 function Flux2D(n::AA, fw::AA, fh::AA, fb::AA)
-    w = zero(fw)
+    w = deepcopy(fw)
+    if w[1] isa Number
+        w .= 0.0
+    else
+        for e in w
+            e .= 0.0
+        end
+    end
+    
     return Flux2F{typeof(n),typeof(w),typeof(fw),2}(n, w, fw, fh, fb)
 end
