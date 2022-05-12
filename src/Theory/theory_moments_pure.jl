@@ -483,7 +483,7 @@ function flux_conserve_2d!(fw, ff, u, v, ω)
     fw[1] = sum(ω .* ff)
     fw[2] = sum(u .* ω .* ff)
     fw[3] = sum(v .* ω .* ff)
-    fw[end] = 0.5 * sum(u .^ 2 .* ω .* ff)
+    fw[end] = 0.5 * sum((u .^ 2 .+ v .^ 2) .* ω .* ff)
 end
 
 #--- 2f2v ---#
