@@ -135,3 +135,35 @@ function extract_last(a::AA{T}, idx::Integer; mode = :view::Symbol) where {T}
 
     return sw
 end
+
+
+"""
+$(SIGNATURES)
+
+Calculate rate of convergence
+"""
+convergence_order(e1, e2, r = 2) = log(e1 / e2) / log(r)
+
+
+"""
+$(SIGNATURES)
+
+Calculate L1 error
+"""
+L1_error(u::T, ue::T, Δx) where {T<:AA} = sum(abs.(u .- ue) .* Δx)
+
+
+"""
+$(SIGNATURES)
+
+Calculate L2 error
+"""
+L2_error(u::T, ue::T, Δx) where {T<:AA} = sqrt(sum((abs.(u .- ue) .* Δx) .^ 2))
+
+
+"""
+$(SIGNATURES)
+
+Calculate L∞ error
+"""
+L∞_error(u::T, ue::T, Δx) where {T<:AA} = maximum(abs.(u .- ue) .* Δx)
