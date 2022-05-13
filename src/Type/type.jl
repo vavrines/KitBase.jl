@@ -26,10 +26,10 @@ export ControlVolumeUS, ControlVolumeUS1F, ControlVolumeUS2F
 export Interface, Interface1F, Interface2F
 export Interface1D, Interface1D1F, Interface1D2F, Interface1D3F, Interface1D4F
 export Interface2D, Interface2D1F, Interface2D2F
-export Solution1D, Solution1D1F, Solution1D2F
-export Solution2D, Solution2D1F, Solution2D2F
-export Flux1D, Flux1D1F, Flux1D2F
-export Flux2D, Flux2D1F, Flux2D2F
+export Solution, Solution1F, Solution2F
+export Solution1D, Solution2D
+export Flux, Flux1F, Flux2F
+export Flux1D, Flux2D
 export Particle, Particle1D, Particle2D
 export ControlVolumeParticle1D, ControlVolumeParticle2D
 

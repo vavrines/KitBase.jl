@@ -46,6 +46,19 @@ maxwellian(u, v, w, prim::AV) =
 """
 $(SIGNATURES)
 
+Reduced Maxwellian distribution related to energy
+"""
+energy_maxwellian(h, λ, K) = @. h * K / (2.0 * λ)
+
+"""
+$(SIGNATURES)
+"""
+energy_maxwellian(h, prim::AV, K) = energy_maxwellian(h, prim[end], K)
+
+
+"""
+$(SIGNATURES)
+
 In-place Maxwellian
 
 1V
