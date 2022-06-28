@@ -27,15 +27,16 @@ fortsign(x, y) = abs(x) * sign(y)
 $(SIGNATURES)
 
 Split matrix into row vectors
+
+This function can be used for building physics-informed neural networks.
 """
 function mat_split(m::AM{T}) where {T<:Number}
-
-    if length(m[1, :]) == 2
+    if length(m[:, 1]) == 2
         nx = eltype(m).([1.0 0.0])
         ny = eltype(m).([0.0 1.0])
 
         return nx * m, ny * m
-    elseif length(m[1, :]) == 3
+    elseif length(m[:, 2]) == 3
         nx = eltype(m).([1.0 0.0 0.0])
         ny = eltype(m).([0.0 1.0 0.0])
         nz = eltype(m).([0.0 0.0 1.0])
@@ -43,6 +44,7 @@ function mat_split(m::AM{T}) where {T<:Number}
         return nx * m, ny * m, nz * m
     end
 
+    throw("arrays are not aligned")
 end
 
 
