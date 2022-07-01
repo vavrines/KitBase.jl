@@ -490,17 +490,17 @@ julia> harmonic(2)
 function harmonic(n::Integer)
     if n < 0
         throw(DomainError(n))
-    elseif n==0
+    elseif n == 0
         return 0.0 # by convention (see Crandall, p.22)
     elseif n <= 10
         # perform exact sum for small n
         total = 0.0
-        for k=1:n
-            total +=  1.0 / k
+        for k = 1:n
+            total += 1.0 / k
         end
         return total
     else
-        return γ + SpecialFunctions.digamma(n+1) # digamma(m) = ψ(m)
+        return Base.MathConstants.γ + SpecialFunctions.digamma(n + 1) # digamma(m) = ψ(m)
     end
 end
 
@@ -518,7 +518,7 @@ julia> harmonic(2.0)
 1.5000000000000016
 ```
 """
-harmonic(x::ComplexOrReal{Float64}) = γ + SpecialFunctions.digamma(x+1)
+harmonic(x::ComplexOrReal{Float64}) = Base.MathConstants.γ + SpecialFunctions.digamma(x + 1)
 
 """
 $(SIGNATURES)
@@ -543,12 +543,12 @@ function harmonic(n::Integer, r::Real)
     if n == 0
         return 0.0
     end
-    if r==1
+    if r == 1
         return harmonic(n)
     end
     total = 0.0
-    for k=1:n
-        total +=  1.0 / k^r
+    for k = 1:n
+        total += 1.0 / k^r
     end
     return total
 end
@@ -572,8 +572,49 @@ julia> harmonic(2,1)
 ```
 """
 function harmonic(n::Integer, r::Integer)
-    if r<1
+    if r < 1
         throw(DomainError(r))
     end
-    return (-1)^(r-1) * ( SpecialFunctions.polygamma(r-1,n+1) - SpecialFunctions.polygamma(r-1,1) ) / SpecialFunctions.gamma(r)
+    return (-1)^(r - 1) * (
+        SpecialFunctions.polygamma(r - 1, n + 1) - SpecialFunctions.polygamma(r - 1, 1)
+    ) / SpecialFunctions.gamma(r)
 end
+
+
+const stieltjes_n = [Base.MathConstants.γ, 
+    -0.0728158454836767248605863758749013191377363383, 	# A082633
+    -0.0096903631928723184845303860352125293590658061, 	# A086279
+    +0.0020538344203033458661600465427533842857158044, 	# A086280
+    +0.0023253700654673000574681701775260680009044694, 	# A086281
+    +0.0007933238173010627017533348774444448307315394, 	# A086282
+    -0.0002387693454301996098724218419080042777837151, 	# A183141
+    -0.0005272895670577510460740975054788582819962534, 	# A183167
+    -0.0003521233538030395096020521650012087417291805, 	# A183206
+    -0.0000343947744180880481779146237982273906207895, 	# A184853
+    +0.0002053328149090647946837222892370653029598537, 	# A184854
+]
+"""
+$(SIGNATURES)
+
+Provide the first 10 Stieltjes (generalized Euler-Mascheroni) constants (see
+Abramowitz and Stegunm, 23.2.5) or (https://en.wikipedia.org/wiki/Stieltjes_constants).
+
+## Arguments
+* `n::Integer`: the number of elements to compute.
+
+## Examples
+```jldoctest; setup = :(using Polylogarithms)
+julia> stieltjes(0)
+0.5772156649015329
+```
+"""
+function stieltjes(n::Integer)
+    if n<0
+        throw(DomainError(n))
+    elseif n>10
+        throw(DomainError(n, "Only the first 11 Stieltjes numbers are defined so far."))
+    end
+
+    return stieltjes_n[n+1]
+end
+

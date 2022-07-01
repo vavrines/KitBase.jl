@@ -85,6 +85,10 @@ u1 = KitBase.realizable_reconstruct(
     KitBase.maxwell_boltzmann_dual_prime,
 )
 
+###
+# Polylogarithms
+###
+
 function get_μt(z)
     μ = log(convert(Complex{Float64}, z))
     t = abs(μ / 2 / π)
@@ -116,3 +120,26 @@ s, z = 1.0, 100.0
 μ, t = get_μt(z)
 polylog(s, z)
 
+KitBase.harmonic(9)
+KitBase.harmonic(9.0)
+KitBase.harmonic(0, 9.0)
+KitBase.harmonic(1, 9.0)
+KitBase.harmonic(2, 9.0)
+KitBase.harmonic(2, 1)
+
+KitBase.f_crandall(0, 0)
+KitBase.f_crandall(0, 1)
+KitBase.f_crandall(1, 0)
+KitBase.f_crandall(1, 1)
+
+KitBase.g_crandall(1)
+KitBase.b_crandall(1, 1, 1)
+KitBase.c_crandall(1, 1, 1)
+
+KitBase.Q(1, 0, 1)
+KitBase.Q(1, 1, 1)
+KitBase.Q_closed(1, 1, 1)
+
+KitBase.c_closed(1, 0, 1)
+KitBase.c_closed(1, 1, 1)
+KitBase.c_closed(1, 2, 1)
