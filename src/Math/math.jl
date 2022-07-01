@@ -12,6 +12,7 @@ export kinetic_entropy
 export optimize_closure, realizable_reconstruct
 export ylm, rlylm, eval_spherharmonic
 export basis_size, eval_sphermonomial
+export polylog
 
 include("math_general.jl")
 include("math_difference.jl")
@@ -19,3 +20,4 @@ include("math_entropy.jl")
 include("math_closure.jl")
 include("sphere_harmonics.jl")
 include("sphere_monomials.jl")
+include("polylog.jl")

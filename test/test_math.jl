@@ -84,3 +84,5 @@ u1 = KitBase.realizable_reconstruct(
     weights,
     KitBase.maxwell_boltzmann_dual_prime,
 )
+
+polylog(1.5, 0.9)
