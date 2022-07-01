@@ -86,23 +86,33 @@ u1 = KitBase.realizable_reconstruct(
 )
 
 function get_μt(z)
-    log(convert(Complex{Float64}, z)), abs(μ / 2 / π)
+    μ = log(convert(Complex{Float64}, z))
+    t = abs(μ / 2 / π)
+    return μ, t
 end
 
+# abs(μ) < 1.0e-14
 s, z = 1.5, 1.0
 μ, t = get_μt(z)
 polylog(s, z)
 
+# abs(z) <= 0.5 && abs(z) < t
 z = 0.1
 μ, t = get_μt(z)
 polylog(s, z)
 
+# t <= T && (abs(round(real(s)) - s) > tau_threshold || real(s) <= 0)
 s, z = -1.0, 1.0
 μ, t = get_μt(z)
 polylog(s, z)
 
+# t <= T = 0.512
 s, z = 1.5, 0.5
 μ, t = get_μt(z)
 polylog(s, z)
 
+# else
+s, z = 1.0, 100.0
+μ, t = get_μt(z)
+polylog(s, z)
 
