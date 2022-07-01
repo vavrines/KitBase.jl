@@ -128,9 +128,7 @@ function polylog(
             min_iterations = min_iterations,
             max_iterations = max_iterations,
         )
-        #    elseif t <= 2.0
     else
-        # println("  main level $level, z=$z,  abs(μ)/2π = ", abs(log(z))/twoπ  )
         return polylog_duplication(
             s,
             z;

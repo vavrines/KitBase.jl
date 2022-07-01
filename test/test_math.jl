@@ -85,4 +85,24 @@ u1 = KitBase.realizable_reconstruct(
     KitBase.maxwell_boltzmann_dual_prime,
 )
 
-polylog(1.5, 0.9)
+function get_μt(z)
+    log(convert(Complex{Float64}, z)), abs(μ / 2 / π)
+end
+
+s, z = 1.5, 1.0
+μ, t = get_μt(z)
+polylog(s, z)
+
+z = 0.1
+μ, t = get_μt(z)
+polylog(s, z)
+
+s, z = -1.0, 1.0
+μ, t = get_μt(z)
+polylog(s, z)
+
+s, z = 1.5, 0.5
+μ, t = get_μt(z)
+polylog(s, z)
+
+
