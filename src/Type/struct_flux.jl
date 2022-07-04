@@ -103,6 +103,6 @@ function Flux2D(n::AA, fw::AA, fh::AA, fb::AA)
             e .= 0.0
         end
     end
-    
+
     return Flux2F{typeof(n),typeof(w),typeof(fh),2}(n, w, fw, fh, fb)
 end
