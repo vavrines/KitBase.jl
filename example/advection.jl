@@ -23,7 +23,7 @@ property = Scalar(1.0, 1e-6)
 ib = IB((x, args...) -> sin(2π * x))
 
 ks = SolverSet(set, pSpace, vSpace, property, ib)
-ctr, face = init_fvm(ks)
+ctr, face = KitBase.init_fvm(ks)
 
 t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
