@@ -3,12 +3,23 @@
 # Solver stores data in structs of arrays (SoA)
 # ============================================================
 
+"""
+$(TYPEDEF)
+
+Solution structure with no distribution function
+"""
 struct Solution{T1,T2,ND} <: AbstractSolution
     w::T1
     prim::T1
     ∇w::T2
 end
 
+
+"""
+$(TYPEDEF)
+
+Solution structure with 1 distribution function
+"""
 struct Solution1F{T1,T2,T3,T4,ND} <: AbstractSolution
     w::T1
     prim::T1
@@ -17,6 +28,12 @@ struct Solution1F{T1,T2,T3,T4,ND} <: AbstractSolution
     ∇f::T4
 end
 
+
+"""
+$(TYPEDEF)
+
+Solution structure with 2 distribution functions
+"""
 struct Solution2F{T1,T2,T3,T4,ND} <: AbstractSolution
     w::T1
     prim::T1
@@ -28,56 +45,33 @@ struct Solution2F{T1,T2,T3,T4,ND} <: AbstractSolution
 end
 
 
-function Solution1D(w::AA, prim::AA)
-    sw = deepcopy(w)
-    if w[1] isa Number
-        sw .= 0.0
-    else
-        for e in sw
-            e .= 0.0
-        end
-    end
+"""
+$(SIGNATURES)
 
+Generate 1D solution structure
+"""
+function Solution1D(w::AA, prim::AA)
+    sw = @. zero(w)
     return Solution{typeof(w),typeof(sw),1}(w, prim, sw)
 end
 
+"""
+$(SIGNATURES)
+"""
 function Solution1D(w::AA, prim::AA, f::AA)
-    sw = deepcopy(w)
-    sf = deepcopy(f)
-    if w[1] isa Number
-        sw .= 0.0
-        sf .= 0.0
-    else
-        for e in sw
-            e .= 0.0
-        end
-        for e in sf
-            e .= 0.0
-        end
-    end
-
+    sw = @. zero(w)
+    sf = @. zero(f)
+    
     return Solution1F{typeof(w),typeof(sw),typeof(f),typeof(sf),1}(w, prim, sw, f, sf)
 end
 
+"""
+$(SIGNATURES)
+"""
 function Solution1D(w::AA, prim::AA, h::AA, b::AA)
-    sw = deepcopy(w)
-    sh = deepcopy(h)
-    sb = deepcopy(b)
-    if w[1] isa Number
-        sw .= 0.0
-        sh .= 0.0
-        sb .= 0.0
-    else
-        for e in sw
-            e .= 0.0
-        end
-        for e in sh
-            e .= 0.0
-        end
-        for e in sb
-            e .= 0.0
-        end
-    end
+    sw = @. zero(w)
+    sh = @. zero(h)
+    sb = @. zero(b)
 
     return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),1}(
         w,
@@ -91,36 +85,65 @@ function Solution1D(w::AA, prim::AA, h::AA, b::AA)
 end
 
 
+"""
+$(SIGNATURES)
+
+Generate 2D solution structure
+"""
 function Solution2D(w::AA, prim::AA)
-    ET = ifelse(w[1] isa Number, eltype(w), eltype(w[1]))
-    sw = zeros(ET, axes(w)[1], 2, axes(w)[2:end]...)
+    if w[1] isa Number
+        sw = slope_array(w)
+    else
+        if ndims(w) == 1
+            sw = [slope_array(w[i]) for i in axes(w, 1)]
+        else
+            sw = [slope_array(w[i, j]) for i in axes(w, 1), j in axes(w, 2)]
+        end
+    end
+
     return Solution{typeof(w),typeof(sw),2}(w, prim, sw)
 end
 
+"""
+$(SIGNATURES)
+"""
 function Solution2D(w::AA, prim::AA, f::AA)
-    ET = ifelse(w[1] isa Number, eltype(w), eltype(w[1]))
-    sw = zeros(ET, axes(w)[1], 2, axes(w)[2:end]...)
-    sf = begin
-        if ndims(f) - ndims(w) > 1
-            zeros(ET, axes(f)[1:2]..., 2, axes(f)[3:end]...)
+    if w[1] isa Number
+        sw = slope_array(w)
+        sf = slope_array(f)
+    else
+        if ndims(w) == 1
+            sw = [slope_array(w[i]) for i in axes(w, 1)]
+            sf = [slope_array(f[i]) for i in axes(w, 1)]
         else
-            zeros(ET, axes(f)[1], 2, axes(f)[2:end]...)
+            sw = [slope_array(w[i, j]) for i in axes(w, 1), j in axes(w, 2)]
+            sf = [slope_array(f[i, j]) for i in axes(w, 1), j in axes(w, 2)]
         end
     end
+
     return Solution1F{typeof(w),typeof(sw),typeof(f),typeof(sf),2}(w, prim, sw, f, sf)
 end
 
+"""
+$(SIGNATURES)
+"""
 function Solution2D(w::AA, prim::AA, h::AA, b::AA)
-    ET = ifelse(w[1] isa Number, eltype(w), eltype(w[1]))
-    sw = zeros(ET, axes(w)[1], 2, axes(w)[2:end]...)
-    sh = begin
-        if ndims(h) - ndims(w) > 1
-            zeros(ET, axes(h)[1:2]..., 2, axes(h)[3:end]...)
+    if w[1] isa Number
+        sw = slope_array(w)
+        sh = slope_array(h)
+        sb = slope_array(b)
+    else
+        if ndims(w) == 1
+            sw = [slope_array(w[i]) for i in axes(w, 1)]
+            sh = [slope_array(h[i]) for i in axes(w, 1)]
+            sb = [slope_array(b[i]) for i in axes(w, 1)]
         else
-            zeros(ET, axes(h)[1], 2, axes(h)[2:end]...)
+            sw = [slope_array(w[i, j]) for i in axes(w, 1), j in axes(w, 2)]
+            sh = [slope_array(h[i, j]) for i in axes(w, 1), j in axes(w, 2)]
+            sb = [slope_array(b[i, j]) for i in axes(w, 1), j in axes(w, 2)]
         end
     end
-    sb = zero(sh)
+
     return Solution2F{typeof(w),typeof(sw),typeof(h),typeof(sh),2}(
         w,
         prim,
