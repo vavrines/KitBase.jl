@@ -41,7 +41,7 @@ begin
     ks = SolverSet(set, ps, vs, gas, ib)
 end
 
-ctr, a1face, a2face = init_fvm(ks, ks.pSpace)
+ctr, a1face, a2face = KitBase.init_fvm(ks, ks.pSpace)
 
 t = 0.0
 dt = timestep(ks, ctr, 0.0)

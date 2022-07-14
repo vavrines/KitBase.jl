@@ -7,7 +7,7 @@ $(TYPEDSIGNATURES)
 
 Initialize solver...
 """
-function initialize(configfilename::T) where {T<:AbstractString}
+function initialize(configfilename::AbstractString)
     println("==============================================================")
     println("Kinetic.jl")
     println("A Portable Toolbox for Scientific and Neural Computing")
@@ -35,7 +35,7 @@ end
 """
 $(TYPEDSIGNATURES)
 """
-function initialize(config::T) where {T<:AbstractDict}
+function initialize(config::AbstractDict)
     println("==============================================================")
     println("Kinetic.jl")
     println("A Portable Toolbox for Scientific and Neural Computing")

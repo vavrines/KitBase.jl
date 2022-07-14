@@ -175,13 +175,19 @@ KitBase.Interface2D3F(dx, cosa, sina, w, h) |> show
 sol_w = rand(4, 3)
 sol_prim = rand(4, 3)
 sol_h = rand(6, 3)
-KitBase.Solution1D(sol_w, sol_prim)
+
+x = KitBase.Solution1D(sol_w, sol_prim)
 KitBase.Solution1D(sol_w, sol_prim, sol_h)
 KitBase.Solution1D(sol_w, sol_prim, sol_h, sol_h)
 
 sol_w = rand(4, 3, 2)
 sol_prim = rand(4, 3, 2)
 sol_h = rand(6, 3, 2)
+
+sol_w = [rand(4) for i = 1:4, j = 1:3]
+sol_prim = [rand(4) for i = 1:4, j = 1:3]
+sol_h = [rand(16, 16) for i = 1:4, j = 1:3]
+
 KitBase.Solution2D(sol_w, sol_prim)
 KitBase.Solution2D(sol_w, sol_prim, sol_h)
 KitBase.Solution2D(sol_w, sol_prim, sol_h, sol_h)

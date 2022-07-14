@@ -2,7 +2,7 @@
 
 [![version](https://juliahub.com/docs/KitBase/version.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS)
 ![CI](https://img.shields.io/github/workflow/status/vavrines/KitBase.jl/CI)
-[![](https://img.shields.io/badge/docs-stable-9cf.svg)](https://xiaotianbai.com/Kinetic.jl/stable/)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://xiaotianbai.com/Kinetic.jl/stable/)
 [![codecov](https://img.shields.io/codecov/c/github/vavrines/KitBase.jl?style=flat-square)](https://codecov.io/gh/vavrines/KitBase.jl)
 [![deps](https://juliahub.com/docs/KitBase/deps.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS?t=2)
 [![GitHub commits since tagged version](https://img.shields.io/github/commits-since/vavrines/KitBase.jl/v0.8.0.svg?style=social&logo=github)](https://github.com/vavrines/KitBase.jl)

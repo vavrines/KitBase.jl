@@ -37,7 +37,7 @@ ib = begin
 end
 ks = SolverSet(set, ps, vs, gas, ib)
 #=
-ctr, face = init_fvm(ks)
+ctr, face = KitBase.init_fvm(ks)
 plot(ks, ctr)
 
 t = 0.0
