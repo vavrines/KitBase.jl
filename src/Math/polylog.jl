@@ -10,7 +10,6 @@ const near_int_threshold = 1.0e-6
 const series_transition_threshold = 0.25
 struct Diagnostics end
 
-
 """
 $(SIGNATURES)
 
@@ -478,10 +477,10 @@ $(SIGNATURES)
 
 Calculate harmonic numbers (http://mathworld.wolfram.com/HarmonicNumber.html)
 
-## Arguments
+# Arguments
 * ``n```::Integer`: non-negative index of the Harmonic number to calculate
 
-## Examples
+# Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> harmonic(2)
 1.5

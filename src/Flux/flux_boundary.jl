@@ -3,11 +3,15 @@ $(SIGNATURES)
 
 Maxwell's diffusive boundary flux
 
-- @args: distribution functions and their slopes at left/right sides of interface
-- @args: particle velocity quadrature points and weights
-- @args: time step
-
 1D continuum
+
+# Arguments
+* ``fw``: fluxes for conservative variables
+* ``bc``: boundary condition for primitive variables
+* ``w``: conservative variables
+* ``inK``: internal degrees of freedom
+* ``dt``: time step
+* ``rot``: rotation indicator (1/-1)
 """
 function flux_boundary_maxwell!(
     fw::AV{T1},
@@ -270,10 +274,7 @@ $(SIGNATURES)
 
 Specular reflection boundary flux
 
-- @args: fluxes of conservative variables and distribution functions
-- @args: distribution functions
-- @args: velocity quadrature points and weights
-- @args: time step
+1D1F1V
 """
 function flux_boundary_specular!(
     fw::AV{T1},
@@ -282,7 +283,7 @@ function flux_boundary_specular!(
     u::T4,
     ω::T4,
     dt,
-) where {T1<:Real,T2<:FN,T3<:FN,T4<:AV{<:FN}} # 1D1F1V
+) where {T1<:Real,T2<:FN,T3<:FN,T4<:AV{<:FN}}
 
     fWall = similar(f)
     for i in eachindex(f)
