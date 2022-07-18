@@ -290,6 +290,135 @@ function step!(
     )
 end
 
+"""
+$(SIGNATURES)
+
+2D0F
+"""
+function step!(
+    KS,
+    vs,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    faceD,
+    faceU,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume,ControlVolume2D}}
+    dt, Δs, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        faceL.fw,
+        faceR.fw,
+        faceD.fw,
+        faceU.fw,
+        gas.γ,
+        Δs,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+2D1F2V
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace2D,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    faceD,
+    faceU,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume1F,ControlVolume2D1F}}
+    dt, Δs, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        cell.f,
+        faceL.fw,
+        faceL.ff,
+        faceR.fw,
+        faceR.ff,
+        faceD.fw,
+        faceD.ff,
+        faceU.fw,
+        faceU.ff,
+        vs.u,
+        vs.v,
+        vs.weights,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        Δs,
+        dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+2D2F2V
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace2D,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    faceD,
+    faceU,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume2F,ControlVolume2D2F}}
+    dt, Δs, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        cell.h,
+        cell.b,
+        faceL.fw,
+        faceL.fh,
+        faceL.fb,
+        faceR.fw,
+        faceR.fh,
+        faceR.fb,
+        faceD.fw,
+        faceD.fh,
+        faceD.fb,
+        faceU.fw,
+        faceU.fh,
+        faceU.fb,
+        vs.u,
+        vs.v,
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        Δs,
+        dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
 # ------------------------------------------------------------
 # Low-level backends
 # ------------------------------------------------------------
@@ -524,7 +653,7 @@ end
 """
 $(SIGNATURES)
 
-1D1F3V @ FSM
+1D1F3V fast spectral method
 """
 function step!(
     w::T3,
@@ -634,7 +763,7 @@ end
 """
 $(SIGNATURES)
 
-1D2F1V @ Mixture
+1D2F1V mixture
 """
 function step!(
     w::T3,
@@ -743,7 +872,7 @@ end
 """
 $(SIGNATURES)
 
-1D3F1V @ Rykov
+1D3F1V Rykov
 """
 function step!(
     w::T3,
