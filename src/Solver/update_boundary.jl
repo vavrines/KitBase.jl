@@ -10,6 +10,7 @@ function update_boundary!(
     dt,
     residual;
     bc,
+    fn = step!,
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     resL = zero(ctr[1].w)
@@ -21,7 +22,7 @@ function update_boundary!(
         i = 1
         j = KS.pSpace.nx
         if KS.set.nSpecies == 1
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 face[i].fw,
@@ -32,7 +33,7 @@ function update_boundary!(
                 avgL,
             )
         elseif KS.set.nSpecies == 2
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 face[i].fw,
@@ -54,7 +55,7 @@ function update_boundary!(
     if bc[2] != :fix
         j = KS.pSpace.nx
         if KS.set.nSpecies == 1
-            step!(
+            fn(
                 ctr[j].w,
                 ctr[j].prim,
                 face[j].fw,
@@ -65,7 +66,7 @@ function update_boundary!(
                 avgR,
             )
         elseif KS.set.nSpecies == 2
-            step!(
+            fn(
                 ctr[j].w,
                 ctr[j].prim,
                 face[j].fw,
@@ -113,6 +114,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision),
     bc,
+    fn = step!,
 ) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
 
     resL = zero(ctr[1].w)
@@ -124,7 +126,7 @@ function update_boundary!(
         i = 1
 
         if KS.set.space[5:6] == "1v"
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].f,
@@ -145,7 +147,7 @@ function update_boundary!(
                 coll,
             )
         elseif KS.set.space[5:6] == "3v"
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].f,
@@ -174,7 +176,7 @@ function update_boundary!(
         j = KS.pSpace.nx
 
         if KS.set.space[5:6] == "1v"
-            step!(
+            fn(
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].f,
@@ -195,7 +197,7 @@ function update_boundary!(
                 coll,
             )
         elseif KS.set.space[5:6] == "3v"
-            step!(
+            fn(
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].f,
@@ -250,6 +252,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision),
     bc,
+    fn = step!,
 ) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
 
     resL = zero(ctr[1].w)
@@ -260,7 +263,7 @@ function update_boundary!(
     if bc[1] != :fix
         i = 1
         if KS.set.nSpecies == 1
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
@@ -285,7 +288,7 @@ function update_boundary!(
                 coll,
             )
         else
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
@@ -318,7 +321,7 @@ function update_boundary!(
     if bc[2] != :fix
         j = KS.pSpace.nx
         if KS.set.nSpecies == 1
-            step!(
+            fn(
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].h,
@@ -343,7 +346,7 @@ function update_boundary!(
                 coll,
             )
         else
-            step!(
+            fn(
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].h,
@@ -403,6 +406,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
+    fn = step!,
     isMHD = false::Bool,
 ) where {TC<:Union{ControlVolume3F,ControlVolume1D3F},TF<:Union{Interface3F,Interface1D3F}}
 
@@ -413,12 +417,12 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
+        fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
     end
 
     if bc[2] != :fix
         j = KS.pSpace.nx
-        step!(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
+        fn(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -451,6 +455,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
+    fn = step!,
     isMHD = false::Bool,
 ) where {TC<:Union{ControlVolume4F,ControlVolume1D4F},TF<:Union{Interface4F,Interface1D4F}}
 
@@ -461,12 +466,12 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
+        fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
     end
 
     if bc[2] != :fix
         j = KS.pSpace.nx
-        step!(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
+        fn(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -500,6 +505,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
+    fn = step!,
 ) where {TC<:Union{ControlVolume,ControlVolume2D},TF<:Union{Interface,Interface2D}}
 
     nx, ny, dx, dy = begin
@@ -521,7 +527,7 @@ function update_boundary!(
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
-            step!(
+            fn(
                 ctr[1, j].w,
                 ctr[1, j].prim,
                 a1face[1, j].fw,
@@ -539,7 +545,7 @@ function update_boundary!(
 
     if bc[2] != :fix
         @inbounds for j = 1:ny
-            step!(
+            fn(
                 ctr[nx, j].w,
                 ctr[nx, j].prim,
                 a1face[nx, j].fw,
@@ -557,7 +563,7 @@ function update_boundary!(
 
     if bc[3] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
-            step!(
+            fn(
                 ctr[i, 1].w,
                 ctr[i, 1].prim,
                 a1face[i, 1].fw,
@@ -575,7 +581,7 @@ function update_boundary!(
 
     if bc[4] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
-            step!(
+            fn(
                 ctr[i, ny].w,
                 ctr[i, ny].prim,
                 a1face[i, ny].fw,
@@ -634,6 +640,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
+    fn = step!,
 ) where {TC<:Union{ControlVolume1F,ControlVolume2D1F},TF<:Union{Interface1F,Interface2D1F}}
 
     nx, ny, dx, dy = begin
@@ -655,7 +662,7 @@ function update_boundary!(
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
-            step!(
+            fn(
                 ctr[1, j].w,
                 ctr[1, j].prim,
                 ctr[1, j].f,
@@ -684,7 +691,7 @@ function update_boundary!(
     end
     if bc[2] != :fix
         @inbounds for j = 1:ny
-            step!(
+            fn(
                 ctr[nx, j].w,
                 ctr[nx, j].prim,
                 ctr[nx, j].f,
@@ -713,7 +720,7 @@ function update_boundary!(
     end
     if bc[3] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
-            step!(
+            fn(
                 ctr[i, 1].w,
                 ctr[i, 1].prim,
                 ctr[i, 1].f,
@@ -742,7 +749,7 @@ function update_boundary!(
     end
     if bc[4] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
-            step!(
+            fn(
                 ctr[i, ny].w,
                 ctr[i, ny].prim,
                 ctr[i, ny].f,
@@ -813,6 +820,7 @@ function update_boundary!(
     residual;
     coll = symbolize(KS.set.collision)::Symbol,
     bc,
+    fn = step!,
 ) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
 
     nx, ny, dx, dy = begin
@@ -834,7 +842,7 @@ function update_boundary!(
 
     if bc[1] != :fix
         @inbounds for j = 1:ny
-            step!(
+            fn(
                 ctr[1, j].w,
                 ctr[1, j].prim,
                 ctr[1, j].h,
@@ -869,7 +877,7 @@ function update_boundary!(
     end
     if bc[2] != :fix
         @inbounds for j = 1:ny
-            step!(
+            fn(
                 ctr[nx, j].w,
                 ctr[nx, j].prim,
                 ctr[nx, j].h,
@@ -904,7 +912,7 @@ function update_boundary!(
     end
     if bc[3] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
-            step!(
+            fn(
                 ctr[i, 1].w,
                 ctr[i, 1].prim,
                 ctr[i, 1].h,
@@ -939,7 +947,7 @@ function update_boundary!(
     end
     if bc[4] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
-            step!(
+            fn(
                 ctr[i, ny].w,
                 ctr[i, ny].prim,
                 ctr[i, ny].h,
@@ -1015,6 +1023,7 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc,
+    fn = step!,
 ) where {TC<:ControlVolumeUS,TF<:Interface2D}
 
     for i in eachindex(KS.ps.cellType)
@@ -1039,6 +1048,7 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc,
+    fn = step!,
 ) where {TC<:ControlVolumeUS1F,TF<:Interface2D1F}
 
     for i in eachindex(KS.ps.cellType)
@@ -1064,6 +1074,7 @@ function update_boundary!(
     residual;
     coll::Symbol,
     bc,
+    fn = step!,
 ) where {TC<:ControlVolumeUS2F,TF<:Interface2D2F}
 
     for i in eachindex(KS.ps.cellType)

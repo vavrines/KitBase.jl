@@ -54,6 +54,7 @@ function update!(
     residual::AA{<:FN}; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     sumRes = zero(ctr[1].w)
@@ -61,7 +62,7 @@ function update!(
 
     if ndims(sumRes) == 1
         @inbounds @threads for i = 2:KS.ps.nx-1
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 face[i].fw,
@@ -74,7 +75,7 @@ function update!(
         end
     elseif ndims(sumRes) == 2
         @inbounds @threads for i = 2:KS.ps.nx-1
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 face[i].fw,
@@ -98,9 +99,9 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; bc = [bc, bc])
+        update_boundary!(KS, ctr, face, dt, residual; bc = [bc, bc], fn = fn)
     else
-        update_boundary!(KS, ctr, face, dt, residual; bc = bc)
+        update_boundary!(KS, ctr, face, dt, residual; bc = bc, fn = fn)
     end
 
     return nothing
@@ -115,6 +116,7 @@ function update!(
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
 
     sumRes = zero(ctr[1].w)
@@ -123,7 +125,7 @@ function update!(
     phase = KS.set.space[3:end]
     if phase == "1f1v"
         @inbounds @threads for i = 2:KS.ps.nx-1
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].f,
@@ -147,7 +149,7 @@ function update!(
     elseif phase == "1f3v"
         if KS.set.collision == "fsm"
             @inbounds @threads for i = 2:KS.ps.nx-1
-                step!(
+                fn(
                     ctr[i].w,
                     ctr[i].prim,
                     ctr[i].f,
@@ -170,7 +172,7 @@ function update!(
             end
         else
             @inbounds @threads for i = 2:KS.ps.nx-1
-                step!(
+                fn(
                     ctr[i].w,
                     ctr[i].prim,
                     ctr[i].f,
@@ -201,9 +203,9 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc])
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], fn = fn)
     else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn)
     end
 
     return nothing
@@ -218,6 +220,7 @@ function update!(
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
 
     sumRes = zero(ctr[1].w)
@@ -225,7 +228,7 @@ function update!(
 
     if ndims(sumRes) == 1
         @inbounds @threads for i = 2:KS.ps.nx-1
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
@@ -252,7 +255,7 @@ function update!(
         end
     elseif ndims(sumRes) == 2
         @inbounds @threads for i = 2:KS.ps.nx-1
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
@@ -287,9 +290,9 @@ function update!(
     end
 
     if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc])
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], fn = fn)
     else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn)
     end
 
     return nothing
@@ -305,13 +308,14 @@ function update!(
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
+    fn = step!,
 ) where {TC<:ControlVolume1D3F,TF<:Interface1D3F}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i = 2:KS.ps.nx-1
-        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
+        fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -328,9 +332,10 @@ function update!(
             coll = coll,
             bc = [bc, bc],
             isMHD = isMHD,
+            fn = fn,
         )
     else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD, fn = fn)
     end
 
     #=
@@ -421,13 +426,14 @@ function update!(
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
+    fn = step!,
 ) where {TC<:ControlVolume1D4F,TF<:Interface1D4F}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i = 2:KS.ps.nx-1
-        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
+        fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -444,9 +450,10 @@ function update!(
             coll = coll,
             bc = [bc, bc],
             isMHD = isMHD,
+            fn = fn,
         )
     else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD)
+        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD, fn = fn)
     end
 
     return nothing
@@ -462,6 +469,7 @@ function update!(
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {TC<:Union{ControlVolume,ControlVolume2D},TF<:Union{Interface,Interface2D}}
 
     nx, ny, dx, dy = begin
@@ -479,7 +487,7 @@ function update!(
 
         @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
-                step!(
+                fn(
                     ctr[i, j].w,
                     ctr[i, j].prim,
                     a1face[i, j].fw,
@@ -511,9 +519,10 @@ function update!(
             residual;
             coll = coll,
             bc = [bc, bc, bc, bc],
+            fn = fn,
         )
     else
-        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc, fn = fn)
     end
 
     return nothing
@@ -529,6 +538,7 @@ function update!(
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {TC<:Union{ControlVolume1F,ControlVolume2D1F},TF<:Union{Interface1F,Interface2D1F}}
 
     nx, ny, dx, dy = begin
@@ -546,7 +556,7 @@ function update!(
 
         @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
-                step!(
+                fn(
                     ctr[i, j].w,
                     ctr[i, j].prim,
                     ctr[i, j].f,
@@ -590,9 +600,10 @@ function update!(
             residual;
             coll = coll,
             bc = [bc, bc, bc, bc],
+            fn = fn,
         )
     else
-        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc, fn = fn)
     end
 
     return nothing
@@ -609,6 +620,7 @@ function update!(
     residual;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
 
     nx, ny, dx, dy = begin
@@ -626,7 +638,7 @@ function update!(
 
         @inbounds @threads for j = 2:ny-1
             for i = 2:nx-1
-                step!(
+                fn(
                     ctr[i, j].w,
                     ctr[i, j].prim,
                     ctr[i, j].h,
@@ -676,9 +688,10 @@ function update!(
             residual;
             coll = coll,
             bc = [bc, bc, bc, bc],
+            fn = fn,
         )
     else
-        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc)
+        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc, fn = fn)
     end
 
     return nothing
@@ -693,6 +706,7 @@ function update!(
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {T<:Union{Interface,Interface2D}}
 
     sumRes = zero(ctr[1].w)
@@ -702,7 +716,7 @@ function update!(
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 face[KS.ps.cellFaces[i, 1]].fw,
@@ -721,7 +735,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn)
 
     return nothing
 
@@ -735,6 +749,7 @@ function update!(
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {T<:Union{Interface1F,Interface2D1F}}
 
     sumRes = zero(ctr[1].w)
@@ -744,7 +759,7 @@ function update!(
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].f,
@@ -776,7 +791,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn)
 
     return nothing
 
@@ -790,6 +805,7 @@ function update!(
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {T<:Union{Interface2F,Interface2D2F}}
 
     sumRes = zero(ctr[1].w)
@@ -799,7 +815,7 @@ function update!(
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
 
-            step!(
+            fn(
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
@@ -835,7 +851,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc)
+    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn)
 
     return nothing
 
