@@ -3,42 +3,75 @@ $(SIGNATURES)
 
 Update flow variables with finite volume formulation
 """
+step!(
+    KS,
+    cell::AbstractControlVolume,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) = step!(KS, KS.gas, cell, faceL, faceR, p, coll)
+
 function step!(
     KS,
+    gas::Scalar,
     cell::TC,
     faceL,
     faceR,
-    dt,
-    dx,
-    RES,
-    AVG,
-    coll,
+    p,
+    coll = :bgk,
 ) where {TC<:Union{ControlVolume,ControlVolume1D}}
-    gas = KS.gas
 
-    if KS.gas isa Scalar
-        step!(cell.w, cell.prim, faceL.fw, cellR.fw, KS.gas.a, dx, RES, AVG)
-    elseif KS.gas isa Gas
-        step!(cell.w, cell.prim, faceL.fw, cellR.fw, KS.gas.γ, dx, RES, AVG)
-    elseif KS.gas isa Mixture
-        step!(
-            cell.w,
-            cell.prim,
-            faceL.fw,
-            cellR.fw,
-            KS.gas.γ,
-            KS.gas.mi,
-            KS.gas.ni,
-            gas.me,
-            gas.ne,
-            Gas.Kn,
-            dx,
-            dt,
-            RES,
-            AVG,
-        )
-    end
+    dt, dx, RES, AVG = p
+    step!(cell.w, cell.prim, faceL.fw, faceR.fw, gas.a, dx, RES, AVG)
+
 end
+
+function step!(
+    KS,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume,ControlVolume1D}}
+
+    dt, dx, RES, AVG = p
+    step!(cell.w, cell.prim, faceL.fw, faceR.fw, gas.γ, dx, RES, AVG)
+
+end
+
+function step!(
+    KS,
+    gas::Mixture,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume,ControlVolume1D}}
+
+    dt, dx, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        faceL.fw,
+        faceR.fw,
+        gas.γ,
+        gas.mi,
+        gas.ni,
+        gas.me,
+        gas.ne,
+        gas.Kn,
+        dx,
+        dt,
+        RES,
+        AVG,
+    )
+
+end
+
 
 """
 $(SIGNATURES)

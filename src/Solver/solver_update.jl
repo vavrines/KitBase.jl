@@ -18,14 +18,11 @@ function update!(
 
     @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].w, sumRes, sumAvg = step!(
-            ctr[i].w,
-            ctr[i].prim,
-            face[i].fw,
-            face[i+1].fw,
-            KS.gas.a,
-            KS.ps.dx[i],
-            sumRes,
-            sumAvg,
+            KS,
+            ctr[i],
+            face[i],
+            face[i+1],
+            (dt, KS.ps.dx[i], sumRes, sumAvg),
         )
     end
 
