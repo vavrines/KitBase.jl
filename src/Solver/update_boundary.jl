@@ -20,69 +20,24 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        j = KS.ps.nx
-        if KS.set.nSpecies == 1
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                face[i].fw,
-                face[i+1].fw,
-                KS.gas.γ,
-                KS.ps.dx[i],
-                resL,
-                avgL,
-            )
-        elseif KS.set.nSpecies == 2
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                face[i].fw,
-                face[i+1].fw,
-                KS.gas.γ,
-                KS.gas.mi,
-                KS.gas.ni,
-                KS.gas.me,
-                KS.gas.ne,
-                KS.gas.Kn[1],
-                KS.ps.dx[i],
-                dt,
-                resL,
-                avgL,
-            )
-        end
+        fn(
+            KS,
+            ctr[i],
+            face[i],
+            face[i+1],
+            (dt, KS.ps.dx[i], resL, avgL),
+        )
     end
 
     if bc[2] != :fix
         j = KS.ps.nx
-        if KS.set.nSpecies == 1
-            fn(
-                ctr[j].w,
-                ctr[j].prim,
-                face[j].fw,
-                face[j+1].fw,
-                KS.gas.γ,
-                KS.ps.dx[j],
-                resR,
-                avgR,
-            )
-        elseif KS.set.nSpecies == 2
-            fn(
-                ctr[j].w,
-                ctr[j].prim,
-                face[j].fw,
-                face[j+1].fw,
-                KS.gas.γ,
-                KS.gas.mi,
-                KS.gas.ni,
-                KS.gas.me,
-                KS.gas.ne,
-                KS.gas.Kn[1],
-                KS.ps.dx[j],
-                dt,
-                resR,
-                avgR,
-            )
-        end
+        fn(
+            KS,
+            ctr[j],
+            face[j],
+            face[j+1],
+            (dt, KS.ps.dx[j], resR, avgR),
+        )
     end
 
     @. residual += sqrt((resL + resR) * 2) / (avgL + avgR + 1.e-7)

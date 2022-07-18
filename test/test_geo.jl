@@ -18,12 +18,12 @@ KitBase.unit_normal(rand(3), rand(3), rand(3))
 KitBase.point_distance(rand(2), rand(2), rand(2))
 
 #--- structure mesh ---#
-KitBase.ps1D()
-KitBase.ps1D(0.0, 1.0) |> show
-KitBase.ps2D()
-KitBase.ps2D(0.0, 1.0, 0.0, 1.0) |> show
+KitBase.PSpace1D()
+KitBase.PSpace1D(0.0, 1.0) |> show
+KitBase.PSpace2D()
+KitBase.PSpace2D(0.0, 1.0, 0.0, 1.0) |> show
 KitBase.CSpace2D(0.0, 1.0, 10, 0.0, π, 10) |> show
-KitBase.ps3D{Int,Int,AA{Float64,3},AA{Float64,5},AA{Float64,4},AA{Float64,4}}(
+KitBase.PSpace3D{Int,Int,AA{Float64,3},AA{Float64,5},AA{Float64,4},AA{Float64,4}}(
     0,
     1,
     10,

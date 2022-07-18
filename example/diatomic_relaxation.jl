@@ -59,8 +59,8 @@ set = KitBase.Setup(
     cfl,
     maxTime,
 )
-pSpace = KitBase.ps1D(x0, x1, nx)
-vSpace = KitBase.vs1D(umin, umax, nu)
+pSpace = KitBase.PSpace1D(x0, x1, nx)
+vSpace = KitBase.VSpace1D(umin, umax, nu)
 gas = KitBase.DiatomicGas(
     knudsen,
     mach,

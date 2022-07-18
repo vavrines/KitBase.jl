@@ -15,7 +15,7 @@ set = KitBase.Setup(
     1.0, # simulation time
 )
 
-pSpace = KitBase.ps1D(0.0, 1.0, 100, 1)
+pSpace = KitBase.PSpace1D(0.0, 1.0, 100, 1)
 vSpace = nothing
 property = KitBase.Scalar(0, 1e-6)
 

@@ -46,7 +46,7 @@ begin
     points, triangulation = KitBase.octa_quadrature(quadratureorder)
     weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
-    vspace = KitBase.vs1D{Float64,Int64,typeof(points),typeof(weights)}(
+    vspace = KitBase.VSpace1D{Float64,Int64,typeof(points),typeof(weights)}(
         -1.0,
         1.0,
         nq,

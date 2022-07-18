@@ -23,8 +23,8 @@ begin
         cfl,
         maxTime,
     )
-    pSpace = KitBase.ps1D(x0, x1, nx, nxg)
-    vSpace = KitBase.vs1D(umin, umax, nu, vMeshType, nug)
+    pSpace = KitBase.PSpace1D(x0, x1, nx, nxg)
+    vSpace = KitBase.VSpace1D(umin, umax, nu, vMeshType, nug)
     μᵣ = KitBase.ref_vhs_vis(knudsen, alphaRef, omegaRef)
     gas =
         KitBase.Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ, mass, 0)
