@@ -18,9 +18,9 @@ function update!(
 
     @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].w, sumRes, sumAvg = step!(
-            face[i].fw,
             ctr[i].w,
             ctr[i].prim,
+            face[i].fw,
             face[i+1].fw,
             KS.gas.a,
             KS.ps.dx[i],
@@ -64,9 +64,9 @@ function update!(
     if ndims(sumRes) == 1
         @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
-                face[i].fw,
                 ctr[i].w,
                 ctr[i].prim,
+                face[i].fw,
                 face[i+1].fw,
                 KS.gas.γ,
                 KS.ps.dx[i],
@@ -77,9 +77,9 @@ function update!(
     elseif ndims(sumRes) == 2
         @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
-                face[i].fw,
                 ctr[i].w,
                 ctr[i].prim,
+                face[i].fw,
                 face[i+1].fw,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -126,11 +126,11 @@ function update!(
     if phase == "1f1v"
         @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
-                face[i].fw,
-                face[i].ff,
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].f,
+                face[i].fw,
+                face[i].ff,
                 face[i+1].fw,
                 face[i+1].ff,
                 KS.vs.u,
@@ -150,11 +150,11 @@ function update!(
         if KS.set.collision == "fsm"
             @inbounds @threads for i = 2:KS.ps.nx-1
                 step!(
-                    face[i].fw,
-                    face[i].ff,
                     ctr[i].w,
                     ctr[i].prim,
                     ctr[i].f,
+                    face[i].fw,
+                    face[i].ff,
                     face[i+1].fw,
                     face[i+1].ff,
                     KS.gas.γ,
@@ -173,11 +173,11 @@ function update!(
         else
             @inbounds @threads for i = 2:KS.ps.nx-1
                 step!(
-                    face[i].fw,
-                    face[i].ff,
                     ctr[i].w,
                     ctr[i].prim,
                     ctr[i].f,
+                    face[i].fw,
+                    face[i].ff,
                     face[i+1].fw,
                     face[i+1].ff,
                     KS.vs.u,
@@ -228,13 +228,13 @@ function update!(
     if ndims(sumRes) == 1
         @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
                 ctr[i].b,
+                face[i].fw,
+                face[i].fh,
+                face[i].fb,
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
@@ -255,13 +255,13 @@ function update!(
     elseif ndims(sumRes) == 2
         @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
                 ctr[i].b,
+                face[i].fw,
+                face[i].fh,
+                face[i].fb,
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
@@ -313,7 +313,7 @@ function update!(
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i = 2:KS.ps.nx-1
-        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
+        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -429,7 +429,7 @@ function update!(
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i = 2:KS.ps.nx-1
-        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
+        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)

@@ -1,9 +1,51 @@
 """
 $(SIGNATURES)
 
+Update flow variables with finite volume formulation
+"""
+function step!(
+    KS,
+    cell::TC,
+    faceL,
+    faceR,
+    dt,
+    dx,
+    RES,
+    AVG,
+    coll,
+) where {TC<:Union{ControlVolume,ControlVolume1D}}
+    gas = KS.gas
+
+    if KS.gas isa Scalar
+        step!(cell.w, cell.prim, faceL.fw, cellR.fw, KS.gas.a, dx, RES, AVG)
+    elseif KS.gas isa Gas
+        step!(cell.w, cell.prim, faceL.fw, cellR.fw, KS.gas.γ, dx, RES, AVG)
+    elseif KS.gas isa Mixture
+        step!(
+            cell.w,
+            cell.prim,
+            faceL.fw,
+            cellR.fw,
+            KS.gas.γ,
+            KS.gas.mi,
+            KS.gas.ni,
+            gas.me,
+            gas.ne,
+            Gas.Kn,
+            dx,
+            dt,
+            RES,
+            AVG,
+        )
+    end
+end
+
+"""
+$(SIGNATURES)
+
 Scalar
 """
-function step!(fwL::X, w::X, prim::AV{X}, fwR::X, a, dx, RES, AVG) where {X<:FN}
+function step!(w::X, prim::AV{X}, fwL::X, fwR::X, a, dx, RES, AVG) where {X<:FN}
     #--- store W^n and calculate H^n,\tau^n ---#
     w_old = deepcopy(w)
 
@@ -24,9 +66,9 @@ $(SIGNATURES)
 1D0F
 """
 function step!(
-    fwL::X,
     w::Y,
     prim::Y,
+    fwL::X,
     fwR::X,
     γ,
     dx,
@@ -55,9 +97,9 @@ $(SIGNATURES)
 1D0F Mixture
 """
 function step!(
-    fwL::T1,
     w::T2,
     prim::T2,
+    fwL::T1,
     fwR::T1,
     γ,
     mi,
@@ -113,11 +155,11 @@ $(SIGNATURES)
 1D1F1V
 """
 function step!(
-    fwL::T1,
-    ffL::T2,
     w::T3,
     prim::T3,
     f::T4,
+    fwL::T1,
+    ffL::T2,
     fwR::T1,
     ffR::T2,
     u::T5,
@@ -170,11 +212,11 @@ $(SIGNATURES)
 1D1F3V
 """
 function step!(
-    fwL::T1,
-    ffL::T2,
     w::T3,
     prim::T3,
     f::T4,
+    fwL::T1,
+    ffL::T2,
     fwR::T1,
     ffR::T2,
     uVelo::T5,
@@ -231,11 +273,11 @@ $(SIGNATURES)
 1D1F3V @ FSM
 """
 function step!(
-    fwL::T1,
-    ffL::T2,
     w::T3,
     prim::T3,
     f::T4,
+    fwL::T1,
+    ffL::T2,
     fwR::T1,
     ffR::T2,
     γ,
@@ -275,13 +317,13 @@ $(SIGNATURES)
 1D2F1V
 """
 function step!(
-    fwL::T1,
-    fhL::T2,
-    fbL::T2,
     w::T3,
     prim::T3,
     h::T4,
     b::T4,
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
     fwR::T1,
     fhR::T2,
     fbR::T2,
@@ -341,13 +383,13 @@ $(SIGNATURES)
 1D2F1V @ Mixture
 """
 function step!(
-    fwL::T1,
-    fhL::T2,
-    fbL::T2,
     w::T3,
     prim::T3,
     h::T4,
     b::T4,
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
     fwR::T1,
     fhR::T2,
     fbR::T2,
@@ -450,15 +492,15 @@ $(SIGNATURES)
 1D3F1V @ Rykov
 """
 function step!(
-    fwL::T1,
-    fhL::T2,
-    fbL::T2,
-    frL::T2,
     w::T3,
     prim::T3,
     h::T4,
     b::T4,
     r::T4,
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
+    frL::T2,
     fwR::T1,
     fhR::T2,
     fbR::T2,
@@ -566,8 +608,8 @@ $(SIGNATURES)
 """
 function step!(
     KS::T,
-    faceL::Interface1D4F,
     cell::ControlVolume1D4F,
+    faceL::Interface1D4F,
     faceR::Interface1D4F,
     dx,
     dt,
@@ -802,8 +844,8 @@ $(SIGNATURES)
 """
 function step!(
     KS::T,
-    faceL::Interface1D3F,
     cell::ControlVolume1D3F,
+    faceL::Interface1D3F,
     faceR::Interface1D3F,
     dx,
     dt,

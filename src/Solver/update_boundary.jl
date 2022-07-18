@@ -22,9 +22,9 @@ function update_boundary!(
         j = KS.pSpace.nx
         if KS.set.nSpecies == 1
             step!(
-                face[i].fw,
                 ctr[i].w,
                 ctr[i].prim,
+                face[i].fw,
                 face[i+1].fw,
                 KS.gas.γ,
                 KS.ps.dx[i],
@@ -33,9 +33,9 @@ function update_boundary!(
             )
         elseif KS.set.nSpecies == 2
             step!(
-                face[i].fw,
                 ctr[i].w,
                 ctr[i].prim,
+                face[i].fw,
                 face[i+1].fw,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -55,9 +55,9 @@ function update_boundary!(
         j = KS.pSpace.nx
         if KS.set.nSpecies == 1
             step!(
-                face[j].fw,
                 ctr[j].w,
                 ctr[j].prim,
+                face[j].fw,
                 face[j+1].fw,
                 KS.gas.γ,
                 KS.ps.dx[j],
@@ -66,9 +66,9 @@ function update_boundary!(
             )
         elseif KS.set.nSpecies == 2
             step!(
-                face[j].fw,
                 ctr[j].w,
                 ctr[j].prim,
+                face[j].fw,
                 face[j+1].fw,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -125,11 +125,11 @@ function update_boundary!(
 
         if KS.set.space[5:6] == "1v"
             step!(
-                face[i].fw,
-                face[i].ff,
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].f,
+                face[i].fw,
+                face[i].ff,
                 face[i+1].fw,
                 face[i+1].ff,
                 KS.vSpace.u,
@@ -146,11 +146,11 @@ function update_boundary!(
             )
         elseif KS.set.space[5:6] == "3v"
             step!(
-                face[i].fw,
-                face[i].ff,
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].f,
+                face[i].fw,
+                face[i].ff,
                 face[i+1].fw,
                 face[i+1].ff,
                 KS.vSpace.u,
@@ -175,11 +175,11 @@ function update_boundary!(
 
         if KS.set.space[5:6] == "1v"
             step!(
-                face[j].fw,
-                face[j].ff,
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].f,
+                face[j].fw,
+                face[j].ff,
                 face[j+1].fw,
                 face[j+1].ff,
                 KS.vSpace.u,
@@ -196,11 +196,11 @@ function update_boundary!(
             )
         elseif KS.set.space[5:6] == "3v"
             step!(
-                face[j].fw,
-                face[j].ff,
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].f,
+                face[j].fw,
+                face[j].ff,
                 face[j+1].fw,
                 face[j+1].ff,
                 KS.vSpace.u,
@@ -261,13 +261,13 @@ function update_boundary!(
         i = 1
         if KS.set.nSpecies == 1
             step!(
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
                 ctr[i].b,
+                face[i].fw,
+                face[i].fh,
+                face[i].fb,
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
@@ -286,13 +286,13 @@ function update_boundary!(
             )
         else
             step!(
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
                 ctr[i].w,
                 ctr[i].prim,
                 ctr[i].h,
                 ctr[i].b,
+                face[i].fw,
+                face[i].fh,
+                face[i].fb,
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
@@ -319,13 +319,13 @@ function update_boundary!(
         j = KS.pSpace.nx
         if KS.set.nSpecies == 1
             step!(
-                face[j].fw,
-                face[j].fh,
-                face[j].fb,
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].h,
                 ctr[j].b,
+                face[j].fw,
+                face[j].fh,
+                face[j].fb,
                 face[j+1].fw,
                 face[j+1].fh,
                 face[j+1].fb,
@@ -344,13 +344,13 @@ function update_boundary!(
             )
         else
             step!(
-                face[j].fw,
-                face[j].fh,
-                face[j].fb,
                 ctr[j].w,
                 ctr[j].prim,
                 ctr[j].h,
                 ctr[j].b,
+                face[j].fw,
+                face[j].fh,
+                face[j].fb,
                 face[j+1].fw,
                 face[j+1].fh,
                 face[j+1].fb,
@@ -413,12 +413,12 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
+        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
     end
 
     if bc[2] != :fix
         j = KS.pSpace.nx
-        step!(KS, face[j], ctr[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
+        step!(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -461,12 +461,12 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
+        step!(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
     end
 
     if bc[2] != :fix
         j = KS.pSpace.nx
-        step!(KS, face[j], ctr[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
+        step!(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -1023,7 +1023,7 @@ function update_boundary!(
             deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
-            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
+            ctr[i].prim .= conserve_prim(ctr[i].w, KS.gas.γ)
         end
     end
 
@@ -1048,7 +1048,7 @@ function update_boundary!(
             id1, id2 = ids
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].f .= 0.5 .* (ctr[id1].f .+ ctr[id2].f)
-            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
+            ctr[i].prim .= conserve_prim(ctr[i].w, KS.gas.γ)
         end
     end
 
@@ -1074,7 +1074,7 @@ function update_boundary!(
             ctr[i].w .= 0.5 .* (ctr[id1].w .+ ctr[id2].w)
             ctr[i].h .= 0.5 .* (ctr[id1].h .+ ctr[id2].h)
             ctr[i].b .= 0.5 .* (ctr[id1].b .+ ctr[id2].b)
-            ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
+            ctr[i].prim .= conserve_prim(ctr[i].w, KS.gas.γ)
         end
     end
 
