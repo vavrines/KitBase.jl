@@ -10,7 +10,7 @@ begin
     avg = zeros(3)
 end
 
-KitBase.step!(fwL, w, prim, fwR, γ, dx, res, avg)
+KitBase.step!(w, prim, fwL, fwR, γ, dx, res, avg)
 
 begin
     ffL = zeros(16)
@@ -20,7 +20,7 @@ begin
     ω = ones(16)
 end
 
-KitBase.step!(fwL, ffL, w, prim, f, fwR, ffR, u, ω, γ, 1e-3, 0.72, 1.0, dx, dt, res, avg)
+KitBase.step!(w, prim, f, fwL, ffL, fwR, ffR, u, ω, γ, 1e-3, 0.72, 1.0, dx, dt, res, avg)
 
 KitBase.step!(
     KitBase.prim_conserve([1.0, 0.0, 0.0, 0.0, 1.0], γ),
