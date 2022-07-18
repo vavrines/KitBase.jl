@@ -4,14 +4,15 @@ $(SIGNATURES)
 Update solver for boundary cells
 """
 function update_boundary!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AV{TC},
-    face::AV{TF},
+    face,
     dt,
     residual;
     bc,
     fn = step!,
-) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
+    kwargs...,
+) where {TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1F,ControlVolume1D1F,ControlVolume2F,ControlVolume1D2F}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -40,7 +41,10 @@ function update_boundary!(
         )
     end
 
-    @. residual += sqrt((resL + resR) * 2) / (avgL + avgR + 1.e-7)
+    #@. residual += sqrt((resL + resR) * 2) / (avgL + avgR + 1.e-7)
+    for i in eachindex(residual)
+        residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7) # residual for first species only
+    end
 
     ng = 1 - first(eachindex(KS.ps.x))
     if bc[1] == :period
@@ -60,310 +64,17 @@ function update_boundary!(
 
 end
 
-
 function update_boundary!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AV{TC},
-    face::AV{TF},
+    face,
     dt,
     residual;
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
-) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
-
-    resL = zero(ctr[1].w)
-    avgL = zero(ctr[1].w)
-    resR = zero(ctr[1].w)
-    avgR = zero(ctr[1].w)
-
-    if bc[1] != :fix
-        i = 1
-
-        if KS.set.space[5:6] == "1v"
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].f,
-                face[i].fw,
-                face[i].ff,
-                face[i+1].fw,
-                face[i+1].ff,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        elseif KS.set.space[5:6] == "3v"
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].f,
-                face[i].fw,
-                face[i].ff,
-                face[i+1].fw,
-                face[i+1].ff,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.w,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        end
-    end
-
-    if bc[2] != :fix
-        j = KS.ps.nx
-
-        if KS.set.space[5:6] == "1v"
-            fn(
-                ctr[j].w,
-                ctr[j].prim,
-                ctr[j].f,
-                face[j].fw,
-                face[j].ff,
-                face[j+1].fw,
-                face[j+1].ff,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[j],
-                dt,
-                resR,
-                avgR,
-                coll,
-            )
-        elseif KS.set.space[5:6] == "3v"
-            fn(
-                ctr[j].w,
-                ctr[j].prim,
-                ctr[j].f,
-                face[j].fw,
-                face[j].ff,
-                face[j+1].fw,
-                face[j+1].ff,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.w,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[j],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        end
-    end
-
-    for i in eachindex(residual)
-        residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
-    end
-
-    ng = 1 - first(eachindex(KS.ps.x))
-    if bc[1] == :period
-        bc_period!(ctr, ng)
-    elseif bc[1] == :extra
-        bc_extra!(ctr, ng; dirc = :xl)
-    elseif bc[1] == :balance
-        bc_balance!(ctr[0], ctr[1], ctr[2])
-    end
-    if bc[2] == :extra
-        bc_extra!(ctr, ng; dirc = :xr)
-    elseif bc[2] == :balance
-        bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
-    end
-
-    return nothing
-
-end
-
-function update_boundary!(
-    KS::AbstractSolverSet,
-    ctr::AV{TC},
-    face::AV{TF},
-    dt,
-    residual;
-    coll = symbolize(KS.set.collision),
-    bc,
-    fn = step!,
-) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
-
-    resL = zero(ctr[1].w)
-    avgL = zero(ctr[1].w)
-    resR = zero(ctr[1].w)
-    avgR = zero(ctr[1].w)
-
-    if bc[1] != :fix
-        i = 1
-        if KS.set.nSpecies == 1
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].h,
-                ctr[i].b,
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
-                face[i+1].fw,
-                face[i+1].fh,
-                face[i+1].fb,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        else
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].h,
-                ctr[i].b,
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
-                face[i+1].fw,
-                face[i+1].fh,
-                face[i+1].fb,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.mi,
-                KS.gas.ni,
-                KS.gas.me,
-                KS.gas.ne,
-                KS.gas.Kn[1],
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        end
-    end
-
-    if bc[2] != :fix
-        j = KS.ps.nx
-        if KS.set.nSpecies == 1
-            fn(
-                ctr[j].w,
-                ctr[j].prim,
-                ctr[j].h,
-                ctr[j].b,
-                face[j].fw,
-                face[j].fh,
-                face[j].fb,
-                face[j+1].fw,
-                face[j+1].fh,
-                face[j+1].fb,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[j],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        else
-            fn(
-                ctr[j].w,
-                ctr[j].prim,
-                ctr[j].h,
-                ctr[j].b,
-                face[j].fw,
-                face[j].fh,
-                face[j].fb,
-                face[j+1].fw,
-                face[j+1].fh,
-                face[j+1].fb,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.mi,
-                KS.gas.ni,
-                KS.gas.me,
-                KS.gas.ne,
-                KS.gas.Kn[1],
-                KS.gas.Pr,
-                KS.ps.dx[j],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        end
-    end
-
-    for i in eachindex(residual)
-        residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
-    end
-
-    ng = 1 - first(eachindex(KS.ps.x))
-    if bc[1] == :period
-        bc_period!(ctr, ng)
-    elseif bc[1] == :extra
-        bc_extra!(ctr, ng; dirc = :xl)
-    elseif bc[1] == :balance
-        bc_balance!(ctr[0], ctr[1], ctr[2])
-    end
-    if bc[2] == :extra
-        bc_extra!(ctr, ng; dirc = :xr)
-    elseif bc[2] == :balance
-        bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
-    end
-
-    return nothing
-
-end
-
-function update_boundary!(
-    KS::AbstractSolverSet,
-    ctr::AV{TC},
-    face::AV{TF},
-    dt,
-    residual;
-    coll = symbolize(KS.set.collision)::Symbol,
-    bc,
-    fn = step!,
-    isMHD = false::Bool,
-) where {TC<:Union{ControlVolume3F,ControlVolume1D3F},TF<:Union{Interface3F,Interface1D3F}}
+    isMHD = false,
+) where {TC<:Union{ControlVolume3F,ControlVolume1D3F}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -403,16 +114,16 @@ function update_boundary!(
 end
 
 function update_boundary!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AV{TC},
-    face::AV{TF},
+    face,
     dt,
     residual;
-    coll = symbolize(KS.set.collision)::Symbol,
+    coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
     isMHD = false::Bool,
-) where {TC<:Union{ControlVolume4F,ControlVolume1D4F},TF<:Union{Interface4F,Interface1D4F}}
+) where {TC<:Union{ControlVolume4F,ControlVolume1D4F}}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -452,16 +163,16 @@ function update_boundary!(
 end
 
 function update_boundary!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AM{TC},
-    a1face::AM{TF},
-    a2face::AM{TF},
+    a1face,
+    a2face,
     dt,
     residual;
-    coll = symbolize(KS.set.collision)::Symbol,
+    coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
-) where {TC<:Union{ControlVolume,ControlVolume2D},TF<:Union{Interface,Interface2D}}
+) where {TC<:Union{ControlVolume,ControlVolume2D,ControlVolume1F,ControlVolume2D1F,ControlVolume2F,ControlVolume2D2F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -483,16 +194,13 @@ function update_boundary!(
     if bc[1] != :fix
         @inbounds for j = 1:ny
             fn(
-                ctr[1, j].w,
-                ctr[1, j].prim,
-                a1face[1, j].fw,
-                a1face[2, j].fw,
-                a2face[1, j].fw,
-                a2face[1, j+1].fw,
-                KS.gas.γ,
-                dx[1, j] * dy[1, j],
-                resL,
-                avgL,
+                KS,
+                ctr[1, j],
+                a1face[1, j],
+                a1face[2, j],
+                a2face[1, j],
+                a2face[1, j+1],
+                (dt, dx[1, j] * dy[1, j], resL, avgL),
                 coll,
             )
         end
@@ -501,16 +209,13 @@ function update_boundary!(
     if bc[2] != :fix
         @inbounds for j = 1:ny
             fn(
-                ctr[nx, j].w,
-                ctr[nx, j].prim,
-                a1face[nx, j].fw,
-                a1face[nx+1, j].fw,
-                a2face[nx, j].fw,
-                a2face[nx, j+1].fw,
-                KS.gas.γ,
-                dx[nx, j] * dy[nx, j],
-                resR,
-                avgR,
+                KS,
+                ctr[nx, j],
+                a1face[nx, j],
+                a1face[nx+1, j],
+                a2face[nx, j],
+                a2face[nx, j+1],
+                (dt, dx[nx, j] * dy[nx, j], resR, avgR),
                 coll,
             )
         end
@@ -519,16 +224,13 @@ function update_boundary!(
     if bc[3] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
             fn(
-                ctr[i, 1].w,
-                ctr[i, 1].prim,
-                a1face[i, 1].fw,
-                a1face[i+1, 1].fw,
-                a2face[i, 1].fw,
-                a2face[i, 2].fw,
-                KS.gas.γ,
-                dx[i, 1] * dy[i, 1],
-                resD,
-                avgD,
+                KS,
+                ctr[i, 1],
+                a1face[i, 1],
+                a1face[i+1, 1],
+                a2face[i, 1],
+                a2face[i, 2],
+                (dt, dx[i, 1] * dy[i, 1], resD, avgD),
                 coll,
             )
         end
@@ -537,16 +239,13 @@ function update_boundary!(
     if bc[4] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
             fn(
-                ctr[i, ny].w,
-                ctr[i, ny].prim,
-                a1face[i, ny].fw,
-                a1face[i+1, ny].fw,
-                a2face[i, ny].fw,
-                a2face[i, ny+1].fw,
-                KS.gas.γ,
-                dx[i, ny] * dy[i, ny],
-                resU,
-                avgU,
+                KS,
+                ctr[i, ny],
+                a1face[i, ny],
+                a1face[i+1, ny],
+                a2face[i, ny],
+                a2face[i, ny+1],
+                (dt, dx[i, ny] * dy[i, ny], resU, avgU),
                 coll,
             )
         end
@@ -587,399 +286,15 @@ function update_boundary!(
 end
 
 function update_boundary!(
-    KS::AbstractSolverSet,
-    ctr::AM{TC},
-    a1face::AM{TF},
-    a2face::AM{TF},
-    dt,
-    residual;
-    coll = symbolize(KS.set.collision)::Symbol,
-    bc,
-    fn = step!,
-) where {TC<:Union{ControlVolume1F,ControlVolume2D1F},TF<:Union{Interface1F,Interface2D1F}}
-
-    nx, ny, dx, dy = begin
-        if KS.ps isa CSpace2D
-            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
-        else
-            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
-        end
-    end
-
-    resL = zero(ctr[1].w)
-    avgL = zero(ctr[1].w)
-    resR = zero(ctr[1].w)
-    avgR = zero(ctr[1].w)
-    resU = zero(ctr[1].w)
-    avgU = zero(ctr[1].w)
-    resD = zero(ctr[1].w)
-    avgD = zero(ctr[1].w)
-
-    if bc[1] != :fix
-        @inbounds for j = 1:ny
-            fn(
-                ctr[1, j].w,
-                ctr[1, j].prim,
-                ctr[1, j].f,
-                a1face[1, j].fw,
-                a1face[1, j].ff,
-                a1face[2, j].fw,
-                a1face[2, j].ff,
-                a2face[1, j].fw,
-                a2face[1, j].ff,
-                a2face[1, j+1].fw,
-                a2face[1, j+1].ff,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[1, j] * dy[1, j],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        end
-    end
-    if bc[2] != :fix
-        @inbounds for j = 1:ny
-            fn(
-                ctr[nx, j].w,
-                ctr[nx, j].prim,
-                ctr[nx, j].f,
-                a1face[nx, j].fw,
-                a1face[nx, j].ff,
-                a1face[nx+1, j].fw,
-                a1face[nx+1, j].ff,
-                a2face[nx, j].fw,
-                a2face[nx, j].ff,
-                a2face[nx, j+1].fw,
-                a2face[nx, j+1].ff,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[nx, j] * dy[nx, j],
-                dt,
-                resR,
-                avgR,
-                coll,
-            )
-        end
-    end
-    if bc[3] != :fix
-        @inbounds for i = 2:nx-1 # skip overlap
-            fn(
-                ctr[i, 1].w,
-                ctr[i, 1].prim,
-                ctr[i, 1].f,
-                a1face[i, 1].fw,
-                a1face[i, 1].ff,
-                a1face[i+1, 1].fw,
-                a1face[i+1, 1].ff,
-                a2face[i, 1].fw,
-                a2face[i, 1].ff,
-                a2face[i, 2].fw,
-                a2face[i, 2].ff,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[i, 1] * dy[i, 1],
-                dt,
-                resD,
-                avgD,
-                coll,
-            )
-        end
-    end
-    if bc[4] != :fix
-        @inbounds for i = 2:nx-1 # skip overlap
-            fn(
-                ctr[i, ny].w,
-                ctr[i, ny].prim,
-                ctr[i, ny].f,
-                a1face[i, ny].fw,
-                a1face[i, ny].ff,
-                a1face[i+1, ny].fw,
-                a1face[i+1, ny].ff,
-                a2face[i, ny].fw,
-                a2face[i, ny].ff,
-                a2face[i, ny+1].fw,
-                a2face[i, ny+1].ff,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[i, ny] * dy[i, ny],
-                dt,
-                resU,
-                avgU,
-                coll,
-            )
-        end
-    end
-
-    for i in eachindex(residual)
-        residual[i] +=
-            sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) /
-            (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
-    end
-
-    ngx = 1 - first(eachindex(KS.ps.x[:, 1]))
-    if bc[1] == :period
-        bc_period!(ctr, ngx; dirc = :x)
-    elseif bc[1] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[1]) * "!"))
-        bcfun(ctr, ngx; dirc = :xl)
-    end
-    if bc[2] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[2]) * "!"))
-        bcfun(ctr, ngx; dirc = :xr)
-    end
-
-    ngy = 1 - first(eachindex(KS.ps.y[1, :]))
-    if bc[3] == :period
-        bc_period!(ctr, ngy; dirc = :y)
-    elseif bc[3] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[3]) * "!"))
-        bcfun(ctr, ngy; dirc = :yl)
-    end
-    if bc[4] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
-        bcfun(ctr, ngy; dirc = :yr)
-    end
-
-    return nothing
-
-end
-
-function update_boundary!(
-    KS::AbstractSolverSet,
-    ctr::AM{TC},
-    a1face::AM{TF},
-    a2face::AM{TF},
-    dt,
-    residual;
-    coll = symbolize(KS.set.collision)::Symbol,
-    bc,
-    fn = step!,
-) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
-
-    nx, ny, dx, dy = begin
-        if KS.ps isa CSpace2D
-            KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
-        else
-            KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
-        end
-    end
-
-    resL = zero(ctr[1].w)
-    avgL = zero(ctr[1].w)
-    resR = zero(ctr[1].w)
-    avgR = zero(ctr[1].w)
-    resU = zero(ctr[1].w)
-    avgU = zero(ctr[1].w)
-    resD = zero(ctr[1].w)
-    avgD = zero(ctr[1].w)
-
-    if bc[1] != :fix
-        @inbounds for j = 1:ny
-            fn(
-                ctr[1, j].w,
-                ctr[1, j].prim,
-                ctr[1, j].h,
-                ctr[1, j].b,
-                a1face[1, j].fw,
-                a1face[1, j].fh,
-                a1face[1, j].fb,
-                a1face[2, j].fw,
-                a1face[2, j].fh,
-                a1face[2, j].fb,
-                a2face[1, j].fw,
-                a2face[1, j].fh,
-                a2face[1, j].fb,
-                a2face[1, j+1].fw,
-                a2face[1, j+1].fh,
-                a2face[1, j+1].fb,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[1, j] * dy[1, j],
-                dt,
-                resL,
-                avgL,
-                coll,
-            )
-        end
-    end
-    if bc[2] != :fix
-        @inbounds for j = 1:ny
-            fn(
-                ctr[nx, j].w,
-                ctr[nx, j].prim,
-                ctr[nx, j].h,
-                ctr[nx, j].b,
-                a1face[nx, j].fw,
-                a1face[nx, j].fh,
-                a1face[nx, j].fb,
-                a1face[nx+1, j].fw,
-                a1face[nx+1, j].fh,
-                a1face[nx+1, j].fb,
-                a2face[nx, j].fw,
-                a2face[nx, j].fh,
-                a2face[nx, j].fb,
-                a2face[nx, j+1].fw,
-                a2face[nx, j+1].fh,
-                a2face[nx, j+1].fb,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[nx, j] * dy[nx, j],
-                dt,
-                resR,
-                avgR,
-                coll,
-            )
-        end
-    end
-    if bc[3] != :fix
-        @inbounds for i = 2:nx-1 # skip overlap
-            fn(
-                ctr[i, 1].w,
-                ctr[i, 1].prim,
-                ctr[i, 1].h,
-                ctr[i, 1].b,
-                a1face[i, 1].fw,
-                a1face[i, 1].fh,
-                a1face[i, 1].fb,
-                a1face[i+1, 1].fw,
-                a1face[i+1, 1].fh,
-                a1face[i+1, 1].fb,
-                a2face[i, 1].fw,
-                a2face[i, 1].fh,
-                a2face[i, 1].fb,
-                a2face[i, 2].fw,
-                a2face[i, 2].fh,
-                a2face[i, 2].fb,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[i, 1] * dy[i, 1],
-                dt,
-                resD,
-                avgD,
-                coll,
-            )
-        end
-    end
-    if bc[4] != :fix
-        @inbounds for i = 2:nx-1 # skip overlap
-            fn(
-                ctr[i, ny].w,
-                ctr[i, ny].prim,
-                ctr[i, ny].h,
-                ctr[i, ny].b,
-                a1face[i, ny].fw,
-                a1face[i, ny].fh,
-                a1face[i, ny].fb,
-                a1face[i+1, ny].fw,
-                a1face[i+1, ny].fh,
-                a1face[i+1, ny].fb,
-                a2face[i, ny].fw,
-                a2face[i, ny].fh,
-                a2face[i, ny].fb,
-                a2face[i, ny+1].fw,
-                a2face[i, ny+1].fh,
-                a2face[i, ny+1].fb,
-                KS.vs.u,
-                KS.vs.v,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                dx[i, ny] * dy[i, ny],
-                dt,
-                resU,
-                avgU,
-                coll,
-            )
-        end
-    end
-
-    for i in eachindex(residual)
-        residual[i] +=
-            sqrt((resL[i] + resR[i] + resU[i] + resD[i]) * 2) /
-            (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
-    end
-
-    ngx = 1 - first(eachindex(KS.ps.x[:, 1]))
-    if bc[1] == :period
-        bc_period!(ctr, ngx; dirc = :x)
-    elseif bc[1] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[1]) * "!"))
-        bcfun(ctr, ngx; dirc = :xl)
-    end
-    if bc[2] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[2]) * "!"))
-        bcfun(ctr, ngx; dirc = :xr)
-    end
-
-    ngy = 1 - first(eachindex(KS.ps.y[1, :]))
-    if bc[3] == :period
-        bc_period!(ctr, ngy; dirc = :y)
-    elseif bc[3] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[3]) * "!"))
-        bcfun(ctr, ngy; dirc = :yl)
-    end
-    if bc[4] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
-        bcfun(ctr, ngy; dirc = :yr)
-    end
-
-    return nothing
-
-end
-
-function update_boundary!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AV{TC},
-    face::AV{TF},
+    face,
     dt,
     residual;
-    coll::Symbol,
+    coll,
     bc,
     fn = step!,
-) where {TC<:ControlVolumeUS,TF<:Interface2D}
+) where {TC<:ControlVolumeUS}
 
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
@@ -996,15 +311,15 @@ function update_boundary!(
 end
 
 function update_boundary!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AV{TC},
-    face::AV{TF},
+    face,
     dt,
     residual;
-    coll::Symbol,
+    coll,
     bc,
     fn = step!,
-) where {TC<:ControlVolumeUS1F,TF<:Interface2D1F}
+) where {TC<:ControlVolumeUS1F}
 
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
@@ -1022,15 +337,15 @@ function update_boundary!(
 end
 
 function update_boundary!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AV{TC},
-    face::AV{TF},
+    face,
     dt,
     residual;
-    coll::Symbol,
+    coll,
     bc,
     fn = step!,
-) where {TC<:ControlVolumeUS2F,TF<:Interface2D2F}
+) where {TC<:ControlVolumeUS2F}
 
     for i in eachindex(KS.ps.cellType)
         if KS.ps.cellType[i] == 3
