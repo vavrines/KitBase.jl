@@ -1,9 +1,9 @@
 """
 $(SIGNATURES)
 
-Update flow variables with finite volume formulation
+Scalar
 """
-function step!(fwL::X, w::X, prim::AV{X}, fwR::X, a, dx, RES, AVG) where {X<:FN} # scalar
+function step!(fwL::X, w::X, prim::AV{X}, fwR::X, a, dx, RES, AVG) where {X<:FN}
     #--- store W^n and calculate H^n,\tau^n ---#
     w_old = deepcopy(w)
 
@@ -20,6 +20,8 @@ end
 
 """
 $(SIGNATURES)
+
+1D0F
 """
 function step!(
     fwL::X,
@@ -50,7 +52,7 @@ end
 """
 $(SIGNATURES)
 
-Mixture
+1D0F Mixture
 """
 function step!(
     fwL::T1,

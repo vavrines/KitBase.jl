@@ -61,7 +61,7 @@ $(SIGNATURES)
 function Solution1D(w::AA, prim::AA, f::AA)
     sw = @. zero(w)
     sf = @. zero(f)
-    
+
     return Solution1F{typeof(w),typeof(sw),typeof(f),typeof(sf),1}(w, prim, sw, f, sf)
 end
 

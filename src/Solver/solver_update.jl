@@ -1,22 +1,22 @@
 """
-$(TYPEDSIGNATURES)
+$(SIGNATURES)
 
 Update flow variables over control volumes
 """
 function update!(
-    KS::AbstractSolverSet,
+    KS,
     ctr::AV{TC},
     face::AV{TF},
     dt,
-    residual::FN; # 1D / 2D
+    residual::FN;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     sumRes = zero(ctr[1].w)
-    sumAvg = zero(ctr[1].w)
+    sumAvg = zero(sumRes)
 
-    @inbounds @threads for i = 1:KS.pSpace.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].w, sumRes, sumAvg = step!(
             face[i].fw,
             ctr[i].w,
@@ -29,19 +29,19 @@ function update!(
         )
     end
 
-    residual = sqrt(sumRes * KS.pSpace.nx) / (sumAvg + 1.e-7)
+    residual = sqrt(sumRes * KS.ps.nx) / (sumAvg + 1.e-7)
 
     if bc[1] == :period
-        ctr[0].w = ctr[KS.pSpace.nx].w
-        ctr[0].sw = ctr[KS.pSpace.nx].sw
-        ctr[KS.pSpace.nx+1].w = ctr[1].w
-        ctr[KS.pSpace.nx+1].sw = ctr[1].sw
+        ctr[0].w = ctr[KS.ps.nx].w
+        ctr[0].sw = ctr[KS.ps.nx].sw
+        ctr[KS.ps.nx+1].w = ctr[1].w
+        ctr[KS.ps.nx+1].sw = ctr[1].sw
     elseif bc[1] == :extra
         ctr[0].w = ctr[1].w
     end
 
     if bc[2] == :extra
-        ctr[KS.pSpace.nx+1].w = ctr[KS.pSpace.nx].w
+        ctr[KS.ps.nx+1].w = ctr[KS.ps.nx].w
     end
 
     return residual
@@ -62,7 +62,7 @@ function update!(
     sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
-        @inbounds @threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
                 face[i].fw,
                 ctr[i].w,
@@ -75,7 +75,7 @@ function update!(
             )
         end
     elseif ndims(sumRes) == 2
-        @inbounds @threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
                 face[i].fw,
                 ctr[i].w,
@@ -96,7 +96,7 @@ function update!(
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
     if bc isa Symbol
@@ -124,7 +124,7 @@ function update!(
 
     phase = KS.set.space[3:end]
     if phase == "1f1v"
-        @inbounds @threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
                 face[i].fw,
                 face[i].ff,
@@ -133,8 +133,8 @@ function update!(
                 ctr[i].f,
                 face[i+1].fw,
                 face[i+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -148,7 +148,7 @@ function update!(
         end
     elseif phase == "1f3v"
         if KS.set.collision == "fsm"
-            @inbounds @threads for i = 2:KS.pSpace.nx-1
+            @inbounds @threads for i = 2:KS.ps.nx-1
                 step!(
                     face[i].fw,
                     face[i].ff,
@@ -171,7 +171,7 @@ function update!(
                 )
             end
         else
-            @inbounds @threads for i = 2:KS.pSpace.nx-1
+            @inbounds @threads for i = 2:KS.ps.nx-1
                 step!(
                     face[i].fw,
                     face[i].ff,
@@ -180,10 +180,10 @@ function update!(
                     ctr[i].f,
                     face[i+1].fw,
                     face[i+1].ff,
-                    KS.vSpace.u,
-                    KS.vSpace.v,
-                    KS.vSpace.w,
-                    KS.vSpace.weights,
+                    KS.vs.u,
+                    KS.vs.v,
+                    KS.vs.w,
+                    KS.vs.weights,
                     KS.gas.γ,
                     KS.gas.μᵣ,
                     KS.gas.ω,
@@ -199,7 +199,7 @@ function update!(
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
     if bc isa Symbol
@@ -226,7 +226,7 @@ function update!(
     sumAvg = zero(ctr[1].w)
 
     if ndims(sumRes) == 1
-        @inbounds @threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
                 face[i].fw,
                 face[i].fh,
@@ -238,8 +238,8 @@ function update!(
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
@@ -253,7 +253,7 @@ function update!(
             )
         end
     elseif ndims(sumRes) == 2
-        @inbounds @threads for i = 2:KS.pSpace.nx-1
+        @inbounds @threads for i = 2:KS.ps.nx-1
             step!(
                 face[i].fw,
                 face[i].fh,
@@ -265,8 +265,8 @@ function update!(
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -285,7 +285,7 @@ function update!(
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
     if bc isa Symbol
@@ -312,12 +312,12 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for i = 2:KS.pSpace.nx-1
+    @inbounds @threads for i = 2:KS.ps.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
     if bc isa Symbol
@@ -336,7 +336,7 @@ function update!(
     end
 
     #=
-    ng = 1 - first(eachindex(KS.pSpace.x))
+    ng = 1 - first(eachindex(KS.ps.x))
     if bc == :extra
         for i in 1:ng
             ctr[1-i].w .= ctr[1].w
@@ -350,40 +350,40 @@ function update!(
             ctr[1-i].ψ = deepcopy(ctr[1].ψ)
             ctr[1-i].lorenz .= ctr[1].lorenz
 
-            ctr[KS.pSpace.nx+i].w .= ctr[KS.pSpace.nx].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[KS.pSpace.nx].prim
-            ctr[KS.pSpace.nx+i].h0 .= ctr[KS.pSpace.nx].h0
-            ctr[KS.pSpace.nx+i].h1 .= ctr[KS.pSpace.nx].h1
-            ctr[KS.pSpace.nx+i].h2 .= ctr[KS.pSpace.nx].h2
-            ctr[KS.pSpace.nx+i].E .= ctr[KS.pSpace.nx].E
-            ctr[KS.pSpace.nx+i].B .= ctr[KS.pSpace.nx].B
-            ctr[KS.pSpace.nx+i].ϕ = deepcopy(ctr[KS.pSpace.nx].ϕ)
-            ctr[KS.pSpace.nx+i].ψ = deepcopy(ctr[KS.pSpace.nx].ψ)
-            ctr[KS.pSpace.nx+i].lorenz .= ctr[KS.pSpace.nx].lorenz
+            ctr[KS.ps.nx+i].w .= ctr[KS.ps.nx].w
+            ctr[KS.ps.nx+i].prim .= ctr[KS.ps.nx].prim
+            ctr[KS.ps.nx+i].h0 .= ctr[KS.ps.nx].h0
+            ctr[KS.ps.nx+i].h1 .= ctr[KS.ps.nx].h1
+            ctr[KS.ps.nx+i].h2 .= ctr[KS.ps.nx].h2
+            ctr[KS.ps.nx+i].E .= ctr[KS.ps.nx].E
+            ctr[KS.ps.nx+i].B .= ctr[KS.ps.nx].B
+            ctr[KS.ps.nx+i].ϕ = deepcopy(ctr[KS.ps.nx].ϕ)
+            ctr[KS.ps.nx+i].ψ = deepcopy(ctr[KS.ps.nx].ψ)
+            ctr[KS.ps.nx+i].lorenz .= ctr[KS.ps.nx].lorenz
         end
     elseif bc == :period
         for i in 1:ng
-            ctr[1-i].w .= ctr[KS.pSpace.nx+1-i].w
-            ctr[1-i].prim .= ctr[KS.pSpace.nx+1-i].prim
-            ctr[1-i].h0 .= ctr[KS.pSpace.nx+1-i].h0
-            ctr[1-i].h1 .= ctr[KS.pSpace.nx+1-i].h1
-            ctr[1-i].h2 .= ctr[KS.pSpace.nx+1-i].h2
-            ctr[1-i].E .= ctr[KS.pSpace.nx+1-i].E
-            ctr[1-i].B .= ctr[KS.pSpace.nx+1-i].B
-            ctr[1-i].ϕ = deepcopy(ctr[KS.pSpace.nx+1-i].ϕ)
-            ctr[1-i].ψ = deepcopy(ctr[KS.pSpace.nx+1-i].ψ)
-            ctr[1-i].lorenz .= ctr[KS.pSpace.nx+1-i].lorenz
+            ctr[1-i].w .= ctr[KS.ps.nx+1-i].w
+            ctr[1-i].prim .= ctr[KS.ps.nx+1-i].prim
+            ctr[1-i].h0 .= ctr[KS.ps.nx+1-i].h0
+            ctr[1-i].h1 .= ctr[KS.ps.nx+1-i].h1
+            ctr[1-i].h2 .= ctr[KS.ps.nx+1-i].h2
+            ctr[1-i].E .= ctr[KS.ps.nx+1-i].E
+            ctr[1-i].B .= ctr[KS.ps.nx+1-i].B
+            ctr[1-i].ϕ = deepcopy(ctr[KS.ps.nx+1-i].ϕ)
+            ctr[1-i].ψ = deepcopy(ctr[KS.ps.nx+1-i].ψ)
+            ctr[1-i].lorenz .= ctr[KS.ps.nx+1-i].lorenz
 
-            ctr[KS.pSpace.nx+i].w .= ctr[i].w
-            ctr[KS.pSpace.nx+i].prim .= ctr[i].prim
-            ctr[KS.pSpace.nx+i].h0 .= ctr[i].h0
-            ctr[KS.pSpace.nx+i].h1 .= ctr[i].h1
-            ctr[KS.pSpace.nx+i].h2 .= ctr[i].h2
-            ctr[KS.pSpace.nx+i].E .= ctr[i].E
-            ctr[KS.pSpace.nx+i].B .= ctr[i].B
-            ctr[KS.pSpace.nx+i].ϕ = deepcopy(ctr[i].ϕ)
-            ctr[KS.pSpace.nx+i].ψ = deepcopy(ctr[i].ψ)
-            ctr[KS.pSpace.nx+i].lorenz .= ctr[i].lorenz
+            ctr[KS.ps.nx+i].w .= ctr[i].w
+            ctr[KS.ps.nx+i].prim .= ctr[i].prim
+            ctr[KS.ps.nx+i].h0 .= ctr[i].h0
+            ctr[KS.ps.nx+i].h1 .= ctr[i].h1
+            ctr[KS.ps.nx+i].h2 .= ctr[i].h2
+            ctr[KS.ps.nx+i].E .= ctr[i].E
+            ctr[KS.ps.nx+i].B .= ctr[i].B
+            ctr[KS.ps.nx+i].ϕ = deepcopy(ctr[i].ϕ)
+            ctr[KS.ps.nx+i].ψ = deepcopy(ctr[i].ψ)
+            ctr[KS.ps.nx+i].lorenz .= ctr[i].lorenz
         end
     elseif bc == :balance
         @. ctr[0].w = 0.5 * (ctr[-1].w + ctr[1].w)
@@ -397,16 +397,16 @@ function update!(
         ctr[0].ψ = 0.5 * (ctr[-1].ψ + ctr[1].ψ)
         @. ctr[0].lorenz = 0.5 * (ctr[-1].lorenz + ctr[1].lorenz)
 
-        @. ctr[KS.pSpace.nx+1].w = 0.5 * (ctr[KS.pSpace.nx].w + ctr[KS.pSpace.nx+2].w)
-        @. ctr[KS.pSpace.nx+1].prim = 0.5 * (ctr[KS.pSpace.nx].prim + ctr[KS.pSpace.nx+2].prim)
-        @. ctr[KS.pSpace.nx+1].h0 = 0.5 * (ctr[KS.pSpace.nx].h0 + ctr[KS.pSpace.nx+2].h0)
-        @. ctr[KS.pSpace.nx+1].h1 = 0.5 * (ctr[KS.pSpace.nx].h1 + ctr[KS.pSpace.nx+2].h1)
-        @. ctr[KS.pSpace.nx+1].h2 = 0.5 * (ctr[KS.pSpace.nx].h2 + ctr[KS.pSpace.nx+2].h2)
-        @. ctr[KS.pSpace.nx+1].E = 0.5 * (ctr[KS.pSpace.nx].E + ctr[KS.pSpace.nx+2].E)
-        @. ctr[KS.pSpace.nx+1].B = 0.5 * (ctr[KS.pSpace.nx].B + ctr[KS.pSpace.nx+2].B)
-        ctr[KS.pSpace.nx+1].ϕ = 0.5 * (ctr[KS.pSpace.nx].ϕ + ctr[KS.pSpace.nx+2].ϕ)
-        ctr[KS.pSpace.nx+1].ψ = 0.5 * (ctr[KS.pSpace.nx].ψ + ctr[KS.pSpace.nx+2].ψ)
-        @. ctr[KS.pSpace.nx+1].lorenz = 0.5 * (ctr[KS.pSpace.nx].lorenz + ctr[KS.pSpace.nx+2].lorenz)
+        @. ctr[KS.ps.nx+1].w = 0.5 * (ctr[KS.ps.nx].w + ctr[KS.ps.nx+2].w)
+        @. ctr[KS.ps.nx+1].prim = 0.5 * (ctr[KS.ps.nx].prim + ctr[KS.ps.nx+2].prim)
+        @. ctr[KS.ps.nx+1].h0 = 0.5 * (ctr[KS.ps.nx].h0 + ctr[KS.ps.nx+2].h0)
+        @. ctr[KS.ps.nx+1].h1 = 0.5 * (ctr[KS.ps.nx].h1 + ctr[KS.ps.nx+2].h1)
+        @. ctr[KS.ps.nx+1].h2 = 0.5 * (ctr[KS.ps.nx].h2 + ctr[KS.ps.nx+2].h2)
+        @. ctr[KS.ps.nx+1].E = 0.5 * (ctr[KS.ps.nx].E + ctr[KS.ps.nx+2].E)
+        @. ctr[KS.ps.nx+1].B = 0.5 * (ctr[KS.ps.nx].B + ctr[KS.ps.nx+2].B)
+        ctr[KS.ps.nx+1].ϕ = 0.5 * (ctr[KS.ps.nx].ϕ + ctr[KS.ps.nx+2].ϕ)
+        ctr[KS.ps.nx+1].ψ = 0.5 * (ctr[KS.ps.nx].ψ + ctr[KS.ps.nx+2].ψ)
+        @. ctr[KS.ps.nx+1].lorenz = 0.5 * (ctr[KS.ps.nx].lorenz + ctr[KS.ps.nx+2].lorenz)
     else
     end
     =#
@@ -428,12 +428,12 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for i = 2:KS.pSpace.nx-1
+    @inbounds @threads for i = 2:KS.ps.nx-1
         step!(KS, face[i], ctr[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
     for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.pSpace.nx) / (sumAvg[i] + 1.e-7)
+        residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
     if bc isa Symbol
@@ -560,9 +560,9 @@ function update!(
                     a2face[i, j].ff,
                     a2face[i, j+1].fw,
                     a2face[i, j+1].ff,
-                    KS.vSpace.u,
-                    KS.vSpace.v,
-                    KS.vSpace.weights,
+                    KS.vs.u,
+                    KS.vs.v,
+                    KS.vs.weights,
                     KS.gas.γ,
                     KS.gas.μᵣ,
                     KS.gas.ω,
@@ -645,9 +645,9 @@ function update!(
                     a2face[i, j+1].fw,
                     a2face[i, j+1].fh,
                     a2face[i, j+1].fb,
-                    KS.vSpace.u,
-                    KS.vSpace.v,
-                    KS.vSpace.weights,
+                    KS.vs.u,
+                    KS.vs.v,
+                    KS.vs.weights,
                     KS.gas.K,
                     KS.gas.γ,
                     KS.gas.μᵣ,
@@ -711,7 +711,7 @@ function update!(
                 face[KS.ps.cellFaces[i, 2]].fw,
                 face[KS.ps.cellFaces[i, 3]].fw,
                 KS.gas.γ,
-                KS.pSpace.cellArea[i],
+                KS.ps.cellArea[i],
                 dirc,
                 sumRes,
                 sumAvg,
@@ -756,15 +756,15 @@ function update!(
                 face[KS.ps.cellFaces[i, 2]].ff,
                 face[KS.ps.cellFaces[i, 3]].fw,
                 face[KS.ps.cellFaces[i, 3]].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                KS.pSpace.cellArea[i],
+                KS.ps.cellArea[i],
                 dirc,
                 dt,
                 sumRes,
@@ -815,15 +815,15 @@ function update!(
                 face[KS.ps.cellFaces[i, 3]].fw,
                 face[KS.ps.cellFaces[i, 3]].fh,
                 face[KS.ps.cellFaces[i, 3]].fb,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
                 KS.gas.Pr,
-                KS.pSpace.cellArea[i],
+                KS.ps.cellArea[i],
                 dirc,
                 dt,
                 sumRes,
