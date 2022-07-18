@@ -1,14 +1,16 @@
 """
 $(SIGNATURES)
 
-Update flow variables over control volumes
+Update flow variables
+
+1D scalar
 """
 function update!(
     KS,
     ctr::AV{TC},
     face::AV{TF},
     dt,
-    residual::FN;
+    residual::Number;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     fn = step!,
@@ -24,6 +26,7 @@ function update!(
             face[i],
             face[i+1],
             (dt, KS.ps.dx[i], sumRes, sumAvg),
+            coll,
         )
     end
 
@@ -46,52 +49,36 @@ function update!(
 
 end
 
+"""
+$(SIGNATURES)
+
+- 1D0F pure & mixture
+- 1D1F
+- 1D2F pure & mixture
+"""
 function update!(
     KS::AbstractSolverSet,
     ctr::AV{TC},
-    face::AV{TF},
+    face,
     dt,
-    residual::AA{<:FN}; # 1D / 2D
+    residual::AA; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     fn = step!,
-) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
+) where {TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1F,ControlVolume1D1F,ControlVolume2F,ControlVolume1D2F}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    if ndims(sumRes) == 1
-        @inbounds @threads for i = 2:KS.ps.nx-1
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                face[i].fw,
-                face[i+1].fw,
-                KS.gas.γ,
-                KS.ps.dx[i],
-                sumRes,
-                sumAvg,
-            )
-        end
-    elseif ndims(sumRes) == 2
-        @inbounds @threads for i = 2:KS.ps.nx-1
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                face[i].fw,
-                face[i+1].fw,
-                KS.gas.γ,
-                KS.gas.mi,
-                KS.gas.ni,
-                KS.gas.me,
-                KS.gas.ne,
-                KS.gas.Kn[1],
-                KS.ps.dx[i],
-                dt,
-                sumRes,
-                sumAvg,
-            )
-        end
+    @inbounds @threads for i = 2:KS.ps.nx-1
+        fn(
+            KS,
+            ctr[i],
+            face[i],
+            face[i+1],
+            (dt, KS.ps.dx[i], sumRes, sumAvg),
+            coll,
+        )
     end
 
     for i in eachindex(residual)
@@ -110,206 +97,15 @@ end
 
 function update!(
     KS::AbstractSolverSet,
-    ctr::AV{TC},
-    face::AV{TF},
-    dt,
-    residual; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
-
-    sumRes = zero(ctr[1].w)
-    sumAvg = zero(ctr[1].w)
-
-    phase = KS.set.space[3:end]
-    if phase == "1f1v"
-        @inbounds @threads for i = 2:KS.ps.nx-1
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].f,
-                face[i].fw,
-                face[i].ff,
-                face[i+1].fw,
-                face[i+1].ff,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                sumRes,
-                sumAvg,
-                coll,
-            )
-        end
-    elseif phase == "1f3v"
-        if KS.set.collision == "fsm"
-            @inbounds @threads for i = 2:KS.ps.nx-1
-                fn(
-                    ctr[i].w,
-                    ctr[i].prim,
-                    ctr[i].f,
-                    face[i].fw,
-                    face[i].ff,
-                    face[i+1].fw,
-                    face[i+1].ff,
-                    KS.gas.γ,
-                    KS.gas.fsm.Kn,
-                    KS.gas.fsm.nm,
-                    KS.gas.fsm.ϕ,
-                    KS.gas.fsm.ψ,
-                    KS.gas.fsm.χ,
-                    KS.ps.dx[i],
-                    dt,
-                    sumRes,
-                    sumAvg,
-                    coll,
-                )
-            end
-        else
-            @inbounds @threads for i = 2:KS.ps.nx-1
-                fn(
-                    ctr[i].w,
-                    ctr[i].prim,
-                    ctr[i].f,
-                    face[i].fw,
-                    face[i].ff,
-                    face[i+1].fw,
-                    face[i+1].ff,
-                    KS.vs.u,
-                    KS.vs.v,
-                    KS.vs.w,
-                    KS.vs.weights,
-                    KS.gas.γ,
-                    KS.gas.μᵣ,
-                    KS.gas.ω,
-                    KS.gas.Pr,
-                    KS.ps.dx[i],
-                    dt,
-                    sumRes,
-                    sumAvg,
-                    coll,
-                )
-            end
-        end
-    end
-
-    for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
-    end
-
-    if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], fn = fn)
-    else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn)
-    end
-
-    return nothing
-
-end
-
-function update!(
-    KS::AbstractSolverSet,
-    ctr::AV{TC},
-    face::AV{TF},
-    dt,
-    residual; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
-
-    sumRes = zero(ctr[1].w)
-    sumAvg = zero(ctr[1].w)
-
-    if ndims(sumRes) == 1
-        @inbounds @threads for i = 2:KS.ps.nx-1
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].h,
-                ctr[i].b,
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
-                face[i+1].fw,
-                face[i+1].fh,
-                face[i+1].fb,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.μᵣ,
-                KS.gas.ω,
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                sumRes,
-                sumAvg,
-                coll,
-            )
-        end
-    elseif ndims(sumRes) == 2
-        @inbounds @threads for i = 2:KS.ps.nx-1
-            fn(
-                ctr[i].w,
-                ctr[i].prim,
-                ctr[i].h,
-                ctr[i].b,
-                face[i].fw,
-                face[i].fh,
-                face[i].fb,
-                face[i+1].fw,
-                face[i+1].fh,
-                face[i+1].fb,
-                KS.vs.u,
-                KS.vs.weights,
-                KS.gas.K,
-                KS.gas.γ,
-                KS.gas.mi,
-                KS.gas.ni,
-                KS.gas.me,
-                KS.gas.ne,
-                KS.gas.Kn[1],
-                KS.gas.Pr,
-                KS.ps.dx[i],
-                dt,
-                sumRes,
-                sumAvg,
-                coll,
-            )
-        end
-    end
-
-    for i in eachindex(residual)
-        residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
-    end
-
-    if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = [bc, bc], fn = fn)
-    else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn)
-    end
-
-    return nothing
-
-end
-
-function update!(
-    KS::AbstractSolverSet,
-    ctr::AV{TC},
-    face::AV{TF},
+    ctr::AV{ControlVolume1D3F},
+    face::AV{Interface1D3F},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
     fn = step!,
-) where {TC<:ControlVolume1D3F,TF<:Interface1D3F}
+)
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
@@ -419,15 +215,15 @@ end
 
 function update!(
     KS::AbstractSolverSet,
-    ctr::AV{TC},
-    face::AV{TF},
+    ctr::AV{ControlVolume1D4F},
+    face::AV{Interface1D4F},
     dt,
     residual; # 1D / 2D
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     isMHD = true::Bool,
     fn = step!,
-) where {TC<:ControlVolume1D4F,TF<:Interface1D4F}
+)
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
