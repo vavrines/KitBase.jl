@@ -49,10 +49,7 @@ for i = 1:ks.ps.nx
         wp[i, :] .= ks.ib.wR
     end
 end
-fwp = SharedArray{Float64}(
-    (ks.ps.nx + 1, 3),
-    init = A -> (A = zeros(ks.ps.nx + 1, 3)),
-)
+fwp = SharedArray{Float64}((ks.ps.nx + 1, 3), init = A -> (A = zeros(ks.ps.nx + 1, 3)))
 
 @time for iter = 1:nt÷3
     @sync @distributed for i = 2:ks.ps.nx

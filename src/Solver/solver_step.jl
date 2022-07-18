@@ -28,7 +28,8 @@ step!(
     faceU::T,
     p,
     coll = :bgk,
-) where {T<:AbstractInterface} = step!(KS, KS.vs, KS.gas, cell, faceL, faceR, faceD, faceU, p, coll)
+) where {T<:AbstractInterface} =
+    step!(KS, KS.vs, KS.gas, cell, faceL, faceR, faceD, faceU, p, coll)
 
 """
 $(SIGNATURES)

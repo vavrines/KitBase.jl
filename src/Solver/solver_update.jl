@@ -20,14 +20,8 @@ function update!(
     sumAvg = zero(sumRes)
 
     @inbounds @threads for i = 1:KS.ps.nx
-        ctr[i].w, sumRes, sumAvg = fn(
-            KS,
-            ctr[i],
-            face[i],
-            face[i+1],
-            (dt, KS.ps.dx[i], sumRes, sumAvg),
-            coll,
-        )
+        ctr[i].w, sumRes, sumAvg =
+            fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll)
     end
 
     residual = sqrt(sumRes * KS.ps.nx) / (sumAvg + 1.e-7)
@@ -65,20 +59,22 @@ function update!(
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     fn = step!,
-) where {TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1F,ControlVolume1D1F,ControlVolume2F,ControlVolume1D2F}}
+) where {
+    TC<:Union{
+        ControlVolume,
+        ControlVolume1D,
+        ControlVolume1F,
+        ControlVolume1D1F,
+        ControlVolume2F,
+        ControlVolume1D2F,
+    },
+}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i = 2:KS.ps.nx-1
-        fn(
-            KS,
-            ctr[i],
-            face[i],
-            face[i+1],
-            (dt, KS.ps.dx[i], sumRes, sumAvg),
-            coll,
-        )
+        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll)
     end
 
     for i in eachindex(residual)
@@ -131,7 +127,17 @@ function update!(
             fn = fn,
         )
     else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD, fn = fn)
+        update_boundary!(
+            KS,
+            ctr,
+            face,
+            dt,
+            residual;
+            coll = coll,
+            bc = bc,
+            isMHD = isMHD,
+            fn = fn,
+        )
     end
 
     #=
@@ -249,7 +255,17 @@ function update!(
             fn = fn,
         )
     else
-        update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, isMHD = isMHD, fn = fn)
+        update_boundary!(
+            KS,
+            ctr,
+            face,
+            dt,
+            residual;
+            coll = coll,
+            bc = bc,
+            isMHD = isMHD,
+            fn = fn,
+        )
     end
 
     return nothing
@@ -266,7 +282,16 @@ function update!(
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
     fn = step!,
-) where {T<:Union{ControlVolume,ControlVolume2D,ControlVolume1F,ControlVolume2D1F,ControlVolume2F,ControlVolume2D2F}}
+) where {
+    T<:Union{
+        ControlVolume,
+        ControlVolume2D,
+        ControlVolume1F,
+        ControlVolume2D1F,
+        ControlVolume2F,
+        ControlVolume2D2F,
+    },
+}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -311,7 +336,17 @@ function update!(
             fn = fn,
         )
     else
-        update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll = coll, bc = bc, fn = fn)
+        update_boundary!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            dt,
+            residual;
+            coll = coll,
+            bc = bc,
+            fn = fn,
+        )
     end
 
     return nothing

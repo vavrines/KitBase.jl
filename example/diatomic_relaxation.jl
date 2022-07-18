@@ -147,18 +147,7 @@ function step(KS, w, prim, h, b, r, dt)
     MBR = similar(b)
     MRR = similar(r)
 
-    KitBase.maxwellian!(
-        MHT,
-        MBT,
-        MRT,
-        MHR,
-        MBR,
-        MRR,
-        KS.vs.u,
-        prim,
-        KS.gas.K,
-        KS.gas.Kr,
-    )
+    KitBase.maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, KS.vs.u, prim, KS.gas.K, KS.gas.Kr)
     τ_old = KitBase.vhs_collision_time(prim[1:end-1], KS.gas.μᵣ, KS.gas.ω)
     Zr = KitBase.rykov_zr(1.0 / prim[4], KS.gas.T₀, KS.gas.Z₀)
     Er0_old = 0.5 * sum(@. KS.vs.weights * ((1.0 / Zr) * MRR + (1.0 - 1.0 / Zr) * MRT))
@@ -167,18 +156,7 @@ function step(KS, w, prim, h, b, r, dt)
     prim .= KitBase.conserve_prim(w, KS.gas.K, KS.gas.Kr)
 
     #--- calculate M^{n+1} and tau^{n+1} ---#
-    KitBase.maxwellian!(
-        MHT,
-        MBT,
-        MRT,
-        MHR,
-        MBR,
-        MRR,
-        KS.vs.u,
-        prim,
-        KS.gas.K,
-        KS.gas.Kr,
-    )
+    KitBase.maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, KS.vs.u, prim, KS.gas.K, KS.gas.Kr)
 
     SHT = similar(h)
     SBT = similar(b)

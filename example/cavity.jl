@@ -128,8 +128,7 @@ end
             ks.ps.dy[i, ks.ps.ny],
             -1,
         )
-        a2face[i, ks.ps.ny+1].fw .=
-            KitBase.global_frame(a2face[i, ks.ps.ny+1].fw, 0.0, 1.0)
+        a2face[i, ks.ps.ny+1].fw .= KitBase.global_frame(a2face[i, ks.ps.ny+1].fw, 0.0, 1.0)
     end
 
     # update

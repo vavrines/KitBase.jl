@@ -208,8 +208,7 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
                     if KS.vs isa Nothing
                         abs(prim[2]) + sos, abs(prim[3]) + sos
                     else
-                        max(KS.vs.u1, abs(prim[2])) + sos,
-                        max(KS.vs.v1, abs(prim[3])) + sos
+                        max(KS.vs.u1, abs(prim[2])) + sos, max(KS.vs.v1, abs(prim[3])) + sos
                     end
                 end
                 tmax = max(tmax, umax / dx[i, j] + vmax / dy[i, j])

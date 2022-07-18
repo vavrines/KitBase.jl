@@ -258,8 +258,7 @@ function init_fvm(
 
     elseif KS.set.space[3:4] == "1f"
 
-        ctr =
-            OffsetArray{ControlVolume1F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
+        ctr = OffsetArray{ControlVolume1F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface1F}(undef, nx + 1, ny)
         a2face = Array{Interface1F}(undef, nx, ny + 1)
 
@@ -291,8 +290,7 @@ function init_fvm(
 
     elseif KS.set.space[3:4] == "2f"
 
-        ctr =
-            OffsetArray{ControlVolume2F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
+        ctr = OffsetArray{ControlVolume2F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface2F}(undef, nx + 1, ny)
         a2face = Array{Interface2F}(undef, nx, ny + 1)
 
