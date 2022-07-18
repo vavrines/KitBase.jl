@@ -11,13 +11,14 @@ function update!(
     residual::FN;
     coll = symbolize(KS.set.collision),
     bc = symbolize(KS.set.boundary),
+    fn = step!,
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(sumRes)
 
     @inbounds @threads for i = 1:KS.ps.nx
-        ctr[i].w, sumRes, sumAvg = step!(
+        ctr[i].w, sumRes, sumAvg = fn(
             KS,
             ctr[i],
             face[i],
