@@ -59,8 +59,8 @@ set = KitBase.Setup(
     cfl,
     maxTime,
 )
-pSpace = KitBase.PSpace1D(x0, x1, nx)
-vSpace = KitBase.VSpace1D(umin, umax, nu)
+pSpace = KitBase.ps1D(x0, x1, nx)
+vSpace = KitBase.vs1D(umin, umax, nu)
 gas = KitBase.DiatomicGas(
     knudsen,
     mach,
@@ -138,7 +138,7 @@ r = deepcopy(r0)
 function step(KS, w, prim, h, b, r, dt)
 
     w_old = deepcopy(w)
-    q = KitBase.heat_flux(h, b, r, prim, KS.vSpace.u, KS.vSpace.weights)
+    q = KitBase.heat_flux(h, b, r, prim, KS.vs.u, KS.vs.weights)
 
     MHT = similar(h)
     MBT = similar(b)
@@ -154,14 +154,14 @@ function step(KS, w, prim, h, b, r, dt)
         MHR,
         MBR,
         MRR,
-        KS.vSpace.u,
+        KS.vs.u,
         prim,
         KS.gas.K,
         KS.gas.Kr,
     )
     τ_old = KitBase.vhs_collision_time(prim[1:end-1], KS.gas.μᵣ, KS.gas.ω)
     Zr = KitBase.rykov_zr(1.0 / prim[4], KS.gas.T₀, KS.gas.Z₀)
-    Er0_old = 0.5 * sum(@. KS.vSpace.weights * ((1.0 / Zr) * MRR + (1.0 - 1.0 / Zr) * MRT))
+    Er0_old = 0.5 * sum(@. KS.vs.weights * ((1.0 / Zr) * MRR + (1.0 - 1.0 / Zr) * MRT))
 
     w[4] += dt * (Er0_old - w_old[4]) / τ_old
     prim .= KitBase.conserve_prim(w, KS.gas.K, KS.gas.Kr)
@@ -174,7 +174,7 @@ function step(KS, w, prim, h, b, r, dt)
         MHR,
         MBR,
         MRR,
-        KS.vSpace.u,
+        KS.vs.u,
         prim,
         KS.gas.K,
         KS.gas.Kr,
@@ -193,7 +193,7 @@ function step(KS, w, prim, h, b, r, dt)
         SHR,
         SBR,
         SRR,
-        KS.vSpace.u,
+        KS.vs.u,
         MHT,
         MBT,
         MRT,

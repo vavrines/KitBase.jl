@@ -6,8 +6,8 @@ plot_line(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plot i
 ) where {X<:AbstractSolverSet,Y<:AA{<:AbstractControlVolume,1}}
 
     # solution
-    pltx = KS.pSpace.x[1:KS.pSpace.nx]
-    plty = zeros(KS.pSpace.nx, 3)
+    pltx = KS.ps.x[1:KS.ps.nx]
+    plty = zeros(KS.ps.nx, 3)
     for i in eachindex(pltx)
         for j = 1:2
             plty[i, j] = ctr[i].prim[j]
@@ -54,7 +54,7 @@ plot_contour(args...; kwargs...) = @info "plot_line is deprecated, use Plots.plo
     pltx = KS.ps.x[1:KS.ps.nx, 1]
     plty = KS.ps.y[1, 1:KS.ps.ny]
 
-    sol = zeros(size(ctr[1].w, 1), KS.pSpace.nx, KS.pSpace.ny)
+    sol = zeros(size(ctr[1].w, 1), KS.ps.nx, KS.ps.ny)
     for i in axes(sol, 2)
         for j in axes(sol, 3)
             for k = 1:size(sol, 1)-1

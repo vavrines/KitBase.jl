@@ -20,7 +20,7 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        j = KS.pSpace.nx
+        j = KS.ps.nx
         if KS.set.nSpecies == 1
             fn(
                 ctr[i].w,
@@ -53,7 +53,7 @@ function update_boundary!(
     end
 
     if bc[2] != :fix
-        j = KS.pSpace.nx
+        j = KS.ps.nx
         if KS.set.nSpecies == 1
             fn(
                 ctr[j].w,
@@ -87,7 +87,7 @@ function update_boundary!(
 
     @. residual += sqrt((resL + resR) * 2) / (avgL + avgR + 1.e-7)
 
-    ng = 1 - first(eachindex(KS.pSpace.x))
+    ng = 1 - first(eachindex(KS.ps.x))
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
@@ -134,8 +134,8 @@ function update_boundary!(
                 face[i].ff,
                 face[i+1].fw,
                 face[i+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -155,10 +155,10 @@ function update_boundary!(
                 face[i].ff,
                 face[i+1].fw,
                 face[i+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.w,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.w,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -173,7 +173,7 @@ function update_boundary!(
     end
 
     if bc[2] != :fix
-        j = KS.pSpace.nx
+        j = KS.ps.nx
 
         if KS.set.space[5:6] == "1v"
             fn(
@@ -184,8 +184,8 @@ function update_boundary!(
                 face[j].ff,
                 face[j+1].fw,
                 face[j+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -205,10 +205,10 @@ function update_boundary!(
                 face[j].ff,
                 face[j+1].fw,
                 face[j+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.w,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.w,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -226,7 +226,7 @@ function update_boundary!(
         residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
     end
 
-    ng = 1 - first(eachindex(KS.pSpace.x))
+    ng = 1 - first(eachindex(KS.ps.x))
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
@@ -274,8 +274,8 @@ function update_boundary!(
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
@@ -299,8 +299,8 @@ function update_boundary!(
                 face[i+1].fw,
                 face[i+1].fh,
                 face[i+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -319,7 +319,7 @@ function update_boundary!(
     end
 
     if bc[2] != :fix
-        j = KS.pSpace.nx
+        j = KS.ps.nx
         if KS.set.nSpecies == 1
             fn(
                 ctr[j].w,
@@ -332,8 +332,8 @@ function update_boundary!(
                 face[j+1].fw,
                 face[j+1].fh,
                 face[j+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
@@ -357,8 +357,8 @@ function update_boundary!(
                 face[j+1].fw,
                 face[j+1].fh,
                 face[j+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -380,7 +380,7 @@ function update_boundary!(
         residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
     end
 
-    ng = 1 - first(eachindex(KS.pSpace.x))
+    ng = 1 - first(eachindex(KS.ps.x))
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
@@ -421,7 +421,7 @@ function update_boundary!(
     end
 
     if bc[2] != :fix
-        j = KS.pSpace.nx
+        j = KS.ps.nx
         fn(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
@@ -429,7 +429,7 @@ function update_boundary!(
         residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
     end
 
-    ng = 1 - first(eachindex(KS.pSpace.x))
+    ng = 1 - first(eachindex(KS.ps.x))
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
@@ -470,7 +470,7 @@ function update_boundary!(
     end
 
     if bc[2] != :fix
-        j = KS.pSpace.nx
+        j = KS.ps.nx
         fn(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
 
@@ -478,7 +478,7 @@ function update_boundary!(
         residual[i] += sqrt((resL[i] + resR[i]) * 2) / (avgL[i] + avgR[i] + 1.e-7)
     end
 
-    ng = 1 - first(eachindex(KS.pSpace.x))
+    ng = 1 - first(eachindex(KS.ps.x))
     if bc[1] == :period
         bc_period!(ctr, ng)
     elseif bc[1] == :extra
@@ -603,7 +603,7 @@ function update_boundary!(
             (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
     end
 
-    ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
+    ngx = 1 - first(eachindex(KS.ps.x[:, 1]))
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] in (:extra, :mirror)
@@ -615,7 +615,7 @@ function update_boundary!(
         bcfun(ctr, ngx; dirc = :xr)
     end
 
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    ngy = 1 - first(eachindex(KS.ps.y[1, :]))
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] in (:extra, :mirror)
@@ -674,9 +674,9 @@ function update_boundary!(
                 a2face[1, j].ff,
                 a2face[1, j+1].fw,
                 a2face[1, j+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -703,9 +703,9 @@ function update_boundary!(
                 a2face[nx, j].ff,
                 a2face[nx, j+1].fw,
                 a2face[nx, j+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -732,9 +732,9 @@ function update_boundary!(
                 a2face[i, 1].ff,
                 a2face[i, 2].fw,
                 a2face[i, 2].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -761,9 +761,9 @@ function update_boundary!(
                 a2face[i, ny].ff,
                 a2face[i, ny+1].fw,
                 a2face[i, ny+1].ff,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.γ,
                 KS.gas.μᵣ,
                 KS.gas.ω,
@@ -783,7 +783,7 @@ function update_boundary!(
             (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
     end
 
-    ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
+    ngx = 1 - first(eachindex(KS.ps.x[:, 1]))
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] in (:extra, :mirror)
@@ -795,7 +795,7 @@ function update_boundary!(
         bcfun(ctr, ngx; dirc = :xr)
     end
 
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    ngy = 1 - first(eachindex(KS.ps.y[1, :]))
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] in (:extra, :mirror)
@@ -859,9 +859,9 @@ function update_boundary!(
                 a2face[1, j+1].fw,
                 a2face[1, j+1].fh,
                 a2face[1, j+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
@@ -894,9 +894,9 @@ function update_boundary!(
                 a2face[nx, j+1].fw,
                 a2face[nx, j+1].fh,
                 a2face[nx, j+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
@@ -929,9 +929,9 @@ function update_boundary!(
                 a2face[i, 2].fw,
                 a2face[i, 2].fh,
                 a2face[i, 2].fb,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
@@ -964,9 +964,9 @@ function update_boundary!(
                 a2face[i, ny+1].fw,
                 a2face[i, ny+1].fh,
                 a2face[i, ny+1].fb,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.μᵣ,
@@ -987,7 +987,7 @@ function update_boundary!(
             (avgL[i] + avgR[i] + avgU[i] + avgD[i] + 1.e-7)
     end
 
-    ngx = 1 - first(eachindex(KS.pSpace.x[:, 1]))
+    ngx = 1 - first(eachindex(KS.ps.x[:, 1]))
     if bc[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
     elseif bc[1] in (:extra, :mirror)
@@ -999,7 +999,7 @@ function update_boundary!(
         bcfun(ctr, ngx; dirc = :xr)
     end
 
-    ngy = 1 - first(eachindex(KS.pSpace.y[1, :]))
+    ngy = 1 - first(eachindex(KS.ps.y[1, :]))
     if bc[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
     elseif bc[3] in (:extra, :mirror)

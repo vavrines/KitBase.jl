@@ -12,12 +12,12 @@ function evolve!(
     bc = symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
-    if firstindex(KS.pSpace.x) < 1
+    if firstindex(KS.ps.x) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx + 1
+        idx1 = KS.ps.nx + 1
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     end
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
@@ -63,12 +63,12 @@ function evolve!(
     bc = symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
 
-    if firstindex(KS.pSpace.x) < 1
+    if firstindex(KS.ps.x) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx + 1
+        idx1 = KS.ps.nx + 1
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     end
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
@@ -98,12 +98,12 @@ function evolve!(
     bc = symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
 
-    if firstindex(KS.pSpace.x) < 1
+    if firstindex(KS.ps.x) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx + 1
+        idx1 = KS.ps.nx + 1
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     end
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
@@ -129,8 +129,8 @@ function evolve!(
             KS.ib.bc(KS.ps.x0, KS.ib.p),
             ctr[1].h,
             ctr[1].b,
-            KS.vSpace.u,
-            KS.vSpace.weights,
+            KS.vs.u,
+            KS.vs.weights,
             KS.gas.inK,
             dt,
             1,
@@ -138,14 +138,14 @@ function evolve!(
     end
     if bcs[2] == :maxwell
         flux_boundary_maxwell!(
-            face[KS.pSpace.nx+1].fw,
-            face[KS.pSpace.nx+1].fh,
-            face[KS.pSpace.nx+1].fb,
+            face[KS.ps.nx+1].fw,
+            face[KS.ps.nx+1].fh,
+            face[KS.ps.nx+1].fb,
             KS.ib.bc(KS.ps.x1, KS.ib.p),
-            ctr[KS.pSpace.nx].h,
-            ctr[KS.pSpace.nx].b,
-            KS.vSpace.u,
-            KS.vSpace.weights,
+            ctr[KS.ps.nx].h,
+            ctr[KS.ps.nx].b,
+            KS.vs.u,
+            KS.vs.weights,
             KS.gas.inK,
             dt,
             -1,
@@ -165,12 +165,12 @@ function evolve!(
     isMHD = false::Bool,
 ) where {TC<:Union{ControlVolume4F,ControlVolume1D4F},TF<:Union{Interface4F,Interface1D4F}}
 
-    if firstindex(KS.pSpace.x) < 1
+    if firstindex(KS.ps.x) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx + 1
+        idx1 = KS.ps.nx + 1
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     end
 
     if mode == :kcu
@@ -191,8 +191,8 @@ function evolve!(
                 ctr[i].h1 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh1,
                 ctr[i].h2 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh2,
                 ctr[i].h3 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh3,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -220,8 +220,8 @@ function evolve!(
                 ctr[i].h1 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh1,
                 ctr[i].h2 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh2,
                 ctr[i].h3 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh3,
-                KS.vSpace.u,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.weights,
                 dt,
                 ctr[i-1].sh0,
                 ctr[i-1].sh1,
@@ -278,12 +278,12 @@ function evolve!(
     isMHD = false::Bool,
 ) where {TC<:Union{ControlVolume3F,ControlVolume1D3F},TF<:Union{Interface3F,Interface1D3F}}
 
-    if firstindex(KS.pSpace.x) < 1
+    if firstindex(KS.ps.x) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx + 1
+        idx1 = KS.ps.nx + 1
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     end
 
     if mode == :kcu
@@ -301,9 +301,9 @@ function evolve!(
                 ctr[i].h0 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh0,
                 ctr[i].h1 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh1,
                 ctr[i].h2 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh2,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -329,9 +329,9 @@ function evolve!(
                 ctr[i].h0 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh0,
                 ctr[i].h1 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh1,
                 ctr[i].h2 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh2,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 dt,
                 1.0,
                 ctr[i-1].sh0,
@@ -357,9 +357,9 @@ function evolve!(
                 ctr[i].h0 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh0,
                 ctr[i].h1 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh1,
                 ctr[i].h2 .- 0.5 .* KS.ps.dx[i] .* ctr[i].sh2,
-                KS.vSpace.u,
-                KS.vSpace.v,
-                KS.vSpace.weights,
+                KS.vs.u,
+                KS.vs.v,
+                KS.vs.weights,
                 KS.gas.K,
                 KS.gas.γ,
                 KS.gas.mi,
@@ -431,14 +431,14 @@ function evolve!(
         end
     end
 
-    if firstindex(KS.pSpace.x[:, 1]) < 1
+    if firstindex(KS.ps.x[:, 1]) < 1
         idx0 = 1
         idx1 = nx + 1
     else
         idx0 = 2
         idx1 = nx
     end
-    if firstindex(KS.pSpace.y[1, :]) < 1
+    if firstindex(KS.ps.y[1, :]) < 1
         idy0 = 1
         idy1 = ny + 1
     else
@@ -504,14 +504,14 @@ function evolve!(
         end
     end
 
-    if firstindex(KS.pSpace.x[:, 1]) < 1
+    if firstindex(KS.ps.x[:, 1]) < 1
         idx0 = 1
         idx1 = nx + 1
     else
         idx0 = 2
         idx1 = nx
     end
-    if firstindex(KS.pSpace.y[1, :]) < 1
+    if firstindex(KS.ps.y[1, :]) < 1
         idy0 = 1
         idy1 = ny + 1
     else
@@ -562,8 +562,8 @@ function evolve!(
         @inbounds Threads.@threads for j = 1:ny
             n = -KS.ps.n[1, j, 4]
             len = KS.ps.areas[1, j, 4]
-            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+            vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
+            vt = KS.vs.v .* n[1] .- KS.vs.u .* n[2]
             xc = (KS.ps.vertices[1, j, 1, 1] + KS.ps.vertices[1, j, 4, 1]) / 2
             yc = (KS.ps.vertices[1, j, 1, 2] + KS.ps.vertices[1, j, 4, 2]) / 2
             bcL = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
@@ -575,7 +575,7 @@ function evolve!(
                 ctr[1, j].f,
                 vn,
                 vt,
-                KS.vSpace.weights,
+                KS.vs.weights,
                 dt,
                 len,
                 1,
@@ -587,8 +587,8 @@ function evolve!(
         @inbounds Threads.@threads for j = 1:ny
             n = KS.ps.n[nx, j, 2]
             len = KS.ps.areas[nx, j, 2]
-            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+            vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
+            vt = KS.vs.v .* n[1] .- KS.vs.u .* n[2]
             xc = (KS.ps.vertices[nx, j, 2, 1] + KS.ps.vertices[nx, j, 3, 1]) / 2
             yc = (KS.ps.vertices[nx, j, 2, 2] + KS.ps.vertices[nx, j, 3, 2]) / 2
             bcR = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
@@ -600,7 +600,7 @@ function evolve!(
                 ctr[nx, j].f,
                 vn,
                 vt,
-                KS.vSpace.weights,
+                KS.vs.weights,
                 dt,
                 len,
                 -1,
@@ -612,8 +612,8 @@ function evolve!(
         @inbounds Threads.@threads for i = 1:nx
             n = -KS.ps.n[i, 1, 1]
             len = KS.ps.areas[i, 1, 1]
-            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+            vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
+            vt = KS.vs.v .* n[1] .- KS.vs.u .* n[2]
             xc = (KS.ps.vertices[i, 1, 1, 1] + KS.ps.vertices[i, 1, 2, 1]) / 2
             yc = (KS.ps.vertices[i, 1, 1, 2] + KS.ps.vertices[i, 1, 2, 2]) / 2
             bcD = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
@@ -625,7 +625,7 @@ function evolve!(
                 ctr[i, 1].f,
                 vn,
                 vt,
-                KS.vSpace.weights,
+                KS.vs.weights,
                 dt,
                 len,
                 1,
@@ -637,8 +637,8 @@ function evolve!(
         @inbounds Threads.@threads for i = 1:nx
             n = KS.ps.n[i, ny, 3]
             len = KS.ps.areas[i, ny, 3]
-            vn = KS.vSpace.u .* n[1] .+ KS.vSpace.v .* n[2]
-            vt = KS.vSpace.v .* n[1] .- KS.vSpace.u .* n[2]
+            vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
+            vt = KS.vs.v .* n[1] .- KS.vs.u .* n[2]
             xc = (KS.ps.vertices[i, ny, 3, 1] + KS.ps.vertices[i, ny, 4, 1]) / 2
             yc = (KS.ps.vertices[i, ny, 3, 2] + KS.ps.vertices[i, ny, 4, 2]) / 2
             bcU = local_frame(KS.ib.bc(xc, yc, KS.ib.p), n[1], n[2])
@@ -650,7 +650,7 @@ function evolve!(
                 ctr[i, ny].f,
                 vn,
                 vt,
-                KS.vSpace.weights,
+                KS.vs.weights,
                 dt,
                 len,
                 -1,
@@ -679,14 +679,14 @@ function evolve!(
         end
     end
 
-    if firstindex(KS.pSpace.x[:, 1]) < 1
+    if firstindex(KS.ps.x[:, 1]) < 1
         idx0 = 1
         idx1 = nx + 1
     else
         idx0 = 2
         idx1 = nx
     end
-    if firstindex(KS.pSpace.y[1, :]) < 1
+    if firstindex(KS.ps.y[1, :]) < 1
         idy0 = 1
         idy1 = ny + 1
     else
@@ -750,8 +750,8 @@ function evolve!(
     if mode == :hll
 
         @inbounds Threads.@threads for i in eachindex(face)
-            vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
-            vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+            vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
+            vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
 
             if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
                 flux_hll!(
@@ -831,8 +831,8 @@ function evolve!(
     if mode == :kfvs
 
         @inbounds Threads.@threads for i in eachindex(face)
-            vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
-            vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+            vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
+            vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
 
             if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
                 flux_kfvs!(
@@ -850,7 +850,7 @@ function evolve!(
                     (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
                     vn,
                     vt,
-                    KS.vSpace.weights,
+                    KS.vs.weights,
                     dt,
                     face[i].len,
                 )
@@ -880,7 +880,7 @@ function evolve!(
                         ),
                         vn,
                         vt,
-                        KS.vSpace.weights,
+                        KS.vs.weights,
                         KS.gas.K,
                         dt,
                         face[i].len,
@@ -908,8 +908,8 @@ function evolve!(
     if mode == :kfvs
 
         @inbounds Threads.@threads for i in eachindex(face)
-            vn = KS.vSpace.u .* face[i].n[1] .+ KS.vSpace.v .* face[i].n[2]
-            vt = KS.vSpace.v .* face[i].n[1] .- KS.vSpace.u .* face[i].n[2]
+            vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
+            vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
 
             if !(-1 in KS.ps.faceCells[i, :]) # exclude boundary face
                 flux_kfvs!(
@@ -938,7 +938,7 @@ function evolve!(
                     (KS.ps.faceCenter[i, 2] - KS.ps.cellCenter[KS.ps.faceCells[i, 2], 2]),
                     vn,
                     vt,
-                    KS.vSpace.weights,
+                    KS.vs.weights,
                     dt,
                     face[i].len,
                 )
@@ -978,7 +978,7 @@ function evolve!(
                         ),
                         vn,
                         vt,
-                        KS.vSpace.weights,
+                        KS.vs.weights,
                         KS.gas.K,
                         dt,
                         face[i].len,

@@ -1158,10 +1158,10 @@ function step!(
         _h2 = @view cell.h2[:, j]
         _h3 = @view cell.h3[:, j]
 
-        shift_pdf!(_h0, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
-        shift_pdf!(_h1, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
-        shift_pdf!(_h2, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
-        shift_pdf!(_h3, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
+        shift_pdf!(_h0, cell.lorenz[1, j], KS.vs.du[1, j], dt)
+        shift_pdf!(_h1, cell.lorenz[1, j], KS.vs.du[1, j], dt)
+        shift_pdf!(_h2, cell.lorenz[1, j], KS.vs.du[1, j], dt)
+        shift_pdf!(_h3, cell.lorenz[1, j], KS.vs.du[1, j], dt)
     end
 
     # force -> f^{n+1} : step 2
@@ -1199,7 +1199,7 @@ function step!(
             KS.gas.Kn[1],
         )
     end
-    g = mixture_maxwellian(KS.vSpace.u, prim)
+    g = mixture_maxwellian(KS.vs.u, prim)
 
     # BGK term
     Mu, Mv, Mw, MuL, MuR = mixture_gauss_moments(prim, KS.gas.K)
@@ -1393,9 +1393,9 @@ function step!(
             _h1 = @view cell.h1[:, i, j]
             _h2 = @view cell.h2[:, i, j]
 
-            shift_pdf!(_h0, cell.lorenz[1, j], KS.vSpace.du[1, i, j], dt)
-            shift_pdf!(_h1, cell.lorenz[1, j], KS.vSpace.du[1, i, j], dt)
-            shift_pdf!(_h2, cell.lorenz[1, j], KS.vSpace.du[1, i, j], dt)
+            shift_pdf!(_h0, cell.lorenz[1, j], KS.vs.du[1, i, j], dt)
+            shift_pdf!(_h1, cell.lorenz[1, j], KS.vs.du[1, i, j], dt)
+            shift_pdf!(_h2, cell.lorenz[1, j], KS.vs.du[1, i, j], dt)
         end
     end
 
@@ -1405,9 +1405,9 @@ function step!(
             _h1 = @view cell.h1[i, :, j]
             _h2 = @view cell.h2[i, :, j]
 
-            shift_pdf!(_h0, cell.lorenz[2, j], KS.vSpace.dv[i, 1, j], dt)
-            shift_pdf!(_h1, cell.lorenz[2, j], KS.vSpace.dv[i, 1, j], dt)
-            shift_pdf!(_h2, cell.lorenz[2, j], KS.vSpace.dv[i, 1, j], dt)
+            shift_pdf!(_h0, cell.lorenz[2, j], KS.vs.dv[i, 1, j], dt)
+            shift_pdf!(_h1, cell.lorenz[2, j], KS.vs.dv[i, 1, j], dt)
+            shift_pdf!(_h2, cell.lorenz[2, j], KS.vs.dv[i, 1, j], dt)
         end
     end
 
@@ -1444,11 +1444,11 @@ function step!(
         )
     end
 
-    H0 = similar(KS.vSpace.u)
+    H0 = similar(KS.vs.u)
     H1 = similar(H0)
     H2 = similar(H0)
     for k in axes(H0, 3)
-        H0[:, :, k] .= maxwellian(KS.vSpace.u[:, :, k], KS.vSpace.v[:, :, k], prim[:, k])
+        H0[:, :, k] .= maxwellian(KS.vs.u[:, :, k], KS.vs.v[:, :, k], prim[:, k])
         @. H1[:, :, k] = H0[:, :, k] * prim[4, k]
         @. H2[:, :, k] = H0[:, :, k] * (prim[4, k]^2 + 1.0 / (2.0 * prim[5, k]))
     end

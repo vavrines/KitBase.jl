@@ -34,7 +34,7 @@ begin
     ny = 50#100
     dx = (x1 - x0) / nx
     dy = (y1 - y0) / ny
-    pspace = KitBase.PSpace2D(x0, x1, nx, y0, y1, ny)
+    pspace = KitBase.ps2D(x0, x1, nx, y0, y1, ny)
 
     # time
     tEnd = 1.0
@@ -46,7 +46,7 @@ begin
     points, triangulation = KitBase.octa_quadrature(quadratureorder)
     weights = KitBase.quadrature_weights(points, triangulation)
     nq = size(points, 1)
-    vspace = KitBase.VSpace1D{Float64,Int64,typeof(points),typeof(weights)}(
+    vspace = KitBase.vs1D{Float64,Int64,typeof(points),typeof(weights)}(
         -1.0,
         1.0,
         nq,

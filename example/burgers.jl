@@ -15,7 +15,7 @@ set = KitBase.Setup(
     1.0, # simulation time
 )
 
-pSpace = KitBase.PSpace1D(0.0, 1.0, 100, 1)
+pSpace = KitBase.ps1D(0.0, 1.0, 100, 1)
 vSpace = nothing
 property = KitBase.Scalar(0, 1e-6)
 
@@ -24,14 +24,14 @@ prim0 = KitBase.conserve_prim(w0)
 ib = nothing
 ks = KitBase.SolverSet(set, pSpace, vSpace, property, ib, @__DIR__)
 
-ctr = OffsetArray{KitBase.ControlVolume1D}(undef, eachindex(ks.pSpace.x))
+ctr = OffsetArray{KitBase.ControlVolume1D}(undef, eachindex(ks.ps.x))
 for i in eachindex(ctr)
-    u = sin(2π * ks.pSpace.x[i])
+    u = sin(2π * ks.ps.x[i])
     ctr[i] = KitBase.ControlVolume1D(u, KitBase.conserve_prim(u))
 end
 
-face = Array{KitBase.Interface1D}(undef, ks.pSpace.nx + 1)
-for i = 1:ks.pSpace.nx+1
+face = Array{KitBase.Interface1D}(undef, ks.ps.nx + 1)
+for i = 1:ks.ps.nx+1
     face[i] = KitBase.Interface1D(0.0)
 end
 
@@ -53,18 +53,18 @@ anim = @animate for iter = 1:nt
         )
     end
 
-    for i = 1:ks.pSpace.nx
+    for i = 1:ks.ps.nx
         ctr[i].w += (face[i].fw - face[i+1].fw) / ks.ps.dx[i]
         ctr[i].prim .= KitBase.conserve_prim(ctr[i].w)
     end
-    ctr[0].w = ctr[ks.pSpace.nx].w
-    ctr[ks.pSpace.nx+1].w = ctr[1].w
+    ctr[0].w = ctr[ks.ps.nx].w
+    ctr[ks.ps.nx+1].w = ctr[1].w
 
-    sol = zeros(ks.pSpace.nx)
-    for i = 1:ks.pSpace.nx
+    sol = zeros(ks.ps.nx)
+    for i = 1:ks.ps.nx
         sol[i] = ctr[i].w
     end
-    plot(ks.pSpace.x[1:ks.pSpace.nx], sol, xlabel = "x", label = "u", ylims = [-1, 1])
+    plot(ks.ps.x[1:ks.ps.nx], sol, xlabel = "x", label = "u", ylims = [-1, 1])
 end
 
 gif(anim, "burgers.gif", fps = 45)

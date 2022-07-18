@@ -21,7 +21,7 @@ function initialize(configfilename::AbstractString)
         ks = D["set"]
         ctr = D["ctr"]
         t = D["t"]
-        face = init_fvm(ks, ks.pSpace)[2]
+        face = init_fvm(ks, ks.ps)[2]
 
         return ks, ctr, face, t
     else
@@ -85,8 +85,8 @@ function init_fvm(
 
     if KS.set.space[3:4] == "0f"
 
-        ctr = OffsetArray{ControlVolume}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface}(undef, KS.pSpace.nx + 1)
+        ctr = OffsetArray{ControlVolume}(undef, eachindex(KS.ps.x))
+        face = Array{Interface}(undef, KS.ps.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
@@ -100,15 +100,15 @@ function init_fvm(
             ctr[i] = ControlVolume(funcar(w), funcar(prim), 1)
         end
 
-        for i = 1:KS.pSpace.nx+1
+        for i = 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface(fw, 1)
         end
 
     elseif KS.set.space[3:4] == "1f"
 
-        ctr = OffsetArray{ControlVolume1F}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface1F}(undef, KS.pSpace.nx + 1)
+        ctr = OffsetArray{ControlVolume1F}(undef, eachindex(KS.ps.x))
+        face = Array{Interface1F}(undef, KS.ps.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
@@ -117,7 +117,7 @@ function init_fvm(
             ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(f), 1)
         end
 
-        for i = 1:KS.pSpace.nx+1
+        for i = 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface(fw, ff, 1)
@@ -125,8 +125,8 @@ function init_fvm(
 
     elseif KS.set.space[3:4] == "2f"
 
-        ctr = OffsetArray{ControlVolume2F}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface2F}(undef, KS.pSpace.nx + 1)
+        ctr = OffsetArray{ControlVolume2F}(undef, eachindex(KS.ps.x))
+        face = Array{Interface2F}(undef, KS.ps.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
@@ -135,7 +135,7 @@ function init_fvm(
             ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(h), funcar(b), 1)
         end
 
-        for i = 1:KS.pSpace.nx+1
+        for i = 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
             face[i] = Interface(fw, ff, ff, 1)
@@ -143,8 +143,8 @@ function init_fvm(
 
     elseif KS.set.space[3:4] == "3f"
 
-        ctr = OffsetArray{ControlVolume1D3F}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface1D3F}(undef, KS.pSpace.nx + 1)
+        ctr = OffsetArray{ControlVolume1D3F}(undef, eachindex(KS.ps.x))
+        face = Array{Interface1D3F}(undef, KS.ps.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
@@ -166,7 +166,7 @@ function init_fvm(
             )
         end
 
-        for i = 1:KS.pSpace.nx+1
+        for i = 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
             fe = deepcopy(KS.ib.fE(KS.ps.x[1], KS.ib.p)) |> funcar
@@ -175,8 +175,8 @@ function init_fvm(
 
     elseif KS.set.space[3:4] == "4f"
 
-        ctr = OffsetArray{ControlVolume1D4F}(undef, eachindex(KS.pSpace.x))
-        face = Array{Interface1D4F}(undef, KS.pSpace.nx + 1)
+        ctr = OffsetArray{ControlVolume1D4F}(undef, eachindex(KS.ps.x))
+        face = Array{Interface1D4F}(undef, KS.ps.nx + 1)
 
         for i in eachindex(ctr)
             w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
@@ -199,7 +199,7 @@ function init_fvm(
             )
         end
 
-        for i = 1:KS.pSpace.nx+1
+        for i = 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
             fe = deepcopy(KS.ib.fE(KS.ps.x[1], KS.ib.p)) |> funcar
@@ -232,7 +232,7 @@ function init_fvm(
 
     if KS.set.space[3:4] == "0f"
 
-        ctr = OffsetArray{ControlVolume}(undef, axes(KS.pSpace.x, 1), axes(KS.pSpace.y, 2))
+        ctr = OffsetArray{ControlVolume}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface}(undef, nx + 1, ny)
         a2face = Array{Interface}(undef, nx, ny + 1)
 
@@ -259,7 +259,7 @@ function init_fvm(
     elseif KS.set.space[3:4] == "1f"
 
         ctr =
-            OffsetArray{ControlVolume1F}(undef, axes(KS.pSpace.x, 1), axes(KS.pSpace.y, 2))
+            OffsetArray{ControlVolume1F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface1F}(undef, nx + 1, ny)
         a2face = Array{Interface1F}(undef, nx, ny + 1)
 
@@ -292,7 +292,7 @@ function init_fvm(
     elseif KS.set.space[3:4] == "2f"
 
         ctr =
-            OffsetArray{ControlVolume2F}(undef, axes(KS.pSpace.x, 1), axes(KS.pSpace.y, 2))
+            OffsetArray{ControlVolume2F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface2F}(undef, nx + 1, ny)
         a2face = Array{Interface2F}(undef, nx, ny + 1)
 
@@ -703,7 +703,7 @@ function init_ptc_soa!(
             flag[np_tmp] = 0
             if i < 1
                 flag[np_tmp] = 1
-            elseif i > KS.pSpace.nx
+            elseif i > KS.ps.nx
                 flag[np_tmp] = 2
             end
             τ = vhs_collision_time(ctr[i].prim, KS.gas.μᵣ, KS.gas.ω)

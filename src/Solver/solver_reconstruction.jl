@@ -14,12 +14,12 @@ function reconstruct!(
 
     dx = KS.ps.dx
 
-    if first(eachindex(KS.pSpace.x)) < 1
+    if first(eachindex(KS.ps.x)) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx - 1
+        idx1 = KS.ps.nx - 1
     end
 
     if ctr[1].w isa Number
@@ -62,12 +62,12 @@ function reconstruct!(
 
     dx = KS.ps.dx
 
-    if first(eachindex(KS.pSpace.x)) < 1
+    if first(eachindex(KS.ps.x)) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx - 1
+        idx1 = KS.ps.nx - 1
     end
 
     @inbounds Threads.@threads for i = idx0:idx1
@@ -109,12 +109,12 @@ function reconstruct!(
 
     dx = KS.ps.dx
 
-    if first(eachindex(KS.pSpace.x)) < 1
+    if first(eachindex(KS.ps.x)) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx - 1
+        idx1 = KS.ps.nx - 1
     end
 
     @inbounds Threads.@threads for i = idx0:idx1
@@ -165,12 +165,12 @@ function reconstruct!(
 
     dx = KS.ps.dx
 
-    if first(eachindex(KS.pSpace.x)) < 1
+    if first(eachindex(KS.ps.x)) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx - 1
+        idx1 = KS.ps.nx - 1
     end
 
     @inbounds Threads.@threads for i = idx0:idx1
@@ -230,12 +230,12 @@ function reconstruct!(
 
     dx = KS.ps.dx
 
-    if first(eachindex(KS.pSpace.x)) < 1
+    if first(eachindex(KS.ps.x)) < 1
         idx0 = 1
-        idx1 = KS.pSpace.nx
+        idx1 = KS.ps.nx
     else
         idx0 = 2
-        idx1 = KS.pSpace.nx - 1
+        idx1 = KS.ps.nx - 1
     end
 
     @inbounds Threads.@threads for i = idx0:idx1
@@ -728,18 +728,18 @@ function reconstruct!(
 
         s0U = extract_last(ctr[i, ny].sh0, 2, mode = :view)
         reconstruct2!(s0U, ctr[i, ny-1].h0, ctr[i, ny].h0, 0.5 * (dy[i, ny-1] + dy[i, ny]))
-        s1U = extract_last(ctr[i, KS.pSpace.ny].sh1, 2, mode = :view)
+        s1U = extract_last(ctr[i, KS.ps.ny].sh1, 2, mode = :view)
         reconstruct2!(
             s1U,
-            ctr[i, KS.pSpace.ny-1].h1,
-            ctr[i, KS.pSpace.ny].h1,
+            ctr[i, KS.ps.ny-1].h1,
+            ctr[i, KS.ps.ny].h1,
             0.5 * (dy[i, ny-1] + dy[i, ny]),
         )
-        s2U = extract_last(ctr[i, KS.pSpace.ny].sh2, 2, mode = :view)
+        s2U = extract_last(ctr[i, KS.ps.ny].sh2, 2, mode = :view)
         reconstruct2!(
             s2U,
-            ctr[i, KS.pSpace.ny-1].h2,
-            ctr[i, KS.pSpace.ny].h2,
+            ctr[i, KS.ps.ny-1].h2,
+            ctr[i, KS.ps.ny].h2,
             0.5 * (dy[i, ny-1] + dy[i, ny]),
         )
     end
@@ -891,7 +891,7 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
     end
 
     @inbounds Threads.@threads for i in eachindex(ctr)
-        ids = KS.pSpace.cellNeighbors[i, :]
+        ids = KS.ps.cellNeighbors[i, :]
         if -1 in ids
             deleteat!(ids, findall(x -> x == -1, ids))
             id1, id2 = ids[1:2]

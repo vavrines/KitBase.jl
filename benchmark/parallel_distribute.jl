@@ -37,25 +37,25 @@ ib = KitBase.set_ib(vars, set, vSpace, gas)
 folder = @__DIR__
 ks = KitBase.SolverSet(set, pSpace, vSpace, gas, ib, folder)
 
-dt = ks.pSpace.dx[1] / (5.0 + KitBase.sound_speed(ks.ib.primL, ks.gas.γ))
+dt = ks.ps.dx[1] / (5.0 + KitBase.sound_speed(ks.ib.primL, ks.gas.γ))
 nt = floor(ks.set.maxTime / dt) |> Int
 
 #--- parallel ---#
-wp = SharedArray{Float64}((ks.pSpace.nx, 3), init = A -> (A = zeros(ks.pSpace.nx, 3)))
-for i = 1:ks.pSpace.nx
-    if i <= ks.pSpace.nx ÷ 2
+wp = SharedArray{Float64}((ks.ps.nx, 3), init = A -> (A = zeros(ks.ps.nx, 3)))
+for i = 1:ks.ps.nx
+    if i <= ks.ps.nx ÷ 2
         wp[i, :] .= ks.ib.wL
     else
         wp[i, :] .= ks.ib.wR
     end
 end
 fwp = SharedArray{Float64}(
-    (ks.pSpace.nx + 1, 3),
-    init = A -> (A = zeros(ks.pSpace.nx + 1, 3)),
+    (ks.ps.nx + 1, 3),
+    init = A -> (A = zeros(ks.ps.nx + 1, 3)),
 )
 
 @time for iter = 1:nt÷3
-    @sync @distributed for i = 2:ks.pSpace.nx
+    @sync @distributed for i = 2:ks.ps.nx
         flux = @view fwp[i, :]
         KitBase.flux_gks!(
             flux,
@@ -66,32 +66,32 @@ fwp = SharedArray{Float64}(
             ks.gas.μᵣ,
             ks.gas.ω,
             dt,
-            0.5 * ks.pSpace.dx[i-1],
-            0.5 * ks.pSpace.dx[i],
+            0.5 * ks.ps.dx[i-1],
+            0.5 * ks.ps.dx[i],
         )
     end
 
-    @sync @distributed for i = 2:ks.pSpace.nx-1
+    @sync @distributed for i = 2:ks.ps.nx-1
         for j = 1:3
-            wp[i, j] += (fwp[i, j] - fwp[i+1, j]) / ks.pSpace.dx[i]
+            wp[i, j] += (fwp[i, j] - fwp[i+1, j]) / ks.ps.dx[i]
         end
     end
 end
 """~13.620491 seconds (2.26 M allocations: 101.219 MiB, 0.22% gc time)"""
 
 #--- serial ---#
-w = zeros(ks.pSpace.nx, 3)
-for i = 1:ks.pSpace.nx
-    if i <= ks.pSpace.nx ÷ 2
+w = zeros(ks.ps.nx, 3)
+for i = 1:ks.ps.nx
+    if i <= ks.ps.nx ÷ 2
         w[i, :] .= ks.ib.wL
     else
         w[i, :] .= ks.ib.wR
     end
 end
-fw = zeros(ks.pSpace.nx + 1, 3)
+fw = zeros(ks.ps.nx + 1, 3)
 
 @time for iter = 1:nt÷3
-    for i = 2:ks.pSpace.nx
+    for i = 2:ks.ps.nx
         flux = @view fw[i, :]
         KitBase.flux_gks!(
             flux,
@@ -102,14 +102,14 @@ fw = zeros(ks.pSpace.nx + 1, 3)
             ks.gas.μᵣ,
             ks.gas.ω,
             dt,
-            0.5 * ks.pSpace.dx[i-1],
-            0.5 * ks.pSpace.dx[i],
+            0.5 * ks.ps.dx[i-1],
+            0.5 * ks.ps.dx[i],
         )
     end
 
-    for i = 2:ks.pSpace.nx-1
+    for i = 2:ks.ps.nx-1
         for j = 1:3
-            w[i, j] += (fw[i, j] - fw[i+1, j]) / ks.pSpace.dx[i]
+            w[i, j] += (fw[i, j] - fw[i+1, j]) / ks.ps.dx[i]
         end
     end
 end
