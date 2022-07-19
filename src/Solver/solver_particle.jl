@@ -511,18 +511,18 @@ end
 
 
 function stat!(KS, ctr, ptc)
-    @inbounds Threads.@threads for i = 1:KS.ps.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].w .= 0.0
     end
 
-    @inbounds Threads.@threads for i in eachindex(ptc.x)
+    @inbounds @threads for i in eachindex(ptc.x)
         ctr[ptc.idx[i]].w[1] += ptc.m[i] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[2] += ptc.m[i] * ptc.v[i, 1] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[3] += ptc.m[i] * ptc.v[i, 2] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[4] += 0.5 * ptc.m[i] * sum(ptc.v[i, :] .^ 2) / ctr[ptc.idx[i]].dx
     end
 
-    @inbounds Threads.@threads for i = 1:KS.ps.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
     end
 end
@@ -565,7 +565,7 @@ function particle_transport!(
     dt,
 ) where {T1<:AbstractSolverSet,T2<:AA{ControlVolumeParticle1D,1},T3<:AA{Particle1D,1}}
 
-    @inbounds Threads.@threads for i = 1:KS.ps.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].wf .= ctr[i].w
     end
 
@@ -621,7 +621,7 @@ function particle_transport!(
         end
     end
 
-    @inbounds Threads.@threads for i = 1:KS.ps.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].wp .= 0.0
     end
     @inbounds for i = 1:npt
@@ -763,7 +763,7 @@ $(SIGNATURES)
 Duplicate particles: ptc_new -> ptc
 """
 function duplicate!(ptc, ptc_new, n = length(ptc))
-    @inbounds Threads.@threads for i = 1:n
+    @inbounds @threads for i = 1:n
         ptc[i].m = ptc_new[i].m
         ptc[i].x = ptc_new[i].x
         ptc[i].v .= ptc_new[i].v
@@ -776,7 +776,7 @@ function duplicate!(ptc, ptc_new, n = length(ptc))
 end
 
 function duplicate!(ptc::Particle, ptc_tmp, n = length(ptc.x))
-    @inbounds Threads.@threads for i = 1:n
+    @inbounds @threads for i = 1:n
         ptc.m[i] = ptc_tmp.m[i]
         ptc.x[i] = ptc_tmp.x[i]
         ptc.v[i, :] .= ptc_tmp.v[i, :]

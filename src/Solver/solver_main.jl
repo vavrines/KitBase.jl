@@ -136,7 +136,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
 
     if ctr[1].w isa Number
 
-        @inbounds Threads.@threads for i = 1:KS.ps.nx
+        @inbounds @threads for i = 1:KS.ps.nx
             prim = ctr[i].prim
             vmax = abs(ctr[i].prim[2])
             tmax = max(tmax, vmax / KS.ps.dx[i])
@@ -144,7 +144,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
 
     elseif KS.set.nSpecies == 1
 
-        @inbounds Threads.@threads for i = 1:KS.ps.nx
+        @inbounds @threads for i = 1:KS.ps.nx
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
             vmax = begin
@@ -159,7 +159,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
 
     elseif KS.set.nSpecies == 2
 
-        @inbounds Threads.@threads for i = 1:KS.ps.nx
+        @inbounds @threads for i = 1:KS.ps.nx
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
             vmax = begin
@@ -200,7 +200,7 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
 
     if KS.set.nSpecies == 1
 
-        @inbounds Threads.@threads for j = 1:ny
+        @inbounds @threads for j = 1:ny
             for i = 1:nx
                 prim = ctr[i, j].prim
                 sos = sound_speed(prim, KS.gas.γ)
@@ -217,7 +217,7 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
 
     elseif KS.set.nSpecies == 2
 
-        @inbounds Threads.@threads for j = 1:ny
+        @inbounds @threads for j = 1:ny
             for i = 1:nx
                 prim = ctr[i, j].prim
                 sos = sound_speed(prim, KS.gas.γ)
@@ -251,7 +251,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume
 
     if KS.set.nSpecies == 1
 
-        @inbounds Threads.@threads for i in eachindex(ctr)
+        @inbounds @threads for i in eachindex(ctr)
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
             umax = KS.vs.u1 + sos

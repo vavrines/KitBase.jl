@@ -19,7 +19,7 @@ function evolve_boundary!(
     bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
 
     if bcs[1] == :maxwell
-        @inbounds Threads.@threads for j = 1:ny
+        @inbounds @threads for j = 1:ny
             n = -KS.ps.n[1, j, 4]
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[1, j, 1, 1] + KS.ps.vertices[1, j, 4, 1]) / 2
@@ -45,7 +45,7 @@ function evolve_boundary!(
     end
 
     if bcs[2] == :maxwell
-        @inbounds Threads.@threads for j = 1:ny
+        @inbounds @threads for j = 1:ny
             n = KS.ps.n[nx, j, 2]
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[nx, j, 2, 1] + KS.ps.vertices[nx, j, 3, 1]) / 2
@@ -71,7 +71,7 @@ function evolve_boundary!(
     end
 
     if bcs[3] == :maxwell
-        @inbounds Threads.@threads for i = 1:nx
+        @inbounds @threads for i = 1:nx
             n = -KS.ps.n[i, 1, 1]
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[i, 1, 1, 1] + KS.ps.vertices[i, 1, 2, 1]) / 2
@@ -98,7 +98,7 @@ function evolve_boundary!(
     end
 
     if bcs[4] == :maxwell
-        @inbounds Threads.@threads for i = 1:nx
+        @inbounds @threads for i = 1:nx
             n = KS.ps.n[i, ny, 3]
             vn, vt = local_velocity(KS.vs.u, KS.vs.v, n)
             xc = (KS.ps.vertices[i, ny, 3, 1] + KS.ps.vertices[i, ny, 4, 1]) / 2

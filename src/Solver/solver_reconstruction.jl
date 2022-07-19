@@ -23,7 +23,7 @@ function reconstruct!(
     end
 
     if ctr[1].w isa Number
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             ctr[i].sw = reconstruct3(
                 ctr[i-1].w,
                 ctr[i].w,
@@ -34,7 +34,7 @@ function reconstruct!(
             )
         end
     else
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             reconstruct3!(
                 ctr[i].sw,
                 ctr[i-1].w,
@@ -70,7 +70,7 @@ function reconstruct!(
         idx1 = KS.ps.nx - 1
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sw,
             ctr[i-1].w,
@@ -82,7 +82,7 @@ function reconstruct!(
         )
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sf,
             ctr[i-1].f,
@@ -117,7 +117,7 @@ function reconstruct!(
         idx1 = KS.ps.nx - 1
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sw,
             ctr[i-1].w,
@@ -129,7 +129,7 @@ function reconstruct!(
         )
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sh,
             ctr[i-1].h,
@@ -173,7 +173,7 @@ function reconstruct!(
         idx1 = KS.ps.nx - 1
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sw,
             ctr[i-1].w,
@@ -185,7 +185,7 @@ function reconstruct!(
         )
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sh0,
             ctr[i-1].h0,
@@ -238,7 +238,7 @@ function reconstruct!(
         idx1 = KS.ps.nx - 1
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sw,
             ctr[i-1].w,
@@ -250,7 +250,7 @@ function reconstruct!(
         )
     end
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         reconstruct3!(
             ctr[i].sh0,
             ctr[i-1].h0,
@@ -315,7 +315,7 @@ function reconstruct!(
 
     #--- conservative variables ---#
     # boundary
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         swL = extract_last(ctr[1, j].sw, 1, mode = :view)
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
@@ -323,7 +323,7 @@ function reconstruct!(
         reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dy[nx, j]))
     end
 
-    @inbounds Threads.@threads for i = 1:nx
+    @inbounds @threads for i = 1:nx
         swD = extract_last(ctr[i, 1].sw, 2, mode = :view)
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
@@ -332,7 +332,7 @@ function reconstruct!(
     end
 
     # inner
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = 2:nx-1
             sw = extract_last(ctr[i, j].sw, 1, mode = :view)
             reconstruct3!(
@@ -347,7 +347,7 @@ function reconstruct!(
         end
     end
 
-    @inbounds Threads.@threads for j = 2:ny-1
+    @inbounds @threads for j = 2:ny-1
         for i = 1:nx
             sw = extract_last(ctr[i, j].sw, 2, mode = :view)
             reconstruct3!(
@@ -385,7 +385,7 @@ function reconstruct!(
 
     #--- conservative variables ---#
     # boundary
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         swL = extract_last(ctr[1, j].sw, 1, mode = :view)
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
@@ -393,7 +393,7 @@ function reconstruct!(
         reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
-    @inbounds Threads.@threads for i = 1:nx
+    @inbounds @threads for i = 1:nx
         swD = extract_last(ctr[i, 1].sw, 2, mode = :view)
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
@@ -402,7 +402,7 @@ function reconstruct!(
     end
 
     # inner
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = 2:nx-1
             sw = extract_last(ctr[i, j].sw, 1, mode = :view)
             reconstruct3!(
@@ -417,7 +417,7 @@ function reconstruct!(
         end
     end
 
-    @inbounds Threads.@threads for j = 2:ny-1
+    @inbounds @threads for j = 2:ny-1
         for i = 1:nx
             sw = extract_last(ctr[i, j].sw, 2, mode = :view)
             reconstruct3!(
@@ -434,7 +434,7 @@ function reconstruct!(
 
     #--- particle distribution function ---#
     # boundary
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         sfL = extract_last(ctr[1, j].sf, 1, mode = :view)
         reconstruct2!(sfL, ctr[1, j].f, ctr[2, j].f, 0.5 * (dx[1, j] + dx[2, j]))
 
@@ -442,7 +442,7 @@ function reconstruct!(
         reconstruct2!(sfR, ctr[nx-1, j].f, ctr[nx, j].f, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
-    @inbounds Threads.@threads for i = 1:nx
+    @inbounds @threads for i = 1:nx
         sfD = extract_last(ctr[i, 1].sf, 2, mode = :view)
         reconstruct2!(sfD, ctr[i, 1].f, ctr[i, 2].f, 0.5 * (dy[i, 1] + dy[i, 2]))
 
@@ -451,7 +451,7 @@ function reconstruct!(
     end
 
     # inner
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = 2:nx-1
             sf = extract_last(ctr[i, j].sf, 1, mode = :view)
             reconstruct3!(
@@ -466,7 +466,7 @@ function reconstruct!(
         end
     end
 
-    @inbounds Threads.@threads for j = 2:ny-1
+    @inbounds @threads for j = 2:ny-1
         for i = 1:nx
             sf = extract_last(ctr[i, j].sf, 2, mode = :view)
             reconstruct3!(
@@ -504,7 +504,7 @@ function reconstruct!(
 
     #--- conservative variables ---#
     # boundary
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         swL = extract_last(ctr[1, j].sw, 1, mode = :view)
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
@@ -512,7 +512,7 @@ function reconstruct!(
         reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
-    @inbounds Threads.@threads for i = 1:nx
+    @inbounds @threads for i = 1:nx
         swD = extract_last(ctr[i, 1].sw, 2, mode = :view)
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
@@ -521,7 +521,7 @@ function reconstruct!(
     end
 
     # inner
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = 2:nx-1
             sw = extract_last(ctr[i, j].sw, 1, mode = :view)
             reconstruct3!(
@@ -536,7 +536,7 @@ function reconstruct!(
         end
     end
 
-    @inbounds Threads.@threads for j = 2:ny-1
+    @inbounds @threads for j = 2:ny-1
         for i = 1:nx
             sw = extract_last(ctr[i, j].sw, 2, mode = :view)
             reconstruct3!(
@@ -553,7 +553,7 @@ function reconstruct!(
 
     #--- particle distribution function ---#
     # boundary
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         shL = extract_last(ctr[1, j].sh, 1, mode = :view)
         reconstruct2!(shL, ctr[1, j].h, ctr[2, j].h, 0.5 * (dx[1, j] + dx[2, j]))
         sbL = extract_last(ctr[1, j].sb, 1, mode = :view)
@@ -565,7 +565,7 @@ function reconstruct!(
         reconstruct2!(sbR, ctr[nx-1, j].b, ctr[nx, j].b, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
-    @inbounds Threads.@threads for i = 1:nx
+    @inbounds @threads for i = 1:nx
         shD = extract_last(ctr[i, 1].sh, 2, mode = :view)
         reconstruct2!(shD, ctr[i, 1].h, ctr[i, 2].h, 0.5 * (dy[i, 1] + dy[i, 2]))
         sbD = extract_last(ctr[i, 1].sb, 2, mode = :view)
@@ -578,7 +578,7 @@ function reconstruct!(
     end
 
     # inner
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = 2:nx-1
             sh = extract_last(ctr[i, j].sh, 1, mode = :view)
             reconstruct3!(
@@ -604,7 +604,7 @@ function reconstruct!(
         end
     end
 
-    @inbounds Threads.@threads for j = 2:ny-1
+    @inbounds @threads for j = 2:ny-1
         for i = 1:nx
             sh = extract_last(ctr[i, j].sh, 2, mode = :view)
             reconstruct3!(
@@ -653,7 +653,7 @@ function reconstruct!(
 
     #--- macroscopic variables ---#
     # boundary
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         swL = extract_last(ctr[1, j].sw, 1, mode = :view)
         reconstruct2!(swL, ctr[1, j].w, ctr[2, j].w, 0.5 * (dx[1, j] + dx[2, j]))
 
@@ -661,7 +661,7 @@ function reconstruct!(
         reconstruct2!(swR, ctr[nx-1, j].w, ctr[nx, j].w, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
-    @inbounds Threads.@threads for i = 1:nx
+    @inbounds @threads for i = 1:nx
         swD = extract_last(ctr[i, 1].sw, 2, mode = :view)
         reconstruct2!(swD, ctr[i, 1].w, ctr[i, 2].w, 0.5 * (dy[i, 1] + dy[i, 2]))
 
@@ -670,7 +670,7 @@ function reconstruct!(
     end
 
     # inner
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = 2:nx-1
             sw = extract_last(ctr[i, j].sw, 1, mode = :view)
             reconstruct3!(
@@ -685,7 +685,7 @@ function reconstruct!(
         end
     end
 
-    @inbounds Threads.@threads for j = 2:ny-1
+    @inbounds @threads for j = 2:ny-1
         for i = 1:nx
             sw = extract_last(ctr[i, j].sw, 2, mode = :view)
             reconstruct3!(
@@ -702,7 +702,7 @@ function reconstruct!(
 
     #--- particle distribution function ---#
     # boundary
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         s0L = extract_last(ctr[1, j].sh0, 1, mode = :view)
         reconstruct2!(s0L, ctr[1, j].h0, ctr[2, j].h0, 0.5 * (dx[1, j] + dx[2, j]))
         s1L = extract_last(ctr[1, j].sh1, 1, mode = :view)
@@ -718,7 +718,7 @@ function reconstruct!(
         reconstruct2!(s2R, ctr[nx-1, j].h2, ctr[nx, j].h2, 0.5 * (dx[nx-1, j] + dx[nx, j]))
     end
 
-    @inbounds Threads.@threads for i = 1:nx
+    @inbounds @threads for i = 1:nx
         s0D = extract_last(ctr[i, 1].sh0, 2, mode = :view)
         reconstruct2!(s0D, ctr[i, 1].h0, ctr[i, 2].h0, 0.5 * (dy[i, 1] + dy[i, 2]))
         s1D = extract_last(ctr[i, 1].sh1, 2, mode = :view)
@@ -745,7 +745,7 @@ function reconstruct!(
     end
 
     # inner
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = 2:nx-1
             sh0 = extract_last(ctr[i, j].sh0, 1, mode = :view)
             reconstruct3!(
@@ -782,7 +782,7 @@ function reconstruct!(
         end
     end
 
-    @inbounds Threads.@threads for j = 2:ny-1
+    @inbounds @threads for j = 2:ny-1
         for i = 1:nx
             sh0 = extract_last(ctr[i, j].sh0, 2, mode = :view)
             reconstruct3!(
@@ -828,7 +828,7 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
         return
     end
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         ids = ps.cellNeighbors[i, :]
         deleteat!(ids, findall(x -> x == -1, ids))
         id1, id2 = ids[1:2]
@@ -856,7 +856,7 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
         return
     end
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         ids = ps.cellNeighbors[i, :]
         deleteat!(ids, findall(x -> x == -1, ids))
         id1, id2 = ids[1:2]
@@ -890,7 +890,7 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
         return
     end
 
-    @inbounds Threads.@threads for i in eachindex(ctr)
+    @inbounds @threads for i in eachindex(ctr)
         ids = KS.ps.cellNeighbors[i, :]
         if -1 in ids
             deleteat!(ids, findall(x -> x == -1, ids))
