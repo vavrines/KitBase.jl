@@ -22,32 +22,15 @@ function evolve!(
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-    # scalar is treated specially since there is no in-place operation
-    if KS.set.matter == "scalar"
-        @inbounds Threads.@threads for i = idx0:idx1
-            face[i].fw = KitBase.flux_gks(
-                ctr[i-1].w + 0.5 * KS.ps.dx[i-1] * ctr[i-1].sw,
-                ctr[i].w - 0.5 * KS.ps.dx[i] * ctr[i].sw,
-                KS.gas.μᵣ,
-                dt,
-                0.5 * KS.ps.dx[i-1],
-                0.5 * KS.ps.dx[i],
-                KS.gas.a,
-                ctr[i-1].sw,
-                ctr[i].sw,
-            )
-        end
-    else
-        @inbounds Threads.@threads for i = idx0:idx1
-            fn(
-                KS,
-                face[i],
-                ctr[i-1],
-                ctr[i],
-                (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
-                dt,
-            )
-        end
+    @inbounds @threads for i = idx0:idx1
+        fn(
+            KS,
+            face[i],
+            ctr[i-1],
+            ctr[i],
+            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
+            dt,
+        )
     end
 
     return nothing
@@ -73,7 +56,7 @@ function evolve!(
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         fn(
             KS,
             face[i],
@@ -107,7 +90,7 @@ function evolve!(
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-    @inbounds Threads.@threads for i = idx0:idx1
+    @inbounds @threads for i = idx0:idx1
         fn(
             KS,
             face[i],
@@ -172,7 +155,7 @@ function evolve!(
     end
 
     if mode == :kcu
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             flux_kcu!(
                 face[i].fw,
                 face[i].fh0,
@@ -203,7 +186,7 @@ function evolve!(
             )
         end
     elseif mode == :kfvs
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             flux_kfvs!(
                 face[i].fw,
                 face[i].fh0,
@@ -234,7 +217,7 @@ function evolve!(
     end
 
     if isPlasma
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             flux_em!(
                 face[i].femL,
                 face[i].femR,
@@ -285,7 +268,7 @@ function evolve!(
     end
 
     if mode == :kcu
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             flux_kcu!(
                 face[i].fw,
                 face[i].fh0,
@@ -315,7 +298,7 @@ function evolve!(
             )
         end
     elseif mode == :kfvs
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             flux_kfvs!(
                 face[i].fw,
                 face[i].fh0,
@@ -341,7 +324,7 @@ function evolve!(
             )
         end
     elseif mode == :ugks
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             flux_ugks!(
                 face[i].fw,
                 face[i].fh0,
@@ -380,7 +363,7 @@ function evolve!(
     end
 
     if isPlasma
-        @inbounds Threads.@threads for i = idx0:idx1
+        @inbounds @threads for i = idx0:idx1
             flux_em!(
                 face[i].femL,
                 face[i].femR,
@@ -447,7 +430,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     # x direction
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = idx0:idx1
             n = KS.ps.n[i-1, j, 2]
             len = KS.ps.areas[i-1, j, 2]
@@ -464,7 +447,7 @@ function evolve!(
     end
 
     # y direction
-    @inbounds Threads.@threads for j = idy0:idy1
+    @inbounds @threads for j = idy0:idy1
         for i = 1:nx
             n = KS.ps.n[i, j-1, 3]
             len = KS.ps.areas[i, j-1, 3]
@@ -520,7 +503,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     # x direction
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = idx0:idx1
             n = KS.ps.n[i-1, j, 2]
             len = KS.ps.areas[i-1, j, 2]
@@ -537,7 +520,7 @@ function evolve!(
     end
 
     # y direction
-    @inbounds Threads.@threads for j = idy0:idy1
+    @inbounds @threads for j = idy0:idy1
         for i = 1:nx
             n = KS.ps.n[i, j-1, 3]
             len = KS.ps.areas[i, j-1, 3]
@@ -555,7 +538,7 @@ function evolve!(
 
     bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
     if bcs[1] == :maxwell
-        @inbounds Threads.@threads for j = 1:ny
+        @inbounds @threads for j = 1:ny
             n = -KS.ps.n[1, j, 4]
             len = KS.ps.areas[1, j, 4]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -580,7 +563,7 @@ function evolve!(
         end
     end
     if bcs[2] == :maxwell
-        @inbounds Threads.@threads for j = 1:ny
+        @inbounds @threads for j = 1:ny
             n = KS.ps.n[nx, j, 2]
             len = KS.ps.areas[nx, j, 2]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -605,7 +588,7 @@ function evolve!(
         end
     end
     if bcs[3] == :maxwell
-        @inbounds Threads.@threads for i = 1:nx
+        @inbounds @threads for i = 1:nx
             n = -KS.ps.n[i, 1, 1]
             len = KS.ps.areas[i, 1, 1]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -630,7 +613,7 @@ function evolve!(
         end
     end
     if bcs[4] == :maxwell
-        @inbounds Threads.@threads for i = 1:nx
+        @inbounds @threads for i = 1:nx
             n = KS.ps.n[i, ny, 3]
             len = KS.ps.areas[i, ny, 3]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -693,7 +676,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     # x direction
-    @inbounds Threads.@threads for j = 1:ny
+    @inbounds @threads for j = 1:ny
         for i = idx0:idx1
             n = KS.ps.n[i-1, j, 2]
             len = KS.ps.areas[i-1, j, 2]
@@ -710,7 +693,7 @@ function evolve!(
     end
 
     # y direction
-    @inbounds Threads.@threads for j = idy0:idy1
+    @inbounds @threads for j = idy0:idy1
         for i = 1:nx
             n = KS.ps.n[i, j-1, 3]
             len = KS.ps.areas[i, j-1, 3]
@@ -743,7 +726,7 @@ function evolve!(
 
     if mode == :hll
 
-        @inbounds Threads.@threads for i in eachindex(face)
+        @inbounds @threads for i in eachindex(face)
             vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
             vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
 
@@ -824,7 +807,7 @@ function evolve!(
 
     if mode == :kfvs
 
-        @inbounds Threads.@threads for i in eachindex(face)
+        @inbounds @threads for i in eachindex(face)
             vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
             vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
 
@@ -901,7 +884,7 @@ function evolve!(
 
     if mode == :kfvs
 
-        @inbounds Threads.@threads for i in eachindex(face)
+        @inbounds @threads for i in eachindex(face)
             vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
             vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
 
