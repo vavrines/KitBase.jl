@@ -2,6 +2,9 @@
 $(SIGNATURES)
 
 Write solution data
+
+Arguments
+* ``mode``: data format including `:bson`, `:jld`, `:vtk` and `:tec`
 """
 function write_sol(args...; mode = :bson)
     fn = eval(Symbol("write_" * string(mode)))

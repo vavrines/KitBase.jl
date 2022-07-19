@@ -60,6 +60,9 @@ function init_fvm(KS, array = :dynamic_array; structarray = false)
     return init_fvm(KS, KS.ps, array; structarray = structarray)
 end
 
+"""
+$(SIGNATURES)
+"""
 function init_fvm(
     KS,
     ps::AbstractPhysicalSpace1D,
@@ -207,6 +210,9 @@ function init_fvm(
     return ctr |> funcst, face |> funcst
 end
 
+"""
+$(SIGNATURES)
+"""
 function init_fvm(
     KS,
     ps::AbstractPhysicalSpace2D,
@@ -325,6 +331,9 @@ function init_fvm(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = false)
 
     funcar = eval(array)

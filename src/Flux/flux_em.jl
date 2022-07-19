@@ -3,11 +3,13 @@ $(SIGNATURES)
 
 Wave propagation method for Maxwell's equations
 
-* @args: {E, B, ϕ, ψ} in left-left, left, right, and right-right cells
-* @args: eigenmatrix (A -> A+ & A-), eigenvalue (D)
-* @args: full size of left & right cells
-* @args: speed of light (sol)
-* @args: auxiliary parameters (χₑ, νᵦ)
+# Arguments
+
+* ``E, B, ϕ, ψ``: variables in hyperbolic Maxwell's equations
+* ``Ap, An``: eigenmatrix (A -> A+ & A-), eigenvalue (D)
+* ``dxL, dxR``: full size of left & right cells
+* ``sol``: speed of light
+* ``χₑ, νᵦ``: auxiliary parameters
 
 """
 function flux_em!(
@@ -110,13 +112,7 @@ end
 """
 $(SIGNATURES)
 
-Wave propagation method for 2D Maxwell's equations
-
-* @args: {E, B, ϕ, ψ} in left-left, left, right, and right-right cells
-* @args: eigenmatrix (A -> A+ & A-), eigenvalue (D)
-* @args: full size of left & right cells
-* @args: speed of light (sol)
-* @args: auxiliary parameters (χₑ, νᵦ)
+Wave propagation method for 2D Maxwell's equations in x direction
 """
 function flux_emx!(
     femL::X,
@@ -243,13 +239,7 @@ end
 """
 $(SIGNATURES)
 
-Wave propagation method for 2D Maxwell's equations
-
-* @args: {E, B, ϕ, ψ} in left-left, left, right, and right-right cells
-* @args: eigenmatrix (A -> A+ & A-), eigenvalue (D)
-* @args: full size of left & right cells
-* @args: speed of light (sol)
-* @args: auxiliary parameters (χₑ, νᵦ)
+Wave propagation method for 2D Maxwell's equations in y direction
 """
 function flux_emy!(
     femL::AA{<:Real,1},

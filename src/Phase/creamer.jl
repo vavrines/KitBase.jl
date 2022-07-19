@@ -25,10 +25,12 @@ $(SIGNATURES)
 
 Cleaner for all duplicate (non unique) entries of quadrature points and triangles
 
-* @args Points : quadrature points
-* @args Triangles : triangulation
-* @return xyz & triangulation : new quadrature points and triangulation
+# Arguments
+* ``Points``: quadrature points
+* ``Triangles``: triangulation
 
+# Outputs
+* new quadrature points and triangulation
 """
 function unique(Points::AM{T1}, Triangles::AM{T2}) where {T1<:Real,T2<:Integer}
     nPoints = size(Points)[2]

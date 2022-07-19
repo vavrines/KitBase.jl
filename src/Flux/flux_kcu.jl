@@ -6,6 +6,9 @@ Kinetic central-upwind (KCU) flux
 flux_kcu!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
     flux_kcu!(face, ctrL, ctrR, KS.gas, KS.vs, args...)
 
+"""
+$(SIGNATURES)
+"""
 function flux_kcu!(
     face::Interface1F,
     ctrL::T,
@@ -39,6 +42,9 @@ function flux_kcu!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_kcu!(
     face::Interface2F,
     ctrL::T,
@@ -99,6 +105,9 @@ function flux_kcu!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_kcu!(
     face::Interface1F,
     ctrL::T,
@@ -140,6 +149,9 @@ function flux_kcu!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_kcu!(
     face::Interface2F,
     ctrL::T,
@@ -186,6 +198,9 @@ function flux_kcu!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_kcu!(
     face::Interface1F,
     ctrL::T,
@@ -225,16 +240,12 @@ function flux_kcu!(
 
 end
 
-
+# ------------------------------------------------------------
+# Low-level backends
+# ------------------------------------------------------------
 
 """
 $(SIGNATURES)
-
-Kinetic central-upwind (KCU) method
-
-- @args: particle distribution functions and their slopes at left/right sides of interface
-- @args: particle velocity quadrature points and weights
-- @args: time step and cell size
 
 1D1F1V
 """

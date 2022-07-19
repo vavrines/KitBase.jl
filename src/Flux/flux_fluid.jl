@@ -36,10 +36,7 @@ end
 """
 $(SIGNATURES)
 
-HLL flux for the Euler equations
-
-- @args: variables at left & right sides of interface
-- @args: specific heat ratio
+HLL flux
 """
 flux_hll!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
     flux_hll!(face, ctrL, ctrR, KS.gas, args...)
@@ -76,6 +73,9 @@ function flux_hll!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function flux_hll!(fw::AV, wL::T, wR::T, γ, dt, len = 1.0) where {T<:AV}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -112,15 +112,13 @@ Roe's flux with entropy fix
 
 _P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Schemes, Journal of Computational Physics, 43, pp. 357-372._
 (_cf. http://cfdbooks.com/cfdcodes.html_)
-
-* @args primL[1:4] = left state (rhoL, uL, vL, pL)
-* @args primR[1:4] = right state (rhoR, uR, vR, pR)
-* @args γ: specific heat ratio
-* @args n[2]: unit face normal (L -> R)
 """
 flux_roe!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
     flux_roe!(face, ctrL, ctrR, KS.gas, args...)
 
+"""
+$(SIGNATURES)
+"""
 function flux_roe!(
     face::Interface,
     ctrL::T,
@@ -141,6 +139,13 @@ function flux_roe!(
 
 end
 
+"""
+$(SIGNATURES)
+
+# Arguments
+
+* ``n[2]``: unit face normal (L -> R)
+"""
 function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs = 1.0, n = [1.0, 0.0]) where {T<:AV}
 
     primL = conserve_prim(wL, γ)

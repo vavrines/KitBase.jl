@@ -6,6 +6,7 @@ Maxwell's diffusive boundary flux
 1D continuum
 
 # Arguments
+
 * ``fw``: fluxes for conservative variables
 * ``bc``: boundary condition for primitive variables
 * ``w``: conservative variables

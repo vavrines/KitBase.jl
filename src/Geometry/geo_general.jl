@@ -82,6 +82,9 @@ function local_frame(w::AV, cosa, sina)
     return L
 end
 
+"""
+$(SIGNATURES)
+"""
 local_frame(w::AV, n) = local_frame(w::AV, n[1], n[2])
 
 """

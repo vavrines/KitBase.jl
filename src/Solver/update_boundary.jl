@@ -61,6 +61,9 @@ function update_boundary!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function update_boundary!(
     KS,
     ctr::AV{TC},
@@ -110,6 +113,9 @@ function update_boundary!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function update_boundary!(
     KS,
     ctr::AV{TC},
@@ -159,6 +165,9 @@ function update_boundary!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function update_boundary!(
     KS,
     ctr::AM{TC},
@@ -291,6 +300,9 @@ function update_boundary!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function update_boundary!(
     KS,
     ctr::AV{TC},
@@ -316,6 +328,9 @@ function update_boundary!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function update_boundary!(
     KS,
     ctr::AV{TC},
@@ -342,6 +357,9 @@ function update_boundary!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function update_boundary!(
     KS,
     ctr::AV{TC},

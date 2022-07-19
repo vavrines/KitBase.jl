@@ -66,6 +66,9 @@ function solve!(
 
 end
 
+"""
+$(SIGNATURES)
+"""
 function solve!(
     KS::AbstractSolverSet,
     ctr::AM{<:AbstractControlVolume},
@@ -127,11 +130,9 @@ end
 """
 $(SIGNATURES)
 
-Calculate timestep based on current solutions
-
+Calculate timestep from current solution
 """
 function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime)
-
     tmax = 0.0
 
     if ctr[1].w isa Number
@@ -183,11 +184,12 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
     dt = ifelse(dt < (KS.set.maxTime - simTime), dt, KS.set.maxTime - simTime)
 
     return dt
-
 end
 
+"""
+$(SIGNATURES)
+"""
 function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime)
-
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -242,11 +244,12 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
     dt = ifelse(dt < (KS.set.maxTime - simTime), dt, KS.set.maxTime - simTime)
 
     return dt
-
 end
 
+"""
+$(SIGNATURES)
+"""
 function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime)
-
     tmax = 0.0
 
     if KS.set.nSpecies == 1
@@ -270,5 +273,4 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume
     dt = ifelse(dt < (KS.set.maxTime - simTime), dt, KS.set.maxTime - simTime)
 
     return dt
-
 end

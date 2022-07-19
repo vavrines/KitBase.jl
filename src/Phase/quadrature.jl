@@ -7,9 +7,12 @@ $(SIGNATURES)
 
 Gauss-Legendre quadrature
 
-* @args n : quadrature order (MUST be even)
-* @return points : quadrature points in 3D coordinate
-* @return weights : quadrature weights
+# Arguments
+* ``n``: quadrature order (MUST be even)
+
+# Outputs
+* ``points``: quadrature points in 3D coordinate
+* ``weights``: quadrature weights
 """
 function legendre_quadrature(n::T) where {T<:Integer}
 
@@ -44,10 +47,12 @@ $(SIGNATURES)
 
 Octaeder quadrature
 
-* @args n : quadrature order
-* @args slerpflag : flag of spherical linear interpolation
-* @return points
-* @return triangulation
+# Arguments
+* ``n``: quadrature order
+* ``slerpflag``: flag of spherical linear interpolation
+
+# Outputs
+* points and triangulation
 """
 function octa_quadrature(n::T, slerpflag = true::Bool) where {T<:Integer}
 
@@ -166,9 +171,12 @@ $(SIGNATURES)
 
 Create quadrature weights from points and triangulation
 
-* @arg xyz : quadrature points
-* @arg triangles : triangulation
-* @return weights : quadrature weights
+# Arguments
+* ``xyz``: quadrature points
+* ``triangles``: triangulation
+
+# Outputs
+* quadrature weights
 """
 function quadrature_weights(xyz::X, triangles::Y) where {X<:AA{<:Real,2},Y<:AA{<:Integer,2}}
     weights = zeros(axes(xyz, 1))

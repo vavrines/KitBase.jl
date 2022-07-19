@@ -3,9 +3,7 @@ $(SIGNATURES)
 
 Unified gas kinetic scheme (UGKS)
 
-* @args: particle distribution functions and their slopes at left/right sides of interface
-* @args: particle velocity quadrature points and weights
-* @args: time step
+1D2F1V
 """
 function flux_ugks!(
     fw::T1,
@@ -118,6 +116,8 @@ end
 
 """
 $(SIGNATURES)
+
+2D2F2V
 """
 function flux_ugks!(
     fw::T1,
