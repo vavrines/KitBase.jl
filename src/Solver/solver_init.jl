@@ -56,11 +56,7 @@ $(SIGNATURES)
 
 Initialize finite volume data structure
 """
-function init_fvm(
-    KS,
-    array = :dynamic_array;
-    structarray = false,
-)
+function init_fvm(KS, array = :dynamic_array; structarray = false)
     return init_fvm(KS, KS.ps, array; structarray = structarray)
 end
 
@@ -329,12 +325,7 @@ function init_fvm(
 
 end
 
-function init_fvm(
-    KS,
-    ps::UnstructPSpace,
-    array = :dynamic_array;
-    structarray = false,
-)
+function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = false)
 
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
@@ -600,12 +591,7 @@ $(SIGNATURES)
 
 Initialize particles based on flow conditions
 """
-function init_ptc!(
-    KS,
-    ctr::AV;
-    mode = :soa,
-    factor = 1,
-)
+function init_ptc!(KS, ctr::AV; mode = :soa, factor = 1)
     if mode == :soa
         init_ptc_soa!(KS, ctr, factor)
     elseif mode == :aos
@@ -619,11 +605,7 @@ $(SIGNATURES)
 
 Initialize particles with array of structs
 """
-function init_ptc_aos!(
-    KS,
-    ctr::AV,
-    factor = 1,
-)
+function init_ptc_aos!(KS, ctr::AV, factor = 1)
 
     np = 0
     for i in eachindex(ctr)
@@ -664,11 +646,7 @@ $(SIGNATURES)
 
 Initialize particles with struct of arrays
 """
-function init_ptc_soa!(
-    KS,
-    ctr::AV,
-    factor = 1,
-)
+function init_ptc_soa!(KS, ctr::AV, factor = 1)
 
     np = 0
     for i in eachindex(ctr)

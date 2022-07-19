@@ -328,14 +328,7 @@ $(SIGNATURES)
 
 4F1V
 """
-function moments_conserve(
-    h0::X,
-    h1::X,
-    h2::X,
-    h3::X,
-    u::T,
-    ω::T,
-) where {X<:AV,T<:AV}
+function moments_conserve(h0::X, h1::X, h2::X, h3::X, u::T, ω::T) where {X<:AV,T<:AV}
     moments = similar(h0, 5)
 
     moments[1] = discrete_moments(h0, u, ω, 0)
@@ -353,13 +346,7 @@ $(SIGNATURES)
 
 Calculate conservative moments of diatomic particle distribution
 """
-function diatomic_moments_conserve(
-    h::X,
-    b::X,
-    r::X,
-    u::T,
-    ω::T,
-) where {X<:AV,T<:AV}
+function diatomic_moments_conserve(h::X, b::X, r::X, u::T, ω::T) where {X<:AV,T<:AV}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -415,12 +402,7 @@ moments_conserve_slope(a, Mu::OffsetArray{T,1}, alpha::Integer) where {T} =
 """
 $(SIGNATURES)
 """
-moments_conserve_slope(
-    a::AV,
-    Mu::Y,
-    Mxi::Y,
-    alpha::Integer,
-) where {Y} =
+moments_conserve_slope(a::AV, Mu::Y, Mxi::Y, alpha::Integer) where {Y} =
     a[1] .* moments_conserve(Mu, Mxi, alpha + 0, 0) .+
     a[2] .* moments_conserve(Mu, Mxi, alpha + 1, 0) .+
     0.5 * a[3] .* moments_conserve(Mu, Mxi, alpha + 2, 0) .+
@@ -588,13 +570,7 @@ $(SIGNATURES)
 
 2F1V
 """
-heat_flux(
-    h::X,
-    b::X,
-    prim::AV,
-    u::Z,
-    ω::Z,
-) where {X<:AV,Z<:AV} =
+heat_flux(h::X, b::X, prim::AV, u::Z, ω::Z) where {X<:AV,Z<:AV} =
     0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
 
 """
@@ -602,14 +578,7 @@ $(SIGNATURES)
 
 3F1V Rykov model
 """
-function heat_flux(
-    h::X,
-    b::X,
-    r::X,
-    prim::AV,
-    u::Z,
-    ω::Z,
-) where {X<:AV,Z<:AV}
+function heat_flux(h::X, b::X, r::X, prim::AV, u::Z, ω::Z) where {X<:AV,Z<:AV}
 
     q = similar(h, 2)
 
@@ -627,13 +596,7 @@ $(SIGNATURES)
 
 1F2V
 """
-function heat_flux(
-    h::AM,
-    prim::Y,
-    u::Z,
-    v::Z,
-    ω::Z,
-) where {Y<:AV,Z<:AM}
+function heat_flux(h::AM, prim::Y, u::Z, v::Z, ω::Z) where {Y<:AV,Z<:AM}
 
     q = similar(h, 2)
     q[1] = 0.5 * sum(@. ω * (u - prim[2]) * ((u - prim[2])^2 + (v - prim[3])^2) * h)

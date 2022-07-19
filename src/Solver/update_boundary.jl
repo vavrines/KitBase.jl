@@ -12,7 +12,16 @@ function update_boundary!(
     bc,
     fn = step!,
     kwargs...,
-) where {TC<:Union{ControlVolume,ControlVolume1D,ControlVolume1F,ControlVolume1D1F,ControlVolume2F,ControlVolume1D2F}}
+) where {
+    TC<:Union{
+        ControlVolume,
+        ControlVolume1D,
+        ControlVolume1F,
+        ControlVolume1D1F,
+        ControlVolume2F,
+        ControlVolume1D2F,
+    },
+}
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
@@ -21,24 +30,12 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        fn(
-            KS,
-            ctr[i],
-            face[i],
-            face[i+1],
-            (dt, KS.ps.dx[i], resL, avgL),
-        )
+        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], resL, avgL))
     end
 
     if bc[2] != :fix
         j = KS.ps.nx
-        fn(
-            KS,
-            ctr[j],
-            face[j],
-            face[j+1],
-            (dt, KS.ps.dx[j], resR, avgR),
-        )
+        fn(KS, ctr[j], face[j], face[j+1], (dt, KS.ps.dx[j], resR, avgR))
     end
 
     #@. residual += sqrt((resL + resR) * 2) / (avgL + avgR + 1.e-7)
@@ -172,7 +169,16 @@ function update_boundary!(
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
-) where {TC<:Union{ControlVolume,ControlVolume2D,ControlVolume1F,ControlVolume2D1F,ControlVolume2F,ControlVolume2D2F}}
+) where {
+    TC<:Union{
+        ControlVolume,
+        ControlVolume2D,
+        ControlVolume1F,
+        ControlVolume2D1F,
+        ControlVolume2F,
+        ControlVolume2D2F,
+    },
+}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
