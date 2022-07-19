@@ -41,6 +41,9 @@ HLL flux for the Euler equations
 - @args: variables at left & right sides of interface
 - @args: specific heat ratio
 """
+flux_hll!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+    flux_hll!(face, ctrL, ctrR, KS.gas, args...)
+
 function flux_hll!(
     face::Interface,
     ctrL::T,
@@ -115,6 +118,9 @@ _P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Scheme
 * @args γ: specific heat ratio
 * @args n[2]: unit face normal (L -> R)
 """
+flux_roe!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+    flux_roe!(face, ctrL, ctrR, KS.gas, args...)
+
 function flux_roe!(
     face::Interface,
     ctrL::T,

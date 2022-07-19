@@ -7,6 +7,9 @@ $(SIGNATURES)
 
 Gas kinetic flux
 """
+flux_gks!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+    flux_gks!(face, ctrL, ctrR, KS.gas, args...)
+
 function flux_gks!(
     face::Interface,
     ctrL::T,

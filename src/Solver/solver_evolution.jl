@@ -40,10 +40,10 @@ function evolve!(
     else
         @inbounds Threads.@threads for i = idx0:idx1
             fn(
+                KS,
                 face[i],
                 ctr[i-1],
                 ctr[i],
-                KS.gas,
                 (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
                 dt,
             )
@@ -75,11 +75,10 @@ function evolve!(
 
     @inbounds Threads.@threads for i = idx0:idx1
         fn(
+            KS,
             face[i],
             ctr[i-1],
             ctr[i],
-            KS.gas,
-            KS.vs,
             (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
             dt,
         )
@@ -110,11 +109,10 @@ function evolve!(
 
     @inbounds Threads.@threads for i = idx0:idx1
         fn(
+            KS,
             face[i],
             ctr[i-1],
             ctr[i],
-            KS.gas,
-            KS.vs,
             (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
             dt,
         )
@@ -455,10 +453,10 @@ function evolve!(
             len = KS.ps.areas[i-1, j, 2]
 
             fn(
+                KS,
                 a1face[i, j],
                 ctr[i-1, j],
                 ctr[i, j],
-                KS.gas,
                 (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
                 dt,
             )
@@ -472,10 +470,10 @@ function evolve!(
             len = KS.ps.areas[i, j-1, 3]
 
             fn(
+                KS,
                 a2face[i, j],
                 ctr[i, j-1],
                 ctr[i, j],
-                KS.gas,
                 (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
                 dt,
             )
@@ -528,11 +526,10 @@ function evolve!(
             len = KS.ps.areas[i-1, j, 2]
 
             fn(
+                KS,
                 a1face[i, j],
                 ctr[i-1, j],
                 ctr[i, j],
-                KS.gas,
-                KS.vs,
                 (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
                 dt,
             )
@@ -546,11 +543,10 @@ function evolve!(
             len = KS.ps.areas[i, j-1, 3]
 
             fn(
+                KS,
                 a2face[i, j],
                 ctr[i, j-1],
                 ctr[i, j],
-                KS.gas,
-                KS.vs,
                 (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
                 dt,
             )
@@ -703,11 +699,10 @@ function evolve!(
             len = KS.ps.areas[i-1, j, 2]
 
             fn(
+                KS,
                 a1face[i, j],
                 ctr[i-1, j],
                 ctr[i, j],
-                KS.gas,
-                KS.vs,
                 (0.5 .* dx[i-1, j], 0.5 .* dx[i, j], len, n, 1),
                 dt,
             )
@@ -721,11 +716,10 @@ function evolve!(
             len = KS.ps.areas[i, j-1, 3]
 
             fn(
+                KS,
                 a2face[i, j],
                 ctr[i, j-1],
                 ctr[i, j],
-                KS.gas,
-                KS.vs,
                 (0.5 .* dy[i, j-1], 0.5 .* dy[i, j], len, n, 2),
                 dt,
             )
