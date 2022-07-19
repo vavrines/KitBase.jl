@@ -34,7 +34,7 @@ begin
     ny = 50#100
     dx = (x1 - x0) / nx
     dy = (y1 - y0) / ny
-    pspace = KitBase.PSpace2D(x0, x1, nx, y0, y1, ny)
+    pspace = KitBase.ps2D(x0, x1, nx, y0, y1, ny)
 
     # time
     tEnd = 1.0

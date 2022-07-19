@@ -7,14 +7,56 @@ $(SIGNATURES)
 
 Gas kinetic flux
 """
+flux_gks!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+    flux_gks!(face, ctrL, ctrR, KS.gas, args...)
+
+"""
+$(SIGNATURES)
+
+Scalar
+
+`flux_gks` is called since there is no in-place operation for scalar
+"""
 function flux_gks!(
     face::Interface,
-    ctrL::T,
-    ctrR::T,
+    ctrL,
+    ctrR,
+    gas::Scalar,
+    p,
+    dt = 1.0,
+)
+
+    dxL, dxR = p[1:2]
+
+    face.fw = flux_gks(
+        ctrL.w + dxL * ctrL.sw,
+        ctrR.w - dxR * ctrR.sw,
+        gas.μᵣ,
+        dt,
+        dxL,
+        dxR,
+        gas.a,
+        ctrL.sw,
+        ctrR.sw,
+    )
+
+    return nothing
+
+end
+
+"""
+$(SIGNATURES)
+
+Gas
+"""
+function flux_gks!(
+    face::Interface,
+    ctrL,
+    ctrR,
     gas::Gas,
     p,
     dt = 1.0,
-) where {T<:ControlVolume}
+)
 
     dxL, dxR = p[1:2]
 
@@ -40,14 +82,19 @@ function flux_gks!(
 
 end
 
+"""
+$(SIGNATURES)
+
+Mixture
+"""
 function flux_gks!(
     face::Interface,
-    ctrL::T,
-    ctrR::T,
+    ctrL,
+    ctrR,
     gas::Mixture,
     p,
     dt = 1.0,
-) where {T<:ControlVolume}
+)
 
     dxL, dxR = p[1:2]
 
@@ -76,6 +123,9 @@ function flux_gks!(
 
 end
 
+# ------------------------------------------------------------
+# Low-level backends
+# ------------------------------------------------------------
 
 """
 $(SIGNATURES)

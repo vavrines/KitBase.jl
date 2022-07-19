@@ -38,6 +38,7 @@ function PSpace1D(X0::TR, X1::TR, NX::TI, NG = 0::Integer) where {TR,TI}
 end
 
 PSpace1D() = PSpace1D(0, 1, 100)
+
 PSpace1D(X0::T, X1::T) where {T} = PSpace1D(X0, X1, 100)
 
 
@@ -187,6 +188,7 @@ function PSpace2D(
 end
 
 PSpace2D() = PSpace2D(0, 1, 45, 0, 1, 45)
+
 PSpace2D(X0::T, X1::T, Y0::T, Y1::T) where {T} = PSpace2D(X0, X1, 45, Y0, Y1, 45)
 
 

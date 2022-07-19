@@ -10,7 +10,6 @@ const near_int_threshold = 1.0e-6
 const series_transition_threshold = 0.25
 struct Diagnostics end
 
-
 """
 $(SIGNATURES)
 
@@ -21,16 +20,16 @@ Calculate the Polylogarithm function ``Li_s(z)`` defined by
 It uses double precision complex numbers (not arbitrary precision).
 The goal is an relative error bound 10^{-12}.
  
-## Input Arguments
+# Arguments
 * ``s```::Complex`: the 'fractional' parameter
 * ``z```::Complex`: the point at which to calculate it
 It should also accept input arguments as `Real` or `Rational` or `Integer` but these aren't completely tested.
 There are additional keywords, but these are currently intended for testing not use.
 
-## Output Arguments
+# Outputs
 * ``Li_s(z)``: the result
 
-## Examples
+# Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> polylog(0.35, 0.2)
 0.23803890574407033
@@ -65,19 +64,19 @@ Calculate the Polylogarithm function ``{Li}_s(z)`` defined by
 It uses double precision complex numbers (not arbitrary precision).
 The goal is an relative error bound 10^{-12}.
  
-## Input Arguments
+# Arguments
 * ``s::```Complex`: the 'fractional' parameter
 * ``z```::Complex`: the point at which to calculate it
 * `::Diagnostics`: use this to indicate that the output should include extra information
 It should also accept input arguments as `Real` or `Rational` or `Integer` but these aren't completely tested.
 There are additional keywords, but these are currently intended for testing not use.
 
-## Output Arguments
-* ``Li_s(z)``: The result
-* ``n``:       The number of elements used in each series
-* `series`:    The series used to compute results (4 = reciprocal)
+# Outputs
+* ``Li_s(z)``: the result
+* ``n``: the number of elements used in each series
+* `series`: the series used to compute results (4 = reciprocal)
 
-## Examples
+# Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> polylog(0.35, 0.2, Diagnostics() )
 (0.23803890574407033, 17, 1)
@@ -478,10 +477,10 @@ $(SIGNATURES)
 
 Calculate harmonic numbers (http://mathworld.wolfram.com/HarmonicNumber.html)
 
-## Arguments
+# Arguments
 * ``n```::Integer`: non-negative index of the Harmonic number to calculate
 
-## Examples
+# Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> harmonic(2)
 1.5
@@ -525,12 +524,12 @@ $(SIGNATURES)
 
 Calculate generalized harmonic numbers (e.g., see http://mathworld.wolfram.com/HarmonicNumber.html)
 
-## Arguments
+# Arguments
 * ``n```::Integer`: non-negative index 1 of the Harmonic number to calculate
 * ``r```::Real`: index 2 of the Harmonic number to calculate
 It should be possible to extend this to complex r, but that requires more testing.
 
-## Examples
+# Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> harmonic(2,1.5)
 1.3535533905932737
@@ -561,11 +560,11 @@ Calculates generalized harmonic numbers (e.g., see http://mathworld.wolfram.com/
 
 Using a better approach which works when both inputs are integers (https://carma.newcastle.edu.au/resources/jon/Preprints/Papers/Published-InPress/Oscillatory%20(Tapas%20II)/Papers/coffey-zeta.pdf, p.341)
  
-## Arguments
+# Arguments
 * ``n```::Integer`: non-negative index 1 of the Harmonic number to calculate
 * ``r```::Integer`: index 2 of the Harmonic number to calculate
 
-## Examples
+# Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> harmonic(2,1)
 1.5000000000000002
@@ -581,17 +580,18 @@ function harmonic(n::Integer, r::Integer)
 end
 
 
-const stieltjes_n = [Base.MathConstants.γ, 
-    -0.0728158454836767248605863758749013191377363383, 	# A082633
-    -0.0096903631928723184845303860352125293590658061, 	# A086279
-    +0.0020538344203033458661600465427533842857158044, 	# A086280
-    +0.0023253700654673000574681701775260680009044694, 	# A086281
-    +0.0007933238173010627017533348774444448307315394, 	# A086282
-    -0.0002387693454301996098724218419080042777837151, 	# A183141
-    -0.0005272895670577510460740975054788582819962534, 	# A183167
-    -0.0003521233538030395096020521650012087417291805, 	# A183206
-    -0.0000343947744180880481779146237982273906207895, 	# A184853
-    +0.0002053328149090647946837222892370653029598537, 	# A184854
+const stieltjes_n = [
+    Base.MathConstants.γ,
+    -0.0728158454836767248605863758749013191377363383, # A082633
+    -0.0096903631928723184845303860352125293590658061, # A086279
+    +0.0020538344203033458661600465427533842857158044, # A086280
+    +0.0023253700654673000574681701775260680009044694, # A086281
+    +0.0007933238173010627017533348774444448307315394, # A086282
+    -0.0002387693454301996098724218419080042777837151, # A183141
+    -0.0005272895670577510460740975054788582819962534, # A183167
+    -0.0003521233538030395096020521650012087417291805, # A183206
+    -0.0000343947744180880481779146237982273906207895, # A184853
+    +0.0002053328149090647946837222892370653029598537, # A184854
 ]
 """
 $(SIGNATURES)
@@ -599,22 +599,21 @@ $(SIGNATURES)
 Provide the first 10 Stieltjes (generalized Euler-Mascheroni) constants (see
 Abramowitz and Stegunm, 23.2.5) or (https://en.wikipedia.org/wiki/Stieltjes_constants).
 
-## Arguments
+# Arguments
 * `n::Integer`: the number of elements to compute.
 
-## Examples
+# Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> stieltjes(0)
 0.5772156649015329
 ```
 """
 function stieltjes(n::Integer)
-    if n<0
+    if n < 0
         throw(DomainError(n))
-    elseif n>10
+    elseif n > 10
         throw(DomainError(n, "Only the first 11 Stieltjes numbers are defined so far."))
     end
 
     return stieltjes_n[n+1]
 end
-

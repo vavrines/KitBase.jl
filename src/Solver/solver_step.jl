@@ -1,9 +1,435 @@
 """
 $(SIGNATURES)
 
-Update flow variables with finite volume formulation
+Update flow variables with finite volume method
+
+1D
 """
-function step!(fwL::X, w::X, prim::AV{X}, fwR::X, a, dx, RES, AVG) where {X<:FN} # scalar
+step!(
+    KS::AbstractSolverSet,
+    cell::AbstractControlVolume,
+    faceL::T,
+    faceR::T,
+    p,
+    coll = :bgk,
+) where {T<:AbstractInterface} = step!(KS, KS.vs, KS.gas, cell, faceL, faceR, p, coll)
+
+"""
+$(SIGNATURES)
+
+2D
+"""
+step!(
+    KS::AbstractSolverSet,
+    cell::AbstractControlVolume,
+    faceL::T,
+    faceR::T,
+    faceD::T,
+    faceU::T,
+    p,
+    coll = :bgk,
+) where {T<:AbstractInterface} =
+    step!(KS, KS.vs, KS.gas, cell, faceL, faceR, faceD, faceU, p, coll)
+
+"""
+$(SIGNATURES)
+
+1D scalar
+"""
+function step!(
+    KS,
+    vs,
+    gas::Scalar,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume,ControlVolume1D}}
+    dt, dx, RES, AVG = p
+    step!(cell.w, cell.prim, faceL.fw, faceR.fw, gas.a, dx, RES, AVG)
+end
+
+"""
+$(SIGNATURES)
+
+1D0F
+"""
+function step!(
+    KS,
+    vs,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume,ControlVolume1D}}
+    dt, dx, RES, AVG = p
+    step!(cell.w, cell.prim, faceL.fw, faceR.fw, gas.γ, dx, RES, AVG)
+end
+
+"""
+$(SIGNATURES)
+
+1D0F mixture
+"""
+function step!(
+    KS,
+    vs,
+    gas::Mixture,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume,ControlVolume1D}}
+    dt, dx, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        faceL.fw,
+        faceR.fw,
+        gas.γ,
+        gas.mi,
+        gas.ni,
+        gas.me,
+        gas.ne,
+        gas.Kn[1],
+        dx,
+        dt,
+        RES,
+        AVG,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+1D1F1V
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace1D,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume1F,ControlVolume1D1F}}
+    dt, dx, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        cell.f,
+        faceL.fw,
+        faceL.ff,
+        faceR.fw,
+        faceR.ff,
+        KS.vs.u,
+        KS.vs.weights,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dx,
+        dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+1D1F3V
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace3D,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume1F,ControlVolume1D1F}}
+    dt, dx, RES, AVG = p
+    if coll == :fsm
+        step!(
+            cell.w,
+            cell.prim,
+            cell.f,
+            faceL.fw,
+            faceL.ff,
+            faceR.fw,
+            faceR.ff,
+            gas.γ,
+            gas.fsm.Kn,
+            gas.fsm.nm,
+            gas.fsm.ϕ,
+            gas.fsm.ψ,
+            gas.fsm.χ,
+            dx,
+            dt,
+            RES,
+            AVG,
+            coll,
+        )
+    else
+        step!(
+            cell.w,
+            cell.prim,
+            cell.f,
+            faceL.fw,
+            faceL.ff,
+            faceR.fw,
+            faceR.ff,
+            vs.u,
+            vs.v,
+            vs.w,
+            vs.weights,
+            gas.γ,
+            gas.μᵣ,
+            gas.ω,
+            gas.Pr,
+            dx,
+            dt,
+            RES,
+            AVG,
+            coll,
+        )
+    end
+end
+
+"""
+$(SIGNATURES)
+
+1D2F1V
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace1D,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume2F,ControlVolume1D2F}}
+    dt, dx, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        cell.h,
+        cell.b,
+        faceL.fw,
+        faceL.fh,
+        faceL.fb,
+        faceR.fw,
+        faceR.fh,
+        faceR.fb,
+        KS.vs.u,
+        KS.vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        dx,
+        dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+1D2F1V mixture
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace1D,
+    gas::Mixture,
+    cell::TC,
+    faceL,
+    faceR,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume2F,ControlVolume1D2F}}
+    dt, dx, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        cell.h,
+        cell.b,
+        faceL.fw,
+        faceL.fh,
+        faceL.fb,
+        faceR.fw,
+        faceR.fh,
+        faceR.fb,
+        KS.vs.u,
+        KS.vs.weights,
+        gas.K,
+        gas.γ,
+        gas.mi,
+        gas.ni,
+        gas.me,
+        gas.ne,
+        gas.Kn[1],
+        gas.Pr,
+        dx,
+        dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+2D0F
+"""
+function step!(
+    KS,
+    vs,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    faceD,
+    faceU,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume,ControlVolume2D}}
+    dt, Δs, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        faceL.fw,
+        faceR.fw,
+        faceD.fw,
+        faceU.fw,
+        gas.γ,
+        Δs,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+2D1F2V
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace2D,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    faceD,
+    faceU,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume1F,ControlVolume2D1F}}
+    dt, Δs, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        cell.f,
+        faceL.fw,
+        faceL.ff,
+        faceR.fw,
+        faceR.ff,
+        faceD.fw,
+        faceD.ff,
+        faceU.fw,
+        faceU.ff,
+        vs.u,
+        vs.v,
+        vs.weights,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        Δs,
+        dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+2D2F2V
+"""
+function step!(
+    KS,
+    vs::AbstractVelocitySpace2D,
+    gas::Gas,
+    cell::TC,
+    faceL,
+    faceR,
+    faceD,
+    faceU,
+    p,
+    coll = :bgk,
+) where {TC<:Union{ControlVolume2F,ControlVolume2D2F}}
+    dt, Δs, RES, AVG = p
+    step!(
+        cell.w,
+        cell.prim,
+        cell.h,
+        cell.b,
+        faceL.fw,
+        faceL.fh,
+        faceL.fb,
+        faceR.fw,
+        faceR.fh,
+        faceR.fb,
+        faceD.fw,
+        faceD.fh,
+        faceD.fb,
+        faceU.fw,
+        faceU.fh,
+        faceU.fb,
+        vs.u,
+        vs.v,
+        vs.weights,
+        gas.K,
+        gas.γ,
+        gas.μᵣ,
+        gas.ω,
+        gas.Pr,
+        Δs,
+        dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+# ------------------------------------------------------------
+# Low-level backends
+# ------------------------------------------------------------
+
+"""
+$(SIGNATURES)
+
+Scalar
+"""
+function step!(w::X, prim::AV{X}, fwL::X, fwR::X, a, dx, RES, AVG) where {X<:FN}
     #--- store W^n and calculate H^n,\tau^n ---#
     w_old = deepcopy(w)
 
@@ -20,11 +446,13 @@ end
 
 """
 $(SIGNATURES)
+
+1D0F
 """
 function step!(
-    fwL::X,
     w::Y,
     prim::Y,
+    fwL::X,
     fwR::X,
     γ,
     dx,
@@ -50,12 +478,12 @@ end
 """
 $(SIGNATURES)
 
-Mixture
+1D0F Mixture
 """
 function step!(
-    fwL::T1,
     w::T2,
     prim::T2,
+    fwL::T1,
     fwR::T1,
     γ,
     mi,
@@ -111,11 +539,11 @@ $(SIGNATURES)
 1D1F1V
 """
 function step!(
-    fwL::T1,
-    ffL::T2,
     w::T3,
     prim::T3,
     f::T4,
+    fwL::T1,
+    ffL::T2,
     fwR::T1,
     ffR::T2,
     u::T5,
@@ -168,11 +596,11 @@ $(SIGNATURES)
 1D1F3V
 """
 function step!(
-    fwL::T1,
-    ffL::T2,
     w::T3,
     prim::T3,
     f::T4,
+    fwL::T1,
+    ffL::T2,
     fwR::T1,
     ffR::T2,
     uVelo::T5,
@@ -226,14 +654,14 @@ end
 """
 $(SIGNATURES)
 
-1D1F3V @ FSM
+1D1F3V fast spectral method
 """
 function step!(
-    fwL::T1,
-    ffL::T2,
     w::T3,
     prim::T3,
     f::T4,
+    fwL::T1,
+    ffL::T2,
     fwR::T1,
     ffR::T2,
     γ,
@@ -273,13 +701,13 @@ $(SIGNATURES)
 1D2F1V
 """
 function step!(
-    fwL::T1,
-    fhL::T2,
-    fbL::T2,
     w::T3,
     prim::T3,
     h::T4,
     b::T4,
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
     fwR::T1,
     fhR::T2,
     fbR::T2,
@@ -336,16 +764,16 @@ end
 """
 $(SIGNATURES)
 
-1D2F1V @ Mixture
+1D2F1V mixture
 """
 function step!(
-    fwL::T1,
-    fhL::T2,
-    fbL::T2,
     w::T3,
     prim::T3,
     h::T4,
     b::T4,
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
     fwR::T1,
     fhR::T2,
     fbR::T2,
@@ -445,18 +873,18 @@ end
 """
 $(SIGNATURES)
 
-1D3F1V @ Rykov
+1D3F1V Rykov
 """
 function step!(
-    fwL::T1,
-    fhL::T2,
-    fbL::T2,
-    frL::T2,
     w::T3,
     prim::T3,
     h::T4,
     b::T4,
     r::T4,
+    fwL::T1,
+    fhL::T2,
+    fbL::T2,
+    frL::T2,
     fwR::T1,
     fhR::T2,
     fbR::T2,
@@ -564,8 +992,8 @@ $(SIGNATURES)
 """
 function step!(
     KS::T,
-    faceL::Interface1D4F,
     cell::ControlVolume1D4F,
+    faceL::Interface1D4F,
     faceR::Interface1D4F,
     dx,
     dt,
@@ -731,10 +1159,10 @@ function step!(
         _h2 = @view cell.h2[:, j]
         _h3 = @view cell.h3[:, j]
 
-        shift_pdf!(_h0, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
-        shift_pdf!(_h1, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
-        shift_pdf!(_h2, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
-        shift_pdf!(_h3, cell.lorenz[1, j], KS.vSpace.du[1, j], dt)
+        shift_pdf!(_h0, cell.lorenz[1, j], KS.vs.du[1, j], dt)
+        shift_pdf!(_h1, cell.lorenz[1, j], KS.vs.du[1, j], dt)
+        shift_pdf!(_h2, cell.lorenz[1, j], KS.vs.du[1, j], dt)
+        shift_pdf!(_h3, cell.lorenz[1, j], KS.vs.du[1, j], dt)
     end
 
     # force -> f^{n+1} : step 2
@@ -772,7 +1200,7 @@ function step!(
             KS.gas.Kn[1],
         )
     end
-    g = mixture_maxwellian(KS.vSpace.u, prim)
+    g = mixture_maxwellian(KS.vs.u, prim)
 
     # BGK term
     Mu, Mv, Mw, MuL, MuR = mixture_gauss_moments(prim, KS.gas.K)
@@ -800,8 +1228,8 @@ $(SIGNATURES)
 """
 function step!(
     KS::T,
-    faceL::Interface1D3F,
     cell::ControlVolume1D3F,
+    faceL::Interface1D3F,
     faceR::Interface1D3F,
     dx,
     dt,
@@ -966,9 +1394,9 @@ function step!(
             _h1 = @view cell.h1[:, i, j]
             _h2 = @view cell.h2[:, i, j]
 
-            shift_pdf!(_h0, cell.lorenz[1, j], KS.vSpace.du[1, i, j], dt)
-            shift_pdf!(_h1, cell.lorenz[1, j], KS.vSpace.du[1, i, j], dt)
-            shift_pdf!(_h2, cell.lorenz[1, j], KS.vSpace.du[1, i, j], dt)
+            shift_pdf!(_h0, cell.lorenz[1, j], KS.vs.du[1, i, j], dt)
+            shift_pdf!(_h1, cell.lorenz[1, j], KS.vs.du[1, i, j], dt)
+            shift_pdf!(_h2, cell.lorenz[1, j], KS.vs.du[1, i, j], dt)
         end
     end
 
@@ -978,9 +1406,9 @@ function step!(
             _h1 = @view cell.h1[i, :, j]
             _h2 = @view cell.h2[i, :, j]
 
-            shift_pdf!(_h0, cell.lorenz[2, j], KS.vSpace.dv[i, 1, j], dt)
-            shift_pdf!(_h1, cell.lorenz[2, j], KS.vSpace.dv[i, 1, j], dt)
-            shift_pdf!(_h2, cell.lorenz[2, j], KS.vSpace.dv[i, 1, j], dt)
+            shift_pdf!(_h0, cell.lorenz[2, j], KS.vs.dv[i, 1, j], dt)
+            shift_pdf!(_h1, cell.lorenz[2, j], KS.vs.dv[i, 1, j], dt)
+            shift_pdf!(_h2, cell.lorenz[2, j], KS.vs.dv[i, 1, j], dt)
         end
     end
 
@@ -1017,11 +1445,11 @@ function step!(
         )
     end
 
-    H0 = similar(KS.vSpace.u)
+    H0 = similar(KS.vs.u)
     H1 = similar(H0)
     H2 = similar(H0)
     for k in axes(H0, 3)
-        H0[:, :, k] .= maxwellian(KS.vSpace.u[:, :, k], KS.vSpace.v[:, :, k], prim[:, k])
+        H0[:, :, k] .= maxwellian(KS.vs.u[:, :, k], KS.vs.v[:, :, k], prim[:, k])
         @. H1[:, :, k] = H0[:, :, k] * prim[4, k]
         @. H2[:, :, k] = H0[:, :, k] * (prim[4, k]^2 + 1.0 / (2.0 * prim[5, k]))
     end

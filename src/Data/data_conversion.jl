@@ -25,6 +25,9 @@ function static_array(x::AV)
     return y
 end
 
+"""
+$(SIGNATURES)
+"""
 function static_array(x::AM)
     y = MMatrix{size(x, 1),size(x, 2)}(collect(x))
 
@@ -40,6 +43,9 @@ function static_array(x::AM)
     return y
 end
 
+"""
+$(SIGNATURES)
+"""
 function static_array(x::AA{T,3}) where {T}
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3)}}(collect(x))
 
@@ -57,6 +63,9 @@ function static_array(x::AA{T,3}) where {T}
     return y
 end
 
+"""
+$(SIGNATURES)
+"""
 function static_array(x::AA{T,4}) where {T}
     y = MArray{Tuple{size(x, 1),size(x, 2),size(x, 3),size(x, 4)}}(collect(x))
 
@@ -83,4 +92,8 @@ $(SIGNATURES)
 Transform to dynamic array
 """
 dynamic_array(x) = x
+
+"""
+$(SIGNATURES)
+"""
 dynamic_array(x::StaticArray) = Array(x)

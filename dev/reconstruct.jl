@@ -45,7 +45,7 @@ begin
 end
 
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
-ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+ctr, face = KitBase.init_fvm(ks, ks.ps)
 
 dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
@@ -55,8 +55,8 @@ nt = ks.set.maxTime ÷ dt |> Int
     KitBase.evolve!(ks, ctr, face, dt; mode = :kfvs, bc = :maxwell)
     #=
     @inbounds Threads.@threads for i in eachindex(face)
-        vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
-        vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
+        vn = ks.vs.u .* face[i].n[1] .+ ks.vs.v .* face[i].n[2]
+        vt = ks.vs.v .* face[i].n[1] .- ks.vs.u .* face[i].n[2]
 
         if !(-1 in ps.faceCells[i, :])
             KitBase.flux_kfvs!(
@@ -69,7 +69,7 @@ nt = ks.set.maxTime ÷ dt |> Int
                 ctr[ps.faceCells[i, 2]].b .+ ctr[ps.faceCells[i, 2]].sb[:, :, 1] .* (ps.faceCenter[i, 1] - ps.cellCenter[ps.faceCells[i, 2], 1]) .+ ctr[ps.faceCells[i, 2]].sb[:, :, 2] .* (ps.faceCenter[i, 2] - ps.cellCenter[ps.faceCells[i, 2], 2]),
                 vn,
                 vt,
-                ks.vSpace.weights,
+                ks.vs.weights,
                 dt,
                 face[i].len,
             )
@@ -89,7 +89,7 @@ nt = ks.set.maxTime ÷ dt |> Int
                     ctr[ps.faceCells[i, idx]].b .+ ctr[ps.faceCells[i, idx]].sb[:, :, 1] .* (ps.faceCenter[i, 1] - ps.cellCenter[ps.faceCells[i, idx], 1]) .+ ctr[ps.faceCells[i, idx]].sb[:, :, 2] .* (ps.faceCenter[i, 2] - ps.cellCenter[ps.faceCells[i, idx], 2]),
                     vn,
                     vt,
-                    ks.vSpace.weights,
+                    ks.vs.weights,
                     ks.gas.K,
                     dt,
                     face[i].len,
@@ -123,15 +123,15 @@ nt = ks.set.maxTime ÷ dt |> Int
                 face[ps.cellFaces[i, 3]].fw,
                 face[ps.cellFaces[i, 3]].fh,
                 face[ps.cellFaces[i, 3]].fb,
-                ks.vSpace.u,
-                ks.vSpace.v,
-                ks.vSpace.weights,
+                ks.vs.u,
+                ks.vs.v,
+                ks.vs.weights,
                 ks.gas.K,
                 ks.gas.γ,
                 ks.gas.μᵣ,
                 ks.gas.ω,
                 ks.gas.Pr,
-                ks.pSpace.cellArea[i],
+                ks.ps.cellArea[i],
                 dirc,
                 dt,
                 sumres,

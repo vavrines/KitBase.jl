@@ -25,7 +25,7 @@ begin
     ib = KitBase.IB2F(fw, ff, bc, NamedTuple())
 end
 ks = KitBase.SolverSet(set, ps, vs, gas, ib)
-ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+ctr, face = KitBase.init_fvm(ks, ks.ps)
 dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
 for iter = 1:nt
@@ -33,8 +33,8 @@ for iter = 1:nt
     KitBase.evolve!(ks, ctr, face, dt)
     #=
     @inbounds for i in eachindex(face)
-        vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
-        vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
+        vn = ks.vs.u .* face[i].n[1] .+ ks.vs.v .* face[i].n[2]
+        vt = ks.vs.v .* face[i].n[1] .- ks.vs.u .* face[i].n[2]
 
         if !(-1 in ps.faceCells[i, :])
             KitBase.flux_kfvs!(
@@ -47,7 +47,7 @@ for iter = 1:nt
                 ctr[ps.faceCells[i, 2]].b,
                 vn,
                 vt,
-                ks.vSpace.weights,
+                ks.vs.weights,
                 dt,
                 face[i].len,
             )
@@ -67,7 +67,7 @@ for iter = 1:nt
                     ctr[ps.faceCells[i, idx]].b,
                     vn,
                     vt,
-                    ks.vSpace.weights,
+                    ks.vs.weights,
                     ks.gas.K,
                     dt,
                     face[i].len,
@@ -101,15 +101,15 @@ for iter = 1:nt
                 face[ps.cellFaces[i, 3]].fw,
                 face[ps.cellFaces[i, 3]].fh,
                 face[ps.cellFaces[i, 3]].fb,
-                ks.vSpace.u,
-                ks.vSpace.v,
-                ks.vSpace.weights,
+                ks.vs.u,
+                ks.vs.v,
+                ks.vs.weights,
                 ks.gas.K,
                 ks.gas.γ,
                 ks.gas.μᵣ,
                 ks.gas.ω,
                 ks.gas.Pr,
-                ks.pSpace.cellArea[i],
+                ks.ps.cellArea[i],
                 dirc,
                 dt,
                 sumres,
@@ -153,7 +153,7 @@ begin
     ib = KitBase.IB1F(fw, ff, bc, NamedTuple())
 end
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
-ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+ctr, face = KitBase.init_fvm(ks, ks.ps)
 KitBase.reconstruct!(ks, ctr)
 KitBase.evolve!(ks, ctr, face, dt)
 res = zeros(4)
@@ -162,7 +162,7 @@ KitBase.update!(ks, ctr, face, dt, res)
 D = KitBase.read_dict("t1_0f.txt")
 set = KitBase.set_setup(D)
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
-ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+ctr, face = KitBase.init_fvm(ks, ks.ps)
 KitBase.reconstruct!(ks, ctr)
 KitBase.evolve!(ks, ctr, face, dt)
 res = zeros(4)

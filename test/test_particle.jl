@@ -132,21 +132,21 @@ begin
 end
 
 begin
-    ctr = OffsetArray{KitBase.ControlVolumeParticle1D}(undef, eachindex(ks.pSpace.x))
-    face = Array{KitBase.Interface1D}(undef, ks.pSpace.nx + 1)
+    ctr = OffsetArray{KitBase.ControlVolumeParticle1D}(undef, eachindex(ks.ps.x))
+    face = Array{KitBase.Interface1D}(undef, ks.ps.nx + 1)
     for i in eachindex(ctr)
-        prim = [1.0, 0.0, primL[3] + 2.0 * (ks.pSpace.x[i] - ks.pSpace.x0), 1.0]
+        prim = [1.0, 0.0, primL[3] + 2.0 * (ks.ps.x[i] - ks.ps.x0), 1.0]
 
         ctr[i] = KitBase.ControlVolumeParticle1D(
-            ks.pSpace.x[i],
-            ks.pSpace.dx[i],
+            ks.ps.x[i],
+            ks.ps.dx[i],
             KitBase.prim_conserve(prim, ks.gas.γ),
             prim,
             KitBase.vhs_collision_time(prim, ks.gas.μᵣ, ks.gas.ω),
         )
     end
 
-    for i = 1:ks.pSpace.nx+1
+    for i = 1:ks.ps.nx+1
         face[i] = KitBase.Interface1D(ctr[1].w)
     end
 

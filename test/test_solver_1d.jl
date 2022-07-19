@@ -52,7 +52,7 @@ KitBase.evolve!(ks, ctr, face, dt; mode = :kfvs)
 KitBase.evolve!(ks, ctr, face, dt; mode = :kcu)
 
 gas = KitBase.Gas()
-ks1 = KitBase.SolverSet(ks.set, ks.pSpace, ks.vSpace, gas, ks.ib, ks.outputFolder)
+ks1 = KitBase.SolverSet(ks.set, ks.ps, ks.vs, gas, ks.ib, ks.outputFolder)
 KitBase.init_ptc!(ks1, ctr, mode = :soa)
 KitBase.init_ptc!(ks1, ctr, mode = :aos)
 

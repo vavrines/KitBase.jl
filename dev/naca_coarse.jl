@@ -60,7 +60,7 @@ end
 
 ks = KitBase.SolverSet(set, ps, vs, gas, ib, @__DIR__)
 
-ctr, face = KitBase.init_fvm(ks, ks.pSpace)
+ctr, face = KitBase.init_fvm(ks, ks.ps)
 #@load "ctr.jld2" ctr
 
 dt = KitBase.timestep(ks, ctr, 0.0)
@@ -68,8 +68,8 @@ nt = ks.set.maxTime ÷ dt |> Int
 res = zeros(4)
 @showprogress for iter = 1:nt
     @inbounds Threads.@threads for i in eachindex(face)
-        vn = ks.vSpace.u .* face[i].n[1] .+ ks.vSpace.v .* face[i].n[2]
-        vt = ks.vSpace.v .* face[i].n[1] .- ks.vSpace.u .* face[i].n[2]
+        vn = ks.vs.u .* face[i].n[1] .+ ks.vs.v .* face[i].n[2]
+        vt = ks.vs.v .* face[i].n[1] .- ks.vs.u .* face[i].n[2]
 
         if !(-1 in ps.edgeCells[i, :])
             KitBase.flux_kfvs!(
@@ -82,7 +82,7 @@ res = zeros(4)
                 ctr[ps.edgeCells[i, 2]].b,
                 vn,
                 vt,
-                ks.vSpace.weights,
+                ks.vs.weights,
                 dt,
                 face[i].len,
             )
@@ -102,7 +102,7 @@ res = zeros(4)
                     ctr[ps.edgeCells[i, idx]].b,
                     vn,
                     vt,
-                    ks.vSpace.weights,
+                    ks.vs.weights,
                     ks.gas.K,
                     dt,
                     face[i].len,
@@ -133,15 +133,15 @@ res = zeros(4)
                 face[ps.cellEdges[i, 3]].fw,
                 face[ps.cellEdges[i, 3]].fh,
                 face[ps.cellEdges[i, 3]].fb,
-                ks.vSpace.u,
-                ks.vSpace.v,
-                ks.vSpace.weights,
+                ks.vs.u,
+                ks.vs.v,
+                ks.vs.weights,
                 ks.gas.K,
                 ks.gas.γ,
                 ks.gas.μᵣ,
                 ks.gas.ω,
                 ks.gas.Pr,
-                ks.pSpace.cellArea[i],
+                ks.ps.cellArea[i],
                 dirc,
                 dt,
                 sumres,

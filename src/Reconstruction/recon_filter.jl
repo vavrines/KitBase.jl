@@ -7,9 +7,11 @@ $(SIGNATURES)
 
 Filter of modal solutions
 
-- @arg u: 1D modal solution
-- @arg args...: filter parameters including strength, norm, etc.
-- @arg filter: symbolic filter options including :l2, l2opt, :l1, :lasso, :exp, :houli
+# Arguments
+
+- ``u``: 1D modal solution
+- ``args...``: filter parameters including strength, norm, etc.
+- ``filter``: symbolic filter options including `:l2`, `l2opt`, `:l1`, `:lasso`, `:exp`, `:houli`
 """
 function modal_filter!(u::AA{T}, args...; filter::Symbol) where {T<:FN}
     filtstr = "filter_" * string(filter) * "!"
@@ -18,6 +20,7 @@ function modal_filter!(u::AA{T}, args...; filter::Symbol) where {T<:FN}
 
     return nothing
 end
+
 
 function filter_l2!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
@@ -46,6 +49,7 @@ function filter_l2!(u::AM{T}, args...) where {T<:FN}
 
     return nothing
 end
+
 
 function filter_l2opt!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
@@ -90,6 +94,7 @@ function filter_l2opt!(u::AM{T}, args...) where {T<:FN}
     return nothing
 end
 
+
 function filter_l1!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
     q1 = eachindex(u) |> last
@@ -127,6 +132,7 @@ function filter_l1!(u::AM{T}, args...) where {T<:FN}
     return nothing
 end
 
+
 function filter_lasso!(u::AV{T}, args...) where {T<:FN}
     q0 = eachindex(u) |> first
     @assert q0 >= 0
@@ -149,6 +155,7 @@ function filter_lasso!(u::AM{T}, args...) where {T<:FN}
 
     return nothing
 end
+
 
 function filter_exp!(u::AV{T}, args...) where {T<:FN}
     N = length(u) - 1
@@ -190,16 +197,6 @@ function filter_houli!(u::AV{T}, args...) where {T<:FN}
     return nothing
 end
 
-
-"""
-$(SIGNATURES)
-
-Construct exponential filter for modal solution
-
-- @arg N: degree of polynomials
-- @arg s: order of filter (must be even)
-- @arg Nc: cutoff location
-"""
 function filter_exp1d(N, s, Nc = 0)
     alpha = -log(eps())
 

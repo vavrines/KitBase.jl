@@ -5,7 +5,7 @@
 """
 $(SIGNATURES)
 
-linear average of slopes
+Linear average
 """
 linear(sL, sR) = 0.5 * (sL + sR)
 
@@ -22,7 +22,7 @@ vanleer(sL, sR) =
 """
 $(SIGNATURES)
 
-Triangle
+Triangle case
 """
 function vanleer(sL, s, sR, connect = 2)
     δ = begin
@@ -61,7 +61,7 @@ minmod(sL, sR) = 0.5 * (fortsign(1.0, sL) + fortsign(1.0, sR)) * min(abs(sR), ab
 """
 $(SIGNATURES)
 
-Triangle
+Triangle case
 """
 function minmod(sL, s, sR, connect = 2)
     δ = begin

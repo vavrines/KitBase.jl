@@ -22,7 +22,7 @@ ks = SolverSet(set, pSpace, vSpace, property, ib)
 
 ctr, face = KitBase.init_fvm(ks)
 for i in eachindex(ctr)
-    ctr[i].w = sin(2π * ks.pSpace.x[i])
+    ctr[i].w = sin(2π * ks.ps.x[i])
 end
 
 dt = 1e-3

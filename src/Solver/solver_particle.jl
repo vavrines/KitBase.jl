@@ -134,16 +134,16 @@ function free_transport!(KS::SolverSet, x, v, flag, dt, np = length(x))
         x[i] += v[i, 1] * dt
 
         flag[i] = 0
-        if x[i] < KS.pSpace.x0
+        if x[i] < KS.ps.x0
             flag[i] = 1
-        elseif x[i] > KS.pSpace.x1
+        elseif x[i] > KS.ps.x1
             flag[i] = 2
         end
 
         #if flag[i] != 0
         #    x0 = x[i] - v[i, 1]*dt
         #    vi = @view v[i, :]
-        #    x[i] = boundary!(x[i], vi, (KS.ib, [KS.pSpace.x0, KS.pSpace.x1], x0, flag[i], dt))
+        #    x[i] = boundary!(x[i], vi, (KS.ib, [KS.ps.x0, KS.ps.x1], x0, flag[i], dt))
         #end
     end
 
@@ -154,7 +154,7 @@ end
 
 function bgk_transport!(KS::SolverSet, ctr, ptc, ptc_new, dt, np = KS.gas.np)
 
-    @inbounds for i = 1:KS.pSpace.nx
+    @inbounds for i = 1:KS.ps.nx
         ctr[i].wf .= ctr[i].w
     end
 
@@ -171,9 +171,9 @@ function bgk_transport!(KS::SolverSet, ctr, ptc, ptc_new, dt, np = KS.gas.np)
             ctr[cellid].wf[2] -= ptc.m[i] * ptc.v[i, 1] / ctr[cellid].dx
             ctr[cellid].wf[3] -= 0.5 * ptc.m[i] * sum(ptc.v[i, :] .^ 2) / ctr[cellid].dx
 
-            if ptc.x[i] >= KS.pSpace.x0 && ptc.x[i] <= KS.pSpace.x1
+            if ptc.x[i] >= KS.ps.x0 && ptc.x[i] <= KS.ps.x1
                 npt += 1
-                ptc.idx[i] = find_idx(KS.pSpace.x[1:end], ptc.x[i], mode = :uniform)
+                ptc.idx[i] = find_idx(KS.ps.x[1:end], ptc.x[i], mode = :uniform)
 
                 ptc_new.m[npt] = ptc.m[i]
                 ptc_new.x[npt] = ptc.x[i]
@@ -197,8 +197,8 @@ function bgk_transport!(KS::SolverSet, ctr, ptc, ptc_new, dt, np = KS.gas.np)
                 ctr[cellid].wf[2] -= ptc.m[i] * ptc.v[i, 1] / ctr[cellid].dx
                 ctr[cellid].wf[3] -= 0.5 * ptc.m[i] * sum(ptc.v[i, :] .^ 2) / ctr[cellid].dx
 
-                if ptc[i].x >= KS.pSpace.x0 && ptc[i].x <= KS.pSpace.x1
-                    cellid_tmp = find_idx(KS.pSpace.x[1:end], ptc.x[i], mode = :uniform)
+                if ptc[i].x >= KS.ps.x0 && ptc[i].x <= KS.ps.x1
+                    cellid_tmp = find_idx(KS.ps.x[1:end], ptc.x[i], mode = :uniform)
 
                     ctr[cellid_tmp].wf[1] += ptc.m[i] / ctr[cellid_tmp].dx
                     ctr[cellid_tmp].wf[2] += ptc.m[i] * ptc.v[i, 1] / ctr[cellid_tmp].dx
@@ -211,7 +211,7 @@ function bgk_transport!(KS::SolverSet, ctr, ptc, ptc_new, dt, np = KS.gas.np)
 
     end
 
-    @inbounds for i = 1:KS.pSpace.nx
+    @inbounds for i = 1:KS.ps.nx
         ctr[i].wp .= 0.0
     end
     @inbounds for i = 1:npt
@@ -234,7 +234,7 @@ function boundary!(KS, ctr, ptc, face, dt, bc = :maxwell::Symbol)
 
     if bc == :fix
 
-        ng = 1 - firstindex(KS.pSpace.x)
+        ng = 1 - firstindex(KS.ps.x)
 
         # left boundary
         @inbounds for i = 1:ng
@@ -258,7 +258,7 @@ function boundary!(KS, ctr, ptc, face, dt, bc = :maxwell::Symbol)
 
         # right boundary
         @inbounds for i = 1:ng
-            idx = KS.pSpace.nx + i
+            idx = KS.ps.nx + i
             npc = ceil(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
             for j = 1:npc
                 np += 1
@@ -287,7 +287,7 @@ function boundary!(KS, ctr, ptc, face, dt, bc = :maxwell::Symbol)
                 ptc.x[i] = maxwell_boundary!(
                     ptc.x[i],
                     vi,
-                    (KS.ib, [KS.pSpace.x0, KS.pSpace.x1], x0, ptc.flag[i], dt),
+                    (KS.ib, [KS.ps.x0, KS.ps.x1], x0, ptc.flag[i], dt),
                 )
             end
         end
@@ -345,7 +345,7 @@ function bgk_collision!(
     sum_avg = zeros(3)
 
     npt = KS.gas.np
-    @inbounds for i = 1:KS.pSpace.nx
+    @inbounds for i = 1:KS.ps.nx
         # fluid variables
         wold = deepcopy(ctr[i].w)
         @. ctr[i].wf += (face[i].fw - face[i+1].fw) / ctr[i].dx
@@ -390,7 +390,7 @@ function bgk_collision!(
         end
     end
 
-    @. res = sqrt(KS.pSpace.nx * sum_res) / (sum_avg + 1e-8)
+    @. res = sqrt(KS.ps.nx * sum_res) / (sum_avg + 1e-8)
     KS.gas.np = npt
 
     return nothing
@@ -410,7 +410,7 @@ function sort!(
 
     # calculate cell indices of particles
     @inbounds for i = 1:np
-        idx[i] = find_idx(KS.pSpace.x[1:end], x[i], mode = mode)
+        idx[i] = find_idx(KS.ps.x[1:end], x[i], mode = mode)
     end
 
     # count the number of particles in each cell
@@ -511,18 +511,18 @@ end
 
 
 function stat!(KS, ctr, ptc)
-    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].w .= 0.0
     end
 
-    @inbounds Threads.@threads for i in eachindex(ptc.x)
+    @inbounds @threads for i in eachindex(ptc.x)
         ctr[ptc.idx[i]].w[1] += ptc.m[i] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[2] += ptc.m[i] * ptc.v[i, 1] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[3] += ptc.m[i] * ptc.v[i, 2] / ctr[ptc.idx[i]].dx
         ctr[ptc.idx[i]].w[4] += 0.5 * ptc.m[i] * sum(ptc.v[i, :] .^ 2) / ctr[ptc.idx[i]].dx
     end
 
-    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].prim .= KitBase.conserve_prim(ctr[i].w, KS.gas.γ)
     end
 end
@@ -565,7 +565,7 @@ function particle_transport!(
     dt,
 ) where {T1<:AbstractSolverSet,T2<:AA{ControlVolumeParticle1D,1},T3<:AA{Particle1D,1}}
 
-    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].wf .= ctr[i].w
     end
 
@@ -581,11 +581,11 @@ function particle_transport!(
             ctr[cellid].wf[2] -= ptc[i].m * ptc[i].v[1] / ctr[cellid].dx
             ctr[cellid].wf[3] -= 0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cellid].dx
 
-            if ptc[i].x >= KS.pSpace.x0 && ptc[i].x <= KS.pSpace.x1
+            if ptc[i].x >= KS.ps.x0 && ptc[i].x <= KS.ps.x1
                 npt += 1
 
-                cellid_tmp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[1].dx))
-                #cellid_tmp = find_idx(KS.pSpace.x[1:KS.pSpace.nx], ptc[i].x, mode=:uniform)
+                cellid_tmp = Int(ceil((ptc[i].x - KS.ps.x0) / ctr[1].dx))
+                #cellid_tmp = find_idx(KS.ps.x[1:KS.ps.nx], ptc[i].x, mode=:uniform)
 
                 sample_particle!(
                     ptc_tmp[npt],
@@ -608,9 +608,9 @@ function particle_transport!(
                 ctr[cellid].wf[2] -= ptc[i].m * ptc[i].v[1] / ctr[cellid].dx
                 ctr[cellid].wf[3] -= 0.5 * ptc[i].m * sum(ptc[i].v .^ 2) / ctr[cellid].dx
 
-                if ptc[i].x >= KS.pSpace.x0 && ptc[i].x <= KS.pSpace.x1
-                    cellid_tmp = Int(ceil((ptc[i].x - KS.pSpace.x0) / ctr[1].dx))
-                    #cellid_tmp = find_idx(KS.pSpace.x[1:KS.pSpace.nx], ptc[i].x, mode=:uniform)
+                if ptc[i].x >= KS.ps.x0 && ptc[i].x <= KS.ps.x1
+                    cellid_tmp = Int(ceil((ptc[i].x - KS.ps.x0) / ctr[1].dx))
+                    #cellid_tmp = find_idx(KS.ps.x[1:KS.ps.nx], ptc[i].x, mode=:uniform)
 
                     ctr[cellid_tmp].wf[1] += ptc[i].m / ctr[cellid_tmp].dx
                     ctr[cellid_tmp].wf[2] += ptc[i].m * ptc[i].v[1] / ctr[cellid_tmp].dx
@@ -621,7 +621,7 @@ function particle_transport!(
         end
     end
 
-    @inbounds Threads.@threads for i = 1:KS.pSpace.nx
+    @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].wp .= 0.0
     end
     @inbounds for i = 1:npt
@@ -656,7 +656,7 @@ function particle_collision!(
     sum_avg = zeros(3)
 
     npt = KS.gas.np
-    @inbounds for i = 1:KS.pSpace.nx
+    @inbounds for i = 1:KS.ps.nx
         # fluid variables
         wold = deepcopy(ctr[i].w)
         @. ctr[i].wf += (face[i].fw - face[i+1].fw) / ctr[i].dx
@@ -701,11 +701,11 @@ function particle_collision!(
                 KS.gas.μᵣ,
                 KS.gas.ω,
             )
-            #sample_particle!(ptc_temp[npt], KS.gas.m, primG, KS.vSpace.u0, KS.vSpace.u1, ctr[i].x, ctr[i].dx, i, KS.gas.μᵣ, KS.gas.ω)
+            #sample_particle!(ptc_temp[npt], KS.gas.m, primG, KS.vs.u0, KS.vs.u1, ctr[i].x, ctr[i].dx, i, KS.gas.μᵣ, KS.gas.ω)
         end
     end
 
-    @. res = sqrt(KS.pSpace.nx * sum_res) / (sum_avg + 1e-8)
+    @. res = sqrt(KS.ps.nx * sum_res) / (sum_avg + 1e-8)
     KS.gas.np = npt
     return nothing
 
@@ -728,7 +728,7 @@ function particle_boundary!(
 
     if bc == :fix
         # ghost cell
-        ng = 1 - first(eachindex(KS.pSpace.x))
+        ng = 1 - first(eachindex(KS.ps.x))
 
         # left boundary
         @inbounds for i = 1:ng
@@ -742,7 +742,7 @@ function particle_boundary!(
 
         # right boundary
         @inbounds for i = 1:ng
-            idx = KS.pSpace.nx + i
+            idx = KS.ps.nx + i
             npc = ceil(ctr[idx].w[1] * ctr[idx].dx / KS.gas.m) |> Int
             for j = 1:npc
                 np += 1
@@ -763,7 +763,7 @@ $(SIGNATURES)
 Duplicate particles: ptc_new -> ptc
 """
 function duplicate!(ptc, ptc_new, n = length(ptc))
-    @inbounds Threads.@threads for i = 1:n
+    @inbounds @threads for i = 1:n
         ptc[i].m = ptc_new[i].m
         ptc[i].x = ptc_new[i].x
         ptc[i].v .= ptc_new[i].v
@@ -776,7 +776,7 @@ function duplicate!(ptc, ptc_new, n = length(ptc))
 end
 
 function duplicate!(ptc::Particle, ptc_tmp, n = length(ptc.x))
-    @inbounds Threads.@threads for i = 1:n
+    @inbounds @threads for i = 1:n
         ptc.m[i] = ptc_tmp.m[i]
         ptc.x[i] = ptc_tmp.x[i]
         ptc.v[i, :] .= ptc_tmp.v[i, :]

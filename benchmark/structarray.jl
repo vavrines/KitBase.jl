@@ -49,8 +49,8 @@ end
 
 ks = SolverSet(D)
 
-ctr, a1face, a2face = KitBase.init_fvm(ks, ks.pSpace; structarray = true)
-ctr0, a1face0, a2face0 = KitBase.init_fvm(ks, ks.pSpace; structarray = false)
+ctr, a1face, a2face = KitBase.init_fvm(ks, ks.ps; structarray = true)
+ctr0, a1face0, a2face0 = KitBase.init_fvm(ks, ks.ps; structarray = false)
 
 using BenchmarkTools
 

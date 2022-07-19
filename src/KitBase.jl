@@ -64,19 +64,31 @@ const itp = PyNULL()
 function __init__()
     np = nworkers()
     nt = Threads.nthreads()
-    if np == 1 && nt == 1 && !has_cuda()
-        @info "Kinetic will run in serial"
-    else
-        if has_cuda()
-            @info "Kinetic will run in parallel with $np workers, $nt threads and CUDA"
-            for (i, dev) in enumerate(CUDA.devices())
-                @info "$i: $(CUDA.name(dev))"
-            end
-            #@info "Scalar operation is disabled in CUDA"
-            CUDA.allowscalar(false)
+
+    show_worker(np) = begin
+        if np == 1
+            "$np worker"
         else
-            @info "Kinetic will run in parallel with $np workers and $nt threads"
+            "$np workers"
         end
+    end
+    show_thread(nt) = begin
+        if nt == 1
+            "$nt thread"
+        else
+            "$nt threads"
+        end
+    end
+
+    if has_cuda()
+        @info "Kinetic will run with $(show_worker(np)), $(show_thread(nt)) and CUDA"
+        for (i, dev) in enumerate(CUDA.devices())
+            @info "$i: $(CUDA.name(dev))"
+        end
+        #@info "Scalar operation is disabled in CUDA"
+        CUDA.allowscalar(false)
+    else
+        @info "Kinetic will run with $(show_worker(np)) and $(show_thread(nt))"
     end
 
     copy!(itp, pyimport("scipy.interpolate"))

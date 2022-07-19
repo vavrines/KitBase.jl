@@ -33,10 +33,13 @@ $(SIGNATURES)
 
 Calculation of the spherical harmonic for a given order (l,m) in Cartesian coordinates
 
-- @arg l: degree of spherical harmonics
-- @arg m: order of spherical harmonics
-- @arg x, y, z: Cartesian coordinates
-- @return: spherical harmonic polynomial
+# Arguments
+- ``l``: degree of spherical harmonics
+- ``m``: order of spherical harmonics
+- ``x, y, z``: Cartesian coordinates
+
+# Outputs
+- spherical harmonic polynomial
 """
 function ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
     if abs(m) > l
