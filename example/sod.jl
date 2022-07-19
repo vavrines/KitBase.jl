@@ -14,10 +14,11 @@ ctr, face = init_fvm(ks, :static_array; structarray = true)
 t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
 nt = ks.set.maxTime ÷ dt |> Int
+res = zeros(3)
 @showprogress for iter = 1:nt
     reconstruct!(ks, ctr)
     evolve!(ks, ctr, face, dt)
-    update!(ks, ctr, face, dt, zeros(3))
+    update!(ks, ctr, face, dt, res)
 end
 
 plot(ks, ctr)
