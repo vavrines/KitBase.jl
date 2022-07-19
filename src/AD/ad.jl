@@ -17,8 +17,14 @@ $(SIGNATURES)
 """
 ∂maxwellian(u::Real, prim::AV) = ∂maxwellian(u, prim[1], prim[2], prim[end])
 
+"""
+$(SIGNATURES)
+"""
 function ∂maxwellian(u::AV, ρ, U, λ)
     ∂maxwellian.(u::AV, ρ, U, λ)
 end
 
+"""
+$(SIGNATURES)
+"""
 ∂maxwellian(u::AV, prim::AV) = ∂maxwellian(u, prim[1], prim[2], prim[end])

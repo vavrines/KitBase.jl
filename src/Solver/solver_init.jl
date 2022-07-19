@@ -3,9 +3,9 @@
 # ============================================================
 
 """
-$(TYPEDSIGNATURES)
+$(SIGNATURES)
 
-Initialize solver...
+Initialize solver
 """
 function initialize(configfilename::AbstractString)
     println("==============================================================")
@@ -33,7 +33,7 @@ function initialize(configfilename::AbstractString)
 end
 
 """
-$(TYPEDSIGNATURES)
+$(SIGNATURES)
 """
 function initialize(config::AbstractDict)
     println("==============================================================")
@@ -52,24 +52,24 @@ end
 
 
 """
-$(TYPEDSIGNATURES)
+$(SIGNATURES)
 
-Initialize finite volume method...
+Initialize finite volume data structure
 """
 function init_fvm(
-    KS::T,
+    KS,
     array = :dynamic_array;
     structarray = false,
-) where {T<:AbstractSolverSet}
+)
     return init_fvm(KS, KS.ps, array; structarray = structarray)
 end
 
 function init_fvm(
-    KS::T,
-    ps::T1,
+    KS,
+    ps::AbstractPhysicalSpace1D,
     array = :dynamic_array;
     structarray = false,
-) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace1D}
+)
 
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
@@ -212,11 +212,11 @@ function init_fvm(
 end
 
 function init_fvm(
-    KS::T,
-    ps::T1,
+    KS,
+    ps::AbstractPhysicalSpace2D,
     array = :dynamic_array;
     structarray = false,
-) where {T<:AbstractSolverSet,T1<:AbstractPhysicalSpace2D}
+)
 
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
@@ -330,11 +330,11 @@ function init_fvm(
 end
 
 function init_fvm(
-    KS::T,
+    KS,
     ps::UnstructPSpace,
     array = :dynamic_array;
     structarray = false,
-) where {T<:AbstractSolverSet}
+)
 
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
@@ -601,11 +601,11 @@ $(SIGNATURES)
 Initialize particles based on flow conditions
 """
 function init_ptc!(
-    KS::SolverSet,
-    ctr::AV{T};
-    mode = :soa::Symbol,
-    factor = 1::Real,
-) where {T<:AbstractControlVolume}
+    KS,
+    ctr::AV;
+    mode = :soa,
+    factor = 1,
+)
     if mode == :soa
         init_ptc_soa!(KS, ctr, factor)
     elseif mode == :aos
@@ -620,10 +620,10 @@ $(SIGNATURES)
 Initialize particles with array of structs
 """
 function init_ptc_aos!(
-    KS::SolverSet,
-    ctr::AV{T},
+    KS,
+    ctr::AV,
     factor = 1,
-) where {T<:AbstractControlVolume}
+)
 
     np = 0
     for i in eachindex(ctr)
@@ -665,10 +665,10 @@ $(SIGNATURES)
 Initialize particles with struct of arrays
 """
 function init_ptc_soa!(
-    KS::SolverSet,
-    ctr::AV{T},
+    KS,
+    ctr::AV,
     factor = 1,
-) where {T<:AbstractControlVolume}
+)
 
     np = 0
     for i in eachindex(ctr)
