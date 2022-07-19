@@ -3,7 +3,7 @@ $(SIGNATURES)
 
 Calculate moments of Gaussian distribution `G = (λ / π)^(D / 2) * exp[-λ(c^2 + ξ^2)]`
 """
-function gauss_moments(prim::T) where {T<:AA{<:Real,1}}
+function gauss_moments(prim)
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
@@ -63,7 +63,7 @@ $(SIGNATURES)
 
 A more general function dealing with internal energy
 """
-function gauss_moments(prim::T, inK) where {T<:AA{<:Real,1}}
+function gauss_moments(prim, inK)
     if eltype(prim) <: Int
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
@@ -134,7 +134,7 @@ $(SIGNATURES)
 
 Calculate conservative moments of particle distribution
 """
-moments_conserve(Mu::T, alpha::I) where {T<:OffsetArray{<:FN,1},I<:Integer} = Mu[alpha]
+moments_conserve(Mu::OffsetArray{T,1}, alpha::Integer) where {T} = Mu[alpha]
 
 """
 $(SIGNATURES)
@@ -142,9 +142,9 @@ $(SIGNATURES)
 function moments_conserve(
     Mu::T,
     Mxi::T,
-    alpha::I,
-    delta::I,
-) where {T<:OffsetArray{<:FN,1},I<:Integer}
+    alpha::Integer,
+    delta::Integer,
+) where {T<:OffsetArray{TN,1}} where {TN}
 
     uv = similar(Mu, 3)
     uv[1] = Mu[alpha] * Mxi[delta÷2]
@@ -162,10 +162,10 @@ function moments_conserve(
     Mu::T,
     Mv::T,
     Mw::T,
-    alpha::I,
-    beta::I,
-    delta::I,
-) where {T<:OffsetArray{<:FN,1},I<:Integer}
+    alpha::Integer,
+    beta::Integer,
+    delta::Integer,
+) where {T<:OffsetArray{TN,1}} where {TN}
 
     if length(Mw) == 3 # internal motion
         uv = similar(Mu, 4)
@@ -203,7 +203,7 @@ Discrete moments of conservative variables
 
 1F1V
 """
-function moments_conserve(f::X, u::T, ω::T) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
+function moments_conserve(f::X, u::T, ω::T) where {X<:AV,T<:AV}
     w = similar(f, 3)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -215,13 +215,25 @@ end
 """
 $(SIGNATURES)
 
-2F1V
+2F1V or 1F2V (in unstructured mesh)
 """
-function moments_conserve(h::X, b::X, u::T, ω::T) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
-    w = similar(h, 3)
-    w[1] = discrete_moments(h, u, ω, 0)
-    w[2] = discrete_moments(h, u, ω, 1)
-    w[3] = 0.5 * (discrete_moments(h, u, ω, 2) + discrete_moments(b, u, ω, 0))
+function moments_conserve(a1::AV, a2::AV, a3::T, a4::T) where {T<:AV}
+    if minimum(a2) < -0.9
+        f, u, v, ω = a1, a2, a3, a4
+
+        w = similar(f, 4)
+        w[1] = discrete_moments(f, u, ω, 0)
+        w[2] = discrete_moments(f, u, ω, 1)
+        w[3] = discrete_moments(f, v, ω, 1)
+        w[4] = 0.5 * (discrete_moments(f, u, ω, 2) + discrete_moments(f, v, ω, 2))
+    else
+        h, b, u, ω = a1, a2, a3, a4
+
+        w = similar(h, 3)
+        w[1] = discrete_moments(h, u, ω, 0)
+        w[2] = discrete_moments(h, u, ω, 1)
+        w[3] = 0.5 * (discrete_moments(h, u, ω, 2) + discrete_moments(b, u, ω, 0))
+    end
 
     return w
 end
@@ -229,9 +241,9 @@ end
 """
 $(SIGNATURES)
 
-1F2V
+1F2V (in structured mesh)
 """
-function moments_conserve(f::X, u::T, v::T, ω::T) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
+function moments_conserve(f::X, u::T, v::T, ω::T) where {X<:AM,T<:AM}
     w = similar(f, 4)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -246,7 +258,7 @@ $(SIGNATURES)
 
 2F2V
 """
-function moments_conserve(h::X, b::X, u::T, v::T, ω::T) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
+function moments_conserve(h::X, b::X, u::T, v::T, ω::T) where {X<:AA,T<:AA}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -323,7 +335,7 @@ function moments_conserve(
     h3::X,
     u::T,
     ω::T,
-) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
+) where {X<:AV,T<:AV}
     moments = similar(h0, 5)
 
     moments[1] = discrete_moments(h0, u, ω, 0)
@@ -347,7 +359,7 @@ function diatomic_moments_conserve(
     r::X,
     u::T,
     ω::T,
-) where {X<:AA{<:FN,1},T<:AA{<:FN,1}}
+) where {X<:AV,T<:AV}
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -372,7 +384,7 @@ function diatomic_moments_conserve(
     u::T,
     v::T,
     ω::T,
-) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
+) where {X<:AA,T<:AA}
     w = similar(h0, 5)
     w[1] = discrete_moments(h0, u, ω, 0)
     w[2] = discrete_moments(h0, u, ω, 1)
@@ -397,18 +409,18 @@ Calculate slope-related conservative moments
 `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
 """
-moments_conserve_slope(a, Mu::T, alpha::I) where {T<:OffsetArray{<:Real,1},I<:Int} =
+moments_conserve_slope(a, Mu::OffsetArray{T,1}, alpha::Integer) where {T} =
     a * moments_conserve(Mu, alpha)
 
 """
 $(SIGNATURES)
 """
 moments_conserve_slope(
-    a::X,
+    a::AV,
     Mu::Y,
     Mxi::Y,
-    alpha::I,
-) where {X<:AA{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Int} =
+    alpha::Integer,
+) where {Y} =
     a[1] .* moments_conserve(Mu, Mxi, alpha + 0, 0) .+
     a[2] .* moments_conserve(Mu, Mxi, alpha + 1, 0) .+
     0.5 * a[3] .* moments_conserve(Mu, Mxi, alpha + 2, 0) .+
@@ -418,14 +430,14 @@ moments_conserve_slope(
 $(SIGNATURES)
 """
 function moments_conserve_slope(
-    a::X,
+    a::AV,
     Mu::Y,
     Mv::Y,
     Mw::Y,
-    alpha::I,
-    beta::I,
-    delta = 0::I,
-) where {X<:AA{<:Real,1},Y<:OffsetArray{<:Real,1},I<:Integer}
+    alpha::Integer,
+    beta::Integer,
+    delta = 0::Integer,
+) where {Y}
 
     if length(a) == 4
         return a[1] .* moments_conserve(Mu, Mv, Mw, alpha + 0, beta + 0, 0) .+
@@ -579,10 +591,10 @@ $(SIGNATURES)
 heat_flux(
     h::X,
     b::X,
-    prim::Y,
+    prim::AV,
     u::Z,
     ω::Z,
-) where {X<:AA{<:FN,1},Y<:AA{<:Real,1},Z<:AA{<:FN,1}} =
+) where {X<:AV,Z<:AV} =
     0.5 * (sum(@. ω * (u - prim[2]) * (u - prim[2])^2 * h) + sum(@. ω * (u - prim[2]) * b))
 
 """
@@ -594,10 +606,10 @@ function heat_flux(
     h::X,
     b::X,
     r::X,
-    prim::Y,
+    prim::AV,
     u::Z,
     ω::Z,
-) where {X<:AA{<:FN,1},Y<:AA{<:Real,1},Z<:AA{<:FN,1}}
+) where {X<:AV,Z<:AV}
 
     q = similar(h, 2)
 
@@ -616,12 +628,12 @@ $(SIGNATURES)
 1F2V
 """
 function heat_flux(
-    h::X,
+    h::AM,
     prim::Y,
     u::Z,
     v::Z,
     ω::Z,
-) where {X<:AA{<:FN,2},Y<:AA{<:Real,1},Z<:AA{<:FN,2}}
+) where {Y<:AV,Z<:AM}
 
     q = similar(h, 2)
     q[1] = 0.5 * sum(@. ω * (u - prim[2]) * ((u - prim[2])^2 + (v - prim[3])^2) * h)
@@ -639,11 +651,11 @@ $(SIGNATURES)
 function heat_flux(
     h::X,
     b::X,
-    prim::Y,
+    prim::AV,
     u::Z,
     v::Z,
     ω::Z,
-) where {X<:AA{<:FN,2},Y<:AA{<:Real,1},Z<:AA{<:FN,2}}
+) where {X<:AA{<:FN,2},Z<:AA{<:FN,2}}
 
     q = similar(h, 2)
 
@@ -671,11 +683,11 @@ function heat_flux(
     h::X,
     b::X,
     r::X,
-    prim::Y,
+    prim::AV,
     u::Z,
     v::Z,
     ω::Z,
-) where {X<:AA{<:FN,2},Y<:AA{<:Real,1},Z<:AA{<:FN,2}}
+) where {X<:AA{<:FN,2},Z<:AA{<:FN,2}}
 
     q = similar(h, 4)
 
@@ -702,13 +714,13 @@ $(SIGNATURES)
 1F3V
 """
 function heat_flux(
-    f::X,
-    prim::Y,
+    f::AA{T,3},
+    prim::AV,
     u::Z,
     v::Z,
     w::Z,
     ω::Z,
-) where {X<:AA{<:FN,3},Y<:AA{<:Real,1},Z<:AA{<:FN,3}}
+) where {T,Z<:AA{T1,3}} where {T1}
 
     q = similar(f, 3)
 
