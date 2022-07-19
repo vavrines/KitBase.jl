@@ -1,12 +1,12 @@
 function evolve_boundary!(
-    KS::SolverSet,
-    ctr::AM{TC},
-    a1face::AM{TF},
-    a2face::AM{TF},
-    dt,
+    KS,
+    ctr::AM{T},
+    a1face,
+    a2face,
+    dt;
     mode,
     bc,
-) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
+) where {T<:Union{ControlVolume2F,ControlVolume2D2F}}
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D

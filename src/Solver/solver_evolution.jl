@@ -732,7 +732,7 @@ function evolve!(
         end
     end
 
-    evolve_boundary!(KS, ctr, a1face, a2face, dt, mode, bc)
+    evolve_boundary!(KS, ctr, a1face, a2face, dt; mode = mode, bc = bc)
 
     return nothing
 
