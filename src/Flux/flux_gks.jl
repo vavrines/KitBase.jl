@@ -131,11 +131,6 @@ end
 $(SIGNATURES)
 
 Gas kinetic scalar flux
-
-* @args: conservative scalars and their slopes
-* @args: viscosity
-* @args: time step and cell size
-* @return: scalar flux
 """
 function flux_gks(u, μ, dt, a = 0, su = 0.0)
     prim = ifelse(a == 0, conserve_prim(u), conserve_prim(u, a))
@@ -252,10 +247,6 @@ end
 $(SIGNATURES)
 
 Gas kinetic Navier-Stokes flux
-
-* @args: conservative variables and their left/right slopes
-* @args: molecular and thermodynamic parameters
-* @args: time step and cell size
 
 Continuous case
 """

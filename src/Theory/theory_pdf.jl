@@ -79,8 +79,10 @@ $(SIGNATURES)
 
 Reduced distribution function
 
-* @arg : particle distribution function with full velocity space
-* @arg : quadrature weights with reduced velocity setting (v & w by default)
+# Arguments
+* ``f``: particle distribution function with full velocity space
+* ``weights``: quadrature weights with reduced velocity setting (v & w by default)
+* ``dim``: dimension of the reduced distribution function
 """
 function reduce_distribution(f::AM, weights::AV, dim = 1)
     if dim == 1
@@ -169,11 +171,14 @@ $(SIGNATURES)
 
 Recover full distribution function from reduced ones
 
-* @arg h & b : reduced particle distribution function with 1D velocity space
-* @arg u : quadrature nodes in 1D velocity space
-* @arg weights : quadrature weights in 1D velocity space
-* @arg v & w : quadrature nodes in the rest velocity space (with 3D setting)
-* @return f : particle distribution function with 3D velocity space
+# Arguments
+* ``h, b``: reduced particle distribution function with 1D velocity space
+* ``u``: quadrature nodes in 1D velocity space
+* ``weights``: quadrature weights in 1D velocity space
+* ``v, w``: quadrature nodes in the rest velocity space (with 3D setting)
+
+# Outputs
+* ``f``: particle distribution function with 3D velocity space
 """
 function full_distribution(
     h::X,

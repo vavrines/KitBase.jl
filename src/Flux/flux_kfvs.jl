@@ -225,10 +225,6 @@ $(SIGNATURES)
 
 Kinetic flux vector splitting (KFVS) flux
 
-- @args: particle distribution functions and their left/right slopes
-- @args: particle velocity quadrature points and weights
-- @args: time step and cell size
-
 1F1V for pure DOM
 """
 function flux_kfvs!(

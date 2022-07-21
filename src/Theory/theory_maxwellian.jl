@@ -3,10 +3,6 @@ $(SIGNATURES)
 
 Maxwellian in discrete form
 
-* @args: particle velocity quadrature points
-* @args: density, velocity and inverse of temperature
-* @return: Maxwellian distribution function
-
 1V
 """
 maxwellian(u, ρ, U, λ) = @. ρ * sqrt(λ / π) * exp(-λ * (u - U)^2)
