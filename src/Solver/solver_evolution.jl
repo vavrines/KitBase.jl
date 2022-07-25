@@ -107,37 +107,7 @@ function evolve!(
         )
     end
 
-    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
-    if bcs[1] == :maxwell
-        flux_boundary_maxwell!(
-            face[1].fw,
-            face[1].fh,
-            face[1].fb,
-            KS.ib.bc(KS.ps.x0, KS.ib.p),
-            ctr[1].h,
-            ctr[1].b,
-            KS.vs.u,
-            KS.vs.weights,
-            KS.gas.inK,
-            dt,
-            1,
-        )
-    end
-    if bcs[2] == :maxwell
-        flux_boundary_maxwell!(
-            face[KS.ps.nx+1].fw,
-            face[KS.ps.nx+1].fh,
-            face[KS.ps.nx+1].fb,
-            KS.ib.bc(KS.ps.x1, KS.ib.p),
-            ctr[KS.ps.nx].h,
-            ctr[KS.ps.nx].b,
-            KS.vs.u,
-            KS.vs.weights,
-            KS.gas.inK,
-            dt,
-            -1,
-        )
-    end
+    evolve_boundary!(KS, ctr, face, dt; mode = mode, bc = bc)
 
     return nothing
 
