@@ -58,7 +58,7 @@ KitBase.maxwellian(
 )
 
 KitBase.energy_maxwellian(M, prim, 2)
-KitBase.mixture_energy_maxwellian(M, hcat(prim, prim), 2)
+KitBase.mixture_energy_maxwellian(hcat(M, M), hcat(prim, prim), 2)
 
 KitBase.maxwellian!(rand(16), rand(16), prim)
 KitBase.maxwellian!(rand(16, 16), randn(16, 16), randn(16, 16), [1.0, 0.0, 0.0, 1.0])
