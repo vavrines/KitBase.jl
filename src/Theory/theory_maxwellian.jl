@@ -285,3 +285,17 @@ function mixture_maxwellian!(M::AM, u::T, v::T, w::T, prim::AM) where {T<:AM}
     return nothing
 
 end
+
+"""
+$(SIGNATURES)
+
+Reduced Maxwellian distribution related to energy for mixture
+"""
+function mixture_energy_maxwellian(h, prim::AM, K)
+    b = zero(h)
+    for j in axes(prim, 2)
+        b[:, j] .= energy_maxwellian(h[:, j], prim[:, j], K)
+    end
+
+    return b
+end
