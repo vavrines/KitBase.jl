@@ -112,8 +112,13 @@ function flux_boundary_maxwell!(
 
     δ = heaviside.(u .* rot)
     SF = [sum(ω[:, j] .* u[:, j] .* h[:, j] .* (1.0 .- δ[:, j])) for j in axes(h, 2)]
-    SG = [(bc[end, j] / π)^0.5 * sum(ω[:, j] .* u[:, j] .* exp.(-bc[end, j] .* (u[:, j] .- bc[2, j]) .^ 2) .* δ[:, j]) for j in axes(h, 2)]
-    
+    SG = [
+        (bc[end, j] / π)^0.5 * sum(
+            ω[:, j] .* u[:, j] .* exp.(-bc[end, j] .* (u[:, j] .- bc[2, j]) .^ 2) .*
+            δ[:, j],
+        ) for j in axes(h, 2)
+    ]
+
     prim = zero(bc)
     for j in axes(prim, 2)
         prim[:, j] .= [-SF[j] / SG[j]; bc[2:end, j]]
@@ -147,16 +152,7 @@ $(SIGNATURES)
 
 2D Continuum
 """
-function flux_boundary_maxwell!(
-    fw::AV,
-    bc::AV,
-    w::AV,
-    inK,
-    γ,
-    dt,
-    len,
-    rot,
-)
+function flux_boundary_maxwell!(fw::AV, bc::AV, w::AV, inK, γ, dt, len, rot)
 
     @assert length(bc) == 4
 
@@ -330,14 +326,7 @@ Specular reflection boundary flux
 
 1D1F1V
 """
-function flux_boundary_specular!(
-    fw::AV,
-    ff::AV,
-    f::AV,
-    u::T,
-    ω::T,
-    dt,
-) where {T<:AV}
+function flux_boundary_specular!(fw::AV, ff::AV, f::AV, u::T, ω::T, dt) where {T<:AV}
 
     fWall = similar(f)
     for i in eachindex(f)

@@ -3,7 +3,7 @@ $(SIGNATURES)
 
 Kinetic central-upwind (KCU) flux
 """
-flux_kcu!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+flux_kcu!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
     flux_kcu!(face, ctrL, ctrR, KS.gas, KS.vs, args...)
 
 """

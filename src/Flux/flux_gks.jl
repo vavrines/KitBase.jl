@@ -7,7 +7,7 @@ $(SIGNATURES)
 
 Gas kinetic flux
 """
-flux_gks!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+flux_gks!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
     flux_gks!(face, ctrL, ctrR, KS.gas, args...)
 
 """
@@ -17,14 +17,7 @@ Scalar
 
 `flux_gks` is called since there is no in-place operation for scalar
 """
-function flux_gks!(
-    face::Interface,
-    ctrL,
-    ctrR,
-    gas::Scalar,
-    p,
-    dt = 1.0,
-)
+function flux_gks!(face::Interface, ctrL, ctrR, gas::Scalar, p, dt = 1.0)
 
     dxL, dxR = p[1:2]
 
@@ -49,14 +42,7 @@ $(SIGNATURES)
 
 Gas
 """
-function flux_gks!(
-    face::Interface,
-    ctrL,
-    ctrR,
-    gas::Gas,
-    p,
-    dt = 1.0,
-)
+function flux_gks!(face::Interface, ctrL, ctrR, gas::Gas, p, dt = 1.0)
 
     dxL, dxR = p[1:2]
 
@@ -87,14 +73,7 @@ $(SIGNATURES)
 
 Mixture
 """
-function flux_gks!(
-    face::Interface,
-    ctrL,
-    ctrR,
-    gas::Mixture,
-    p,
-    dt = 1.0,
-)
+function flux_gks!(face::Interface, ctrL, ctrR, gas::Mixture, p, dt = 1.0)
 
     dxL, dxR = p[1:2]
 

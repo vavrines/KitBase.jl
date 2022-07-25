@@ -2,6 +2,8 @@
 $(SIGNATURES)
 
 Evolution of interface fluxes
+
+1D continuum
 """
 function evolve!(
     KS::SolverSet,
@@ -23,14 +25,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     @inbounds @threads for i = idx0:idx1
-        fn(
-            KS,
-            face[i],
-            ctr[i-1],
-            ctr[i],
-            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
-            dt,
-        )
+        fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
     return nothing
@@ -39,6 +34,8 @@ end
 
 """
 $(SIGNATURES)
+
+1D1F
 """
 function evolve!(
     KS::SolverSet,
@@ -60,14 +57,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     @inbounds @threads for i = idx0:idx1
-        fn(
-            KS,
-            face[i],
-            ctr[i-1],
-            ctr[i],
-            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
-            dt,
-        )
+        fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
     return nothing
@@ -76,6 +66,8 @@ end
 
 """
 $(SIGNATURES)
+
+1D2F
 """
 function evolve!(
     KS::SolverSet,
@@ -97,14 +89,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     @inbounds @threads for i = idx0:idx1
-        fn(
-            KS,
-            face[i],
-            ctr[i-1],
-            ctr[i],
-            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
-            dt,
-        )
+        fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
     evolve_boundary!(KS, ctr, face, dt; mode = mode, bc = bc)
@@ -115,6 +100,8 @@ end
 
 """
 $(SIGNATURES)
+
+1D4F
 """
 function evolve!(
     KS::SolverSet,
@@ -384,6 +371,8 @@ end
 
 """
 $(SIGNATURES)
+
+2D continuum
 """
 function evolve!(
     KS::SolverSet,
@@ -460,6 +449,8 @@ end
 
 """
 $(SIGNATURES)
+
+2D1F
 """
 function evolve!(
     KS::SolverSet,
@@ -638,6 +629,8 @@ end
 
 """
 $(SIGNATURES)
+
+2D2F
 """
 function evolve!(
     KS::SolverSet,
