@@ -42,19 +42,6 @@ maxwellian(u, v, w, prim::AV) =
 """
 $(SIGNATURES)
 
-Reduced Maxwellian distribution related to energy
-"""
-energy_maxwellian(h, λ, K) = @. h * K / (2.0 * λ)
-
-"""
-$(SIGNATURES)
-"""
-energy_maxwellian(h, prim::AV, K) = energy_maxwellian(h, prim[end], K)
-
-
-"""
-$(SIGNATURES)
-
 In-place Maxwellian
 
 1V
@@ -161,6 +148,19 @@ $(SIGNATURES)
 """
 maxwellian!(M::AA, u::T, v::T, w::T, prim::AV) where {T<:AA} =
     maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
+
+
+"""
+$(SIGNATURES)
+
+Reduced Maxwellian distribution related to energy
+"""
+energy_maxwellian(h, λ, K) = @. h * K / (2.0 * λ)
+
+"""
+$(SIGNATURES)
+"""
+energy_maxwellian(h, prim::AV, K) = energy_maxwellian(h, prim[end], K)
 
 
 """
@@ -291,10 +291,19 @@ $(SIGNATURES)
 
 Reduced Maxwellian distribution related to energy for mixture
 """
-function mixture_energy_maxwellian(h, prim::AM, K)
+function mixture_energy_maxwellian(h::AM, prim::AM, K)
     b = zero(h)
     for j in axes(prim, 2)
         b[:, j] .= energy_maxwellian(h[:, j], prim[:, j], K)
+    end
+
+    return b
+end
+
+function mixture_energy_maxwellian(h::AA{T,3}, prim::AM, K) where {T}
+    b = zero(h)
+    for j in axes(prim, 2)
+        b[:, :, j] .= energy_maxwellian(h[:, :, j], prim[:, j], K)
     end
 
     return b
