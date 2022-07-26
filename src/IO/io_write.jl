@@ -95,7 +95,7 @@ function write_tec(x::AV, sol)
         end
         varnm = varnm * "V" * string(len)
 
-        println(f, "VARIABLES = X, Y, " * varnm)
+        println(f, "VARIABLES = X, " * varnm)
         println(f, "ZONE I = $nx")
 
         dp = "DATAPACKING = BLOCK"
