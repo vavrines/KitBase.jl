@@ -2,6 +2,8 @@
 $(SIGNATURES)
 
 Evolution of interface fluxes
+
+1D continuum
 """
 function evolve!(
     KS::SolverSet,
@@ -23,14 +25,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     @inbounds @threads for i = idx0:idx1
-        fn(
-            KS,
-            face[i],
-            ctr[i-1],
-            ctr[i],
-            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
-            dt,
-        )
+        fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
     return nothing
@@ -39,6 +34,8 @@ end
 
 """
 $(SIGNATURES)
+
+1D1F
 """
 function evolve!(
     KS::SolverSet,
@@ -60,14 +57,7 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     @inbounds @threads for i = idx0:idx1
-        fn(
-            KS,
-            face[i],
-            ctr[i-1],
-            ctr[i],
-            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
-            dt,
-        )
+        fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
     return nothing
@@ -76,6 +66,8 @@ end
 
 """
 $(SIGNATURES)
+
+1D2F
 """
 function evolve!(
     KS::SolverSet,
@@ -97,47 +89,10 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     @inbounds @threads for i = idx0:idx1
-        fn(
-            KS,
-            face[i],
-            ctr[i-1],
-            ctr[i],
-            (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]),
-            dt,
-        )
+        fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
-    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
-    if bcs[1] == :maxwell
-        flux_boundary_maxwell!(
-            face[1].fw,
-            face[1].fh,
-            face[1].fb,
-            KS.ib.bc(KS.ps.x0, KS.ib.p),
-            ctr[1].h,
-            ctr[1].b,
-            KS.vs.u,
-            KS.vs.weights,
-            KS.gas.inK,
-            dt,
-            1,
-        )
-    end
-    if bcs[2] == :maxwell
-        flux_boundary_maxwell!(
-            face[KS.ps.nx+1].fw,
-            face[KS.ps.nx+1].fh,
-            face[KS.ps.nx+1].fb,
-            KS.ib.bc(KS.ps.x1, KS.ib.p),
-            ctr[KS.ps.nx].h,
-            ctr[KS.ps.nx].b,
-            KS.vs.u,
-            KS.vs.weights,
-            KS.gas.inK,
-            dt,
-            -1,
-        )
-    end
+    evolve_boundary!(KS, ctr, face, dt; mode = mode, bc = bc)
 
     return nothing
 
@@ -145,6 +100,8 @@ end
 
 """
 $(SIGNATURES)
+
+1D4F
 """
 function evolve!(
     KS::SolverSet,
@@ -414,6 +371,8 @@ end
 
 """
 $(SIGNATURES)
+
+2D continuum
 """
 function evolve!(
     KS::SolverSet,
@@ -490,6 +449,8 @@ end
 
 """
 $(SIGNATURES)
+
+2D1F
 """
 function evolve!(
     KS::SolverSet,
@@ -668,6 +629,8 @@ end
 
 """
 $(SIGNATURES)
+
+2D2F
 """
 function evolve!(
     KS::SolverSet,

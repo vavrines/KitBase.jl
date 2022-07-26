@@ -38,7 +38,7 @@ $(SIGNATURES)
 
 HLL flux
 """
-flux_hll!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+flux_hll!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
     flux_hll!(face, ctrL, ctrR, KS.gas, args...)
 
 function flux_hll!(
@@ -113,7 +113,7 @@ Roe's flux with entropy fix
 _P. L. Roe, Approximate Riemann Solvers, Parameter Vectors and Difference Schemes, Journal of Computational Physics, 43, pp. 357-372._
 (_cf. http://cfdbooks.com/cfdcodes.html_)
 """
-flux_roe!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+flux_roe!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
     flux_roe!(face, ctrL, ctrR, KS.gas, args...)
 
 """

@@ -5,10 +5,11 @@ Rykov non-equilibrium part
 
 - t: translation
 - r: rotation
-* @arg q: [qt, qr]@1D, [qtx, qty, qrx, qry]@2D
-* @arg prim: [ρ, U, λ, λₜ, λᵣ]@1D, [ρ, U, V, λ, λₜ, λᵣ]@2D
-* @arg σ, ω0, ω1: rotation parameters
 
+# Arguments
+* ``q``: [qt, qr]@1D, [qtx, qty, qrx, qry]@2D
+* ``prim``: [ρ, U, λ, λₜ, λᵣ]@1D, [ρ, U, V, λ, λₜ, λᵣ]@2D
+* ``σ``, ω0, ω1: rotation parameters
 """
 function rykov!(
     Ht_plus::T1,

@@ -2,10 +2,6 @@
 $(SIGNATURES)
 
 Shakhov non-equilibrium part
-
-* @arg: particle velocity quadrature points
-* @arg: discrete Maxwellian
-* @arg: primitive variables, Prandtl number, heat flux, inner degree of freedom
 """
 function shakhov(u::AV{X}, M::AV{Y}, q, prim::AV{Z}, Pr) where {X<:FN,Y<:FN,Z<:Real} # 1F1V
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -109,20 +105,13 @@ end
 
 
 """
-    shakhov!(S, u, M, q, prim, Pr)
-    shakhov!(SH, SB, u, H, B, q, prim, Pr, K)
-    shakhov!(S, u, v, M, q, prim, Pr)
-    shakhov!(SH, SB, u, v, H, B, q, prim, Pr, K)
-    shakhov!(S, u, v, w, M, q, prim, Pr)
+$(SIGNATURES)
 
 In-place Shakhov non-equilibrium part
 
-* @arg: particle velocity quadrature points
-* @arg: discrete Maxwellian
-* @arg: primitive variables, Prandtl number, heat flux, inner degree of freedom
-
+1F1V
 """
-function shakhov!(S::T1, u::AV{T2}, M::T1, q, prim, Pr) where {T1<:AA{<:FN,1},T2<:FN} # 1F1V
+function shakhov!(S::T1, u::AV{T2}, M::T1, q, prim, Pr) where {T1<:AA{<:FN,1},T2<:FN}
     @. S = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
        q *
@@ -132,7 +121,11 @@ function shakhov!(S::T1, u::AV{T2}, M::T1, q, prim, Pr) where {T1<:AA{<:FN,1},T2
     return nothing
 end
 
-#--- 2F1V ---#
+"""
+$(SIGNATURES)
+
+2F1V
+"""
 function shakhov!(
     SH::T1,
     SB::T1,
@@ -162,7 +155,11 @@ function shakhov!(
 
 end
 
-#--- 1F2V ---#
+"""
+$(SIGNATURES)
+
+1F2V
+"""
 function shakhov!(
     S::T1,
     u::T2,
@@ -183,7 +180,11 @@ function shakhov!(
 
 end
 
-#--- 2F2V ---#
+"""
+$(SIGNATURES)
+
+2F2V
+"""
 function shakhov!(
     SH::T1,
     SB::T1,
@@ -212,7 +213,11 @@ function shakhov!(
 
 end
 
-#--- 1F3V ---#
+"""
+$(SIGNATURES)
+
+1F3V
+"""
 function shakhov!(
     S::T1,
     u::T2,

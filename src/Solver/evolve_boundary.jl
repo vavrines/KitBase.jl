@@ -3,6 +3,56 @@ $(SIGNATURES)
 """
 function evolve_boundary!(
     KS,
+    ctr::AV{T},
+    face,
+    dt;
+    mode,
+    bc,
+) where {T<:Union{ControlVolume2F,ControlVolume1D2F}}
+
+    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
+
+    if bcs[1] == :maxwell
+        flux_boundary_maxwell!(
+            face[1].fw,
+            face[1].fh,
+            face[1].fb,
+            KS.ib.bc(KS.ps.x0, KS.ib.p),
+            ctr[1].h,
+            ctr[1].b,
+            KS.vs.u,
+            KS.vs.weights,
+            KS.gas.K,
+            dt,
+            1,
+        )
+    end
+
+    if bcs[2] == :maxwell
+        flux_boundary_maxwell!(
+            face[KS.ps.nx+1].fw,
+            face[KS.ps.nx+1].fh,
+            face[KS.ps.nx+1].fb,
+            KS.ib.bc(KS.ps.x1, KS.ib.p),
+            ctr[KS.ps.nx].h,
+            ctr[KS.ps.nx].b,
+            KS.vs.u,
+            KS.vs.weights,
+            KS.gas.K,
+            dt,
+            -1,
+        )
+    end
+
+    return nothing
+
+end
+
+"""
+$(SIGNATURES)
+"""
+function evolve_boundary!(
+    KS,
     ctr::AM{T},
     a1face,
     a2face,
@@ -126,5 +176,7 @@ function evolve_boundary!(
             a2face[i, ny+1].fw .= global_frame(a2face[i, ny+1].fw, n)
         end
     end
+
+    return nothing
 
 end

@@ -3,7 +3,7 @@ $(SIGNATURES)
 
 Kinetic flux vector splitting (KFVS) flux
 """
-flux_kfvs!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) = 
+flux_kfvs!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
     flux_kfvs!(face, ctrL, ctrR, KS.gas, KS.vs, args...)
 
 function flux_kfvs!(
@@ -224,10 +224,6 @@ end
 $(SIGNATURES)
 
 Kinetic flux vector splitting (KFVS) flux
-
-- @args: particle distribution functions and their left/right slopes
-- @args: particle velocity quadrature points and weights
-- @args: time step and cell size
 
 1F1V for pure DOM
 """
