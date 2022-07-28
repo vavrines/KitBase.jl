@@ -6,7 +6,6 @@ Maxwell's diffusive boundary flux
 1D continuum
 
 # Arguments
-
 * ``fw``: fluxes for conservative variables
 * ``bc``: boundary condition for primitive variables
 * ``w``: conservative variables
@@ -58,7 +57,7 @@ function flux_boundary_maxwell!(
     ω::T3,
     inK,
     dt,
-    rot = 1,
+    rot,
 ) where {T1<:AV,T2<:AV,T3<:AV}
 
     @assert length(bc) == 3
@@ -105,7 +104,7 @@ function flux_boundary_maxwell!(
     ω::T3,
     inK,
     dt,
-    rot = 1,
+    rot,
 ) where {T1<:AM,T2<:AM,T3<:AM}
 
     @assert size(bc, 1) == 3
@@ -187,7 +186,7 @@ function flux_boundary_maxwell!(
     ω::T,
     dt,
     len,
-    rot = 1,
+    rot,
 ) where {T<:AM}
 
     @assert length(bc) == 4
@@ -233,7 +232,7 @@ function flux_boundary_maxwell!(
     inK,
     dt,
     len,
-    rot = 1,
+    rot,
 ) where {T2<:AM,T4<:AM,T5<:AM}
 
     @assert length(bc) == 4
@@ -286,7 +285,7 @@ function flux_boundary_maxwell!(
     ω::T3,
     dt,
     area,
-    rot = 1,
+    rot,
 ) where {T1,T2,T3<:AA{T4,3} where {T4}}
 
     @assert length(bc) == 5
