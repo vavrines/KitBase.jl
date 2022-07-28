@@ -340,13 +340,11 @@ $(SIGNATURES)
 function moments_conserve(a1::AA, a2::AA, a3::T, a4::T) where {T<:AA}
     if minimum(a2) < -0.9
         f, u, v, ω = a1, a2, a3, a4
-        moments_conserve(f, u, v, ω, VDF{1,2})
+        return moments_conserve(f, u, v, ω, VDF{1,2})
     else
         h, b, u, ω = a1, a2, a3, a4
-        moments_conserve(h, b, u, ω, VDF{2,1})
+        return moments_conserve(h, b, u, ω, VDF{2,1})
     end
-
-    return w
 end
 
 """
