@@ -372,7 +372,7 @@ function moments_conserve(a1::AA, a2::AA, a3::AA, a4::AA, a5::T, a6::T) where {T
         h0, h1, h2, u, v, ω = a1, a2, a3, a4, a5, a6
         return moments_conserve(h0, h1, h2, u, v, ω, VDF{3,2})
     else
-        h0, h1, h2, h3, u, ω = a1, a2, a3, a4, a5
+        h0, h1, h2, h3, u, ω = a1, a2, a3, a4, a5, a6
         return moments_conserve(h0, h1, h2, h3, u, ω, VDF{4,1})
     end
 end
