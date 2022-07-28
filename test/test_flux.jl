@@ -583,6 +583,7 @@ KitBase.flux_boundary_maxwell!(
     ones(16, 16, 16),
     dt,
     1,
+    1,
 )
 # mixture
 KitBase.flux_boundary_maxwell!(
