@@ -22,6 +22,7 @@ prim = zeros(4, 2)
 prim[:, 1] .= [1.0, 3.0, 0.5, 1.3]
 prim[:, 2] .= [1 / 1864, -1.3, 0.88, 2 / 1864]
 # pure
+KitBase.gauss_moments(prim[:, 1])
 Mu1, Mv1, Mxi1, MuL1, MuR1 = KitBase.gauss_moments(prim[:, 1], 1)
 Mu2, Mv2, Mxi2, MuL2, MuR2 = KitBase.gauss_moments(prim[:, 2], 1)
 # mixture
@@ -39,6 +40,7 @@ prim = zeros(5, 2)
 prim[:, 1] .= [1.0, 1.0, 0.5, 3.0, 2.0]
 prim[:, 2] .= [1 / 1864, 0.1, -0.3, 2.0, 1 / 1864]
 # pure
+KitBase.gauss_moments(prim[:, 1])
 Mu1, Mv1, Mw1, MuL1, MuR1 = KitBase.gauss_moments(prim[:, 1], 0)
 Mu2, Mv2, Mw2, MuL2, MuR2 = KitBase.gauss_moments(prim[:, 2], 0)
 # mixture
@@ -69,7 +71,7 @@ KitBase.moments_conserve(f1, f1, u1, w1)
 KitBase.moments_conserve(f1, f1, f1, f1, u1, w1)
 
 f2 = rand(16, 16)
-u2 = rand(16, 16)
+u2 = randn(16, 16)
 w2 = rand(16, 16)
 KitBase.discrete_moments(f2, u2, w2, 1)
 KitBase.moments_conserve(f2, u2, u2, w2)
@@ -77,7 +79,7 @@ KitBase.moments_conserve(f2, f2, u2, u2, w2)
 KitBase.moments_conserve(f2, f2, f2, u2, u2, w2)
 
 f3 = rand(16, 16, 16)
-u3 = rand(16, 16, 16)
+u3 = randn(16, 16, 16)
 w3 = rand(16, 16, 16)
 KitBase.discrete_moments(f3, u3, w3, 1)
 KitBase.moments_conserve(f3, u3, u3, u3, w3)
