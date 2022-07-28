@@ -13,15 +13,7 @@ Maxwell's diffusive boundary flux
 * ``dt``: time step
 * ``rot``: rotation indicator (1/-1)
 """
-function flux_boundary_maxwell!(
-    fw::AV,
-    bc::AV,
-    w::AV,
-    inK,
-    γ,
-    dt,
-    rot, # 1 / -1
-)
+function flux_boundary_maxwell!(fw, bc::AV, w, inK, γ, dt, rot)
 
     @assert length(bc) == 3
 
@@ -44,45 +36,64 @@ end
 """
 $(SIGNATURES)
 
-1D2F1V
+1D2F1V & 1F3V
 """
-function flux_boundary_maxwell!(
-    fw::AV,
-    fh::T1,
-    fb::T1,
-    bc::AV,
-    h::T2,
-    b::T2,
-    u::T3,
-    ω::T3,
-    inK,
-    dt,
-    rot,
-) where {T1<:AV,T2<:AV,T3<:AV}
+function flux_boundary_maxwell!(fw::AV, a1, a2, a3, a4, a5, a6, a7, a8, a9, rot)
 
-    @assert length(bc) == 3
+    if length(fw) == 3
+        fh, fb, bc, h, b, u, ω, inK, dt = a1, a2, a3, a4, a5, a6, a7, a8, a9
 
-    δ = heaviside.(u .* rot)
-    SF = sum(ω .* u .* h .* (1.0 .- δ))
-    SG = (bc[end] / π)^0.5 * sum(ω .* u .* exp.(-bc[end] .* (u .- bc[2]) .^ 2) .* δ)
-    prim = [-SF / SG; bc[2:end]]
+        δ = heaviside.(u .* rot)
+        SF = sum(ω .* u .* h .* (1.0 .- δ))
+        SG = (bc[end] / π)^0.5 * sum(ω .* u .* exp.(-bc[end] .* (u .- bc[2]) .^ 2) .* δ)
+        prim = [-SF / SG; bc[2:end]]
 
-    H = maxwellian(u, prim)
-    B = H .* inK ./ (2.0 * prim[end])
+        H = maxwellian(u, prim)
+        B = H .* inK ./ (2.0 * prim[end])
 
-    hWall = H .* δ .+ h .* (1.0 .- δ)
-    bWall = B .* δ .+ b .* (1.0 .- δ)
+        hWall = H .* δ .+ h .* (1.0 .- δ)
+        bWall = B .* δ .+ b .* (1.0 .- δ)
 
-    fw[1] = discrete_moments(hWall, u, ω, 1) * dt
-    fw[2] = discrete_moments(hWall, u, ω, 2) * dt
-    fw[3] =
-        (
-            0.5 * discrete_moments(hWall .* u .^ 2, u, ω, 1) +
-            0.5 * discrete_moments(bWall, u, ω, 1)
-        ) * dt
+        fw[1] = discrete_moments(hWall, u, ω, 1) * dt
+        fw[2] = discrete_moments(hWall, u, ω, 2) * dt
+        fw[3] =
+            (
+                0.5 * discrete_moments(hWall .* u .^ 2, u, ω, 1) +
+                0.5 * discrete_moments(bWall, u, ω, 1)
+            ) * dt
 
-    @. fh = u * hWall * dt
-    @. fb = u * bWall * dt
+        @. fh = u * hWall * dt
+        @. fb = u * bWall * dt
+    elseif length(fw) == 5
+        ff, bc, f, u, v, w, ω, dt, area = a1, a2, a3, a4, a5, a6, a7, a8, a9
+
+        δ = heaviside.(u .* rot)
+        SF = sum(ω .* u .* f .* (1.0 .- δ))
+        SG =
+            (bc[end] / π)^1.5 * sum(
+                ω .* u .*
+                exp.(
+                    -bc[end] .*
+                    ((u .- bc[2]) .^ 2 .+ (v .- bc[3]) .^ 2 .+ (w .- bc[4]) .^ 2),
+                ) .* δ,
+            )
+        prim = [-SF / SG; bc[2:end]]
+
+        M = maxwellian(u, v, w, prim)
+        fWall = M .* δ .+ f .* (1.0 .- δ)
+
+        fw[1] = discrete_moments(fWall, u, ω, 1) * area * dt
+        fw[2] = discrete_moments(fWall, u, ω, 2) * area * dt
+        fw[3] = discrete_moments(fWall .* u, v, ω, 1) * area * dt
+        fw[4] = discrete_moments(fWall .* u, w, ω, 1) * area * dt
+        fw[5] =
+            (0.5 * discrete_moments(fWall .* (u .^ 2 .+ v .^ 2 + w .^ 2), u, ω, 1)) *
+            area *
+            dt
+
+        @. ff = u * fWall * area * dt
+    end
+
 
     return nothing
 
@@ -91,21 +102,9 @@ end
 """
 $(SIGNATURES)
 
-Mixture
+1D2F1V mixture
 """
-function flux_boundary_maxwell!(
-    fw::AM,
-    fh::T1,
-    fb::T1,
-    bc::AM,
-    h::T2,
-    b::T2,
-    u::T3,
-    ω::T3,
-    inK,
-    dt,
-    rot,
-) where {T1<:AM,T2<:AM,T3<:AM}
+function flux_boundary_maxwell!(fw::AM, fh, fb, bc, h, b, u, ω, inK, dt, rot)
 
     @assert size(bc, 1) == 3
 
@@ -151,7 +150,7 @@ $(SIGNATURES)
 
 2D Continuum
 """
-function flux_boundary_maxwell!(fw::AV, bc::AV, w::AV, inK, γ, dt, len, rot)
+function flux_boundary_maxwell!(fw, bc::AV, w, inK, γ, dt, len, rot)
 
     @assert length(bc) == 4
 
@@ -176,18 +175,7 @@ $(SIGNATURES)
 
 2D1F2V
 """
-function flux_boundary_maxwell!(
-    fw::AV,
-    fh::AM,
-    bc::AV,
-    h::AM,
-    u::T,
-    v::T,
-    ω::T,
-    dt,
-    len,
-    rot,
-) where {T<:AM}
+function flux_boundary_maxwell!(fw, fh, bc::AV, h, u, v, ω, dt, len, rot)
 
     @assert length(bc) == 4
 
@@ -219,21 +207,7 @@ $(SIGNATURES)
 
 2D2F2V
 """
-function flux_boundary_maxwell!(
-    fw::AV,
-    fh::T2,
-    fb::T2,
-    bc::AV,
-    h::T4,
-    b::T4,
-    u::T5,
-    v::T5,
-    ω::T5,
-    inK,
-    dt,
-    len,
-    rot,
-) where {T2<:AM,T4<:AM,T5<:AM}
+function flux_boundary_maxwell!(fw, fh, fb, bc::AV, h, b, u, v, ω, inK, dt, len, rot)
 
     @assert length(bc) == 4
 
@@ -269,54 +243,6 @@ function flux_boundary_maxwell!(
 
 end
 
-"""
-$(SIGNATURES)
-
-1F3V
-"""
-function flux_boundary_maxwell!(
-    fw::AV,
-    ff::AA{T1,3},
-    bc::AV,
-    f::AA{T2,3},
-    u::T3,
-    v::T3,
-    w::T3,
-    ω::T3,
-    dt,
-    area,
-    rot,
-) where {T1,T2,T3<:AA{T4,3} where {T4}}
-
-    @assert length(bc) == 5
-
-    δ = heaviside.(u .* rot)
-    SF = sum(ω .* u .* f .* (1.0 .- δ))
-    SG =
-        (bc[end] / π)^1.5 * sum(
-            ω .* u .*
-            exp.(
-                -bc[end] .* ((u .- bc[2]) .^ 2 .+ (v .- bc[3]) .^ 2 .+ (w .- bc[4]) .^ 2),
-            ) .* δ,
-        )
-    prim = [-SF / SG; bc[2:end]]
-
-    M = maxwellian(u, v, w, prim)
-    fWall = M .* δ .+ f .* (1.0 .- δ)
-
-    fw[1] = discrete_moments(fWall, u, ω, 1) * area * dt
-    fw[2] = discrete_moments(fWall, u, ω, 2) * area * dt
-    fw[3] = discrete_moments(fWall .* u, v, ω, 1) * area * dt
-    fw[4] = discrete_moments(fWall .* u, w, ω, 1) * area * dt
-    fw[5] =
-        (0.5 * discrete_moments(fWall .* (u .^ 2 .+ v .^ 2 + w .^ 2), u, ω, 1)) * area * dt
-
-    @. ff = u * fWall * area * dt
-
-    return nothing
-
-end
-
 
 """
 $(SIGNATURES)
@@ -325,8 +251,7 @@ Specular reflection boundary flux
 
 1D1F1V
 """
-function flux_boundary_specular!(fw::AV, ff::AV, f::AV, u::T, ω::T, dt) where {T<:AV}
-
+function flux_boundary_specular!(fw, ff, f, u, ω, dt) where {T<:AV}
     fWall = similar(f)
     for i in eachindex(f)
         fWall[i] = f[end-i+1]
@@ -339,7 +264,6 @@ function flux_boundary_specular!(fw::AV, ff::AV, f::AV, u::T, ω::T, dt) where {
     @. ff = u * fWall * dt
 
     return nothing
-
 end
 
 """
@@ -347,17 +271,7 @@ $(SIGNATURES)
 
 1D2F1V
 """
-function flux_boundary_specular!(
-    fw::AV,
-    fh::T2,
-    fb::T2,
-    h::T3,
-    b::T3,
-    u::T4,
-    ω::T4,
-    dt,
-) where {T2<:AV,T3<:AV,T4<:AV}
-
+function flux_boundary_specular!(fw, fh, fb, h, b, u, ω, dt)
     hWall = similar(h)
     bWall = similar(b)
     for i in eachindex(h)
@@ -377,5 +291,4 @@ function flux_boundary_specular!(
     @. fb = u * bWall * dt
 
     return nothing
-
 end
