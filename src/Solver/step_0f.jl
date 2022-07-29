@@ -23,16 +23,7 @@ $(SIGNATURES)
 
 1D0F
 """
-function step!(
-    w::Y,
-    prim::Y,
-    fwL::X,
-    fwR::X,
-    γ,
-    dx,
-    RES,
-    AVG,
-) where {X<:AV,Y<:AV}
+function step!(w::Y, prim::Y, fwL::X, fwR::X, γ, dx, RES, AVG) where {X<:AV,Y<:AV}
 
     w_old = deepcopy(w)
 

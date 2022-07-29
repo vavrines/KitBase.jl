@@ -219,11 +219,8 @@ function step!(
     #--- update distribution function ---#
     for i in eachindex(u)
         h[i] =
-            (
-                h[i] +
-                (fhL[i] - fhR[i] + fhD[i] - fhU[i]) / Δs +
-                dt / τ * MH[i]
-            ) / (1.0 + dt / τ)
+            (h[i] + (fhL[i] - fhR[i] + fhD[i] - fhU[i]) / Δs + dt / τ * MH[i]) /
+            (1.0 + dt / τ)
     end
 
 end
@@ -288,8 +285,7 @@ function step!(
     for i in eachindex(u)
         f[i] =
             (
-                f[i] -
-                (ff1[i] * dirc[1] + ff2[i] * dirc[2] + ff3[i] * dirc[3]) / Δs +
+                f[i] - (ff1[i] * dirc[1] + ff2[i] * dirc[2] + ff3[i] * dirc[3]) / Δs +
                 dt / τ * M[i]
             ) / (1.0 + dt / τ)
     end
