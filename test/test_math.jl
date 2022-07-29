@@ -58,8 +58,7 @@ KitBase.maxwell_boltzmann_dual(rand())
 KitBase.maxwell_boltzmann_dual_prime(rand())
 
 quadratureorder = 2
-points, triangulation = KitBase.octa_quadrature(quadratureorder)
-weights = KitBase.quadrature_weights(points, triangulation)
+points, weights = KitBase.octa_quadrature(quadratureorder)
 nq = size(points, 1)
 L = 1
 ne = (L + 1)^2
