@@ -78,8 +78,8 @@ function flux_kfvs!(
 ) where {T<:ControlVolume1F}
 
     dxL, dxR, len, n, dirc = p[1:5]
-    sfL = @view ctrL.sf[:, :, dirc]
-    sfR = @view ctrR.sf[:, :, dirc]
+    sfL = extract_last(ctrL.sf, dirc; mode = :view)
+    sfR = extract_last(ctrR.sf, dirc; mode = :view)
 
     flux_kfvs!(
         face.fw,
@@ -112,10 +112,10 @@ function flux_kfvs!(
 ) where {T<:ControlVolume2F}
 
     dxL, dxR, len, n, dirc = p[1:5]
-    shL = @view ctrL.sh[:, :, dirc]
-    sbL = @view ctrL.sb[:, :, dirc]
-    shR = @view ctrR.sh[:, :, dirc]
-    sbR = @view ctrR.sb[:, :, dirc]
+    shL = extract_last(ctrL.sh, dirc; mode = :view)
+    sbL = extract_last(ctrL.sb, dirc; mode = :view)
+    shR = extract_last(ctrR.sh, dirc; mode = :view)
+    sbR = extract_last(ctrR.sb, dirc; mode = :view)
 
     flux_kfvs!(
         face.fw,
@@ -171,8 +171,8 @@ function flux_kfvs!(
         )
     else
         len, n, dirc = p[3:5]
-        sfL = @view ctrL.sf[:, :, :, dirc]
-        sfR = @view ctrR.sf[:, :, :, dirc]
+        sfL = extract_last(ctrL.sf, dirc; mode = :view)
+        sfR = extract_last(ctrR.sf, dirc; mode = :view)
 
         flux_kfvs!(
             face.fw,
