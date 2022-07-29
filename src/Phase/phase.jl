@@ -4,9 +4,9 @@
 
 export VSpace1D, VSpace2D, VSpace3D, UnstructVSpace
 export MVSpace1D, MVSpace2D, MVSpace3D
-export newton_cotes
-export legendre_quadrature, octa_quadrature, quadrature_weights
+export maxwell_quadrature
+export legendre_quadrature, octa_quadrature
 
 include("creamer.jl")
-include("velocity.jl")
 include("quadrature.jl")
+include("velocity.jl")

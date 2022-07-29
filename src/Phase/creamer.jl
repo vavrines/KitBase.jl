@@ -7,7 +7,7 @@ $(SIGNATURES)
 
 Spherical linear interpolation
 """
-function slerp(pt1::T, pt2::T, n::Integer) where {T<:AA{<:Real,1}}
+function slerp(pt1::T, pt2::T, n::Integer) where {T<:AV}
     if norm(pt1 - pt2) < 1e-10 # same points
         return repeat(pt1, 1, n) # return n copies of that point
     end
@@ -32,7 +32,7 @@ Cleaner for all duplicate (non unique) entries of quadrature points and triangle
 # Outputs
 * new quadrature points and triangulation
 """
-function unique(Points::AM{T1}, Triangles::AM{T2}) where {T1<:Real,T2<:Integer}
+function unique(Points::AM, Triangles::AM{T}) where {T<:Integer}
     nPoints = size(Points)[2]
     nTriangles = size(Triangles)[2]
 
@@ -118,7 +118,7 @@ function unique(Points::AM{T1}, Triangles::AM{T2}) where {T1<:Real,T2<:Integer}
 end
 
 
-function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
+function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AV}
     if geometry == :plane
         alpha = angle(B, A, C)
         lb = norm(B - A)
@@ -144,7 +144,7 @@ $(SIGNATURES)
 
 Args order (B,A,C) isn't a mistake
 """
-function angle(B::T, A::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
+function angle(B::T, A::T, C::T, geometry = :plane::Symbol) where {T<:AV}
     if geometry == :plane
         u, v = A - B, C - A
         return acos(dot(u, v) / norm(u, 2) / norm(v, 2))
@@ -168,7 +168,7 @@ function angle(B::T, A::T, C::T, geometry = :plane::Symbol) where {T<:AV{<:Real}
 end
 
 
-function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
+function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV}
     if geometry == :plane
         return norm(v1 - v2)
     elseif geometry == :sphere
@@ -184,7 +184,7 @@ function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV{<:Real}}
 end
 
 
-function muphi_xyz!(muphi::T, xyz::T) where {T<:AM{<:Real}}
+function muphi_xyz!(muphi::T, xyz::T) where {T<:AM}
     n = size(xyz, 1)
     for i = 1:n
         xyz[i, 1] = sqrt(1 - muphi[i, 1]^2) * cos(muphi[i, 2])
@@ -194,7 +194,7 @@ function muphi_xyz!(muphi::T, xyz::T) where {T<:AM{<:Real}}
 end
 
 
-function xyz_muphi!(xyz::T, muphi::T) where {T<:AM{<:Real}}
+function xyz_muphi!(xyz::T, muphi::T) where {T<:AM}
     n = size(xyz, 1)
     for i = 1:n
         muphi[i, 1] = xyz[i, 3]
