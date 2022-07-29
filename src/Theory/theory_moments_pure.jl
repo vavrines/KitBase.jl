@@ -4,7 +4,7 @@ $(SIGNATURES)
 Calculate moments of Gaussian distribution `G = (λ / π)^(D / 2) * exp[-λ(c^2 + ξ^2)]`
 """
 function gauss_moments(prim)
-    if eltype(prim) <: Int
+    if eltype(prim) <: Integer
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
         MuL = OffsetArray(similar(prim, 7), 0:6)
@@ -23,11 +23,8 @@ function gauss_moments(prim)
     @. Mu = MuL + MuR
 
     if length(prim) == 3
-
         return Mu, MuL, MuR
-
     elseif length(prim) == 4
-
         Mv = similar(MuL)
         Mv[0] = 1.0
         Mv[1] = prim[3]
@@ -36,9 +33,7 @@ function gauss_moments(prim)
         end
 
         return Mu, Mv, MuL, MuR
-
     elseif length(prim) == 5
-
         Mv = similar(MuL)
         Mv[0] = 1.0
         Mv[1] = prim[3]
@@ -54,35 +49,17 @@ function gauss_moments(prim)
         end
 
         return Mu, Mv, Mw, MuL, MuR
-
     end
 end
 
 """
 $(SIGNATURES)
 
-A more general function dealing with internal energy
+Calculate moments of Gaussian distribution with internal energy
 """
 function gauss_moments(prim, inK)
-    if eltype(prim) <: Int
-        MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
-    else
-        MuL = OffsetArray(similar(prim, 7), 0:6)
-    end
-    MuR = similar(MuL)
-    Mu = similar(MuL)
-
-    MuL[0] = 0.5 * SpecialFunctions.erfc(-sqrt(prim[end]) * prim[2])
-    MuL[1] = prim[2] * MuL[0] + 0.5 * exp(-prim[end] * prim[2]^2) / sqrt(π * prim[end])
-    MuR[0] = 0.5 * SpecialFunctions.erfc(sqrt(prim[end]) * prim[2])
-    MuR[1] = prim[2] * MuR[0] - 0.5 * exp(-prim[end] * prim[2]^2) / sqrt(π * prim[end])
-    for i = 2:6
-        MuL[i] = prim[2] * MuL[i-1] + 0.5 * (i - 1) * MuL[i-2] / prim[end]
-        MuR[i] = prim[2] * MuR[i-1] + 0.5 * (i - 1) * MuR[i-2] / prim[end]
-    end
-    @. Mu = MuL + MuR
-
     if length(prim) == 3
+        Mu, MuL, MuR = gauss_moments(prim)
 
         Mxi = similar(MuL, 0:2)
         Mxi[0] = 1.0
@@ -90,15 +67,8 @@ function gauss_moments(prim, inK)
         Mxi[2] = (inK^2 + 2.0 * inK) / (4.0 * prim[end]^2)
 
         return Mu, Mxi, MuL, MuR
-
     elseif length(prim) == 4
-
-        Mv = similar(MuL)
-        Mv[0] = 1.0
-        Mv[1] = prim[3]
-        for i = 2:6
-            Mv[i] = prim[3] * Mv[i-1] + 0.5 * (i - 1) * Mv[i-2] / prim[end]
-        end
+        Mu, Mv, MuL, MuR = gauss_moments(prim)
 
         Mxi = similar(MuL, 0:2)
         Mxi[0] = 1.0
@@ -106,25 +76,8 @@ function gauss_moments(prim, inK)
         Mxi[2] = (inK^2 + 2.0 * inK) / (4.0 * prim[end]^2)
 
         return Mu, Mv, Mxi, MuL, MuR
-
     elseif length(prim) == 5
-
-        Mv = similar(MuL)
-        Mv[0] = 1.0
-        Mv[1] = prim[3]
-        for i = 2:6
-            Mv[i] = prim[3] * Mv[i-1] + 0.5 * (i - 1) * Mv[i-2] / prim[end]
-        end
-
-        Mw = similar(MuL)
-        Mw[0] = 1.0
-        Mw[1] = prim[4]
-        for i = 2:6
-            Mw[i] = prim[4] * Mw[i-1] + 0.5 * (i - 1) * Mw[i-2] / prim[end]
-        end
-
-        return Mu, Mv, Mw, MuL, MuR
-
+        return gauss_moments(prim)
     end
 end
 
@@ -134,7 +87,7 @@ $(SIGNATURES)
 
 Calculate conservative moments of particle distribution
 """
-moments_conserve(Mu::OffsetArray{T,1}, alpha::Integer) where {T} = Mu[alpha]
+moments_conserve(Mu::OffsetVector{T}, alpha::Integer) where {T} = Mu[alpha]
 
 """
 $(SIGNATURES)
@@ -144,7 +97,7 @@ function moments_conserve(
     Mxi::T,
     alpha::Integer,
     delta::Integer,
-) where {T<:OffsetArray{TN,1} where {TN}}
+) where {T<:OffsetVector{TN} where {TN}}
 
     uv = similar(Mu, 3)
     uv[1] = Mu[alpha] * Mxi[delta÷2]
@@ -165,7 +118,7 @@ function moments_conserve(
     alpha::Integer,
     beta::Integer,
     delta::Integer,
-) where {T<:OffsetArray{TN,1}} where {TN}
+) where {T<:OffsetVector{TN} where {TN}}
 
     if length(Mw) == 3 # internal motion
         uv = similar(Mu, 4)
