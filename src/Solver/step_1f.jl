@@ -217,12 +217,12 @@ function step!(
     τ = vhs_collision_time(prim, μᵣ, ω)
 
     #--- update distribution function ---#
-    for j in axes(v, 2), i in axes(u, 1)
-        h[i, j] =
+    for i in eachindex(u)
+        h[i] =
             (
-                h[i, j] +
-                (fhL[i, j] - fhR[i, j] + fhD[i, j] - fhU[i, j]) / Δs +
-                dt / τ * MH[i, j]
+                h[i] +
+                (fhL[i] - fhR[i] + fhD[i] - fhU[i]) / Δs +
+                dt / τ * MH[i]
             ) / (1.0 + dt / τ)
     end
 
@@ -285,12 +285,12 @@ function step!(
     τ = vhs_collision_time(prim, μᵣ, ω)
 
     #--- update distribution function ---#
-    for j in axes(v, 2), i in axes(u, 1)
-        f[i, j] =
+    for i in eachindex(u)
+        f[i] =
             (
-                f[i, j] -
-                (ff1[i, j] * dirc[1] + ff2[i, j] * dirc[2] + ff3[i, j] * dirc[3]) / Δs +
-                dt / τ * M[i, j]
+                f[i] -
+                (ff1[i] * dirc[1] + ff2[i] * dirc[2] + ff3[i] * dirc[3]) / Δs +
+                dt / τ * M[i]
             ) / (1.0 + dt / τ)
     end
 
@@ -299,7 +299,7 @@ end
 """
 $(SIGNATURES)
 
-2D1F3V fsm
+2D1F3V fast spectral method
 """
 function step!(
     w::T3,
