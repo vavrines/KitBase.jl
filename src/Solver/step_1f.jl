@@ -81,7 +81,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,3},T3<:AA{<:FN,1},T4<:AA{<:FN,3},T5<:AA{<:FN,3}}
+) where {T1<:AV,T2<:AA{T6,3},T3<:AV,T4<:AA{T7,3},T5<:AA{T8,3}} where {T6,T7,T8}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -189,7 +189,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AV,T2<:Union{AM,AV},T3<:Union{AM,AV}}
+) where {T1<:AV,T2<:AVOM,T3<:AVOM}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -254,7 +254,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AV,T2<:Union{AM,AV},T3<:Union{AM,AV}}
+) where {T1<:AV,T2<:AVOM,T3<:AVOM}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -320,7 +320,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,3},T3<:AA{<:FN,1},T4<:AA{<:FN,3}}
+) where {T1<:AV,T2<:AA{<:FN,3},T3<:AV,T4<:AA{<:FN,3}}
 
     @assert collision == :fsm
 

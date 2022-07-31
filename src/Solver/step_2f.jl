@@ -26,7 +26,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:FN,1},T4<:AA{<:FN,1},T5<:AA{<:FN,1}}
+) where {T1<:AV,T2<:AV,T3<:AV,T4<:AV,T5<:AV}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -95,7 +95,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AA{<:FN,2},T2<:AA{<:FN,2},T3<:AA{<:FN,2},T4<:AA{<:FN,2},T5<:AA{<:FN,2}}
+) where {T1<:AM,T2<:AM,T3<:AM,T4<:AM,T5<:AM}
 
     #--- update conservative flow variables ---#
     # w^n
@@ -208,7 +208,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AV,T2<:Union{AM,AV},T3<:Union{AM,AV}}
+) where {T1<:AV,T2<:AVOM,T3<:AVOM}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -284,7 +284,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AV,T2<:Union{AM,AV},T3<:Union{AM,AV}}
+) where {T1<:AV,T2<:AVOM,T3<:AVOM}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
