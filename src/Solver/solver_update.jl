@@ -27,16 +27,17 @@ function update!(
 
     residual = sqrt(sumRes * KS.ps.nx) / (sumAvg + 1.e-7)
 
-    if bc[1] == :period
+    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
+    if bcs[1] == :period
         ctr[0].w = ctr[KS.ps.nx].w
         ctr[0].sw = ctr[KS.ps.nx].sw
         ctr[KS.ps.nx+1].w = ctr[1].w
         ctr[KS.ps.nx+1].sw = ctr[1].sw
-    elseif bc[1] == :extra
+    elseif bcs[1] == :extra
         ctr[0].w = ctr[1].w
     end
 
-    if bc[2] == :extra
+    if bcs[2] == :extra
         ctr[KS.ps.nx+1].w = ctr[KS.ps.nx].w
     end
 
@@ -83,11 +84,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    if bc isa Symbol
-        update_boundary!(KS, ctr, face, dt, residual; bc = [bc, bc], fn = fn, st = st)
-    else
-        update_boundary!(KS, ctr, face, dt, residual; bc = bc, fn = fn, st = st)
-    end
+    update_boundary!(KS, ctr, face, dt, residual; bc = bc, fn = fn, st = st)
 
     return nothing
 
@@ -120,33 +117,18 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    if bc isa Symbol
-        update_boundary!(
-            KS,
-            ctr,
-            face,
-            dt,
-            residual;
-            coll = coll,
-            bc = [bc, bc],
-            isMHD = isMHD,
-            fn = fn,
-            st = st,
-        )
-    else
-        update_boundary!(
-            KS,
-            ctr,
-            face,
-            dt,
-            residual;
-            coll = coll,
-            bc = bc,
-            isMHD = isMHD,
-            fn = fn,
-            st = st,
-        )
-    end
+    update_boundary!(
+        KS,
+        ctr,
+        face,
+        dt,
+        residual;
+        coll = coll,
+        bc = bc,
+        isMHD = isMHD,
+        fn = fn,
+        st = st,
+    )
 
     return nothing
 
@@ -179,33 +161,18 @@ function update!(
         residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    if bc isa Symbol
-        update_boundary!(
-            KS,
-            ctr,
-            face,
-            dt,
-            residual;
-            coll = coll,
-            bc = [bc, bc],
-            isMHD = isMHD,
-            fn = fn,
-            st = st,
-        )
-    else
-        update_boundary!(
-            KS,
-            ctr,
-            face,
-            dt,
-            residual;
-            coll = coll,
-            bc = bc,
-            isMHD = isMHD,
-            fn = fn,
-            st = st,
-        )
-    end
+    update_boundary!(
+        KS,
+        ctr,
+        face,
+        dt,
+        residual;
+        coll = coll,
+        bc = bc,
+        isMHD = isMHD,
+        fn = fn,
+        st = st,
+    )
 
     return nothing
 
@@ -267,33 +234,18 @@ function update!(
         residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
-    if bc isa Symbol
-        update_boundary!(
-            KS,
-            ctr,
-            a1face,
-            a2face,
-            dt,
-            residual;
-            coll = coll,
-            bc = [bc, bc, bc, bc],
-            fn = fn,
-            st = st,
-        )
-    else
-        update_boundary!(
-            KS,
-            ctr,
-            a1face,
-            a2face,
-            dt,
-            residual;
-            coll = coll,
-            bc = bc,
-            fn = fn,
-            st = st,
-        )
-    end
+    update_boundary!(
+        KS,
+        ctr,
+        a1face,
+        a2face,
+        dt,
+        residual;
+        coll = coll,
+        bc = bc,
+        fn = fn,
+        st = st,
+    )
 
     return nothing
 
