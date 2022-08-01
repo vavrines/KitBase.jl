@@ -11,6 +11,7 @@ function update_boundary!(
     residual;
     bc,
     fn = step!,
+    st = fn,
     kwargs...,
 ) where {
     TC<:Union{
@@ -30,12 +31,12 @@ function update_boundary!(
 
     if bc[1] != :fix
         i = 1
-        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], resL, avgL))
+        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], resL, avgL); st = st)
     end
 
     if bc[2] != :fix
         j = KS.ps.nx
-        fn(KS, ctr[j], face[j], face[j+1], (dt, KS.ps.dx[j], resR, avgR))
+        fn(KS, ctr[j], face[j], face[j+1], (dt, KS.ps.dx[j], resR, avgR); st = st)
     end
 
     #@. residual += sqrt((resL + resR) * 2) / (avgL + avgR + 1.e-7)
@@ -73,6 +74,7 @@ function update_boundary!(
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
+    st = fn,
     isMHD = false,
 ) where {TC<:Union{ControlVolume3F,ControlVolume1D3F}}
 
@@ -125,6 +127,7 @@ function update_boundary!(
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
+    st = fn,
     isMHD = false::Bool,
 ) where {TC<:Union{ControlVolume4F,ControlVolume1D4F}}
 
@@ -178,6 +181,8 @@ function update_boundary!(
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {
     TC<:Union{
         ControlVolume,
@@ -216,7 +221,8 @@ function update_boundary!(
                 a2face[1, j],
                 a2face[1, j+1],
                 (dt, dx[1, j] * dy[1, j], resL, avgL),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
@@ -231,7 +237,8 @@ function update_boundary!(
                 a2face[nx, j],
                 a2face[nx, j+1],
                 (dt, dx[nx, j] * dy[nx, j], resR, avgR),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
@@ -246,7 +253,8 @@ function update_boundary!(
                 a2face[i, 1],
                 a2face[i, 2],
                 (dt, dx[i, 1] * dy[i, 1], resD, avgD),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
@@ -261,7 +269,8 @@ function update_boundary!(
                 a2face[i, ny],
                 a2face[i, ny+1],
                 (dt, dx[i, ny] * dy[i, ny], resU, avgU),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
@@ -312,6 +321,8 @@ function update_boundary!(
     coll,
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {TC<:ControlVolumeUS}
 
     for i in eachindex(KS.ps.cellType)
@@ -340,6 +351,8 @@ function update_boundary!(
     coll,
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {TC<:ControlVolumeUS1F}
 
     for i in eachindex(KS.ps.cellType)
@@ -369,6 +382,8 @@ function update_boundary!(
     coll,
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {TC<:ControlVolumeUS2F}
 
     for i in eachindex(KS.ps.cellType)
