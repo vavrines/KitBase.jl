@@ -119,10 +119,10 @@ function flux_kcu!(
 ) where {T<:ControlVolume1F}
 
     dxL, dxR, len, n, dirc = p
-    swL = @view ctrL.sw[:, dirc]
-    swR = @view ctrR.sw[:, dirc]
-    sfL = @view ctrL.sf[:, :, dirc]
-    sfR = @view ctrR.sf[:, :, dirc]
+    swL = extract_last(ctrL.sw, dirc; mode = :view)
+    swR = extract_last(ctrR.sw, dirc; mode = :view)
+    sfL = extract_last(ctrL.sf, dirc; mode = :view)
+    sfR = extract_last(ctrR.sf, dirc; mode = :view)
 
     flux_kcu!(
         face.fw,
@@ -163,12 +163,12 @@ function flux_kcu!(
 ) where {T<:ControlVolume2F}
 
     dxL, dxR, len, n, dirc = p
-    swL = @view ctrL.sw[:, dirc]
-    swR = @view ctrR.sw[:, dirc]
-    shL = @view ctrL.sh[:, :, dirc]
-    sbL = @view ctrL.sb[:, :, dirc]
-    shR = @view ctrR.sh[:, :, dirc]
-    sbR = @view ctrR.sb[:, :, dirc]
+    swL = extract_last(ctrL.sw, dirc; mode = :view)
+    swR = extract_last(ctrR.sw, dirc; mode = :view)
+    shL = extract_last(ctrL.sh, dirc; mode = :view)
+    sbL = extract_last(ctrL.sb, dirc; mode = :view)
+    shR = extract_last(ctrR.sh, dirc; mode = :view)
+    sbR = extract_last(ctrR.sb, dirc; mode = :view)
 
     flux_kcu!(
         face.fw,

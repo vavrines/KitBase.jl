@@ -4,7 +4,7 @@ $(SIGNATURES)
 Calculate moments of Gaussian distribution `G = (λ / π)^(D / 2) * exp[-λ(c^2 + ξ^2)]`
 """
 function gauss_moments(prim)
-    if eltype(prim) <: Int
+    if eltype(prim) <: Integer
         MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
     else
         MuL = OffsetArray(similar(prim, 7), 0:6)
@@ -23,11 +23,8 @@ function gauss_moments(prim)
     @. Mu = MuL + MuR
 
     if length(prim) == 3
-
         return Mu, MuL, MuR
-
     elseif length(prim) == 4
-
         Mv = similar(MuL)
         Mv[0] = 1.0
         Mv[1] = prim[3]
@@ -36,9 +33,7 @@ function gauss_moments(prim)
         end
 
         return Mu, Mv, MuL, MuR
-
     elseif length(prim) == 5
-
         Mv = similar(MuL)
         Mv[0] = 1.0
         Mv[1] = prim[3]
@@ -54,35 +49,17 @@ function gauss_moments(prim)
         end
 
         return Mu, Mv, Mw, MuL, MuR
-
     end
 end
 
 """
 $(SIGNATURES)
 
-A more general function dealing with internal energy
+Calculate moments of Gaussian distribution with internal energy
 """
 function gauss_moments(prim, inK)
-    if eltype(prim) <: Int
-        MuL = OffsetArray(similar(prim, Float64, 7), 0:6)
-    else
-        MuL = OffsetArray(similar(prim, 7), 0:6)
-    end
-    MuR = similar(MuL)
-    Mu = similar(MuL)
-
-    MuL[0] = 0.5 * SpecialFunctions.erfc(-sqrt(prim[end]) * prim[2])
-    MuL[1] = prim[2] * MuL[0] + 0.5 * exp(-prim[end] * prim[2]^2) / sqrt(π * prim[end])
-    MuR[0] = 0.5 * SpecialFunctions.erfc(sqrt(prim[end]) * prim[2])
-    MuR[1] = prim[2] * MuR[0] - 0.5 * exp(-prim[end] * prim[2]^2) / sqrt(π * prim[end])
-    for i = 2:6
-        MuL[i] = prim[2] * MuL[i-1] + 0.5 * (i - 1) * MuL[i-2] / prim[end]
-        MuR[i] = prim[2] * MuR[i-1] + 0.5 * (i - 1) * MuR[i-2] / prim[end]
-    end
-    @. Mu = MuL + MuR
-
     if length(prim) == 3
+        Mu, MuL, MuR = gauss_moments(prim)
 
         Mxi = similar(MuL, 0:2)
         Mxi[0] = 1.0
@@ -90,15 +67,8 @@ function gauss_moments(prim, inK)
         Mxi[2] = (inK^2 + 2.0 * inK) / (4.0 * prim[end]^2)
 
         return Mu, Mxi, MuL, MuR
-
     elseif length(prim) == 4
-
-        Mv = similar(MuL)
-        Mv[0] = 1.0
-        Mv[1] = prim[3]
-        for i = 2:6
-            Mv[i] = prim[3] * Mv[i-1] + 0.5 * (i - 1) * Mv[i-2] / prim[end]
-        end
+        Mu, Mv, MuL, MuR = gauss_moments(prim)
 
         Mxi = similar(MuL, 0:2)
         Mxi[0] = 1.0
@@ -106,25 +76,8 @@ function gauss_moments(prim, inK)
         Mxi[2] = (inK^2 + 2.0 * inK) / (4.0 * prim[end]^2)
 
         return Mu, Mv, Mxi, MuL, MuR
-
     elseif length(prim) == 5
-
-        Mv = similar(MuL)
-        Mv[0] = 1.0
-        Mv[1] = prim[3]
-        for i = 2:6
-            Mv[i] = prim[3] * Mv[i-1] + 0.5 * (i - 1) * Mv[i-2] / prim[end]
-        end
-
-        Mw = similar(MuL)
-        Mw[0] = 1.0
-        Mw[1] = prim[4]
-        for i = 2:6
-            Mw[i] = prim[4] * Mw[i-1] + 0.5 * (i - 1) * Mw[i-2] / prim[end]
-        end
-
-        return Mu, Mv, Mw, MuL, MuR
-
+        return gauss_moments(prim)
     end
 end
 
@@ -134,7 +87,7 @@ $(SIGNATURES)
 
 Calculate conservative moments of particle distribution
 """
-moments_conserve(Mu::OffsetArray{T,1}, alpha::Integer) where {T} = Mu[alpha]
+moments_conserve(Mu::OffsetVector{T}, alpha::Integer) where {T} = Mu[alpha]
 
 """
 $(SIGNATURES)
@@ -144,7 +97,7 @@ function moments_conserve(
     Mxi::T,
     alpha::Integer,
     delta::Integer,
-) where {T<:OffsetArray{TN,1}} where {TN}
+) where {T<:OffsetVector{TN} where {TN}}
 
     uv = similar(Mu, 3)
     uv[1] = Mu[alpha] * Mxi[delta÷2]
@@ -165,7 +118,7 @@ function moments_conserve(
     alpha::Integer,
     beta::Integer,
     delta::Integer,
-) where {T<:OffsetArray{TN,1}} where {TN}
+) where {T<:OffsetVector{TN} where {TN}}
 
     if length(Mw) == 3 # internal motion
         uv = similar(Mu, 4)
@@ -203,7 +156,7 @@ Discrete moments of conservative variables
 
 1F1V
 """
-function moments_conserve(f::X, u::T, ω::T) where {X<:AV,T<:AV}
+function moments_conserve(f, u, ω, ::Type{VDF{1,1}})
     w = similar(f, 3)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -215,35 +168,9 @@ end
 """
 $(SIGNATURES)
 
-2F1V or 1F2V (in unstructured mesh)
+1F2V
 """
-function moments_conserve(a1::AV, a2::AV, a3::T, a4::T) where {T<:AV}
-    if minimum(a2) < -0.9
-        f, u, v, ω = a1, a2, a3, a4
-
-        w = similar(f, 4)
-        w[1] = discrete_moments(f, u, ω, 0)
-        w[2] = discrete_moments(f, u, ω, 1)
-        w[3] = discrete_moments(f, v, ω, 1)
-        w[4] = 0.5 * (discrete_moments(f, u, ω, 2) + discrete_moments(f, v, ω, 2))
-    else
-        h, b, u, ω = a1, a2, a3, a4
-
-        w = similar(h, 3)
-        w[1] = discrete_moments(h, u, ω, 0)
-        w[2] = discrete_moments(h, u, ω, 1)
-        w[3] = 0.5 * (discrete_moments(h, u, ω, 2) + discrete_moments(b, u, ω, 0))
-    end
-
-    return w
-end
-
-"""
-$(SIGNATURES)
-
-1F2V (in structured mesh)
-"""
-function moments_conserve(f::X, u::T, v::T, ω::T) where {X<:AM,T<:AM}
+function moments_conserve(f, u, v, ω, ::Type{VDF{1,2}})
     w = similar(f, 4)
     w[1] = discrete_moments(f, u, ω, 0)
     w[2] = discrete_moments(f, u, ω, 1)
@@ -256,9 +183,23 @@ end
 """
 $(SIGNATURES)
 
+2F1V
+"""
+function moments_conserve(h, b, u, ω, ::Type{VDF{2,1}})
+    w = similar(h, 3)
+    w[1] = discrete_moments(h, u, ω, 0)
+    w[2] = discrete_moments(h, u, ω, 1)
+    w[3] = 0.5 * (discrete_moments(h, u, ω, 2) + discrete_moments(b, u, ω, 0))
+
+    return w
+end
+
+"""
+$(SIGNATURES)
+
 2F2V
 """
-function moments_conserve(h::X, b::X, u::T, v::T, ω::T) where {X<:AA,T<:AA}
+function moments_conserve(h, b, u, v, ω, ::Type{VDF{2,2}})
     w = similar(h, 4)
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
@@ -278,14 +219,7 @@ $(SIGNATURES)
 
 3F2V
 """
-function moments_conserve(
-    h0::X,
-    h1::X,
-    h2::X,
-    u::T,
-    v::T,
-    ω::T,
-) where {X<:AA{<:FN,2},T<:AA{<:FN,2}}
+function moments_conserve(h0, h1, h2, u, v, ω, ::Type{VDF{3,2}})
     w = similar(h0, 5)
     w[1] = discrete_moments(h0, u, ω, 0)
     w[2] = discrete_moments(h0, u, ω, 1)
@@ -306,7 +240,7 @@ $(SIGNATURES)
 
 1F3V
 """
-function moments_conserve(f::X, u::T, v::T, w::T, ω::T) where {X<:AA{<:FN,3},T<:AA{<:FN,3}}
+function moments_conserve(f, u, v, w, ω, ::Type{VDF{1,3}})
     moments = similar(f, 5)
 
     moments[1] = discrete_moments(f, u, ω, 0)
@@ -328,7 +262,7 @@ $(SIGNATURES)
 
 4F1V
 """
-function moments_conserve(h0::X, h1::X, h2::X, h3::X, u::T, ω::T) where {X<:AV,T<:AV}
+function moments_conserve(h0, h1, h2, h3, u, ω, ::Type{VDF{4,1}})
     moments = similar(h0, 5)
 
     moments[1] = discrete_moments(h0, u, ω, 0)
@@ -338,6 +272,62 @@ function moments_conserve(h0::X, h1::X, h2::X, h3::X, u::T, ω::T) where {X<:AV,
     moments[5] = 0.5 * discrete_moments(h0, u, ω, 2) + 0.5 * discrete_moments(h3, u, ω, 0)
 
     return moments
+end
+
+"""
+$(SIGNATURES)
+
+Shortcut methods
+
+1F1V
+"""
+function moments_conserve(f::AV, u::T, ω::T) where {T<:AV}
+    return moments_conserve(f, u, ω, VDF{1,1})
+end
+
+"""
+$(SIGNATURES)
+
+2F1V & 1F2V
+"""
+function moments_conserve(a1::AA, a2::AA, a3::T, a4::T) where {T<:AA}
+    if minimum(a2) < -0.9
+        f, u, v, ω = a1, a2, a3, a4
+        return moments_conserve(f, u, v, ω, VDF{1,2})
+    else
+        h, b, u, ω = a1, a2, a3, a4
+        return moments_conserve(h, b, u, ω, VDF{2,1})
+    end
+end
+
+"""
+$(SIGNATURES)
+
+2F2V & 1F3V
+"""
+function moments_conserve(a1::AA, a2::AA, a3::T, a4::T, a5::T) where {T<:AA}
+    if minimum(a2) < -0.9
+        f, u, v, w, ω = a1, a2, a3, a4, a5
+        return moments_conserve(f, u, v, w, ω, VDF{1,3})
+    else
+        h, b, u, v, ω = a1, a2, a3, a4, a5
+        return moments_conserve(h, b, u, v, ω, VDF{2,2})
+    end
+end
+
+"""
+$(SIGNATURES)
+
+4F1V & 3F2V
+"""
+function moments_conserve(a1::AA, a2::AA, a3::AA, a4::AA, a5::T, a6::T) where {T<:AA}
+    if minimum(a4) < -0.9
+        h0, h1, h2, u, v, ω = a1, a2, a3, a4, a5, a6
+        return moments_conserve(h0, h1, h2, u, v, ω, VDF{3,2})
+    else
+        h0, h1, h2, h3, u, ω = a1, a2, a3, a4, a5, a6
+        return moments_conserve(h0, h1, h2, h3, u, ω, VDF{4,1})
+    end
 end
 
 

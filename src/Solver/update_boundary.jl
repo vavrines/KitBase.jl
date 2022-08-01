@@ -11,6 +11,7 @@ function update_boundary!(
     residual;
     bc,
     fn = step!,
+    st = fn,
     kwargs...,
 ) where {
     TC<:Union{
@@ -23,19 +24,21 @@ function update_boundary!(
     },
 }
 
+    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
+
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
     resR = zero(ctr[1].w)
     avgR = zero(ctr[1].w)
 
-    if bc[1] != :fix
+    if bcs[1] != :fix
         i = 1
-        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], resL, avgL))
+        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], resL, avgL); st = st)
     end
 
-    if bc[2] != :fix
+    if bcs[2] != :fix
         j = KS.ps.nx
-        fn(KS, ctr[j], face[j], face[j+1], (dt, KS.ps.dx[j], resR, avgR))
+        fn(KS, ctr[j], face[j], face[j+1], (dt, KS.ps.dx[j], resR, avgR); st = st)
     end
 
     #@. residual += sqrt((resL + resR) * 2) / (avgL + avgR + 1.e-7)
@@ -44,16 +47,16 @@ function update_boundary!(
     end
 
     ng = 1 - first(eachindex(KS.ps.x))
-    if bc[1] == :period
+    if bcs[1] == :period
         bc_period!(ctr, ng)
-    elseif bc[1] == :extra
+    elseif bcs[1] == :extra
         bc_extra!(ctr, ng; dirc = :xl)
-    elseif bc[1] == :balance
+    elseif bcs[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
-    if bc[2] == :extra
+    if bcs[2] == :extra
         bc_extra!(ctr, ng; dirc = :xr)
-    elseif bc[2] == :balance
+    elseif bcs[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
@@ -73,20 +76,23 @@ function update_boundary!(
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
+    st = fn,
     isMHD = false,
 ) where {TC<:Union{ControlVolume3F,ControlVolume1D3F}}
 
+    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
+
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
     resR = zero(ctr[1].w)
     avgR = zero(ctr[1].w)
 
-    if bc[1] != :fix
+    if bcs[1] != :fix
         i = 1
         fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
     end
 
-    if bc[2] != :fix
+    if bcs[2] != :fix
         j = KS.ps.nx
         fn(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
@@ -96,16 +102,16 @@ function update_boundary!(
     end
 
     ng = 1 - first(eachindex(KS.ps.x))
-    if bc[1] == :period
+    if bcs[1] == :period
         bc_period!(ctr, ng)
-    elseif bc[1] == :extra
+    elseif bcs[1] == :extra
         bc_extra!(ctr, ng; dirc = :xl)
-    elseif bc[1] == :balance
+    elseif bcs[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
-    if bc[2] == :extra
+    if bcs[2] == :extra
         bc_extra!(ctr, ng; dirc = :xr)
-    elseif bc[2] == :balance
+    elseif bcs[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
@@ -125,20 +131,23 @@ function update_boundary!(
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
+    st = fn,
     isMHD = false::Bool,
 ) where {TC<:Union{ControlVolume4F,ControlVolume1D4F}}
+
+    bcs = ifelse(bc isa Symbol, [bc, bc], bc)
 
     resL = zero(ctr[1].w)
     avgL = zero(ctr[1].w)
     resR = zero(ctr[1].w)
     avgR = zero(ctr[1].w)
 
-    if bc[1] != :fix
+    if bcs[1] != :fix
         i = 1
         fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, resL, avgL, coll, isMHD)
     end
 
-    if bc[2] != :fix
+    if bcs[2] != :fix
         j = KS.ps.nx
         fn(KS, ctr[j], face[j], face[j+1], KS.ps.dx[j], dt, resR, avgR, coll, isMHD)
     end
@@ -148,16 +157,16 @@ function update_boundary!(
     end
 
     ng = 1 - first(eachindex(KS.ps.x))
-    if bc[1] == :period
+    if bcs[1] == :period
         bc_period!(ctr, ng)
-    elseif bc[1] == :extra
+    elseif bcs[1] == :extra
         bc_extra!(ctr, ng; dirc = :xl)
-    elseif bc[1] == :balance
+    elseif bcs[1] == :balance
         bc_balance!(ctr[0], ctr[1], ctr[2])
     end
-    if bc[2] == :extra
+    if bcs[2] == :extra
         bc_extra!(ctr, ng; dirc = :xr)
-    elseif bc[2] == :balance
+    elseif bcs[2] == :balance
         bc_balance!(ctr[KS.ps.nx+1], ctr[KS.ps.nx], ctr[KS.ps.nx-1])
     end
 
@@ -178,6 +187,8 @@ function update_boundary!(
     coll = symbolize(KS.set.collision),
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {
     TC<:Union{
         ControlVolume,
@@ -188,6 +199,8 @@ function update_boundary!(
         ControlVolume2D2F,
     },
 }
+
+    bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
 
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -206,7 +219,7 @@ function update_boundary!(
     resD = zero(ctr[1].w)
     avgD = zero(ctr[1].w)
 
-    if bc[1] != :fix
+    if bcs[1] != :fix
         @inbounds for j = 1:ny
             fn(
                 KS,
@@ -216,12 +229,13 @@ function update_boundary!(
                 a2face[1, j],
                 a2face[1, j+1],
                 (dt, dx[1, j] * dy[1, j], resL, avgL),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
 
-    if bc[2] != :fix
+    if bcs[2] != :fix
         @inbounds for j = 1:ny
             fn(
                 KS,
@@ -231,12 +245,13 @@ function update_boundary!(
                 a2face[nx, j],
                 a2face[nx, j+1],
                 (dt, dx[nx, j] * dy[nx, j], resR, avgR),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
 
-    if bc[3] != :fix
+    if bcs[3] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
             fn(
                 KS,
@@ -246,12 +261,13 @@ function update_boundary!(
                 a2face[i, 1],
                 a2face[i, 2],
                 (dt, dx[i, 1] * dy[i, 1], resD, avgD),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
 
-    if bc[4] != :fix
+    if bcs[4] != :fix
         @inbounds for i = 2:nx-1 # skip overlap
             fn(
                 KS,
@@ -261,7 +277,8 @@ function update_boundary!(
                 a2face[i, ny],
                 a2face[i, ny+1],
                 (dt, dx[i, ny] * dy[i, ny], resU, avgU),
-                coll,
+                coll;
+                st = st,
             )
         end
     end
@@ -273,26 +290,26 @@ function update_boundary!(
     end
 
     ngx = 1 - first(eachindex(KS.ps.x[:, 1]))
-    if bc[1] == :period
+    if bcs[1] == :period
         bc_period!(ctr, ngx; dirc = :x)
-    elseif bc[1] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[1]) * "!"))
+    elseif bcs[1] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[1]) * "!"))
         bcfun(ctr, ngx; dirc = :xl)
     end
-    if bc[2] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[2]) * "!"))
+    if bcs[2] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[2]) * "!"))
         bcfun(ctr, ngx; dirc = :xr)
     end
 
     ngy = 1 - first(eachindex(KS.ps.y[1, :]))
-    if bc[3] == :period
+    if bcs[3] == :period
         bc_period!(ctr, ngy; dirc = :y)
-    elseif bc[3] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[3]) * "!"))
+    elseif bcs[3] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[3]) * "!"))
         bcfun(ctr, ngy; dirc = :yl)
     end
-    if bc[4] in (:extra, :mirror)
-        bcfun = eval(Symbol("bc_" * string(bc[4]) * "!"))
+    if bcs[4] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[4]) * "!"))
         bcfun(ctr, ngy; dirc = :yr)
     end
 
@@ -312,6 +329,8 @@ function update_boundary!(
     coll,
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {TC<:ControlVolumeUS}
 
     for i in eachindex(KS.ps.cellType)
@@ -340,6 +359,8 @@ function update_boundary!(
     coll,
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {TC<:ControlVolumeUS1F}
 
     for i in eachindex(KS.ps.cellType)
@@ -369,6 +390,8 @@ function update_boundary!(
     coll,
     bc,
     fn = step!,
+    st = fn,
+    kwargs...,
 ) where {TC<:ControlVolumeUS2F}
 
     for i in eachindex(KS.ps.cellType)

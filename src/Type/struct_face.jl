@@ -111,13 +111,14 @@ end
 # ------------------------------------------------------------
 
 """
-    mutable struct Interface1D{A<:Union{Real,AA}} <: AbstractInterface1D
-        fw::A
-    end
+$(TYPEDEF)
 
 1D cell interface with no distribution function
 Note that deepcopy constructor is needed to work with StructArrays
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct Interface1D{A<:Union{Real,AA}} <: AbstractInterface1D
     fw::A
@@ -129,14 +130,14 @@ end
 
 
 """
-    mutable struct Interface1D1F{A,B} <: AbstractInterface1D
-        fw::A
-        ff::B
-    end
+$(TYPEDEF)
 
 1D cell interface with 1 distribution function
 Note that deepcopy constructor is needed to work with StructArrays
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct Interface1D1F{A,B<:AA} <: AbstractInterface1D
     fw::A
@@ -154,22 +155,13 @@ end
 
 
 """
-    struct Interface1D2F{A,B} <: AbstractInterface1D
-        fw::A
-        fh::B
-        fb::B
-
-        function Interface1D2F(w::AA, f::AA)
-            fw = zero(w)
-            fh = zero(f)
-            fb = zero(f)
-
-            new{typeof(fw),typeof(fh)}(fw, fh, fb)
-        end
-    end
+$(TYPEDEF)
 
 1D cell interface with 2 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 struct Interface1D2F{A,B<:AA} <: AbstractInterface1D
     fw::A
@@ -196,17 +188,13 @@ end
 
 
 """
-    struct Interface1D3F{A,B,C} <: AbstractInterface1D
-        fw::A
-        fh0::B
-        fh1::B
-        fh2::B
-        femL::C
-        femR::C
-    end
+$(TYPEDEF)
 
 1D cell interface with 3 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 struct Interface1D3F{A,B,C} <: AbstractInterface1D
     fw::A
@@ -265,18 +253,13 @@ end
 
 
 """
-    struct Interface1D4F{A,B,C} <: AbstractInterface1D
-        fw::A
-        fh0::B
-        fh1::B
-        fh2::B
-        fh3::B
-        femL::C
-        femR::C
-    end
+$(TYPEDEF)
 
 1D cell interface with 4 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 struct Interface1D4F{A,B,C} <: AbstractInterface1D
     fw::A
@@ -329,23 +312,13 @@ end
 # ------------------------------------------------------------
 
 """
-    mutable struct Interface2D{A,B,C} <: AbstractInterface2D
-        len::A
-        n::B
-        fw::C
-
-        function Interface2D(L::Real, C::Real, S::Real, w::AA)
-            len = L
-            n = [C, S]
-
-            fw = zero(w)
-
-            new{typeof(len),typeof(n),typeof(fw)}(len, n, fw)
-        end
-    end
+$(TYPEDEF)
 
 2D cell interface with no distribution function
 
+# Fields
+
+$(FIELDS)    
 """
 mutable struct Interface2D{A,B,C} <: AbstractInterface2D
     len::A
@@ -374,25 +347,13 @@ end
 
 
 """
-    mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
-        len::A
-        n::B
-        fw::C
-        ff::D
-
-        function Interface2D1F(L::Real, C::Real, S::Real, w::AA, f::AA)
-            len = L
-            n = [C, S]
-
-            fw = zero(w)
-            ff = zero(f)
-
-            new{typeof(len),typeof(n),typeof(fw),typeof(ff)}(len, n, fw, ff)
-        end
-    end
+$(TYPEDEF)
 
 2D cell interface with 1 distribution function
 
+# Fields
+
+$(FIELDS)
 """
 mutable struct Interface2D1F{A,B,C,D} <: AbstractInterface2D
     len::A
@@ -424,27 +385,13 @@ end
 
 
 """
-    struct Interface2D2F{A,B,C,D} <: AbstractInterface2D
-        len::A
-        n::B
-        fw::C
-        fh::D
-        fb::D
-
-        function Interface2D2F(L::Real, C::Real, S::Real, w::AA, f::AA)
-            len = L
-            n = [C, S]
-
-            fw = zeros(eltype(w), axes(w))
-            fh = zeros(eltype(f), axes(f))
-            fb = zeros(eltype(f), axes(f))
-
-            new{typeof(len),typeof(n),typeof(fw),typeof(fh)}(len, n, fw, fh, fb)
-        end
-    end
+$(TYPEDEF)
 
 2D cell interface with 2 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 struct Interface2D2F{A,B<:AV,C,D} <: AbstractInterface2D
     len::A
@@ -478,23 +425,13 @@ end
 
 
 """
-    struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
-        len::A
-        n::B
-        fw::C
-        fh0::D
-        fh1::D
-        fh2::D
-        femL::E
-        femR::E
-        femLU::E
-        femLD::E
-        femRU::E
-        femRD::E
-    end
+$(TYPEDEF)
 
 2D cell interface with 3 distribution functions
 
+# Fields
+
+$(FIELDS)
 """
 struct Interface2D3F{A,B,C,D,E} <: AbstractInterface2D
     len::A

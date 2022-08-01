@@ -20,7 +20,26 @@ begin
     ω = ones(16)
 end
 
-KitBase.step!(w, prim, f, fwL, ffL, fwR, ffR, u, ω, γ, 1e-3, 0.72, 1.0, dx, dt, res, avg)
+KitBase.step!(
+    w,
+    prim,
+    f,
+    fwL,
+    ffL,
+    fwR,
+    ffR,
+    u,
+    ω,
+    γ,
+    1e-3,
+    0.72,
+    1.0,
+    dx,
+    dt,
+    res,
+    avg,
+    :bgk,
+)
 
 KitBase.step!(
     KitBase.prim_conserve([1.0, 0.0, 0.0, 0.0, 1.0], γ),
@@ -42,6 +61,7 @@ KitBase.step!(
     dt,
     zeros(5),
     zeros(5),
+    :bgk,
 )
 
 KitBase.step!(
@@ -66,6 +86,7 @@ KitBase.step!(
     dt,
     res,
     avg,
+    :bgk,
 )
 KitBase.step!(
     hcat(w, w),
@@ -92,6 +113,7 @@ KitBase.step!(
     dt,
     hcat(res, res),
     hcat(avg, avg),
+    :bgk,
 )
 
 # fsm
