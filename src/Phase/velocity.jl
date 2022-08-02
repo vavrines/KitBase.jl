@@ -23,36 +23,36 @@ end
 function VSpace1D(
     U0,
     U1,
-    NU::TI,
-    TYPE = "rectangle",
-    NG = zero(NU)::TI,
-    PRECISION = Float64,
+    NU::TI;
+    type = "rectangle",
+    ng = zero(NU)::TI,
+    precision = Float64,
 ) where {TI<:Integer}
 
     δ = (U1 - U0) / NU
     u = begin
-        if NG > 0
-            OffsetArray{PRECISION}(undef, 1-NG:NU+NG)
+        if ng > 0
+            OffsetArray{precision}(undef, 1-ng:NU+ng)
         else
-            Array{PRECISION}(undef, NU)
+            Array{precision}(undef, NU)
         end
     end
     du = similar(u)
     weights = similar(u)
 
-    if TYPE == "rectangle" # rectangular
+    if type == "rectangle" # rectangular
         for i in eachindex(u)
             u[i] = U0 + (i - 0.5) * δ
             du[i] = δ
             weights[i] = δ
         end
-    elseif TYPE == "newton" # newton-cotes
+    elseif type == "newton" # newton-cotes
         for i in eachindex(u)
             u[i] = U0 + (i - 0.5) * δ
             du[i] = δ
-            weights[i] = newton_cotes(i + NG, NU + NG * 2) * δ
+            weights[i] = newton_cotes(i + ng, NU + ng * 2) * δ
         end
-    elseif TYPE == "algebra" # algebraic
+    elseif type == "algebra" # algebraic
         _nu = NU + 1
         _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
         u .= (_u[1:end-1] .+ _u[2:end]) ./ 2
@@ -62,7 +62,7 @@ function VSpace1D(
         throw("No velocity quadrature available")
     end
 
-    return VSpace1D{PRECISION,TI,typeof(u),typeof(weights)}(U0, U1, NU, u, du, weights)
+    return VSpace1D{precision,TI,typeof(u),typeof(weights)}(U0, U1, NU, u, du, weights)
 
 end
 
@@ -78,36 +78,36 @@ function MVSpace1D(
     Ui1,
     Ue0,
     Ue1,
-    NU::TI,
-    TYPE = "rectangle",
-    NG = zero(NU)::TI,
-    PRECISION = Float64,
+    NU::TI;
+    type = "rectangle",
+    ng = zero(NU)::TI,
+    precision = Float64,
 ) where {TI<:Integer}
 
-    u0 = PRECISION.([Ui0, Ue0])
-    u1 = PRECISION.([Ui1, Ue1])
+    u0 = precision.([Ui0, Ue0])
+    u1 = precision.([Ui1, Ue1])
     δ = (u1 .- u0) ./ NU
     u = begin
-        if NG > 0
-            OffsetArray{PRECISION}(undef, 1-NG:NU+NG, 1:2)
+        if ng > 0
+            OffsetArray{precision}(undef, 1-ng:NU+ng, 1:2)
         else
-            Array{PRECISION}(undef, NU, 2)
+            Array{precision}(undef, NU, 2)
         end
     end
     du = similar(u)
     weights = similar(u)
 
-    if TYPE == "rectangle" # rectangular
+    if type == "rectangle" # rectangular
         for j in axes(u, 2), i in axes(u, 1)
             u[i, j] = u0[j] + (i - 0.5) * δ[j]
             du[i, j] = δ[j]
             weights[i, j] = δ[j]
         end
-    elseif TYPE == "newton" # newton-cotes
+    elseif type == "newton" # newton-cotes
         for j in axes(u, 2), i in axes(u, 1)
             u[i, j] = u0[j] + (i - 0.5) * δ[j]
             du[i, j] = δ[j]
-            weights[i, j] = newton_cotes(i + NG, NU + NG * 2) * δ[j]
+            weights[i, j] = newton_cotes(i + ng, NU + ng * 2) * δ[j]
         end
     else
         throw("No velocity quadrature available")
@@ -150,20 +150,20 @@ function VSpace2D(
     NU::TI,
     V0,
     V1,
-    NV::TI,
-    TYPE = "rectangle",
-    NGU = zero(NU)::TI,
-    NGV = zero(NV)::TI,
-    PRECISION = Float64,
+    NV::TI;
+    type = "rectangle",
+    ngu = zero(NU)::TI,
+    ngv = zero(NV)::TI,
+    precision = Float64,
 ) where {TI<:Integer}
 
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     u = begin
-        if NGU > 0 || NGV > 0
-            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV)
+        if ngu > 0 || ngv > 0
+            OffsetArray{precision}(undef, 1-ngu:NU+ngu, 1-ngv:NV+ngv)
         else
-            Array{PRECISION}(undef, NU, NV)
+            Array{precision}(undef, NU, NV)
         end
     end
     v = similar(u)
@@ -171,7 +171,7 @@ function VSpace2D(
     dv = similar(u)
     weights = similar(u)
 
-    if TYPE == "rectangle" # rectangular
+    if type == "rectangle" # rectangular
         for j in axes(u, 2)
             for i in axes(u, 1)
                 u[i, j] = U0 + (i - 0.5) * δu
@@ -181,7 +181,7 @@ function VSpace2D(
                 weights[i, j] = δu * δv
             end
         end
-    elseif TYPE == "newton" # newton-cotes
+    elseif type == "newton" # newton-cotes
         for j in axes(u, 2)
             for i in axes(u, 1)
                 u[i, j] = U0 + (i - 0.5) * δu
@@ -189,13 +189,13 @@ function VSpace2D(
                 du[i, j] = δu
                 dv[i, j] = δv
                 weights[i, j] =
-                    newton_cotes(i + NGU, NU + NGU * 2) *
+                    newton_cotes(i + ngu, NU + ngu * 2) *
                     δu *
-                    newton_cotes(j + NGV, NV + NGV * 2) *
+                    newton_cotes(j + ngv, NV + ngv * 2) *
                     δv
             end
         end
-    elseif TYPE == "algebra"
+    elseif type == "algebra"
         _nu = NU + 1
         _nv = NV + 1
         _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
@@ -223,7 +223,7 @@ function VSpace2D(
                 #weights[i, j] = wx[i] * wy[j]
             end
         end
-    elseif TYPE == "maxwell"
+    elseif type == "maxwell"
         _u, _uw = maxwell_quadrature(NU, U1 / 5.76)
         _v, _vw = maxwell_quadrature(NV, V1 / 5.76)
         u1, v1 = meshgrid(_u, _v)
@@ -260,7 +260,7 @@ function VSpace2D(
         throw("No velocity quadrature available")
     end
 
-    return VSpace2D{PRECISION,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, u, v, du, dv, weights)
+    return VSpace2D{precision,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, u, v, du, dv, weights)
 
 end
 
@@ -281,24 +281,24 @@ function MVSpace2D(
     Vi1,
     Ve0,
     Ve1,
-    NV::TI,
-    TYPE = "rectangle",
-    NGU = zero(NU)::TI,
-    NGV = zero(NV)::TI,
-    PRECISION = Float64,
+    NV::TI;
+    type = "rectangle",
+    ngu = zero(NU)::TI,
+    ngv = zero(NV)::TI,
+    precision = Float64,
 ) where {TI<:Integer}
 
-    u0 = PRECISION.([Ui0, Ue0])
-    u1 = PRECISION.([Ui1, Ue1])
+    u0 = precision.([Ui0, Ue0])
+    u1 = precision.([Ui1, Ue1])
     δu = (u1 .- u0) ./ NU
-    v0 = PRECISION.([Vi0, Ve0])
-    v1 = PRECISION.([Vi1, Ve1])
+    v0 = precision.([Vi0, Ve0])
+    v1 = precision.([Vi1, Ve1])
     δv = (v1 .- v0) ./ NV
     u = begin
-        if NGU > 0 || NGV > 0
-            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1:2)
+        if ngu > 0 || ngv > 0
+            OffsetArray{precision}(undef, 1-ngu:NU+ngu, 1-ngv:NV+ngv, 1:2)
         else
-            Array{PRECISION}(undef, NU, NV, 2)
+            Array{precision}(undef, NU, NV, 2)
         end
     end
     v = similar(u)
@@ -306,7 +306,7 @@ function MVSpace2D(
     dv = similar(u)
     weights = similar(u)
 
-    if TYPE == "rectangle" # rectangular
+    if type == "rectangle" # rectangular
         for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             u[i, j, k] = u0[k] + (i - 0.5) * δu[k]
             v[i, j, k] = v0[k] + (j - 0.5) * δv[k]
@@ -314,16 +314,16 @@ function MVSpace2D(
             dv[i, j, k] = δv[k]
             weights[i, j, k] = δu[k] * δv[k]
         end
-    elseif TYPE == "newton" # newton-cotes
+    elseif type == "newton" # newton-cotes
         for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             u[i, j, k] = u0[k] + (i - 0.5) * δu[k]
             v[i, j, k] = v0[k] + (j - 0.5) * δv[k]
             du[i, j, k] = δu[k]
             dv[i, j, k] = δv[k]
             weights[i, j, k] =
-                newton_cotes(i + NGU, NU + NGU * 2) *
+                newton_cotes(i + ngu, NU + ngu * 2) *
                 δu[k] *
-                newton_cotes(j + NGV, NV + NGV * 2) *
+                newton_cotes(j + ngv, NV + ngv * 2) *
                 δv[k]
         end
     else
@@ -376,22 +376,22 @@ function VSpace3D(
     NV::TI,
     W0,
     W1,
-    NW::TI,
-    TYPE = "rectangle",
-    NGU = zero(NU)::TI,
-    NGV = zero(NV)::TI,
-    NGW = zero(NW)::TI,
-    PRECISION = Float64,
+    NW::TI;
+    type = "rectangle",
+    ngu = zero(NU)::TI,
+    ngv = zero(NV)::TI,
+    ngw = zero(NW)::TI,
+    precision = Float64,
 ) where {TI<:Integer}
 
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     δw = (W1 - W0) / NW
     u = begin
-        if NGU > 0 || NGV > 0 || NGW > 0
-            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW)
+        if ngu > 0 || ngv > 0 || ngw > 0
+            OffsetArray{precision}(undef, 1-ngu:NU+ngu, 1-ngv:NV+ngv, 1-ngw:NW+ngw)
         else
-            Array{PRECISION}(undef, NU, NV, NW)
+            Array{precision}(undef, NU, NV, NW)
         end
     end
     v = similar(u)
@@ -401,7 +401,7 @@ function VSpace3D(
     dw = similar(u)
     weights = similar(u)
 
-    if TYPE == "rectangle" # rectangular
+    if type == "rectangle" # rectangular
         for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             u[i, j, k] = U0 + (i - 0.5) * δu
             v[i, j, k] = V0 + (j - 0.5) * δv
@@ -411,7 +411,7 @@ function VSpace3D(
             dw[i, j, k] = δw
             weights[i, j, k] = δu * δv * δw
         end
-    elseif TYPE == "newton" # newton-cotes
+    elseif type == "newton" # newton-cotes
         for k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             u[i, j, k] = U0 + (i - 0.5) * δu
             v[i, j, k] = V0 + (j - 0.5) * δv
@@ -420,14 +420,14 @@ function VSpace3D(
             dv[i, j, k] = δv
             dw[i, j, k] = δw
             weights[i, j, k] =
-                newton_cotes(i + NGU, NU + NGU * 2) *
+                newton_cotes(i + ngu, NU + ngu * 2) *
                 δu *
-                newton_cotes(j + NGV, NV + NGV * 2) *
+                newton_cotes(j + ngv, NV + ngv * 2) *
                 δv *
-                newton_cotes(k + NGW, NW + NGW * 2) *
+                newton_cotes(k + ngw, NW + ngw * 2) *
                 δw
         end
-    elseif TYPE == "algebra"
+    elseif type == "algebra"
         _nu = NU + 1
         _nv = NV + 1
         _nw = NW + 1
@@ -457,7 +457,7 @@ function VSpace3D(
         throw("No velocity quadrature available")
     end
 
-    return VSpace3D{PRECISION,TI,typeof(u)}(
+    return VSpace3D{precision,TI,typeof(u)}(
         U0,
         U1,
         NU,
@@ -501,29 +501,29 @@ function MVSpace3D(
     Wi1,
     We0,
     We1,
-    NW::TI,
-    TYPE = "rectangle",
-    NGU = zero(NU)::TI,
-    NGV = zero(NV)::TI,
-    NGW = zero(NW)::TI,
-    PRECISION = Float64,
+    NW::TI;
+    type = "rectangle",
+    ngu = zero(NU)::TI,
+    ngv = zero(NV)::TI,
+    ngw = zero(NW)::TI,
+    precision = Float64,
 ) where {TI<:Integer}
 
-    u0 = PRECISION.([Ui0, Ue0])
-    u1 = PRECISION.([Ui1, Ue1])
+    u0 = precision.([Ui0, Ue0])
+    u1 = precision.([Ui1, Ue1])
     δu = (u1 .- u0) ./ NU
-    v0 = PRECISION.([Vi0, Ve0])
-    v1 = PRECISION.([Vi1, Ve1])
+    v0 = precision.([Vi0, Ve0])
+    v1 = precision.([Vi1, Ve1])
     δv = (v1 .- v0) ./ NV
-    w0 = PRECISION.([Wi0, We0])
-    w1 = PRECISION.([Wi1, We1])
+    w0 = precision.([Wi0, We0])
+    w1 = precision.([Wi1, We1])
     δw = (w1 .- w0) ./ NW
 
     u = begin
-        if NGU > 0 || NGV > 0 || NGW > 0
-            OffsetArray{PRECISION}(undef, 1-NGU:NU+NGU, 1-NGV:NV+NGV, 1-NGW:NW+NGW, 1:2)
+        if ngu > 0 || ngv > 0 || ngw > 0
+            OffsetArray{precision}(undef, 1-ngu:NU+ngu, 1-ngv:NV+ngv, 1-ngw:NW+ngw, 1:2)
         else
-            Array{PRECISION}(undef, NU, NV, NW, 2)
+            Array{precision}(undef, NU, NV, NW, 2)
         end
     end
     v = similar(u)
@@ -533,7 +533,7 @@ function MVSpace3D(
     dw = similar(u)
     weights = similar(u)
 
-    if TYPE == "rectangle" # rectangular
+    if type == "rectangle" # rectangular
         for l in axes(u, 4), k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             u[i, j, k, l] = u0[l] + (i - 0.5) * δu[l]
             v[i, j, k, l] = v0[l] + (j - 0.5) * δv[l]
@@ -543,7 +543,7 @@ function MVSpace3D(
             dw[i, j, k, l] = δw[l]
             weights[i, j, k, l] = δu[l] * δv[l] * δw[l]
         end
-    elseif TYPE == "newton" # newton-cotes
+    elseif type == "newton" # newton-cotes
         for l in axes(u, 4), k in axes(u, 3), j in axes(u, 2), i in axes(u, 1)
             u[i, j, k, l] = u0[l] + (i - 0.5) * δu[l]
             v[i, j, k, l] = v0[l] + (j - 0.5) * δv[l]
@@ -552,11 +552,11 @@ function MVSpace3D(
             dv[i, j, k, l] = δv[l]
             dw[i, j, k, l] = δw[l]
             weights[i, j, k, l] =
-                newton_cotes(i + NGU, NU + NGU * 2) *
+                newton_cotes(i + ngu, NU + ngu * 2) *
                 δu[l] *
-                newton_cotes(j + NGV, NV + NGV * 2) *
+                newton_cotes(j + ngv, NV + ngv * 2) *
                 δv[l] *
-                newton_cotes(k + NGW, NW + NGW * 2) *
+                newton_cotes(k + ngw, NW + ngw * 2) *
                 δw[l]
         end
     else
