@@ -286,6 +286,7 @@ function mixture_maxwellian!(M::AM, u::T, v::T, w::T, prim::AM) where {T<:AM}
 
 end
 
+
 """
 $(SIGNATURES)
 
@@ -307,4 +308,26 @@ function mixture_energy_maxwellian(h::AA{T,3}, prim::AM, K) where {T}
     end
 
     return b
+end
+
+
+"""
+$(SIGNATURES)
+
+Reduced Maxwellian distribution related to energy for mixture
+"""
+function f_maxwellian(f::AV, u::AV, weights::AV, γ = 3)
+    w = moments_conserve(f, u, weights)
+    prim = conserve_prim(w, γ)
+
+    return maxwellian(u, prim)
+end
+
+f_maxwellian(f::AV, vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D, γ = 3) =
+    f_maxwellian(f, vs.u, vs.weights, γ)
+
+function f_maxwellian(f::AM, vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D, γ = 3)
+    M = [f_maxwellian(f[:, i], vs, γ) for i in axes(f, 2)]
+
+    return hcat(M...)
 end

@@ -221,6 +221,8 @@ KitBase.rykov!(
     0.3049,
 )
 
+KitBase.f_maxwellian(rand(16, 10))
+
 KitBase.reduce_distribution(randn(16, 51), ω, 1)
 KitBase.reduce_distribution(randn(16, 24, 24), ones(24, 24), 1)
 KitBase.reduce_distribution(
@@ -252,7 +254,7 @@ KitBase.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), fsm)
 KitBase.boltzmann_ode!(zeros(16, 16, 16), rand(16, 16, 16), (1.0, 5, phi, psi, phipsi), 0.0)
 KitBase.bgk_ode!(zeros(16, 16, 16), rand(16, 16, 16), (rand(16, 16, 16), 1e-2), 0.0)
 
-vs = KitBase.VSpace3D(-5.0, 5.0, 16, -5.0, 5.0, 16, -5.0, 5.0, 16, "algebra")
+vs = KitBase.VSpace3D(-5.0, 5.0, 16, -5.0, 5.0, 16, -5.0, 5.0, 16, type = "algebra")
 u, v, w = vs.u[:, 1, 1], vs.v[1, :, 1], vs.w[1, 1, :]
 vnu = hcat(vs.u[:], vs.v[:], vs.w[:])
 uuni1d = linspace(vs.u[1, 1, 1], vs.u[end, 1, 1], 16)

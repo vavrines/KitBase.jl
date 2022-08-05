@@ -244,17 +244,17 @@ function set_velocity(dict::T) where {T<:AbstractDict}
         vSpace = nothing
     elseif Dv == 1
         if nSpecies == 1
-            vSpace = VSpace1D(umin, umax, nu, vMeshType, nug)
+            vSpace = VSpace1D(umin, umax, nu; type = vMeshType, ng = nug)
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
             ue1 = umax * sqrt(mi / me)
-            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu, vMeshType, nug)
+            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu; type = vMeshType, ng = nug)
         else
             throw("The velocity space only supports up to two species.")
         end
     elseif Dv == 2
         if nSpecies == 1
-            vSpace = VSpace2D(umin, umax, nu, vmin, vmax, nv, vMeshType, nug, nvg)
+            vSpace = VSpace2D(umin, umax, nu, vmin, vmax, nv; type = vMeshType, ngu = nug, ngv = nvg)
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
             ue1 = umax * sqrt(mi / me)
@@ -270,10 +270,10 @@ function set_velocity(dict::T) where {T<:AbstractDict}
                 vmax,
                 ve0,
                 ve1,
-                nv,
-                vMeshType,
-                nug,
-                nvg,
+                nv;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
             )
         else
             throw("The velocity space only supports up to two species.")
@@ -289,11 +289,11 @@ function set_velocity(dict::T) where {T<:AbstractDict}
                 nv,
                 wmin,
                 wmax,
-                nw,
-                vMeshType,
-                nug,
-                nvg,
-                nwg,
+                nw;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+                ngw = nwg,
             )
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
@@ -317,11 +317,11 @@ function set_velocity(dict::T) where {T<:AbstractDict}
                 wmax,
                 we0,
                 we1,
-                nw,
-                vMeshType,
-                nug,
-                nvg,
-                nwg,
+                nw;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+                ngw = nwg,
             )
         else
             throw("The velocity space only supports up to two species.")
@@ -359,17 +359,17 @@ function set_velocity(;
         vSpace = nothing
     elseif Dv == 1
         if nSpecies == 1
-            vSpace = VSpace1D(umin, umax, nu, vMeshType, nug)
+            vSpace = VSpace1D(umin, umax, nu; type = vMeshType, ng = nug)
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
             ue1 = umax * sqrt(mi / me)
-            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu, vMeshType, nug)
+            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu; type = vMeshType, ng = nug)
         else
             throw("The velocity space only supports up to two species.")
         end
     elseif Dv == 2
         if nSpecies == 1
-            vSpace = VSpace2D(umin, umax, nu, vmin, vmax, nv, vMeshType, nug, nvg)
+            vSpace = VSpace2D(umin, umax, nu, vmin, vmax, nv; type = vMeshType, ngu = nug, ngv = nvg)
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
             ue1 = umax * sqrt(mi / me)
@@ -385,10 +385,10 @@ function set_velocity(;
                 vmax,
                 ve0,
                 ve1,
-                nv,
-                vMeshType,
-                nug,
-                nvg,
+                nv;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
             )
         else
             throw("The velocity space only supports up to two species.")
@@ -404,11 +404,11 @@ function set_velocity(;
                 nv,
                 wmin,
                 wmax,
-                nw,
-                vMeshType,
-                nug,
-                nvg,
-                nwg,
+                nw;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+                ngw = nwg,
             )
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
@@ -432,11 +432,11 @@ function set_velocity(;
                 wmax,
                 we0,
                 we1,
-                nw,
-                vMeshType,
-                nug,
-                nvg,
-                nwg,
+                nw;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+                ngw = nwg,
             )
         else
             throw("The velocity space only supports up to two species.")
