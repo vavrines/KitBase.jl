@@ -10,6 +10,7 @@ export maxwell_boltzmann, maxwell_boltzmann_prime
 export maxwell_boltzmann_dual, maxwell_boltzmann_dual_prime
 export kinetic_entropy
 export optimize_closure, realizable_reconstruct
+export moment_basis, sample_pdf
 export ylm, rlylm, eval_spherharmonic
 export basis_size, eval_sphermonomial
 export polylog
