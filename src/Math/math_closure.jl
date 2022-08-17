@@ -14,6 +14,44 @@ function moment_basis(u, n::Integer)
     return m
 end
 
+"""
+$(SIGNATURES)
+"""
+function moment_basis(u, v, n::Integer)
+    m = Array{eltype(u)}(undef, 0, length(u))
+
+    for i = 1:n
+        for idu = 0:i-1
+            idv = i - 1 - idu
+            tmp = u.^idu .* v.^idv |> permutedims
+            m = vcat(m, tmp)
+        end
+    end
+
+    return m
+end
+
+"""
+$(SIGNATURES)
+
+According to Levermore's paper, the dimensions of moment basis are 10 and 
+35 for n = 3 and n = 5 respectively.
+"""
+function moment_basis(u, v, w, n::Integer)
+    m = Array{eltype(u)}(undef, 0, length(u))
+
+    for i = 1:n
+        for idu = 0:i-1
+            for idv = 0:i-1-idu
+                idw = i - 1 - idu - idv
+                tmp = u.^idu .* v.^idv .* w.^idw |> permutedims
+                m = vcat(m, tmp)
+            end
+        end
+    end
+
+    return m
+end
 
 """
 $(SIGNATURES)
