@@ -84,6 +84,16 @@ u1 = KitBase.realizable_reconstruct(
     KitBase.maxwell_boltzmann_dual_prime,
 )
 
+using Distributions
+u = KitBase.linspace(-5, 5, 100)
+m = moment_basis(u, 15)
+pdf = Normal(0, 0.01)
+prim = [1.0, 0.0, 0.8]
+sample_pdf(m, prim, pdf)
+
+moment_basis(u, u, 3)
+moment_basis(u, u, u, 3)
+
 ###
 # Polylogarithms
 ###

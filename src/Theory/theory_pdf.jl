@@ -81,10 +81,14 @@ Reduced distribution function
 
 # Arguments
 * ``f``: particle distribution function with full velocity space
-* ``weights``: quadrature weights with reduced velocity setting (v & w by default)
-* ``dim``: dimension of the reduced distribution function
+* ``weights``: quadrature weights with reduced velocity setting
+* ``dim``: dimension of the reduced distribution function (1 by default)
+
+For 3D -> 1D, the quadrature weights can be obtained from `VSpace2D`.
 """
 function reduce_distribution(f::AM, weights::AV, dim = 1)
+    @assert dim <= 3
+
     if dim == 1
         h = similar(f, axes(f, 1))
         for i in eachindex(h)
@@ -95,8 +99,6 @@ function reduce_distribution(f::AM, weights::AV, dim = 1)
         for j in eachindex(h)
             h[j] = sum(@. weights * f[:, j])
         end
-    else
-        throw("dimension dismatch")
     end
 
     return h
@@ -105,7 +107,9 @@ end
 """
 $(SIGNATURES)
 """
-function reduce_distribution(f::AA{T1,3}, weights::AM, dim = 1) where {T1}
+function reduce_distribution(f::AA{T,3}, weights::AM, dim = 1) where {T}
+    @assert dim <= 3
+
     if dim == 1
         h = similar(f, axes(f, 1))
         for i in eachindex(h)
@@ -136,7 +140,9 @@ function reduce_distribution(
     w::Y,
     weights::AM,
     dim = 1,
-) where {X,Y<:AA{<:Real,3}}
+) where {X,Y<:AA{T,3}} where {T}
+
+    @assert dim <= 3
 
     if dim == 1
         h = similar(f, axes(f, 1))

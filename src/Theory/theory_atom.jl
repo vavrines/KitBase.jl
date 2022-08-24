@@ -125,7 +125,7 @@ $(SIGNATURES)
 
 RHS-ODE of Boltzmann equation
 """
-function boltzmann_ode!(df, f::AA{T,3}, p, t) where {T<:Real}
+function boltzmann_ode!(df, f::AA{T,3}, p, t) where {T}
     Kn, M, phi, psi, phipsi = p
     df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
 end
@@ -136,7 +136,7 @@ $(SIGNATURES)
 
 RHS-ODE of Boltzmann equation with non-uniform velocity
 """
-function boltzmann_nuode!(df, f::AA{T,3}, p, t) where {T<:Real}
+function boltzmann_nuode!(df, f::AA{T,3}, p, t) where {T}
     Kn, M, phi, psi, phipsi, u, v, w, vnu, u1, v1, w1, vuni = p
 
     nu = length(u)
@@ -160,7 +160,7 @@ $(SIGNATURES)
     
 RHS-ODE of BGK equation
 """
-function bgk_ode!(df, f::AA{T}, p, t) where {T<:Real}
+function bgk_ode!(df, f::AA{T}, p, t) where {T}
     g, τ = p
     df .= (g .- f) ./ τ
 end
