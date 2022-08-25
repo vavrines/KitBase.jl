@@ -28,7 +28,7 @@ function shakhov(
     prim::AV,
     Pr,
     K,
-)::T where {T<:AV}
+) where {T<:AV}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
@@ -82,7 +82,7 @@ function shakhov(
     prim::AV,
     Pr,
     K,
-)::X where {T<:AM,X<:AM}
+) where {T<:AM,X<:AM}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
