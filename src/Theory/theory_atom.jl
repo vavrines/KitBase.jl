@@ -31,17 +31,17 @@ Regulator to construct ν-BGK model
 
 _L. Mieussens and H. Struchtrup. Phys. Fluids, 16(8): 2797-2813, 2004._
 """
-function mieussens_relaxation_time(τ::T, u, prim::AV, tp)::T where {T}
+function νbgk_relaxation_time(τ::T, u, prim::AV, tp)::T where {T}
     c = @. abs(u - prim[2])
     return @. τ / mieussens_frequency(c, tp)
 end
 
-function mieussens_relaxation_time(τ::T, u, v, prim::AV, tp)::T where {T}
+function νbgk_relaxation_time(τ::T, u, v, prim::AV, tp)::T where {T}
     c = @. sqrt((u - prim[2])^2 + (v - prim[3])^2)
     return @. τ / mieussens_frequency(c, tp)
 end
 
-function mieussens_relaxation_time(τ::T, u, v, w, prim::AV, tp)::T where {T}
+function νbgk_relaxation_time(τ::T, u, v, w, prim::AV, tp)::T where {T}
     c = @. sqrt((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2)
     return @. τ / mieussens_frequency(c, tp)
 end
@@ -53,6 +53,19 @@ mieussens_frequency(η, ::Type{Class{2}}) = @. 0.0268351 * (1 + 14.2724 * η^2)
 mieussens_frequency(η, ::Type{Class{3}}) = @. 0.0365643 * (1 + 10 * η^2.081754)
 
 mieussens_frequency(η, ::Type{Class{4}}) = @. 0.1503991 * (1 + 0.92897 * η^4) # usually this isn't used
+
+
+"""
+$(SIGNATURES)
+
+Regulator to construct ν-Shakhov model
+"""
+function νshakhov_relaxation_time(τ::T, u, prim::AV)::T where {T}
+    c = @. abs(u - prim[2])
+    return @. 1 / 0.0871 * τ / (νeq0.(c) + 2 * νeq0(eps()))
+end
+
+νeq0(x) = @. 1.5 * (exp(-x^2) + sqrt(pi) / 2 * (1 / x + 2x) * erf(x))
 
 
 """
