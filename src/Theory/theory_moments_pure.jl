@@ -504,6 +504,13 @@ discrete_moments(f, u, ω, n) = sum(@. ω * u^n * f)
 """
 $(SIGNATURES)
 
+Calculate pressure `p=nkT`
+"""
+(pressure(prim::AV{T})::T) where T = 0.5 * prim[1] / prim[end]
+
+"""
+$(SIGNATURES)
+
 Calculate pressure from particle distribution function
 """
 pressure(f, prim, u, ω) = sum(@. ω * (u - prim[2])^2 * f)
