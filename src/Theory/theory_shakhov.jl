@@ -5,7 +5,7 @@ Shakhov non-equilibrium part
 
 1F1V
 """
-function shakhov(u::AV, M::AV, q, prim::AV, Pr)
+function shakhov(u::AV, M::T, q, prim::AV, Pr)::T where {T<:AV}
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
        q *
@@ -28,7 +28,7 @@ function shakhov(
     prim::AV,
     Pr,
     K,
-) where {T<:AV}
+)::T where {T<:AV}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
@@ -53,11 +53,11 @@ $(SIGNATURES)
 function shakhov(
     u::T,
     v::T,
-    M::AM,
+    M::T1,
     q::AV,
     prim::AV,
     Pr,
-) where {T<:AM}
+)::T1 where {T<:AM,T1<:AM}
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -82,7 +82,7 @@ function shakhov(
     prim::AV,
     Pr,
     K,
-) where {T<:AM,X<:AM}
+)::X where {T<:AM,X<:AM}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -106,11 +106,11 @@ function shakhov(
     u::T,
     v::T,
     w::T,
-    M::AA{T1,3},
+    M::T1,
     q::AV,
     prim::AV,
     Pr,
-) where {T<:AA{T2,3},T1} where {T2}
+)::T1 where {T<:AA{T2,3},T1<:AA{T3,3}} where {T2,T3}
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2] + (w - prim[4]) * q[3]) *
