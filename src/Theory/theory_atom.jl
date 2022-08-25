@@ -32,7 +32,7 @@ Regulator to construct ν-BGK model
 _L. Mieussens and H. Struchtrup. Phys. Fluids, 16(8): 2797-2813, 2004._
 """
 function mieussens_relaxation_time(τ::T, u, prim::AV, tp)::T where {T}
-    c = @. u - prim[2]
+    c = @. abs(u - prim[2])
     return @. τ / mieussens_frequency(c, tp)
 end
 
