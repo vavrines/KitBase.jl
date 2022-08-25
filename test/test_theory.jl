@@ -236,8 +236,12 @@ KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), 1.0, 
 KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), prim, 3.0)
 
 KitBase.ref_vhs_vis(1.0, 1.0, 0.5)
-KitBase.vhs_collision_time(prim[1], prim[end], 1e-3, 0.81)
 KitBase.vhs_collision_time(prim, 1e-3, 0.81)
+
+KitBase.mieussens_relaxation_time(0.1, 1, rand(3), Class{1})
+KitBase.mieussens_relaxation_time(0.1, 1, rand(3), Class{2})
+KitBase.mieussens_relaxation_time(0.1, 1, 1, rand(4), Class{3})
+KitBase.mieussens_relaxation_time(0.1, 1, 1, 1, rand(5), Class{4})
 
 KitBase.rykov_zr(100, 91.5, 18.1)
 
