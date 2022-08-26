@@ -86,13 +86,15 @@ u1 = KitBase.realizable_reconstruct(
 
 using Distributions
 u = KitBase.linspace(-5, 5, 100)
-m = moment_basis(u, 15)
+m = moment_basis(u, 4)
+mm = moment_basis(u, u, 4)
+mmm = moment_basis(u, u, u, 4)
+
 pdf = Normal(0, 0.01)
 prim = [1.0, 0.0, 0.8]
-sample_pdf(m, prim, pdf)
-
-moment_basis(u, u, 3)
-moment_basis(u, u, u, 3)
+sample_pdf(m, 4, prim, pdf)
+sample_pdf(mm, 4, [1, 0, 0, 1], pdf)
+sample_pdf(mmm, 4, [1, 0, 0, 0, 1], pdf)
 
 ###
 # Polylogarithms

@@ -15,7 +15,7 @@ export AbstractSolution, AbstractSolution1D, AbstractSolution2D
 export AbstractFlux, AbstractFlux1D, AbstractFlux2D
 export AbstractParticle, AbstractParticle1D, AbstractParticle2D
 
-export Class, VDF
+export Class, Dimension, VDF
 export Setup
 export Scalar, Radiation, Gas, DiatomicGas, Mixture, Plasma1D, Plasma2D
 export IB, IB1F, IB2F, IB3F, IB4F

@@ -1,14 +1,14 @@
 """
 $(SIGNATURES)
 
-Create basis functions for entropy closure
+Create basis functions for moment closure hierarchies
+
+_C. D. Levermore. J. Stat. Phys. 83(5): 1021-1065, 1996._
 """
 function moment_basis(u, n::Integer)
-    m = similar(u, n, length(u))
-    for j in axes(m, 2)
-        for i in axes(m, 1)
-            m[i, j] = u[j]^(i - 1)
-        end
+    m = zeros(typeof(u), n+1)
+    for i = 1:n+1
+        m[i] = u^(i - 1)
     end
 
     return m
@@ -16,16 +16,20 @@ end
 
 """
 $(SIGNATURES)
+"""
+moment_basis(u::AV, n::Integer) = hcat(moment_basis.(u, n)...)
+
+"""
+$(SIGNATURES)
+
+2D closure
 """
 function moment_basis(u, v, n::Integer)
-    m = Array{eltype(u)}(undef, 0, length(u))
-
-    for i = 1:n
-        for idu = 0:i-1
-            idv = i - 1 - idu
-            tmp = u.^idu .* v.^idv |> permutedims
-            m = vcat(m, tmp)
-        end
+    idx = moment_index(n, Dimension{2})
+    m = zeros(length(idx))
+    for i in eachindex(m)
+        idu, idv = idx[i]
+        m[i] = u^idu * v^idv
     end
 
     return m
@@ -33,25 +37,72 @@ end
 
 """
 $(SIGNATURES)
+"""
+moment_basis(u::AA, v::AA, n::Integer) = hcat(moment_basis.(u, v, n)...)
 
-According to Levermore's paper, the dimensions of moment basis are 10 and 
-35 for n = 3 and n = 5 respectively.
+"""
+$(SIGNATURES)
+
+3D closure
+
+The dimensions of moment basis are 10 and 35 for n = 2 and n = 4 respectively.
 """
 function moment_basis(u, v, w, n::Integer)
-    m = Array{eltype(u)}(undef, 0, length(u))
+    idx = moment_index(n, Dimension{3})
+    m = Array{typeof(u)}(undef, length(idx))
+    for i in eachindex(m)
+        idu, idv, idw = idx[i]
+        m[i] = u^idu * v^idv * w^idw
+    end
 
-    for i = 1:n
-        for idu = 0:i-1
-            for idv = 0:i-1-idu
+    return m
+end
+
+"""
+$(SIGNATURES)
+"""
+moment_basis(u::AA, v::AA, w::AA, n::Integer) = hcat(moment_basis.(u, v, w, n)...)
+
+
+"""
+$(SIGNATURES)
+
+Create index of basis function in moment closure
+"""
+moment_index(n, ::Type{Dimension{1}}) = collect(0:n)
+
+"""
+$(SIGNATURES)
+"""
+function moment_index(n, ::Type{Dimension{2}})
+    idx = Tuple[]
+    for i = 1:n+1
+        for idu = i-1:-1:0
+            idv = i - 1 - idu
+            push!(idx, (idu, idv))
+        end
+    end
+
+    return idx
+end
+
+"""
+$(SIGNATURES)
+"""
+function moment_index(n, ::Type{Dimension{3}})
+    idx = Tuple[]
+    for i = 1:n+1
+        for idu = i-1:-1:0
+            for idv = i-1-idu:-1:0
                 idw = i - 1 - idu - idv
-                tmp = u.^idu .* v.^idv .* w.^idw |> permutedims
-                m = vcat(m, tmp)
+                push!(idx, (idu, idv, idw))
             end
         end
     end
 
-    return m
+    return idx
 end
+
 
 """
 $(SIGNATURES)
@@ -85,19 +136,55 @@ end
 $(SIGNATURES)
 
 Sample distribution functions from entropy closure
-"""
-function sample_pdf(m, prim, pdf)
-    α = zeros(size(m, 1))
-    α[1] = log((prim[1] / (π / prim[end]))^0.5) - prim[2]^2 * prim[end]
-    α[2] = 2.0 * prim[2] * prim[3]
-    α[3] = -prim[3]
 
+# Arguments
+* ``m``: basis function {1, u, u^2, ..., u^n}
+* ``n``: order
+* ``prim``: primitive variables
+* ``pdf``: probability density
+"""
+function sample_pdf(m, n::Integer, prim, pdf)
     pdf1 = Truncated(pdf, -Inf, 0)
-    for i = 4:lastindex(α)
-        if iseven(i)
-            α[i] = rand(pdf)
-        else
+    α = zeros(size(m, 1))
+
+    if length(prim) == 3
+        α[1] = log((prim[1] / (π / prim[end]))^0.5) - prim[2]^2 * prim[end]
+        α[2] = 2.0 * prim[2] * prim[end]
+        α[3] = -prim[3]
+
+        cut = 4
+        idx = moment_index(n, Dimension{1})
+    elseif length(prim) == 4
+        α[1] = log((prim[1] / (π / prim[end]))) - (prim[2]^2 + prim[3]^2) * prim[end]
+        α[2] = 2.0 * prim[2] * prim[end]
+        α[3] = 2.0 * prim[3] * prim[end]
+        α[4] = -prim[end]
+        α[5] = 0.0
+        α[6] = -prim[end]
+
+        cut = 7
+        idx = moment_index(n, Dimension{2})
+    elseif length(prim) == 5
+        α[1] = log((prim[1] / (π / prim[end]))^1.5) - (prim[2]^2 + prim[3]^2 + prim[4]^2) * prim[end]
+        α[2] = 2.0 * prim[2] * prim[end]
+        α[3] = 2.0 * prim[3] * prim[end]
+        α[4] = 2.0 * prim[4] * prim[end]
+        α[5] = -prim[end]
+        α[6] = 0.0
+        α[7] = 0.0
+        α[8] = -prim[end]
+        α[9] = 0.0
+        α[10] = -prim[end]
+
+        cut = 11
+        idx = moment_index(n, Dimension{3})
+    end
+
+    for i = cut:lastindex(α)
+        if iseven(sum(idx[i]))
             α[i] = rand(pdf1)
+        else
+            α[i] = rand(pdf)
         end
     end
 

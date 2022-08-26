@@ -16,7 +16,18 @@ struct Class{N} end
 """
 $(TYPEDEF)
 
-Velocity distribution marker for multiple dispatch
+Dimension dispatcher
+
+# Parameters
+* `N`: dimension index
+"""
+struct Dimension{N} end
+
+
+"""
+$(TYPEDEF)
+
+Velocity distribution function dispatcher
 
 # Parameters
 * `NF`: number of distribution functions
