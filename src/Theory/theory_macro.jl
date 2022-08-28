@@ -294,3 +294,49 @@ Calculate reference viscosity with variable hard sphere (VHS) model
 ref_vhs_vis(Kn, alpha, omega) =
     5.0 * (alpha + 1.0) * (alpha + 2.0) * √π /
     (4.0 * alpha * (5.0 - 2.0 * omega) * (7.0 - 2.0 * omega)) * Kn
+
+# ------------------------------------------------------------
+# Entropy
+# ------------------------------------------------------------
+
+"""
+$(SIGNATURES)
+
+Maxwell Boltzmann entropy
+"""
+maxwell_boltzmann(f) = f * log(f) - f
+
+
+"""
+$(SIGNATURES)
+
+Prim of Maxwell Boltzmann entropy
+"""
+maxwell_boltzmann_prime(x) = log(x)
+
+
+"""
+$(SIGNATURES)
+
+Dual of Maxwell Boltzmann entropy
+"""
+maxwell_boltzmann_dual(f) = exp(f)
+
+
+"""
+$(SIGNATURES)
+
+Dual prim of Maxwell Boltzmann entropy
+"""
+maxwell_boltzmann_dual_prime(f) = exp(f)
+
+
+"""
+$(SIGNATURES)
+
+Reconstruct mathematical entropy from Legendre dual
+"""
+function kinetic_entropy(α::AA, m::AA, weights::AV)
+    B = KitBase.maxwell_boltzmann_dual_prime.(α' * m)[:]
+    return sum(maxwell_boltzmann.(B) .* weights)
+end
