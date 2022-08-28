@@ -12,18 +12,6 @@ function basis_size(LMaxDegree, spatialDim)
 end
 
 
-function power(basis, exponent)
-    if exponent == 0
-        return 1.0
-    end
-    result = basis
-    for i = 2:exponent
-        result *= basis
-    end
-    return result
-end
-
-
 function monomial_basis(pointX, pointY, pointZ, polyDegree::T) where {T<:Integer}
     idx_vector = 1
     spatialDim = 3
@@ -33,8 +21,7 @@ function monomial_basis(pointX, pointY, pointZ, polyDegree::T) where {T<:Integer
         for a = 0:idx_degree
             for b = 0:(idx_degree-a)
                 c = idx_degree - a - b
-                basisAtPt[idx_vector] =
-                    power(pointX, a) * power(pointY, b) * power(pointZ, c)
+                basisAtPt[idx_vector] = pointX^a * pointY^b * pointZ^c
                 idx_vector = idx_vector + 1
             end
         end
@@ -50,7 +37,7 @@ function monomial_basis(pointX, polyDegree::T) where {T<:Integer}
     basisLen = basis_size(polyDegree, spatialDim)
     basisAtPt = ones(1, basisLen)
     for a = 0:polyDegree
-        basisAtPt[idx_vector] = power(pointX, a)
+        basisAtPt[idx_vector] = pointX^a
         idx_vector = idx_vector + 1
     end
 
