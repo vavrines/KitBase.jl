@@ -225,18 +225,14 @@ $(SIGNATURES)
 
 Calculate heat capacity ratio (monatomic gas)
 """
-function heat_capacity_ratio(K, D::T) where {T<:Integer}
-    γ = begin
-        if D == 1
-            (K + 3.0) / (K + 1.0)
-        elseif D == 2
-            (K + 4.0) / (K + 2.0)
-        elseif D == 3
-            (K + 5.0) / (K + 3.0)
-        end
+function heat_capacity_ratio(K, D::Integer)
+    if D == 1
+        return (K + 3.0) / (K + 1.0)
+    elseif D == 2
+        return (K + 4.0) / (K + 2.0)
+    elseif D == 3
+        return (K + 5.0) / (K + 3.0)
     end
-
-    return γ
 end
 
 """
@@ -244,18 +240,30 @@ $(SIGNATURES)
 
 Calculate heat capacity ratio (diatomic gas)
 """
-function heat_capacity_ratio(K, Nr, D::T) where {T<:Integer}
-    γ = begin
-        if D == 1
-            (K + 3.0 + Nr) / (K + 1.0 + Nr)
-        elseif D == 2
-            (K + 4.0 + Nr) / (K + 2.0 + Nr)
-        elseif D == 3
-            (K + 5.0 + Nr) / (K + 3.0 + Nr)
-        end
+function heat_capacity_ratio(K, Nr, D::Integer)
+    if D == 1
+        return (K + 3.0 + Nr) / (K + 1.0 + Nr)
+    elseif D == 2
+        return (K + 4.0 + Nr) / (K + 2.0 + Nr)
+    elseif D == 3
+        return (K + 5.0 + Nr) / (K + 3.0 + Nr)
     end
+end
 
-    return γ
+
+"""
+$(SIGNATURES)
+
+Calculate internal degrees of freedom (monatomic gas)
+"""
+function internal_dof(γ, D::Integer)
+    if D == 1
+        return (3 - γ) / (γ - 1)
+    elseif D == 2
+        return (4 - 2 * γ) / (γ - 1)
+    elseif D == 3
+        return (5 - 3 * γ) / (γ - 1)
+    end
 end
 
 

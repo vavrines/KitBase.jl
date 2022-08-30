@@ -221,7 +221,8 @@ KitBase.rykov!(
     0.3049,
 )
 
-KitBase.f_maxwellian(rand(16, 10))
+KitBase.f_maxwellian(rand(16, 2))
+KitBase.f_maxwellian(rand(16, 2), rand(16, 2))
 
 KitBase.reduce_distribution(randn(16, 51), ω, 1)
 KitBase.reduce_distribution(randn(16, 24, 24), ones(24, 24), 1)

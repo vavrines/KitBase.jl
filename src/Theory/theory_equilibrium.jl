@@ -314,7 +314,7 @@ end
 """
 $(SIGNATURES)
 
-Reduced Maxwellian distribution related to energy for mixture
+Compute Maxwellian directly from distribution function
 """
 function f_maxwellian(f::AV, u::AV, weights::AV, γ = 3)
     w = moments_conserve(f, u, weights)
@@ -323,13 +323,44 @@ function f_maxwellian(f::AV, u::AV, weights::AV, γ = 3)
     return maxwellian(u, prim)
 end
 
+"""
+$(SIGNATURES)
+"""
 f_maxwellian(f::AV, vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D, γ = 3) =
     f_maxwellian(f, vs.u, vs.weights, γ)
 
+"""
+$(SIGNATURES)
+"""
 function f_maxwellian(f::AM, vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D, γ = 3)
     M = [f_maxwellian(f[:, i], vs, γ) for i in axes(f, 2)]
 
     return hcat(M...)
+end
+
+"""
+$(SIGNATURES)
+"""
+function f_maxwellian(h::AV, b::AV, u::AV, weights::AV, γ = 5/3)
+    w = moments_conserve(h, b, u, weights)
+    prim = conserve_prim(w, γ)
+    H = maxwellian(u, prim)
+    B = energy_maxwellian(H, prim[end], internal_dof(γ, 1))
+
+    return H, B
+end
+
+f_maxwellian(h::AV, b::AV, vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D, γ = 5/3) =
+    f_maxwellian(h, b, vs.u, vs.weights, γ)
+
+function f_maxwellian(h::AM, b::AM, vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D, γ = 5/3)
+    H = zero(h)
+    B = zero(b)
+    for j in axes(h, 2)
+        H[:, j], B[:, j] = f_maxwellian(h[:, j], b[:, j], vs, γ)
+    end
+
+    return H, B
 end
 
 # ------------------------------------------------------------
