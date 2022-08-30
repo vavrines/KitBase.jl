@@ -1,6 +1,41 @@
 """
 $(SIGNATURES)
 
+RHS-ODE of Boltzmann equation
+"""
+function boltzmann_ode!(df, f::AA{T,3}, p, t) where {T}
+    Kn, M, phi, psi, phipsi = p
+    df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
+end
+
+
+"""
+$(SIGNATURES)
+
+RHS-ODE of Boltzmann equation with non-uniform velocity
+"""
+function boltzmann_nuode!(df, f::AA{T,3}, p, t) where {T}
+    Kn, M, phi, psi, phipsi, u, v, w, vnu, u1, v1, w1, vuni = p
+
+    nu = length(u)
+    nv = length(v)
+    nw = length(w)
+    nu1 = length(u1)
+    nv1 = length(v1)
+    nw1 = length(w1)
+
+    curve = itp.RegularGridInterpolator((u, v, w), f)
+    _f = reshape(curve(vuni), nu1, nv1, nw1)
+    _df = boltzmann_fft(_f, Kn, M, phi, psi, phipsi)
+
+    curve1 = itp.RegularGridInterpolator((u1, v1, w1), _df)
+    df .= reshape(curve1(vnu), nu, nv, nw)
+end
+
+
+"""
+$(SIGNATURES)
+
 Calculate effective Knudsen number for fast spectral method with hard sphere (HS) model
 """
 hs_boltz_kn(mu_ref, alpha) =

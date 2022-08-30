@@ -221,7 +221,8 @@ KitBase.rykov!(
     0.3049,
 )
 
-KitBase.f_maxwellian(rand(16, 10))
+KitBase.f_maxwellian(rand(16, 2))
+KitBase.f_maxwellian(rand(16, 2), rand(16, 2))
 
 KitBase.reduce_distribution(randn(16, 51), ω, 1)
 KitBase.reduce_distribution(randn(16, 24, 24), ones(24, 24), 1)
@@ -236,8 +237,14 @@ KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), 1.0, 
 KitBase.full_distribution(M, M, u, ω, ones(51, 24, 24), ones(51, 24, 24), prim, 3.0)
 
 KitBase.ref_vhs_vis(1.0, 1.0, 0.5)
-KitBase.vhs_collision_time(prim[1], prim[end], 1e-3, 0.81)
 KitBase.vhs_collision_time(prim, 1e-3, 0.81)
+
+KitBase.νbgk_relaxation_time(0.1, 1, rand(3), Class{1})
+KitBase.νbgk_relaxation_time(0.1, 1, rand(3), Class{2})
+KitBase.νbgk_relaxation_time(0.1, 1, 1, rand(4), Class{3})
+KitBase.νbgk_relaxation_time(0.1, 1, 1, 1, rand(5), Class{4})
+
+KitBase.νshakhov_relaxation_time(0.1, 1, rand(3))
 
 KitBase.rykov_zr(100, 91.5, 18.1)
 

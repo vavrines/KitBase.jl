@@ -1,224 +1,79 @@
-# ============================================================
-# Continuum Theory
-# ============================================================
-
 """
 $(SIGNATURES)
-
-Transform primitive -> conservative variables
+    
+RHS-ODE of BGK equation
 """
-function prim_conserve(prim::AV, γ)
-    if eltype(prim) <: Integer
-        W = similar(prim, Float64)
-    else
-        W = similar(prim)
-    end
-
-    if length(prim) == 3 # 1D
-        W[1] = prim[1]
-        W[2] = prim[1] * prim[2]
-        W[3] = 0.5 * prim[1] / prim[3] / (γ - 1.0) + 0.5 * prim[1] * prim[2]^2
-    elseif length(prim) == 4 # 2D
-        W[1] = prim[1]
-        W[2] = prim[1] * prim[2]
-        W[3] = prim[1] * prim[3]
-        W[4] = 0.5 * prim[1] / prim[4] / (γ - 1.0) + 0.5 * prim[1] * (prim[2]^2 + prim[3]^2)
-    elseif length(prim) == 5 # 3D
-        W[1] = prim[1]
-        W[2] = prim[1] * prim[2]
-        W[3] = prim[1] * prim[3]
-        W[4] = prim[1] * prim[4]
-        W[5] =
-            0.5 * prim[1] / prim[5] / (γ - 1.0) +
-            0.5 * prim[1] * (prim[2]^2 + prim[3]^2 + prim[4]^2)
-    else
-        throw("prim -> w : dimension error")
-    end
-
-    return W
-end
-
-"""
-$(SIGNATURES)
-"""
-prim_conserve(ρ, U, λ, γ) = prim_conserve([ρ, U, λ], γ)
-
-"""
-$(SIGNATURES)
-"""
-prim_conserve(ρ, U, V, λ, γ) = prim_conserve([ρ, U, V, λ], γ)
-
-"""
-$(SIGNATURES)
-"""
-prim_conserve(ρ, U, V, W, λ, γ) = prim_conserve([ρ, U, V, W, λ], γ)
-
-"""
-$(SIGNATURES)
-
-Rykov model
-"""
-function prim_conserve(prim::AV, γ, Kr)
-    if eltype(prim) <: Integer
-        W = similar(prim, Float64, length(prim) - 1)
-    else
-        W = similar(prim, length(prim) - 1)
-    end
-
-    if length(prim) == 5 # 1D
-        W[1] = prim[1]
-        W[2] = prim[1] * prim[2]
-        W[3] = 0.5 * prim[1] / prim[3] / (γ - 1.0) + 0.5 * prim[1] * prim[2]^2
-        W[4] = 0.25 * prim[1] * Kr / prim[5]
-    elseif length(prim) == 6 # 2D
-        W[1] = prim[1]
-        W[2] = prim[1] * prim[2]
-        W[3] = prim[1] * prim[3]
-        W[4] = 0.5 * prim[1] / prim[4] / (γ - 1.0) + 0.5 * prim[1] * (prim[2]^2 + prim[3]^2)
-        W[5] = 0.25 * prim[1] * Kr / prim[6]
-    else
-        throw("prim -> w : dimension error")
-    end
-
-    return W
+function bgk_ode!(df, f::AA{T}, p, t) where {T}
+    g, τ = p
+    df .= (g .- f) ./ τ
 end
 
 
 """
 $(SIGNATURES)
 
-Transform multi-component primitive -> conservative variables
+Calculate collision time with variable hard sphere (VHS) model
 """
-function mixture_prim_conserve(prim::AM, γ)
-    if eltype(prim) <: Integer
-        w = similar(prim, Float64)
-    else
-        w = similar(prim)
-    end
+vhs_collision_time(ρ, λ, μᵣ, ω) = μᵣ * 2.0 * λ^(1.0 - ω) / ρ
 
-    for j in axes(w, 2)
-        w[:, j] .= prim_conserve(prim[:, j], γ)
-    end
+"""
+$(SIGNATURES)
 
-    return w
+For Rykov model prim[end] should be λₜ
+"""
+vhs_collision_time(prim::AV, muRef, omega) =
+    vhs_collision_time(prim[1], prim[end], muRef, omega)
+
+# ------------------------------------------------------------
+# ν model
+# ------------------------------------------------------------
+
+"""
+$(SIGNATURES)
+
+Regulator to construct ν-BGK model
+
+_L. Mieussens and H. Struchtrup. Phys. Fluids, 16(8): 2797-2813, 2004._
+"""
+function νbgk_relaxation_time(τ::T, u, prim::AV, tp)::T where {T}
+    c = @. abs(u - prim[2])
+    return @. τ / mieussens_frequency(c, tp)
 end
 
-
-"""
-$(SIGNATURES)
-
-Transform conservative -> primitive variables
-
-scalar: pseudo primitive vector for scalar conservation laws
-"""
-conserve_prim(u) = [u, 0.5 * u, 1.0]
-
-"""
-$(SIGNATURES)
-"""
-conserve_prim(u, a) = [u, a, 1.0]
-
-"""
-$(SIGNATURES)
-
-vector: primitive vector for Euler, Navier-Stokes and extended equations
-"""
-function conserve_prim(W::AV, γ)
-    if eltype(W) <: Integer
-        prim = similar(W, Float64)
-    else
-        prim = similar(W)
-    end
-
-    if length(W) == 3 # 1D
-        prim[1] = W[1]
-        prim[2] = W[2] / W[1]
-        prim[3] = 0.5 * W[1] / (γ - 1.0) / (W[3] - 0.5 * W[2]^2 / W[1])
-    elseif length(W) == 4 # 2D
-        prim[1] = W[1]
-        prim[2] = W[2] / W[1]
-        prim[3] = W[3] / W[1]
-        prim[4] = 0.5 * W[1] / (γ - 1.0) / (W[4] - 0.5 * (W[2]^2 + W[3]^2) / W[1])
-    elseif length(W) == 5 # 3D
-        prim[1] = W[1]
-        prim[2] = W[2] / W[1]
-        prim[3] = W[3] / W[1]
-        prim[4] = W[4] / W[1]
-        prim[5] = 0.5 * W[1] / (γ - 1.0) / (W[5] - 0.5 * (W[2]^2 + W[3]^2 + W[4]^2) / W[1])
-    else
-        throw("w -> prim : dimension dismatch")
-    end
-
-    return prim
+function νbgk_relaxation_time(τ::T, u, v, prim::AV, tp)::T where {T}
+    c = @. sqrt((u - prim[2])^2 + (v - prim[3])^2)
+    return @. τ / mieussens_frequency(c, tp)
 end
 
-"""
-$(SIGNATURES)
-"""
-conserve_prim(ρ, M, E, γ) = conserve_prim([ρ, M, E], γ)
-
-"""
-$(SIGNATURES)
-"""
-conserve_prim(ρ, MX, MY, E, γ) = conserve_prim([ρ, MX, MY, E], γ)
-
-"""
-$(SIGNATURES)
-"""
-conserve_prim(ρ, MX, MY, MZ, E, γ) = conserve_prim([ρ, MX, MY, MZ, E], γ)
-
-"""
-$(SIGNATURES)
-
-Rykov model
-"""
-function conserve_prim(w::AV, K, Kr)
-    if eltype(w) <: Integer
-        prim = similar(w, Float64, length(w) + 1)
-    else
-        prim = similar(w, length(w) + 1)
-    end
-
-    if length(w) == 4 # 1D
-        prim[1] = w[1]
-        prim[2] = w[2] / w[1]
-        prim[3] = 0.25 * w[1] * (K + Kr + 1.0) / (w[3] - 0.5 * w[2]^2 / w[1])
-        prim[4] = 0.25 * w[1] * (K + 1.0) / (w[3] - w[4] - 0.5 * w[2]^2 / w[1])
-        prim[5] = 0.25 * w[1] * Kr / w[4]
-    elseif length(w) == 5 # 2D
-        prim[1] = w[1]
-        prim[2] = w[2] / w[1]
-        prim[3] = w[3] / w[1]
-        prim[4] = 0.25 * w[1] * (K + Kr + 2.0) / (w[4] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
-        prim[5] = 0.25 * w[1] * (K + 2.0) / (w[4] - w[5] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
-        prim[6] = 0.25 * w[1] * Kr / w[5]
-    else
-        throw("w -> prim : dimension dismatch")
-    end
-
-    return prim
+function νbgk_relaxation_time(τ::T, u, v, w, prim::AV, tp)::T where {T}
+    c = @. sqrt((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2)
+    return @. τ / mieussens_frequency(c, tp)
 end
 
+mieussens_frequency(η, ::Type{Class{1}}) = @. 0.431587 * η^1.791288
+
+mieussens_frequency(η, ::Type{Class{2}}) = @. 0.0268351 * (1 + 14.2724 * η^2)
+
+mieussens_frequency(η, ::Type{Class{3}}) = @. 0.0365643 * (1 + 10 * η^2.081754)
+
+mieussens_frequency(η, ::Type{Class{4}}) = @. 0.1503991 * (1 + 0.92897 * η^4) # usually this isn't used
+
 
 """
 $(SIGNATURES)
 
-Transform multi-component conservative -> primitive variables
+Regulator to construct ν-Shakhov model
 """
-function mixture_conserve_prim(W::AM, γ)
-    if eltype(W) <: Integer
-        prim = similar(W, Float64)
-    else
-        prim = similar(W)
-    end
-
-    for j in axes(prim, 2)
-        prim[:, j] .= conserve_prim(W[:, j], γ)
-    end
-
-    return prim
+function νshakhov_relaxation_time(τ::T, u, prim::AV)::T where {T}
+    c = @. abs(u - prim[2])
+    return @. 1 / 0.0871 * τ / (νeq0.(c) + 2 * νeq0(eps()))
 end
 
+νeq0(x) = @. 1.5 * (exp(-x^2) + sqrt(pi) / 2 * (1 / x + 2x) * erf(x))
+
+# ------------------------------------------------------------
+# AAP model
+# ------------------------------------------------------------
 
 """
 $(SIGNATURES)
@@ -439,103 +294,95 @@ end
 """
 $(SIGNATURES)
 
-Theoretical flux of linear advection equation
+Calculate mixture collision time from AAP model
 """
-advection_flux(u, a) = a * u
+function aap_hs_collision_time(prim::AM, mi, ni, me, ne, kn)
+    ν = similar(prim, 2)
 
+    ν[1] =
+        prim[1, 1] / (mi * (ni + ne)) * 4.0 * sqrt(π) / 3.0 *
+        sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 1]) / (sqrt(2.0) * π * kn) +
+        prim[1, 2] / (me * (ni + ne)) * 4.0 * sqrt(π) / 3.0 *
+        sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2]) / (sqrt(2.0) * π * kn)
+    ν[2] =
+        prim[1, 1] / (mi * (ni + ne)) * 4.0 * sqrt(π) / 3.0 *
+        sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2]) / (sqrt(2.0) * π * kn) +
+        prim[1, 2] / (me * (ni + ne)) * 4.0 * sqrt(π) / 3.0 *
+        sqrt(1.0 / prim[end, 2] + 1.0 / prim[end, 2]) / (sqrt(2.0) * π * kn)
 
-"""
-$(SIGNATURES)
-
-Theoretical flux of Burgers' equation
-"""
-burgers_flux(u) = 0.5 * u^2
-
-
-"""
-$(SIGNATURES)
-
-Theoretical fluxes of Euler Equations
-"""
-function euler_flux(w::AV, γ; frame = :cartesian::Symbol)
-    prim = conserve_prim(w, γ)
-    p = 0.5 * prim[1] / prim[end]
-
-    if eltype(w) <: Integer
-        F = similar(w, Float64)
-        G = similar(w, Float64)
-        H = similar(w, Float64)
-    else
-        F = similar(w)
-        G = similar(w)
-        H = similar(w)
-    end
-
-    if length(w) == 3
-        F[1] = w[2]
-        F[2] = w[2]^2 / w[1] + p
-        F[3] = (w[3] + p) * w[2] / w[1]
-
-        return (F,)
-    elseif length(w) == 4
-        F[1] = w[2]
-        F[2] = w[2]^2 / w[1] + p
-        F[3] = w[2] * w[3] / w[1]
-        F[4] = (w[end] + p) * w[2] / w[1]
-
-        G[1] = w[3]
-        G[2] = w[3] * w[2] / w[1]
-        G[3] = w[3]^2 / w[1] + p
-        G[4] = (w[end] + p) * w[3] / w[1]
-
-        return F, G
-    elseif length(w) == 5
-        F[1] = w[2]
-        F[2] = w[2]^2 / w[1] + p
-        F[3] = w[2] * w[3] / w[1]
-        F[4] = w[2] * w[4] / w[1]
-        F[5] = (w[end] + p) * w[2] / w[1]
-
-        G[1] = w[3]
-        G[2] = w[3] * w[2] / w[1]
-        G[3] = w[3]^2 / w[1] + p
-        G[4] = w[3] * w[4] / w[1]
-        G[5] = (w[end] + p) * w[3] / w[1]
-
-        H[1] = w[4]
-        H[2] = w[4] * w[2] / w[1]
-        H[3] = w[4] * w[3] / w[1]
-        H[4] = w[4]^2 / w[1] + p
-        H[5] = (w[end] + p) * w[4] / w[1]
-
-        return F, G, H
-    end
+    return 1.0 ./ ν
 end
 
 
 """
 $(SIGNATURES)
 
-Flux Jacobian of Euler Equations
+Source term of AAP model in DifferentialEquations.jl
 """
-function euler_jacobi(w::AV, γ)
-    if eltype(w) <: Integer
-        A = similar(w, Float64, 3, 3)
+function aap_hs_diffeq!(du, u, p, t)
+    if length(u) == 6
+        I₁, I₂, I₃, E₁, E₂, E₃ = u
+        w = [
+            I₁ E₁
+            I₂ E₂
+            I₃ E₃
+        ]
+    elseif length(u) == 8
+        I₁, I₂, I₃, I₄, E₁, E₂, E₃, E₄ = u
+        w = [
+            I₁ E₁
+            I₂ E₂
+            I₃ E₃
+            I₄ E₄
+        ]
+    elseif length(u) == 10
+        I₁, I₂, I₃, I₄, I₅, E₁, E₂, E₃, E₄, E₅ = u
+        w = [
+            I₁ E₁
+            I₂ E₂
+            I₃ E₃
+            I₄ E₄
+            I₅ E₅
+        ]
     else
-        A = similar(w, 3, 3)
     end
 
-    A[1, 1] = 0.0
-    A[1, 2] = 1.0
-    A[1, 3] = 0.0
+    τᵢ, τₑ, mi, ni, me, ne, kn, γ = p
+    τ = [τᵢ, τₑ]
 
-    A[2, 1] = 0.5 * (γ - 3.0) * (w[2] / w[1])^2
-    A[2, 2] = (3.0 - γ) * w[2] / w[1]
-    A[2, 3] = γ - 1.0
+    # modified variables
+    prim = mixture_conserve_prim(w, γ)
+    mixprim = aap_hs_prim(prim, τ, mi, ni, me, ne, kn)
+    mixw = mixture_conserve_prim(mixprim, γ)
 
-    A[3, 1] = -γ * w[3] * w[2] / w[1]^2 + (γ - 1.0) * (w[2] / w[1])^3
-    A[3, 2] = γ * w[3] / w[1] - 1.5 * (γ - 1.0) * (w[2] / w[1])^2
-    A[3, 3] = γ * w[2] / w[1]
+    if length(u) == 6
+        du[1] = (mixw[1, 1] - I₁) / τᵢ
+        du[2] = (mixw[2, 1] - I₂) / τᵢ
+        du[3] = (mixw[3, 1] - I₃) / τᵢ
+        du[4] = (mixw[1, 2] - E₁) / τₑ
+        du[5] = (mixw[2, 2] - E₂) / τₑ
+        du[6] = (mixw[3, 2] - E₃) / τₑ
+    elseif length(u) == 8
+        du[1] = (mixw[1, 1] - I₁) / τᵢ
+        du[2] = (mixw[2, 1] - I₂) / τᵢ
+        du[3] = (mixw[3, 1] - I₃) / τᵢ
+        du[4] = (mixw[4, 1] - I₄) / τᵢ
+        du[5] = (mixw[1, 2] - E₁) / τₑ
+        du[6] = (mixw[2, 2] - E₂) / τₑ
+        du[7] = (mixw[3, 2] - E₃) / τₑ
+        du[8] = (mixw[4, 2] - E₄) / τₑ
+    elseif length(u) == 10
+        du[1] = (mixw[1, 1] - I₁) / τᵢ
+        du[2] = (mixw[2, 1] - I₂) / τᵢ
+        du[3] = (mixw[3, 1] - I₃) / τᵢ
+        du[4] = (mixw[4, 1] - I₄) / τᵢ
+        du[5] = (mixw[5, 1] - I₅) / τᵢ
+        du[6] = (mixw[1, 2] - E₁) / τₑ
+        du[7] = (mixw[2, 2] - E₂) / τₑ
+        du[8] = (mixw[3, 2] - E₃) / τₑ
+        du[9] = (mixw[4, 2] - E₄) / τₑ
+        du[10] = (mixw[5, 2] - E₅) / τₑ
+    end
 
-    return A
+    return nothing
 end

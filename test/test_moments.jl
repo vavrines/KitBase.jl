@@ -87,6 +87,7 @@ KitBase.moments_conserve(f3, u3, u3, u3, w3)
 KitBase.diatomic_moments_conserve(f1, f1, f1, u1, w1)
 KitBase.diatomic_moments_conserve(f2, f2, f2, u2, u2, w2)
 
+KitBase.pressure(rand(3))
 KitBase.pressure(f1, rand(3), u1, w1)
 KitBase.pressure(f1, f1, rand(3), u1, w1, 2)
 KitBase.pressure(f2, f2, rand(4), u2, u2, w2, 1)
