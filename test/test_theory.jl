@@ -149,24 +149,15 @@ KitBase.shakhov!(
 )
 
 # ES-BGK
-KitBase.esbgk(rand(16), randn(16), rand(16), [1, 0, 1], 2 / 3)
-KitBase.esbgk(
-    rand(16, 16),
-    randn(16, 16),
-    randn(16, 16),
-    rand(16, 16),
-    [1.0, 0.0, 0.0, 1.0],
-    2 / 3,
-)
-KitBase.esbgk(
-    rand(8, 8, 8),
-    randn(8, 8, 8),
-    randn(8, 8, 8),
-    randn(8, 8, 8),
-    rand(8, 8, 8),
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-    2 / 3,
-)
+vs = VSpace1D()
+prim = [1.0, 0, 1]
+KitBase.esbgk(maxwellian(vs.u, prim), vs.u, vs.weights, prim, 2 / 3)
+vs = VSpace2D()
+prim = [1.0, 0, 0, 1]
+KitBase.esbgk(maxwellian(vs.u, vs.v, prim), vs.u, vs.v, vs.weights, prim, 2 / 3)
+vs = VSpace3D()
+prim = [1.0, 0, 0, 0, 1]
+KitBase.esbgk(maxwellian(vs.u, vs.v, vs.w, prim), vs.u, vs.v, vs.w, vs.weights, prim, 2 / 3)
 
 # Rykov
 KitBase.maxwellian!(
