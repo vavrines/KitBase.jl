@@ -627,6 +627,81 @@ function shakhov!(
 end
 
 # ------------------------------------------------------------
+# ES-BGK model
+# ------------------------------------------------------------
+
+"""
+$(SIGNATURES)
+
+Compute Gaussian distribution in ES-BGK model
+
+1F1V
+"""
+function esbgk(f, u, weights, prim, Pr)
+    P = stress(f, prim, u, weights) / prim[1]
+    T = 0.5 / prim[end]
+    ν = 1 - 1 / Pr
+    M = (1 - ν) * T + ν * P
+
+    prod = zero(u)
+    for i in eachindex(u)
+        c = u[i] - prim[2]
+        prod[i] = c^2 / M
+    end
+
+    return prim[1] / (sqrt(2π * M)) .* exp.(-prod ./ 2)
+end
+
+"""
+$(SIGNATURES)
+
+1F2V
+"""
+function esbgk(f, u, v, weights, prim, Pr)
+    P = stress(f, prim, u, v, weights) / prim[1]
+    t = 0.5 / prim[end]
+    T = diagm([t, t])
+    ν = 1 - 1 / Pr
+    M = (1 - ν) * T + ν * P
+    MI = inv(M)
+
+    c = zeros(2)
+    prod = zero(u)
+    for i in eachindex(u)
+        c[1] = u[i] - prim[2]
+        c[2] = v[i] - prim[3]
+        prod[i] = c' * MI * c
+    end
+
+    return prim[1] / det(sqrt(2π * M)) .* exp.(-prod ./ 2)
+end
+
+"""
+$(SIGNATURES)
+
+1F3V
+"""
+function esbgk(f, u, v, w, weights, prim, Pr)
+    P = stress(f, prim, u, v, w, weights) / prim[1]
+    t = 0.5 / prim[end]
+    T = diagm([t, t, t])
+    ν = 1 - 1 / Pr
+    M = (1 - ν) * T + ν * P
+    MI = inv(M)
+
+    c = zeros(3)
+    prod = zero(u)
+    for i in eachindex(u)
+        c[1] = u[i] - prim[2]
+        c[2] = v[i] - prim[3]
+        c[3] = w[i] - prim[4]
+        prod[i] = c' * MI * c
+    end
+
+    return prim[1] / det(sqrt(2π * M)) .* exp.(-prod ./ 2)
+end
+
+# ------------------------------------------------------------
 # Rykov model
 # ------------------------------------------------------------
 

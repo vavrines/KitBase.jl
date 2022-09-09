@@ -148,6 +148,26 @@ KitBase.shakhov!(
     1.0,
 )
 
+# ES-BGK
+KitBase.esbgk(rand(16), randn(16), rand(16), [1, 0, 1], 2 / 3)
+KitBase.esbgk(
+    rand(16, 16),
+    randn(16, 16),
+    randn(16, 16),
+    rand(16, 16),
+    [1.0, 0.0, 0.0, 1.0],
+    2 / 3,
+)
+KitBase.esbgk(
+    rand(8, 8, 8),
+    randn(8, 8, 8),
+    randn(8, 8, 8),
+    randn(8, 8, 8),
+    rand(8, 8, 8),
+    [1.0, 0.0, 0.0, 0.0, 1.0],
+    2 / 3,
+)
+
 # Rykov
 KitBase.maxwellian!(
     zeros(16),

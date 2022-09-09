@@ -8,7 +8,7 @@ export moments_conserve, diatomic_moments_conserve, mixture_moments_conserve, fl
 export discrete_moments, pressure, stress, heat_flux
 export maxwellian, energy_maxwellian, maxwellian!, f_maxwellian
 export mixture_maxwellian, mixture_energy_maxwellian, mixture_maxwellian!
-export shakhov, shakhov!, rykov!
+export shakhov, shakhov!, esbgk, rykov!
 export reduce_distribution, full_distribution, shift_pdf!
 export ref_vhs_vis, vhs_collision_time, rykov_zr
 export aap_hs_collision_time, aap_hs_prim
