@@ -10,7 +10,6 @@ Wave propagation method for Maxwell's equations
 * ``dxL, dxR``: full size of left & right cells
 * ``sol``: speed of light
 * ``χₑ, νᵦ``: auxiliary parameters
-
 """
 function flux_em!(
     femL::T1,
