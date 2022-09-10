@@ -30,6 +30,7 @@ using LinearAlgebra
 using MultivariatePolynomials
 using OffsetArrays
 using Optim
+using Parameters
 using Printf
 using PyCall
 using RecipesBase
