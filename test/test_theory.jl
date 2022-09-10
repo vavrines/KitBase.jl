@@ -151,13 +151,18 @@ KitBase.shakhov!(
 # ES-BGK
 vs = VSpace1D()
 prim = [1.0, 0, 1]
-KitBase.esbgk(maxwellian(vs.u, prim), vs.u, vs.weights, prim, 2 / 3)
+f = maxwellian(vs.u, prim)
+KitBase.esbgk_ode!(zero(f), f, (vs.u, vs.weights, prim, 2 / 3, 1), 0.0)
+
 vs = VSpace2D()
 prim = [1.0, 0, 0, 1]
-KitBase.esbgk(maxwellian(vs.u, vs.v, prim), vs.u, vs.v, vs.weights, prim, 2 / 3)
+f = maxwellian(vs.u, vs.v, prim)
+KitBase.esbgk_ode!(zero(f), f, (vs.u, vs.v, vs.weights, prim, 2 / 3, 1), 0.0)
+
 vs = VSpace3D()
 prim = [1.0, 0, 0, 0, 1]
-KitBase.esbgk(maxwellian(vs.u, vs.v, vs.w, prim), vs.u, vs.v, vs.w, vs.weights, prim, 2 / 3)
+f = maxwellian(vs.u, vs.v, vs.w, prim)
+KitBase.esbgk_ode!(zero(f), f, (vs.u, vs.v, vs.w, vs.weights, prim, 2 / 3, 1), 0.0)
 
 # Rykov
 KitBase.maxwellian!(
