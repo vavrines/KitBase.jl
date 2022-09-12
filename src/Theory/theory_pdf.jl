@@ -459,3 +459,32 @@ function chapman_enskog(
     return chapman_enskog(u, v, w, prim, a, b, c, A, τ)
 
 end
+
+
+"""
+$(SIGNATURES)
+
+Construct a collision invariant of the Boltzmann equation
+"""
+function collision_invariant(α::AV, vs::AbstractVelocitySpace1D)
+    return @. exp(α[1] + α[2] * vs.u + α[3] * vs.u^2 / 2)
+end
+
+function collision_invariant(α::AV, vs::AbstractVelocitySpace2D)
+    return @. exp(α[1] + α[2] * vs.u + α[3] * vs.v + α[4] * (vs.u^2 + vs.v^2) / 2)
+end
+
+function collision_invariant(α::AV, vs::AbstractVelocitySpace3D)
+    return @. exp(
+        α[1] +
+        α[2] * vs.u +
+        α[3] * vs.v +
+        α[4] * vs.w +
+        α[5] * (vs.u^2 + vs.v^2 + vs.w^2) / 2,
+    )
+end
+
+function collision_invariant(α::AM, vs::AbstractVelocitySpace)
+    M = [collision_invariant(α[:, j], vs) for j in axes(α, 2)]
+    return hcat(M...)
+end
