@@ -548,7 +548,28 @@ function stress(f, prim, u, v, ω)
     P[1, 1] = sum(@. ω * (u - prim[2]) * (u - prim[2]) * f)
     P[1, 2] = sum(@. ω * (u - prim[2]) * (v - prim[3]) * f)
     P[2, 1] = P[1, 2]
-    P[1, 2] = sum(@. ω * (v - prim[3]) * (v - prim[3]) * f)
+    P[2, 2] = sum(@. ω * (v - prim[3]) * (v - prim[3]) * f)
+
+    return P
+end
+
+"""
+$(SIGNATURES)
+"""
+function stress(f, prim, u, v, w, ω)
+    P = similar(prim, 3, 3)
+
+    P[1, 1] = sum(@. ω * (u - prim[2]) * (u - prim[2]) * f)
+    P[1, 2] = sum(@. ω * (u - prim[2]) * (v - prim[3]) * f)
+    P[1, 3] = sum(@. ω * (u - prim[2]) * (w - prim[4]) * f)
+
+    P[2, 1] = P[1, 2]
+    P[2, 2] = sum(@. ω * (v - prim[3]) * (v - prim[3]) * f)
+    P[2, 3] = sum(@. ω * (v - prim[3]) * (w - prim[4]) * f)
+
+    P[3, 1] = P[1, 3]
+    P[3, 2] = P[2, 3]
+    P[3, 3] = sum(@. ω * (w - prim[4]) * (w - prim[4]) * f)
 
     return P
 end

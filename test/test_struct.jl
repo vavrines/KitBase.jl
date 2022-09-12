@@ -19,6 +19,8 @@ Setup(
     0.5, # cfl
     10.0, # time
 ) |> show
+config_ntuple(u0 = -8, c = 1)
+
 KitBase.Scalar(1.0, 1e-3)
 KitBase.Radiation(1e-2, 1.0, 0.0, 1e-3, 1000)
 gas = KitBase.Gas()

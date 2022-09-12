@@ -4,8 +4,21 @@ $(SIGNATURES)
 RHS-ODE of BGK equation
 """
 function bgk_ode!(df, f::AA{T}, p, t) where {T}
-    g, τ = p
-    df .= (g .- f) ./ τ
+    M, τ = p
+    df .= (M .- f) ./ τ
+end
+
+
+"""
+$(SIGNATURES)
+    
+RHS-ODE of ES-BGK equation
+"""
+function esbgk_ode!(df, f::AA{T}, p, t) where {T}
+    gs = p[1:end-1]
+    τ = p[end]
+    G = esbgk(f, gs...)
+    df .= (G .- f) ./ τ
 end
 
 

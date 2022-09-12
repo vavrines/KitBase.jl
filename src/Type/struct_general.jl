@@ -5,6 +5,67 @@
 """
 $(TYPEDEF)
 
+Config named tuple
+"""
+Config = @with_kw (
+    t0 = 0,
+    t1 = 5,
+    nt = 16,
+    x0 = 0,
+    x1 = 1,
+    nx = 100,
+    y0 = 0,
+    y1 = 1,
+    ny = 45,
+    z0 = 0,
+    z1 = 1,
+    nz = 45,
+    u0 = -5,
+    u1 = 5,
+    nu = 48,
+    v0 = -5,
+    v1 = 5,
+    nv = 28,
+    w0 = -5,
+    w1 = 5,
+    nw = 28,
+    nm = 5,
+    Kn = 1,
+    K = 0,
+    α = 1.0,
+    ω = 0.5,
+    Pr = 2 / 3,
+)
+
+
+"""
+$(SIGNATURES)
+
+Generate config named tuple
+"""
+function config_ntuple(nt = Config; kwargs...)
+    y = nt()
+    
+    ks = keys(kwargs)
+    vs = values(kwargs)
+    
+    d = Dict()
+    d1 = Dict()
+    for i in eachindex(ks)
+        if haskey(y, ks[i])
+            d[ks[i]] = vs[i]
+        else
+            d1[ks[i]] = vs[i]
+        end
+    end
+        
+    merge(nt(; d...), (; d1...))
+end
+
+
+"""
+$(TYPEDEF)
+
 Computational setup
 
 # Fields

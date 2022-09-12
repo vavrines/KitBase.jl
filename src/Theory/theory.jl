@@ -8,12 +8,12 @@ export moments_conserve, diatomic_moments_conserve, mixture_moments_conserve, fl
 export discrete_moments, pressure, stress, heat_flux
 export maxwellian, energy_maxwellian, maxwellian!, f_maxwellian
 export mixture_maxwellian, mixture_energy_maxwellian, mixture_maxwellian!
-export shakhov, shakhov!, rykov!
+export shakhov, shakhov!, esbgk, rykov!
 export reduce_distribution, full_distribution, shift_pdf!
 export ref_vhs_vis, vhs_collision_time, rykov_zr
 export aap_hs_collision_time, aap_hs_prim
 export hs_boltz_kn, kernel_mode, fsm_kernel, boltzmann_fft, boltzmann_fft!
-export boltzmann_ode!, bgk_ode!
+export boltzmann_ode!, bgk_ode!, esbgk_ode!
 export chapman_enskog
 export optimize_closure, realizable_reconstruct, moment_basis, sample_pdf, kinetic_entropy
 
