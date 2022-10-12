@@ -76,6 +76,10 @@ mieussens_frequency(η, ::Type{Class{4}}) = @. 0.1503991 * (1 + 0.92897 * η^4) 
 $(SIGNATURES)
 
 Regulator to construct ν-Shakhov model
+
+_Yuan & Wu, J. Fluid Mech., 942, 2022._
+
+``ν = A(p/μ)(νeq0(ξ)+2νeq0(0))``
 """
 function νshakhov_relaxation_time(τ::T, u, prim::AV)::T where {T}
     c = @. abs(u - prim[2])
