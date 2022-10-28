@@ -97,3 +97,19 @@ dynamic_array(x) = x
 $(SIGNATURES)
 """
 dynamic_array(x::StaticArray) = Array(x)
+
+
+"""
+$(SIGNATURES)
+
+Transform dictionary to named tuple
+"""
+dict_ntuple(d) = (; d...)
+
+
+"""
+$(SIGNATURES)
+
+Transform named tuple to dictionary
+"""
+ntuple_dict(nt) = Dict(pairs(nt))
