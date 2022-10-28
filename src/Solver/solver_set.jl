@@ -51,24 +51,30 @@ function SolverSet(
     )
 end
 
-function SolverSet(configfilename::T) where {T<:AbstractString}
-    # generate variables from configuration file
-    dict = read_cfg(configfilename)
+function SolverSet(file)
+    # generate configuration
+    config = begin
+        if file isa AbstractString
+            read_cfg(file)
+        else
+            file
+        end
+    end
 
     # setup
-    set = set_setup(dict)
+    set = set_setup(config)
 
     # physical space
-    ps = set_geometry(dict)
+    ps = set_geometry(config)
 
     # velocity space
-    vs = set_velocity(dict)
+    vs = set_velocity(config)
 
     # gas property
-    gas = set_property(dict)
+    gas = set_property(config)
 
     # initial & boundary condition
-    ib = set_ib(dict, set, ps, vs, gas)
+    ib = set_ib(config, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -76,34 +82,16 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     outputFolder = replace(identifier, ":" => ".")
     mkdir(outputFolder)
     mkdir(string(outputFolder, "data/"))
-    cp(configfilename, string(outputFolder, "config.txt"))
-
-    # create new struct
-    return SolverSet(set, ps, vs, gas, ib, outputFolder)
-end
-
-function SolverSet(dict::T) where {T<:AbstractDict}
-    # setup
-    set = set_setup(; dict...)
-
-    # physical space
-    ps = set_geometry(; dict...)
-
-    # velocity space
-    vs = set_velocity(; dict...)
-
-    # gas property
-    gas = set_property(dict)
-
-    # initial & boundary condition
-    ib = set_ib(dict, set, ps, vs, gas)
-
-    # create working directory
-    identifier = string(Dates.now(), "/")
-    outputFolder = replace(identifier, ":" => ".")
-    mkdir(outputFolder)
-    mkdir(string(outputFolder, "data/"))
-    CSV.write(string(outputFolder, "config.csv"), dict)
+    if file isa AbstractString
+        cp(file, string(outputFolder, "config.txt"))
+    else
+        if file isa NamedTuple
+            dict = ntuple_dict(file)
+        else
+            dict = file
+        end
+        CSV.write(string(outputFolder, "config.csv"), dict)
+    end
 
     # create new struct
     return SolverSet(set, ps, vs, gas, ib, outputFolder)
@@ -115,23 +103,7 @@ $(SIGNATURES)
 
 Generate AbstractPhysicalSpace
 """
-function set_setup(dict::T) where {T<:AbstractDict}
-    set = Setup(
-        dict[:matter],
-        dict[:case],
-        dict[:space],
-        dict[:flux],
-        dict[:collision],
-        dict[:nSpecies],
-        dict[:interpOrder],
-        dict[:limiter],
-        dict[:boundary],
-        dict[:cfl],
-        dict[:maxTime],
-    )
-
-    return set
-end
+set_setup(dict::Union{AbstractDict,NamedTuple}) = set_setup(; dict...)
 
 """
 $(SIGNATURES)
@@ -173,58 +145,36 @@ $(SIGNATURES)
 
 Generate AbstractPhysicalSpace
 """
-function set_geometry(dict::T) where {T<:AbstractDict}
-    try
-        return UnstructPSpace(dict[:mesh])
-    catch
-        if parse(Int, dict[:space][1]) == 1
-            return PSpace1D(dict[:x0], dict[:x1], dict[:nx], dict[:nxg])
-        elseif parse(Int, dict[:space][1]) == 2
-            return PSpace2D(
-                dict[:x0],
-                dict[:x1],
-                dict[:nx],
-                dict[:y0],
-                dict[:y1],
-                dict[:ny],
-                dict[:nxg],
-                dict[:nyg],
-            )
-        else
-            throw("No preset available for 3D simulation, please set it up manually.")
-        end
-    end
-
-    return nothing
-end
+set_geometry(dict::Union{AbstractDict,NamedTuple}) = set_geometry(; dict...)
 
 """
 $(SIGNATURES)
 """
 function set_geometry(;
     space,
-    x0,
-    x1,
-    nx,
-    nxg,
+    x0 = nothing,
+    x1 = nothing,
+    nx = nothing,
+    nxg = nothing,
     y0 = nothing,
     y1 = nothing,
     ny = nothing,
     nyg = nothing,
+    mesh = nothing,
     kwargs...,
 )
-
-    Dx = parse(Int, space[1])
-    if Dx == 1
-        pSpace = PSpace1D(x0, x1, nx, nxg)
-    elseif Dx == 2
-        pSpace = PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
-    else
-        throw("No preset available for 3D simulation, please set it up manually.")
+    try
+        return UnstructPSpace(mesh)
+    catch
+        Dx = parse(Int, space[1])
+        if Dx == 1
+            return PSpace1D(x0, x1, nx, nxg)
+        elseif Dx == 2
+            return PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
+        else
+            throw("No preset available for 3D simulation, please set it up manually.")
+        end
     end
-
-    return pSpace
-
 end
 
 
@@ -233,103 +183,7 @@ $(SIGNATURES)
 
 Generate AbstractVelocitySpace
 """
-function set_velocity(dict::T) where {T<:AbstractDict}
-    for key in keys(dict)
-        s = key
-        @eval $s = $(dict[key])
-    end
-
-    Dv = parse(Int, space[5])
-    if Dv == 0
-        vSpace = nothing
-    elseif Dv == 1
-        if nSpecies == 1
-            vSpace = VSpace1D(umin, umax, nu; type = vMeshType, ng = nug)
-        elseif nSpecies == 2
-            ue0 = umin * sqrt(mi / me)
-            ue1 = umax * sqrt(mi / me)
-            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu; type = vMeshType, ng = nug)
-        else
-            throw("The velocity space only supports up to two species.")
-        end
-    elseif Dv == 2
-        if nSpecies == 1
-            vSpace = VSpace2D(umin, umax, nu, vmin, vmax, nv; type = vMeshType, ngu = nug, ngv = nvg)
-        elseif nSpecies == 2
-            ue0 = umin * sqrt(mi / me)
-            ue1 = umax * sqrt(mi / me)
-            ve0 = vmin * sqrt(mi / me)
-            ve1 = vmax * sqrt(mi / me)
-            vSpace = MVSpace2D(
-                umin,
-                umax,
-                ue0,
-                ue1,
-                nu,
-                vmin,
-                vmax,
-                ve0,
-                ve1,
-                nv;
-                type = vMeshType,
-                ngu = nug,
-                ngv = nvg,
-            )
-        else
-            throw("The velocity space only supports up to two species.")
-        end
-    elseif Dv == 3
-        if nSpecies == 1
-            vSpace = VSpace3D(
-                umin,
-                umax,
-                nu,
-                vmin,
-                vmax,
-                nv,
-                wmin,
-                wmax,
-                nw;
-                type = vMeshType,
-                ngu = nug,
-                ngv = nvg,
-                ngw = nwg,
-            )
-        elseif nSpecies == 2
-            ue0 = umin * sqrt(mi / me)
-            ue1 = umax * sqrt(mi / me)
-            ve0 = vmin * sqrt(mi / me)
-            ve1 = vmax * sqrt(mi / me)
-            we0 = wmin * sqrt(mi / me)
-            we1 = wmax * sqrt(mi / me)
-            vSpace = MVSpace3D(
-                umin,
-                umax,
-                ue0,
-                ue1,
-                nu,
-                vmin,
-                vmax,
-                ve0,
-                ve1,
-                nv,
-                wmin,
-                wmax,
-                we0,
-                we1,
-                nw;
-                type = vMeshType,
-                ngu = nug,
-                ngv = nvg,
-                ngw = nwg,
-            )
-        else
-            throw("The velocity space only supports up to two species.")
-        end
-    end
-
-    return vSpace
-end
+set_velocity(dict::Union{AbstractDict,NamedTuple}) = set_velocity(; dict...)
 
 """
 $(SIGNATURES)
@@ -337,11 +191,11 @@ $(SIGNATURES)
 function set_velocity(;
     space,
     nSpecies,
-    umin,
-    umax,
-    nu,
-    vMeshType,
-    nug,
+    umin = nothing,
+    umax = nothing,
+    nu = nothing,
+    vMeshType = nothing,
+    nug = nothing,
     mi = nothing,
     me = nothing,
     vmin = nothing,
@@ -450,14 +304,9 @@ end
 """
 $(SIGNATURES)
 
-Generate AbstractProperty
+Generate property of matter
 """
-function set_property(dict::T) where {T<:AbstractDict}
-    for key in keys(dict)
-        s = key
-        @eval $s = $(dict[key])
-    end
-
+function set_property(dict::Union{AbstractDict,NamedTuple})
     Dx = parse(Int, dict[:space][1])
     γD = map(parse(Int, dict[:space][3]), parse(Int, dict[:space][5])) do x, y # (x)f(y)v
         if x == 0
@@ -484,7 +333,7 @@ function set_property(dict::T) where {T<:AbstractDict}
 
     elseif dict[:matter] == "gas"
 
-        if nSpecies == 1
+        if dict[:nSpecies] == 1
             μᵣ = ref_vhs_vis(dict[:knudsen], dict[:alphaRef], dict[:omegaRef])
 
             if dict[:collision] == "fsm"
@@ -513,7 +362,7 @@ function set_property(dict::T) where {T<:AbstractDict}
                 μᵣ = μᵣ,
                 fsm = fsm,
             )
-        elseif nSpecies == 2
+        elseif dict[:nSpecies] == 2
             kne = dict[:knudsen] * (dict[:me] / dict[:mi])
             gas = Mixture(
                 [dict[:knudsen], kne],
@@ -530,7 +379,7 @@ function set_property(dict::T) where {T<:AbstractDict}
             throw("The gas property only supports up to two species.")
         end
 
-    elseif matter == "plasma"
+    elseif dict[:matter] == "plasma"
 
         kne = dict[:knudsen] * (dict[:me] / dict[:mi])
         if Dx == 1
@@ -580,11 +429,11 @@ end
 """
 $(SIGNATURES)
 
-Generate AbstractIB
+Generate initial & boundary conditions
 """
-function set_ib(dict::T, set, ps, vs, gas) where {T<:AbstractDict}
+function set_ib(dict::Union{AbstractDict,NamedTuple}, set, ps, vs, gas)
     if haskey(dict, :uLid)
-        ib = set_ib(set, ps, vs, gas, uLid, vLid, tLid)
+        ib = set_ib(set, ps, vs, gas, dict[:uLid], dict[:vLid], dict[:tLid])
     else
         ib = set_ib(set, ps, vs, gas)
     end

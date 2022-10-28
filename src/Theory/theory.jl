@@ -14,7 +14,7 @@ export ref_vhs_vis, vhs_collision_time, rykov_zr
 export aap_hs_collision_time, aap_hs_prim
 export hs_boltz_kn, kernel_mode, fsm_kernel, boltzmann_fft, boltzmann_fft!
 export boltzmann_ode!, bgk_ode!, esbgk_ode!
-export chapman_enskog
+export chapman_enskog, collision_invariant
 export optimize_closure, realizable_reconstruct, moment_basis, sample_pdf, kinetic_entropy
 
 include("theory_macro.jl")

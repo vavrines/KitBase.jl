@@ -1,6 +1,7 @@
 cd(@__DIR__)
 ks, ctr, a1face, a2face, simTime = KitBase.initialize("config_2d2f.txt")
 simTime = KitBase.solve!(ks, ctr, a1face, a2face, simTime)
+KitBase.extract_sol(ks, ctr)
 
 res = zeros(4)
 dt = KitBase.timestep(ks, ctr, 0.0)

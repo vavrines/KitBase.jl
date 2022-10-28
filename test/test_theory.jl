@@ -350,3 +350,11 @@ KitBase.chapman_enskog(
     0.0,
     0.1,
 )
+
+vs = KitBase.VSpace1D()
+KitBase.collision_invariant(rand(3), vs)
+KitBase.collision_invariant(rand(3, 2), vs)
+vs2 = KitBase.VSpace2D()
+KitBase.collision_invariant(rand(4), vs2)
+vs3 = KitBase.VSpace3D()
+KitBase.collision_invariant(rand(5), vs3)

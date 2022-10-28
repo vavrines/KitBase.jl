@@ -1,5 +1,6 @@
 cd(@__DIR__)
 ks, ctr, face, simTime = KitBase.initialize("config_1d0f.txt")
+KitBase.extract_sol(ks, ctr)
 
 using KitBase.JLD2
 set = ks

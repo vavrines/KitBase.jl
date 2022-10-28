@@ -251,7 +251,7 @@ Specular reflection boundary flux
 
 1D1F1V
 """
-function flux_boundary_specular!(fw, ff, f, u, ω, dt) where {T<:AV}
+function flux_boundary_specular!(fw, ff, f, u, ω, dt)
     fWall = similar(f)
     for i in eachindex(f)
         fWall[i] = f[end-i+1]
