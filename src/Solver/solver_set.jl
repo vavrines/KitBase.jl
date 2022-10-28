@@ -83,7 +83,7 @@ function SolverSet(file)
     mkdir(outputFolder)
     mkdir(string(outputFolder, "data/"))
     if file isa AbstractString
-        cp(configfilename, string(outputFolder, "config.txt"))
+        cp(file, string(outputFolder, "config.txt"))
     else
         if file isa NamedTuple
             dict = ntuple_dict(file)
