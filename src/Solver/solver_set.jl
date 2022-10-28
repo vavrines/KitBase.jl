@@ -51,24 +51,30 @@ function SolverSet(
     )
 end
 
-function SolverSet(configfilename::T) where {T<:AbstractString}
-    # generate variables from configuration file
-    dict = read_cfg(configfilename)
+function SolverSet(file)
+    # generate configuration
+    config = begin
+        if file isa AbstractString
+            read_cfg(file)
+        else
+            file
+        end
+    end
 
     # setup
-    set = set_setup(dict)
+    set = set_setup(config)
 
     # physical space
-    ps = set_geometry(dict)
+    ps = set_geometry(config)
 
     # velocity space
-    vs = set_velocity(dict)
+    vs = set_velocity(config)
 
     # gas property
-    gas = set_property(dict)
+    gas = set_property(config)
 
     # initial & boundary condition
-    ib = set_ib(dict, set, ps, vs, gas)
+    ib = set_ib(config, set, ps, vs, gas)
 
     # create working directory
     identifier = string(Dates.now(), "/")
@@ -76,34 +82,16 @@ function SolverSet(configfilename::T) where {T<:AbstractString}
     outputFolder = replace(identifier, ":" => ".")
     mkdir(outputFolder)
     mkdir(string(outputFolder, "data/"))
-    cp(configfilename, string(outputFolder, "config.txt"))
-
-    # create new struct
-    return SolverSet(set, ps, vs, gas, ib, outputFolder)
-end
-
-function SolverSet(dict::T) where {T<:AbstractDict}
-    # setup
-    set = set_setup(dict)
-
-    # physical space
-    ps = set_geometry(dict)
-
-    # velocity space
-    vs = set_velocity(dict)
-
-    # gas property
-    gas = set_property(dict)
-
-    # initial & boundary condition
-    ib = set_ib(dict, set, ps, vs, gas)
-
-    # create working directory
-    identifier = string(Dates.now(), "/")
-    outputFolder = replace(identifier, ":" => ".")
-    mkdir(outputFolder)
-    mkdir(string(outputFolder, "data/"))
-    CSV.write(string(outputFolder, "config.csv"), dict)
+    if file isa AbstractString
+        cp(configfilename, string(outputFolder, "config.txt"))
+    else
+        if file isa NamedTuple
+            dict = ntuple_dict(file)
+        else
+            dict = file
+        end
+        CSV.write(string(outputFolder, "config.csv"), dict)
+    end
 
     # create new struct
     return SolverSet(set, ps, vs, gas, ib, outputFolder)
@@ -115,7 +103,7 @@ $(SIGNATURES)
 
 Generate AbstractPhysicalSpace
 """
-set_setup(dict::AbstractDict) = set_setup(; dict...)
+set_setup(dict::Union{AbstractDict,NamedTuple}) = set_setup(; dict...)
 
 """
 $(SIGNATURES)
@@ -157,7 +145,7 @@ $(SIGNATURES)
 
 Generate AbstractPhysicalSpace
 """
-set_geometry(dict::AbstractDict) = set_geometry(; dict...)
+set_geometry(dict::Union{AbstractDict,NamedTuple}) = set_geometry(; dict...)
 
 """
 $(SIGNATURES)
@@ -195,7 +183,7 @@ $(SIGNATURES)
 
 Generate AbstractVelocitySpace
 """
-set_velocity(dict::AbstractDict) = set_velocity(; dict...)
+set_velocity(dict::Union{AbstractDict,NamedTuple}) = set_velocity(; dict...)
 
 """
 $(SIGNATURES)
@@ -318,12 +306,7 @@ $(SIGNATURES)
 
 Generate property of matter
 """
-function set_property(dict::AbstractDict)
-    #for key in keys(dict)
-    #    s = key
-    #    @eval $s = $(dict[key])
-    #end
-
+function set_property(dict::Union{AbstractDict,NamedTuple})
     Dx = parse(Int, dict[:space][1])
     γD = map(parse(Int, dict[:space][3]), parse(Int, dict[:space][5])) do x, y # (x)f(y)v
         if x == 0
@@ -448,7 +431,7 @@ $(SIGNATURES)
 
 Generate initial & boundary conditions
 """
-function set_ib(dict::AbstractDict, set, ps, vs, gas)
+function set_ib(dict::Union{AbstractDict,NamedTuple}, set, ps, vs, gas)
     if haskey(dict, :uLid)
         ib = set_ib(set, ps, vs, gas, dict[:uLid], dict[:vLid], dict[:tLid])
     else
