@@ -144,7 +144,7 @@ Sample distribution functions from entropy closure
 * ``pdf``: probability density
 """
 function sample_pdf(m, n::Integer, prim, pdf)
-    pdf1 = Truncated(pdf, -Inf, 0)
+    pdf1 = truncated(pdf, -Inf, 0)
     α = zeros(size(m, 1))
 
     if length(prim) == 3
