@@ -104,7 +104,7 @@ Computational setup
 
 $(FIELDS)
 """
-@kwdef struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
+@with_kw struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
     matter::S = "gas"
     case::S = "dev"
     space::S = "1d0f0v"

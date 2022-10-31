@@ -12,7 +12,7 @@ end
 
 export KB
 
-import Base: *, @kwdef
+import Base: *
 import BSON
 import JLD2
 using Base.Threads: @threads
