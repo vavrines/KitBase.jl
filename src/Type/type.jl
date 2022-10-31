@@ -16,9 +16,9 @@ export AbstractFlux, AbstractFlux1D, AbstractFlux2D
 export AbstractParticle, AbstractParticle1D, AbstractParticle2D
 
 export Class, Dimension, VDF
-export Setup, Config, config_ntuple
-export Scalar, Radiation, Gas, DiatomicGas, Mixture, Plasma1D, Plasma2D
-export IB, IB1F, IB2F, IB3F, IB4F
+export Setup, Config, config_ntuple, set_setup
+export Scalar, Radiation, Gas, DiatomicGas, Mixture, Plasma1D, Plasma2D, set_property
+export IB, IB1F, IB2F, IB3F, IB4F, set_ib
 export ControlVolume, ControlVolume1F, ControlVolume2F
 export ControlVolume1D, ControlVolume1D1F, ControlVolume1D2F
 export ControlVolume1D3F, ControlVolume1D4F
@@ -36,7 +36,7 @@ export ControlVolumeParticle1D, ControlVolumeParticle2D
 
 include("abstract.jl")
 include("struct_dispatch.jl")
-include("struct_general.jl")
+include("struct_setup.jl")
 include("struct_property.jl")
 include("struct_ib.jl")
 include("struct_ctr.jl")

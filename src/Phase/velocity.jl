@@ -590,6 +590,139 @@ MVSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
 
 
 """
+$(SIGNATURES)
+
+Generate VelocitySpace
+"""
+function set_velocity(;
+    space,
+    nSpecies,
+    umin = nothing,
+    umax = nothing,
+    nu = nothing,
+    vMeshType = nothing,
+    nug = nothing,
+    mi = nothing,
+    me = nothing,
+    vmin = nothing,
+    vmax = nothing,
+    nv = nothing,
+    nvg = nothing,
+    wmin = nothing,
+    wmax = nothing,
+    nw = nothing,
+    nwg = nothing,
+    kwargs...,
+)
+    Dv = parse(Int, space[5])
+    if Dv == 0
+        vSpace = nothing
+    elseif Dv == 1
+        if nSpecies == 1
+            vSpace = VSpace1D(umin, umax, nu; type = vMeshType, ng = nug)
+        elseif nSpecies == 2
+            ue0 = umin * sqrt(mi / me)
+            ue1 = umax * sqrt(mi / me)
+            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu; type = vMeshType, ng = nug)
+        else
+            throw("The velocity space only supports up to two species.")
+        end
+    elseif Dv == 2
+        if nSpecies == 1
+            vSpace = VSpace2D(
+                umin,
+                umax,
+                nu,
+                vmin,
+                vmax,
+                nv;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+            )
+        elseif nSpecies == 2
+            ue0 = umin * sqrt(mi / me)
+            ue1 = umax * sqrt(mi / me)
+            ve0 = vmin * sqrt(mi / me)
+            ve1 = vmax * sqrt(mi / me)
+            vSpace = MVSpace2D(
+                umin,
+                umax,
+                ue0,
+                ue1,
+                nu,
+                vmin,
+                vmax,
+                ve0,
+                ve1,
+                nv;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+            )
+        else
+            throw("The velocity space only supports up to two species.")
+        end
+    elseif Dv == 3
+        if nSpecies == 1
+            vSpace = VSpace3D(
+                umin,
+                umax,
+                nu,
+                vmin,
+                vmax,
+                nv,
+                wmin,
+                wmax,
+                nw;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+                ngw = nwg,
+            )
+        elseif nSpecies == 2
+            ue0 = umin * sqrt(mi / me)
+            ue1 = umax * sqrt(mi / me)
+            ve0 = vmin * sqrt(mi / me)
+            ve1 = vmax * sqrt(mi / me)
+            we0 = wmin * sqrt(mi / me)
+            we1 = wmax * sqrt(mi / me)
+            vSpace = MVSpace3D(
+                umin,
+                umax,
+                ue0,
+                ue1,
+                nu,
+                vmin,
+                vmax,
+                ve0,
+                ve1,
+                nv,
+                wmin,
+                wmax,
+                we0,
+                we1,
+                nw;
+                type = vMeshType,
+                ngu = nug,
+                ngv = nvg,
+                ngw = nwg,
+            )
+        else
+            throw("The velocity space only supports up to two species.")
+        end
+    end
+
+    return vSpace
+end
+
+"""
+$(SIGNATURES)
+"""
+set_velocity(dict::Union{AbstractDict,NamedTuple}) = set_velocity(; dict...)
+
+
+"""
 $(TYPEDEF)
 
 Unstructured velocity space

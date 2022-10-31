@@ -4,7 +4,6 @@
 
 export SolverSet
 export initialize, init_fvm
-export set_setup, set_geometry, set_velocity, set_property, set_ib
 export solve!, timestep, reconstruct!, evolve!, update!
 
 include("solver_set.jl")

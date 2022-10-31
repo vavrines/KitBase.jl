@@ -209,3 +209,45 @@ mutable struct IB4F{T} <: AbstractCondition
     bc::T
     p::NamedTuple
 end
+
+
+"""
+$(SIGNATURES)
+
+Generate initial & boundary conditions
+"""
+function set_ib(dict::Union{AbstractDict,NamedTuple}, set, ps, vs, gas)
+    if haskey(dict, :uLid)
+        ib = set_ib(set, ps, vs, gas, dict[:uLid], dict[:vLid], dict[:tLid])
+    else
+        ib = set_ib(set, ps, vs, gas)
+    end
+
+    return ib
+end
+
+"""
+$(SIGNATURES)
+"""
+function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
+    ib = begin
+        if parse(Int, set.space[3]) == 0
+            fw, bc, p = config_ib(set, pSpace, vSpace, gas)
+            IB{typeof(bc)}(fw, bc, p)
+        elseif parse(Int, set.space[3]) in [3, 4] && gas isa AbstractPlasma
+            fw, ff, fE, fB, fL, bc, p = config_ib(set, pSpace, vSpace, gas)
+            iname = "IB" * set.space[3] * "F"
+            eval(Symbol(iname)){typeof(bc)}(fw, ff, fE, fB, fL, bc, p)
+        elseif set.case == "cavity"
+            fw, ff, bc, p = config_ib(set, pSpace, vSpace, gas, Um, Vm, Tm)
+            iname = "IB" * set.space[3] * "F"
+            eval(Symbol(iname)){typeof(bc)}(fw, ff, bc, p)
+        else
+            fw, ff, bc, p = config_ib(set, pSpace, vSpace, gas)
+            iname = "IB" * set.space[3] * "F"
+            eval(Symbol(iname)){typeof(bc)}(fw, ff, bc, p)
+        end
+    end
+
+    return ib
+end
