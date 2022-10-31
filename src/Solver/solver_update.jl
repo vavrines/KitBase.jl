@@ -17,15 +17,14 @@ function update!(
     st = fn,
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
 
-    sumRes = zero(ctr[1].w)
-    sumAvg = zero(sumRes)
+    sumRes, sumAvg = 0.0, 0.0
 
     @inbounds @threads for i = 1:KS.ps.nx
         ctr[i].w, sumRes, sumAvg =
             fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll; st = st)
     end
 
-    residual = sqrt(sumRes * KS.ps.nx) / (sumAvg + 1.e-7)
+    residual = sqrt(sumRes * KS.ps.nx) / (sumAvg + 1.e-7) |> Float64
 
     bcs = ifelse(bc isa Symbol, [bc, bc], bc)
     if bcs[1] == :period
