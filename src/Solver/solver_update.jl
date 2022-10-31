@@ -20,8 +20,15 @@ function update!(
     sumRes, sumAvg = 0.0, 0.0
 
     @inbounds @threads for i = 1:KS.ps.nx
-        ctr[i].w, sumRes, sumAvg =
-            fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll; st = st)
+        ctr[i].w, sumRes, sumAvg = fn(
+            KS,
+            ctr[i],
+            face[i],
+            face[i+1],
+            (dt, KS.ps.dx[i], sumRes, sumAvg),
+            coll;
+            st = st,
+        )
     end
 
     residual = sqrt(sumRes * KS.ps.nx) / (sumAvg + 1.e-7) |> Float64
