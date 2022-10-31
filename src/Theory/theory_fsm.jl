@@ -52,15 +52,15 @@ function kernel_mode(
     umax::R,
     vmax::R,
     wmax::R,
-    du::R,
-    dv::R,
-    dw::R,
+    du::R1,
+    dv::R1,
+    dw::R1,
     unum::I,
     vnum::I,
     wnum::I,
-    alpha::R;
+    alpha::R2;
     quad_num = 64::I,
-) where {I<:Integer,R<:Real}
+) where {I<:Integer,R,R1,R2}
 
     supp = sqrt(2.0) * 2.0 * max(umax, vmax, wmax) / (3.0 + sqrt(2.0))
 
@@ -125,9 +125,9 @@ function kernel_mode(
     unum::I,
     vnum::I,
     wnum::I,
-    alpha::R;
+    alpha::R1;
     quad_num = 64::I,
-) where {I<:Integer,R<:Real}
+) where {I<:Integer,R,R1}
 
     supp = sqrt(2.0) * 2.0 * max(umax, vmax, wmax) / (3.0 + sqrt(2.0))
 
@@ -184,12 +184,12 @@ function kernel_mode(
     M::TI,
     umax::TR,
     vmax::TR,
-    du::TR,
-    dv::TR,
+    du::TR1,
+    dv::TR1,
     unum::TI,
     vnum::TI;
     quad_num = 64::TI,
-) where {TI<:Integer,TR<:Real}
+) where {TI<:Integer,TR,TR1}
 
     supp = sqrt(2.0) * 2.0 * max(umax, vmax) / (3.0 + sqrt(2.0))
 
