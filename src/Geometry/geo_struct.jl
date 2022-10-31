@@ -19,13 +19,7 @@ function PSpace1D(X0::TR, X1::TR, NX::TI, NG = 0::Integer) where {TR,TI}
     TX = ifelse(TR == Float32, Float32, Float64)
 
     δ = (X1 - X0) / NX
-    x = begin
-        if NG > 0
-            OffsetArray{TX}(undef, 1-NG:NX+NG)
-        else
-            Array{TX}(undef, NX)
-        end
-    end
+    x = OffsetArray{TX}(undef, 1-NG:NX+NG)
     dx = similar(x)
 
     # uniform mesh
@@ -82,13 +76,7 @@ function PSpace2D(
 
     δx = (X1 - X0) / NX
     δy = (Y1 - Y0) / NY
-    x = begin
-        if NGX > 0 || NGY > 0
-            OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
-        else
-            Array{TX}(undef, NX, NY)
-        end
-    end
+    x = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY)
     y = similar(x)
     dx = similar(x)
     dy = similar(x)
@@ -235,13 +223,7 @@ function CSpace2D(
 
     δr = (R1 - R0) / NR
     δθ = (θ1 - θ0) / Nθ
-    r = begin
-        if NGR > 0 || NGθ > 0
-            OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
-        else
-            Array{TX}(undef, NR, Nθ)
-        end
-    end
+    r = OffsetArray{TX}(undef, 1-NGR:NR+NGR, 1-NGθ:Nθ+NGθ)
     θ = similar(r)
     x = similar(r)
     y = similar(r)
