@@ -19,7 +19,8 @@ step!(
     p,
     coll = :bgk;
     kwargs...,
-) where {T<:AbstractInterface} = step!(KS, KS.vs, KS.gas, cell, faceL, faceR, p, coll; kwargs...)
+) where {T<:AbstractInterface} =
+    step!(KS, KS.vs, KS.gas, cell, faceL, faceR, p, coll; kwargs...)
 
 """
 $(SIGNATURES)
@@ -325,19 +326,7 @@ function step!(
     st = step!,
 ) where {TC<:Union{ControlVolume,ControlVolume2D}}
     dt, Δs, RES, AVG = p
-    st(
-        cell.w,
-        cell.prim,
-        faceL.fw,
-        faceR.fw,
-        faceD.fw,
-        faceU.fw,
-        gas.γ,
-        Δs,
-        RES,
-        AVG,
-        coll,
-    )
+    st(cell.w, cell.prim, faceL.fw, faceR.fw, faceD.fw, faceU.fw, gas.γ, Δs, RES, AVG, coll)
 end
 
 """

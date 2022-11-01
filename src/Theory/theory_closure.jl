@@ -6,7 +6,7 @@ Create basis functions for moment closure hierarchies
 _C. D. Levermore. J. Stat. Phys. 83(5): 1021-1065, 1996._
 """
 function moment_basis(u, n::Integer)
-    m = zeros(typeof(u), n+1)
+    m = zeros(typeof(u), n + 1)
     for i = 1:n+1
         m[i] = u^(i - 1)
     end
@@ -165,7 +165,9 @@ function sample_pdf(m, n::Integer, prim, pdf)
         cut = 7
         idx = moment_index(n, Dimension{2})
     elseif length(prim) == 5
-        α[1] = log((prim[1] / (π / prim[end]))^1.5) - (prim[2]^2 + prim[3]^2 + prim[4]^2) * prim[end]
+        α[1] =
+            log((prim[1] / (π / prim[end]))^1.5) -
+            (prim[2]^2 + prim[3]^2 + prim[4]^2) * prim[end]
         α[2] = 2.0 * prim[2] * prim[end]
         α[3] = 2.0 * prim[3] * prim[end]
         α[4] = 2.0 * prim[4] * prim[end]

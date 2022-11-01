@@ -326,13 +326,20 @@ end
 """
 $(SIGNATURES)
 """
-f_maxwellian(f::AV, vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D, γ = 3) =
-    f_maxwellian(f, vs.u, vs.weights, γ)
+f_maxwellian(
+    f::AV,
+    vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D,
+    γ = 3,
+) = f_maxwellian(f, vs.u, vs.weights, γ)
 
 """
 $(SIGNATURES)
 """
-function f_maxwellian(f::AM, vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D, γ = 3)
+function f_maxwellian(
+    f::AM,
+    vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D,
+    γ = 3,
+)
     M = [f_maxwellian(f[:, i], vs, γ) for i in axes(f, 2)]
 
     return hcat(M...)
@@ -341,7 +348,7 @@ end
 """
 $(SIGNATURES)
 """
-function f_maxwellian(h::AV, b::AV, u::AV, weights::AV, γ = 5/3)
+function f_maxwellian(h::AV, b::AV, u::AV, weights::AV, γ = 5 / 3)
     w = moments_conserve(h, b, u, weights)
     prim = conserve_prim(w, γ)
     H = maxwellian(u, prim)
@@ -350,10 +357,19 @@ function f_maxwellian(h::AV, b::AV, u::AV, weights::AV, γ = 5/3)
     return H, B
 end
 
-f_maxwellian(h::AV, b::AV, vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D, γ = 5/3) =
-    f_maxwellian(h, b, vs.u, vs.weights, γ)
+f_maxwellian(
+    h::AV,
+    b::AV,
+    vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D,
+    γ = 5 / 3,
+) = f_maxwellian(h, b, vs.u, vs.weights, γ)
 
-function f_maxwellian(h::AM, b::AM, vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D, γ = 5/3)
+function f_maxwellian(
+    h::AM,
+    b::AM,
+    vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D,
+    γ = 5 / 3,
+)
     H = zero(h)
     B = zero(b)
     for j in axes(h, 2)
@@ -389,15 +405,7 @@ $(SIGNATURES)
 
 2F1V
 """
-function shakhov(
-    u::AV,
-    H::T,
-    B::T,
-    q,
-    prim::AV,
-    Pr,
-    K,
-) where {T<:AV}
+function shakhov(u::AV, H::T, B::T, q, prim::AV, Pr, K) where {T<:AV}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
@@ -419,14 +427,7 @@ $(SIGNATURES)
 
 1F2V
 """
-function shakhov(
-    u::T,
-    v::T,
-    M::T1,
-    q::AV,
-    prim::AV,
-    Pr,
-)::T1 where {T<:AM,T1<:AM}
+function shakhov(u::T, v::T, M::T1, q::AV, prim::AV, Pr)::T1 where {T<:AM,T1<:AM}
 
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -442,16 +443,7 @@ $(SIGNATURES)
 
 2F2V
 """
-function shakhov(
-    u::T,
-    v::T,
-    H::X,
-    B::X,
-    q::AV,
-    prim::AV,
-    Pr,
-    K,
-) where {T<:AM,X<:AM}
+function shakhov(u::T, v::T, H::X, B::X, q::AV, prim::AV, Pr, K) where {T<:AM,X<:AM}
 
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -513,17 +505,7 @@ $(SIGNATURES)
 
 2F1V
 """
-function shakhov!(
-    SH::T1,
-    SB::T1,
-    u::AV,
-    H::T1,
-    B::T1,
-    q,
-    prim,
-    Pr,
-    K,
-) where {T1<:AV}
+function shakhov!(SH::T1, SB::T1, u::AV, H::T1, B::T1, q, prim, Pr, K) where {T1<:AV}
 
     @. SH =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
@@ -547,15 +529,7 @@ $(SIGNATURES)
 
 1F2V
 """
-function shakhov!(
-    S::T1,
-    u::T2,
-    v::T2,
-    M::T1,
-    q::AV,
-    prim,
-    Pr,
-) where {T1<:AM,T2<:AM}
+function shakhov!(S::T1, u::T2, v::T2, M::T1, q::AV, prim, Pr) where {T1<:AM,T2<:AM}
 
     @. S =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *

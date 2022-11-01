@@ -77,10 +77,10 @@ Generate config named tuple
 """
 function config_ntuple(nt = Config; kwargs...)
     y = nt()
-    
+
     ks = keys(kwargs)
     vs = values(kwargs)
-    
+
     d = Dict()
     d1 = Dict()
     for i in eachindex(ks)
@@ -90,7 +90,7 @@ function config_ntuple(nt = Config; kwargs...)
             d1[ks[i]] = vs[i]
         end
     end
-        
+
     merge(nt(; d...), (; d1...))
 end
 
@@ -104,7 +104,7 @@ Computational setup
 
 $(FIELDS)
 """
-@kwdef struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
+@with_kw struct Setup{S,I<:Integer,E<:AV,F<:Real,G<:Real} <: AbstractSetup
     matter::S = "gas"
     case::S = "dev"
     space::S = "1d0f0v"
@@ -153,3 +153,44 @@ function Setup(
         time,
     )
 end
+
+"""
+$(SIGNATURES)
+
+Generate Setup
+"""
+function set_setup(;
+    matter,
+    case,
+    space,
+    flux,
+    collision,
+    nSpecies,
+    interpOrder,
+    limiter,
+    boundary,
+    cfl,
+    maxTime,
+    kwargs...,
+)
+    set = Setup(
+        matter,
+        case,
+        space,
+        flux,
+        collision,
+        nSpecies,
+        interpOrder,
+        limiter,
+        boundary,
+        cfl,
+        maxTime,
+    )
+
+    return set
+end
+
+"""
+$(SIGNATURES)
+"""
+set_setup(dict::Union{AbstractDict,NamedTuple}) = set_setup(; dict...)

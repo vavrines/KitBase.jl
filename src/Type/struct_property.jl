@@ -7,7 +7,7 @@ Fluid property for scalar conservation laws
 
 $(FIELDS)
 """
-@kwdef mutable struct Scalar{TA,TB} <: AbstractProperty
+@with_kw mutable struct Scalar{TA,TB} <: AbstractProperty
     a::TA = 1.0
     μᵣ::TB = 1e-8
 end
@@ -22,7 +22,7 @@ Radiation property for linear Boltzmann equation
 
 $(FIELDS)
 """
-@kwdef mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
+@with_kw mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
     Kn::T1 = 1.0
     σs::T2 = 1.0
     σa::T2 = 0.0
@@ -50,7 +50,7 @@ Gas property
 
 $(FIELDS)
 """
-@kwdef mutable struct Gas{T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11<:Integer,T12} <: AbstractGas
+@with_kw mutable struct Gas{T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11<:Integer,T12} <: AbstractGas
     Kn::T1 = 1e-2
     Ma::T2 = 0.0
     Pr::T3 = 1.0
@@ -75,7 +75,7 @@ Diatomic gas property
 
 $(FIELDS)
 """
-@kwdef struct DiatomicGas{TA,TI,TF} <: AbstractGas
+@with_kw struct DiatomicGas{TA,TI,TF} <: AbstractGas
     Kn::TA = 1e-2
     Ma::TA = 0.0
     Pr::TA = 1.0
@@ -103,7 +103,7 @@ Multi-component gas property
 
 $(FIELDS)
 """
-@kwdef struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractGas
+@with_kw struct Mixture{A,B,C,D,E,F,G,H,I} <: AbstractGas
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
@@ -125,7 +125,7 @@ $(TYPEDEF)
 
 $(FIELDS)
 """
-@kwdef struct Plasma1D{A,B,C,TD,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
+@with_kw struct Plasma1D{A,B,C,TD,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
@@ -255,7 +255,7 @@ $(TYPEDEF)
 
 $(FIELDS)
 """
-@kwdef struct Plasma2D{A,B,C,D,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
+@with_kw struct Plasma2D{A,B,C,D,E,F,G,H,I,J,TK,L,M,N,O,P} <: AbstractPlasma
     Kn::A = 1e-2
     Ma::B = 0.0
     Pr::C = 1.0
@@ -418,4 +418,218 @@ function Plasma2D(
         D1,
         D2,
     )
+end
+
+
+"""
+$(SIGNATURES)
+
+Generate property of matter
+"""
+function set_property(dict::Union{AbstractDict,NamedTuple})
+    matter = dict[:matter]
+    fn = eval(Symbol(matter * "_property"))
+    return fn(; dict...)
+end
+
+function scalar_property(; a, mu, kwargs...)
+    return Scalar(a, mu)
+end
+
+function radiation_property(; knudsen, sigmaS, sigmaA, kwargs...)
+    return Radiation(knudsen, sigmaS, sigmaA)
+end
+
+function gas_property(;
+    space,
+    inK,
+    nSpecies,
+    knudsen,
+    mach,
+    prandtl,
+    omega = 0.5,
+    alphaRef = 1.0,
+    omegaRef = 0.5,
+    mi = nothing,
+    ni = nothing,
+    me = nothing,
+    ne = nothing,
+    kwargs...,
+)
+
+    Dx = parse(Int, space[1]) # this is type instable
+    γD = map(parse(Int, space[3]), parse(Int, space[5])) do x, y # (x)f(y)v
+        if x == 0
+            return Dx
+        elseif x == 1 # 1f
+            if y >= 3 # 3v
+                return 3
+            else # 1v
+                return Dx
+            end
+        elseif x == 2 # 2f
+            return Dx
+        elseif x >= 3 # 3f / 4f
+            return 3
+        else
+            return nothing
+        end
+    end
+    γ = heat_capacity_ratio(inK, γD)
+
+    if nSpecies == 1
+        μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
+
+        gas = Gas(
+            Kn = knudsen,
+            Ma = mach,
+            Pr = prandtl,
+            K = inK,
+            γ = γ,
+            ω = omega,
+            αᵣ = alphaRef,
+            ωᵣ = omegaRef,
+            μᵣ = μᵣ,
+        )
+    elseif nSpecies == 2
+        kne = knudsen * (me / mi)
+        gas = Mixture([knudsen, kne], mach, prandtl, inK, γ, mi, ni, me, ne)
+    end
+
+    return gas
+
+end
+
+function gas_property(
+    vs;
+    space,
+    inK,
+    knudsen,
+    mach,
+    prandtl,
+    omega,
+    alphaRef,
+    omegaRef,
+    collision,
+    nm = 5,
+    kwargs...,
+)
+
+    @assert collision == "fsm"
+
+    Dx = parse(Int, space[1])
+    γD = map(parse(Int, space[3]), parse(Int, space[5])) do x, y # (x)f(y)v
+        if x == 0
+            return Dx
+        elseif x == 1 # 1f
+            if y >= 3 # 3v
+                return 3
+            else # 1v
+                return Dx
+            end
+        elseif x == 2 # 2f
+            return Dx
+        elseif x >= 3 # 3f / 4f
+            return 3
+        else
+            return nothing
+        end
+    end
+    γ = heat_capacity_ratio(inK, γD)
+
+    μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
+    fsm = fsm_kernel(vs, μᵣ, nm, alphaRef)
+
+    return Gas(
+        Kn = knudsen,
+        Ma = mach,
+        Pr = prandtl,
+        K = inK,
+        γ = γ,
+        ω = omega,
+        αᵣ = alphaRef,
+        ωᵣ = omegaRef,
+        μᵣ = μᵣ,
+        fsm = fsm,
+    )
+
+end
+
+function plasma_property(;
+    space,
+    inK,
+    knudsen,
+    mach,
+    prandtl,
+    mi,
+    ni,
+    me,
+    ne,
+    lD,
+    rL,
+    sol,
+    echi,
+    bnu,
+    kwargs...,
+)
+
+    Dx = parse(Int, space[1])
+    γD = map(parse(Int, space[3]), parse(Int, space[5])) do x, y # (x)f(y)v
+        if x == 0
+            return Dx
+        elseif x == 1 # 1f
+            if y >= 3 # 3v
+                return 3
+            else # 1v
+                return Dx
+            end
+        elseif x == 2 # 2f
+            return Dx
+        elseif x >= 3 # 3f / 4f
+            return 3
+        else
+            return nothing
+        end
+    end
+    γ = heat_capacity_ratio(inK, γD)
+
+    kne = knudsen * (me / mi)
+    if Dx == 1
+        gas = Plasma1D(
+            [knudsen, kne],
+            mach,
+            prandtl,
+            inK,
+            γ,
+            mi,
+            ni,
+            me,
+            ne,
+            lD,
+            rL,
+            sol,
+            echi,
+            bnu,
+        )
+    elseif Dx == 2
+        gas = Plasma2D(
+            [knudsen, kne],
+            mach,
+            prandtl,
+            inK,
+            γ,
+            mi,
+            ni,
+            me,
+            ne,
+            lD,
+            rL,
+            sol,
+            echi,
+            bnu,
+        )
+    end
+
+    return gas
+
 end
