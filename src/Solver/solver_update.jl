@@ -1,9 +1,18 @@
 """
 $(SIGNATURES)
 
-Update flow variables
+Update algorithm
 
-1D scalar
+## Arguments
+``KS``: SolverSet
+``ctr``: array of cell-centered solution
+``face``: array of cell interface
+``dt``: time step
+``residual``: residual
+``coll``: collision operator
+``bc``: boundary condition
+``fn``: update function
+``st``: step function
 """
 function update!(
     KS,
@@ -51,13 +60,6 @@ function update!(
 
 end
 
-"""
-$(SIGNATURES)
-
-- 1D0F pure & mixture
-- 1D1F
-- 1D2F pure & mixture
-"""
 function update!(
     KS::AbstractSolverSet,
     ctr::AV{TC},
@@ -140,9 +142,6 @@ function update!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function update!(
     KS::AbstractSolverSet,
     ctr::AV{ControlVolume1D4F},
@@ -186,6 +185,20 @@ end
 
 """
 $(SIGNATURES)
+
+Update algorithm
+
+## Arguments
+``KS``: SolverSet
+``ctr``: array of cell-centered solution
+``a1face``: array of cell interface perpendicular to `x` axis
+``a2face``: array of cell interface perpendicular to `y` axis
+``dt``: time step
+``residual``: residual
+``coll``: collision operator
+``bc``: boundary condition
+``fn``: update function
+``st``: step function
 """
 function update!(
     KS::AbstractSolverSet,
@@ -257,9 +270,6 @@ function update!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function update!(
     KS::AbstractSolverSet,
     ctr::AV{ControlVolumeUS},
@@ -304,9 +314,6 @@ function update!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function update!(
     KS::AbstractSolverSet,
     ctr::AV{ControlVolumeUS1F},
@@ -364,9 +371,6 @@ function update!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function update!(
     KS::AbstractSolverSet,
     ctr::AV{ControlVolumeUS2F},
