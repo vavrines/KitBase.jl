@@ -3,8 +3,8 @@ $(SIGNATURES)
 
 Write solution data
 
-Arguments
-* ``mode``: data format including `:bson`, `:jld`, `:vtk` and `:tec`
+## Arguments
+* ``mode``: data format (`:bson`, `:jld`, `:vtk`, `:tec`)
 """
 function write_sol(args...; mode = :bson)
     fn = eval(Symbol("write_" * string(mode)))
@@ -120,6 +120,8 @@ end
 
 """
 $(SIGNATURES)
+
+Write data into tecplot data file
 """
 function write_tec(x::AM, y::AM, sol)
     open("sol.dat", "w") do f

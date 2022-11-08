@@ -5,9 +5,9 @@
 """
 $(SIGNATURES)
 
-Initialize solver
+Initialize solver with configuration file
 """
-function initialize(configfilename::AbstractString)
+function initialize(config::AbstractString)
     println("==============================================================")
     println("Kinetic.jl")
     println("A Portable Toolbox for Scientific and Neural Computing")
@@ -16,8 +16,8 @@ function initialize(configfilename::AbstractString)
     @info "initializing solver"
     println("")
 
-    if configfilename[end-3:end] == "jld2"
-        D = load(configfilename)
+    if config[end-3:end] == "jld2"
+        D = load(config)
         ks = D["set"]
         ctr = D["ctr"]
         t = D["t"]
@@ -25,16 +25,13 @@ function initialize(configfilename::AbstractString)
 
         return ks, ctr, face, t
     else
-        ks = SolverSet(configfilename)
+        ks = SolverSet(config)
         cftuple = init_fvm(ks)
 
         return (ks, cftuple..., 0.0)
     end
 end
 
-"""
-$(SIGNATURES)
-"""
 function initialize(config::AbstractDict)
     println("==============================================================")
     println("Kinetic.jl")
@@ -210,9 +207,6 @@ function init_fvm(
     return ctr |> funcst, face |> funcst
 end
 
-"""
-$(SIGNATURES)
-"""
 function init_fvm(
     KS,
     ps::AbstractPhysicalSpace2D,
@@ -331,9 +325,6 @@ function init_fvm(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = false)
 
     funcar = eval(array)

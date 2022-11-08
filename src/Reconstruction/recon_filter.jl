@@ -178,8 +178,8 @@ $(SIGNATURES)
 
 Calculate strength for 1D exponential filter
 
-Note that the implementation here is slightly different from Hesthaven's monograph, i.e.,
-`filterdiag[i+1] = exp(-alpha * ((i - Nc) / (N - Nc))^s)`
+Note that the implementation here, `filterdiag[i+1] = exp(-alpha * (i / (N + 1))^s)`,
+is slightly different from Hesthaven's monograph, `filterdiag[i+1] = exp(-alpha * ((i - Nc) / (N - Nc))^s)`
 """
 function filter_exp1d(N, s, Nc = 0)
     alpha = -log(eps())

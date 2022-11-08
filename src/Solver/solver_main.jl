@@ -1,7 +1,13 @@
 """
 $(SIGNATURES)
 
-Solution algorithm
+Solution algorithm for 1D structured and unstructured mesh
+
+## Arguments
+``KS``: SolverSet
+``ctr``: vector of cell-centered solution
+``face``: vector of cell interface
+``simTime``: simulation time
 """
 function solve!(
     KS::AbstractSolverSet,
@@ -23,7 +29,6 @@ function solve!(
     #--- main loop ---#
     #while true
     @showprogress for iter = 1:nt
-
         #dt = timestep(KS, ctr, simTime)
         reconstruct!(KS, ctr)
         evolve!(
@@ -58,7 +63,6 @@ function solve!(
         if t > KS.set.maxTime || maximum(res) < 5.e-7
             break
         end
-
     end
 
     write_jld(KS, ctr, simTime)
@@ -68,6 +72,15 @@ end
 
 """
 $(SIGNATURES)
+
+Solution algorithm for 2D structured mesh
+
+## Arguments
+``KS``: SolverSet
+``ctr``: matrix of cell-centered solution
+``a1face``: maxtrix of cell interface perpendicular to `x` axis
+``a2face``: maxtrix of cell interface perpendicular to `y` axis
+``simTime``: simulation time
 """
 function solve!(
     KS::AbstractSolverSet,
@@ -130,7 +143,12 @@ end
 """
 $(SIGNATURES)
 
-Calculate timestep from current solution
+Calculate timestep based on the current solution
+
+## Arguments
+``KS``: SolverSet
+``ctr``: array of cell-centered solution
+``simTime``: simulation time
 """
 function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime)
     tmax = 0.0
@@ -186,9 +204,6 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
     return dt
 end
 
-"""
-$(SIGNATURES)
-"""
 function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime)
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
@@ -246,9 +261,6 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
     return dt
 end
 
-"""
-$(SIGNATURES)
-"""
 function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime)
     tmax = 0.0
 

@@ -2,6 +2,10 @@
 $(SIGNATURES)
 
 Reconstruct solutions in cells
+
+## Arguments
+``KS``: SolverSet
+``ctr``: array of cell-centered solution
 """
 function reconstruct!(
     KS::SolverSet,
@@ -51,9 +55,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(
     KS::SolverSet,
     ctr::AV{T},
@@ -101,9 +102,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(
     KS::SolverSet,
     ctr::AV{T},
@@ -160,9 +158,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(
     KS::SolverSet,
     ctr::AV{T},
@@ -228,9 +223,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(
     KS::SolverSet,
     ctr::AV{T},
@@ -305,9 +297,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(
     KS::SolverSet,
     ctr::AM{T},
@@ -378,9 +367,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(
     KS::SolverSet,
     ctr::AM{T},
@@ -500,9 +486,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(
     KS::SolverSet,
     ctr::AM{T},
@@ -841,9 +824,6 @@ function reconstruct!(
 
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS}}
     if KS.set.interpOrder == 1
         return
@@ -872,9 +852,6 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
     return nothing
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS1F}}
     if KS.set.interpOrder == 1
         return
@@ -909,9 +886,6 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
     return nothing
 end
 
-"""
-$(SIGNATURES)
-"""
 function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVolumeUS2F}}
     if KS.set.interpOrder == 1
         return
