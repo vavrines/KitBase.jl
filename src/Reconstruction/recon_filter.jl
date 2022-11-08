@@ -7,11 +7,10 @@ $(SIGNATURES)
 
 Filter of modal solutions
 
-# Arguments
-
-- ``u``: 1D modal solution
+## Arguments
+- ``u``: modal solution
 - ``args...``: filter parameters including strength, norm, etc.
-- ``filter``: symbolic filter options including `:l2`, `l2opt`, `:l1`, `:lasso`, `:exp`, `:houli`
+- ``filter``: symbolic filter options (`:l2`, `l2opt`, `:l1`, `:lasso`, `:exp`, `:houli`)
 """
 function modal_filter!(u::AA, args...; filter::Symbol)
     filtstr = "filter_" * string(filter) * "!"
@@ -151,6 +150,15 @@ function filter_exp!(u::AV, s, Nc = 0)
     return nothing
 end
 
+function filter_exp!(u::AM, spx, spy = spx, λ = 1.0, Nc = 0)
+    nx, nz = size(u)
+    σ = filter_exp2d(nx - 1, nz - 1, spx, spy) .^ λ
+    u .*= σ
+
+    return nothing
+end
+
+
 function filter_houli!(u::AV, s, Nc = 0)
     N = length(u) - 1
     σ = filter_exp1d(N, s, Nc)
@@ -164,12 +172,43 @@ function filter_houli!(u::AV, s, Nc = 0)
     return nothing
 end
 
+
+"""
+$(SIGNATURES)
+
+Calculate strength for 1D exponential filter
+
+Note that the implementation here is slightly different from Hesthaven's monograph, i.e.,
+`filterdiag[i+1] = exp(-alpha * ((i - Nc) / (N - Nc))^s)`
+"""
 function filter_exp1d(N, s, Nc = 0)
     alpha = -log(eps())
 
     filterdiag = ones(N + 1)
     for i = Nc:N
-        filterdiag[i+1] = exp(-alpha * ((i - Nc) / (N - Nc))^s)
+        filterdiag[i+1] = exp(-alpha * (i / (N + 1))^s)
+    end
+
+    return filterdiag
+end
+
+
+"""
+$(SIGNATURES)
+
+Calculate strength for 2D exponential filter
+"""
+function filter_exp2d(Nx, Ny, spx, spy, Nc = 0)
+    alpha = -log(eps())
+
+    filterdiag = ones(Nx + 1, Ny + 1)
+    for i = 0:Nx
+        for j = 0:Ny
+            if i + j >= Nc
+                filterdiag[i+1, j+1] =
+                    exp(-alpha * ((i / (Nx + 1))^spx + (j / (Ny + 1))^spy))
+            end
+        end
     end
 
     return filterdiag

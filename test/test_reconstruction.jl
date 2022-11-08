@@ -71,6 +71,11 @@ let deg = 2, u = rand(deg + 1)
 end
 
 let deg = 2, u = rand(deg + 1, deg + 1)
+    ℓ = rand(deg + 1, deg + 1)
+
     modal_filter!(u, 1e-6, 1e-6; filter = :l2)
     modal_filter!(u, 1e-6, 1e-6; filter = :l2opt)
+    modal_filter!(u, 1e-6, 1e-6, ℓ; filter = :l1)
+    modal_filter!(u, ℓ; filter = :lasso)
+    modal_filter!(u, 2; filter = :exp)
 end
