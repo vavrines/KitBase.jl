@@ -38,6 +38,34 @@ $(SIGNATURES)
 
 HLL flux
 """
+function flux_hll!(fw::AV, wL::T, wR::T, γ, dt, len = 1.0) where {T<:AV}
+    primL = conserve_prim(wL, γ)
+    primR = conserve_prim(wR, γ)
+
+    aL = sound_speed(primL, γ)
+    aR = sound_speed(primR, γ)
+
+    λmin = primL[2] - aL
+    λmax = primR[2] + aR
+
+    if λmin >= 0.0
+        fw .= euler_flux(wL, γ)[1]
+    elseif λmax <= 0.0
+        fw .= euler_flux(wR, γ)[1]
+    else
+        factor = 1.0 / (λmax - λmin)
+
+        flux1 = euler_flux(wL, γ)[1]
+        flux2 = euler_flux(wR, γ)[1]
+
+        @. fw = factor * (λmax * flux1 - λmin * flux2 + λmax * λmin * (wR - wL))
+    end
+
+    @. fw *= dt * len
+
+    return nothing
+end
+
 flux_hll!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
     flux_hll!(face, ctrL, ctrR, KS.gas, args...)
 
@@ -73,35 +101,118 @@ function flux_hll!(
 
 end
 
+
 """
 $(SIGNATURES)
+
+HLLC flux
 """
-function flux_hll!(fw::AV, wL::T, wR::T, γ, dt, len = 1.0) where {T<:AV}
+function flux_hllc!(fw, wL::T, wR::T, γ, dt, len = 1.0) where {T}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
     aL = sound_speed(primL, γ)
     aR = sound_speed(primR, γ)
 
-    λmin = primL[2] - aL
-    λmax = primR[2] + aR
+    tmp1 = 0.5 * (aL + aR) # avg sos
+    tmp2 = 0.5 * (primL[1] + primR[1]) # avg density
 
-    if λmin >= 0.0
+    pL = 0.5 * primL[1] / primL[end]
+    pR = 0.5 * primR[1] / primR[end]
+
+    pvars = 0.5 * (pL + pR) - 0.5 * (primR[2] - primL[2]) * tmp1 * tmp2
+    pstar = max(0.0, pvars)
+
+    qk = begin
+        if pstar < pL
+            1.0
+        else
+            tmp1 = (γ + 1.0) / (2.0 * γ)
+            tmp2 = (pstar / pL - 1.0)
+            sqrt(1.0 + tmp1 * tmp2)
+        end
+    end
+    sL = primL[2] - aL * qk
+
+    qk = begin
+        if pstar <= pR
+            1.0
+        else
+            tmp1 = (γ + 1.0) / (2.0 * γ)
+            tmp2 = (pstar / pR - 1.0)
+            sqrt(1.0 + tmp1 * tmp2)
+        end
+    end
+    sR = primR[2] + aR * qk
+
+    tmp1 =
+        pR - pL + primL[1] * primL[2] * (sL - primL[2]) -
+        primR[1] * primR[2] * (sR - primR[2])
+    tmp2 = primL[1] * (sL - primL[2]) - primR[1] * (sR - primR[2])
+    star = tmp1 / tmp2
+
+    if sL >= 0
         fw .= euler_flux(wL, γ)[1]
-    elseif λmax <= 0.0
+    elseif sR <= 0
         fw .= euler_flux(wR, γ)[1]
-    else
-        factor = 1.0 / (λmax - λmin)
-
-        flux1 = euler_flux(wL, γ)[1]
-        flux2 = euler_flux(wR, γ)[1]
-
-        @. fw = factor * (λmax * flux1 - λmin * flux2 + λmax * λmin * (wR - wL))
+    elseif star >= 0 && sL <= 0
+        fw .= euler_flux(wL, γ)[1]
+        qstar = hllc_var(primL[1], primL[2], pL, sL, star, γ)
+        @. fw += sL * (qstar - wL)
+    elseif star <= 0 && sR >= 0
+        fw .= euler_flux(wR, γ)[1]
+        qstar = hllc_var(primR[1], primR[2], pR, sR, star, γ)
+        @. fw += sR * (qstar - wR)
     end
 
     @. fw *= dt * len
 
     return nothing
+end
+
+flux_hllc!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
+    flux_hllc!(face, ctrL, ctrR, KS.gas, args...)
+
+function flux_hllc!(
+    face::Interface,
+    ctrL::T,
+    ctrR::T,
+    gas::Gas,
+    p,
+    dt = 1.0,
+) where {T<:ControlVolume}
+
+    dxL, dxR = p[1:2]
+
+    if size(ctrL.w, 1) == 3
+        flux_hllc!(face.fw, ctrL.w .+ dxL .* ctrL.sw, ctrR.w .- dxR .* ctrR.sw, gas.γ, dt)
+    elseif size(ctrL.w, 1) == 4
+        len, n, dirc = p[3:5]
+        swL = @view ctrL.sw[:, dirc]
+        swR = @view ctrR.sw[:, dirc]
+        flux_hllc!(
+            face.fw,
+            local_frame(ctrL.w .+ dxL .* swL, n),
+            local_frame(ctrR.w .- dxR .* swR, n),
+            gas.γ,
+            dt,
+            len,
+        )
+        face.fw .= global_frame(face.fw, n)
+    end
+
+    return nothing
+
+end
+
+function hllc_var(d1, u1, p1, s1, star1, γ)
+    tmp1 = d1 * (s1 - u1) / (s1 - star1)
+    tmp2 = 0.5 * (u1^2) + p1 / ((γ - 1.0) * d1)
+    tmp3 = star1 + p1 / (d1 * (s1 - u1))
+
+    ustar = [tmp1, tmp1 * star1, tmp1 * (tmp2 + (star1 - u1) * tmp3)]
+
+    return ustar
 end
 
 

@@ -19,6 +19,7 @@ w0 = 1.0
 prim0 = conserve_prim(w0, property.a)
 ib = IB((x, y) -> sin(2π * x))
 ks = SolverSet(set, pSpace, vSpace, property, ib)
+SolverSet(set, pSpace, property)
 
 ctr, face = KitBase.init_fvm(ks)
 for i in eachindex(ctr)
