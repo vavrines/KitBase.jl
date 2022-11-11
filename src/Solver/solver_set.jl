@@ -36,7 +36,7 @@ function SolverSet(
     PS::AbstractPhysicalSpace,
     VS::Union{AbstractVelocitySpace,Nothing},
     GAS::AbstractProperty,
-    IB::Union{AbstractCondition,Nothing},
+    IB::Union{AbstractCondition,Nothing} = nothing,
     DIR::AbstractString = @__DIR__,
 )
     return SolverSet{typeof(SET),typeof(PS),typeof(VS),typeof(GAS),typeof(IB),typeof(DIR)}(
@@ -45,6 +45,25 @@ function SolverSet(
         PS,
         VS,
         VS,
+        GAS,
+        IB,
+        DIR,
+    )
+end
+
+function SolverSet(
+    SET::AbstractSetup,
+    PS::AbstractPhysicalSpace,
+    GAS::AbstractProperty,
+    IB::Union{AbstractCondition,Nothing} = nothing,
+    DIR::AbstractString = @__DIR__,
+)
+    return SolverSet{typeof(SET),typeof(PS),Nothing,typeof(GAS),typeof(IB),typeof(DIR)}(
+        SET,
+        PS,
+        PS,
+        nothing,
+        nothing,
         GAS,
         IB,
         DIR,
