@@ -3,13 +3,12 @@ $(SIGNATURES)
 
 Wave propagation method for Maxwell's equations
 
-# Arguments
-
-* ``E, B, ϕ, ψ``: variables in hyperbolic Maxwell's equations
-* ``Ap, An``: eigenmatrix (A -> A+ & A-), eigenvalue (D)
-* ``dxL, dxR``: full size of left & right cells
-* ``sol``: speed of light
-* ``χₑ, νᵦ``: auxiliary parameters
+## Arguments
+* `E, B, ϕ, ψ`: variables in hyperbolic Maxwell's equations
+* `Ap, An`: eigenmatrix (A -> A+ & A-), eigenvalue (D)
+* `dxL, dxR`: full size of left & right cells
+* `sol`: speed of light
+* `χₑ, νᵦ`: auxiliary parameters
 """
 function flux_em!(
     femL::T1,

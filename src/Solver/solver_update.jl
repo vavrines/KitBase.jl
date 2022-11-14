@@ -4,15 +4,15 @@ $(SIGNATURES)
 Update algorithm
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: array of cell-centered solution
-``face``: array of cell interface
-``dt``: time step
-``residual``: residual
-``coll``: collision operator
-``bc``: boundary condition
-``fn``: update function
-``st``: step function
+- `KS`: SolverSet  
+- `ctr`: array of cell-centered solution
+- `face`: array of cell interface
+- `dt`: time step
+- `residual`: residual
+- `coll`: collision operator
+- `bc`: boundary condition
+- `fn`: update function
+- `st`: step function
 """
 function update!(
     KS,
@@ -189,16 +189,16 @@ $(SIGNATURES)
 Update algorithm
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: array of cell-centered solution
-``a1face``: array of cell interface perpendicular to `x` axis
-``a2face``: array of cell interface perpendicular to `y` axis
-``dt``: time step
-``residual``: residual
-``coll``: collision operator
-``bc``: boundary condition
-``fn``: update function
-``st``: step function
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
+- `a1face`: array of cell interface perpendicular to `x` axis
+- `a2face`: array of cell interface perpendicular to `y` axis
+- `dt`: time step
+- `residual`: residual
+- `coll`: collision operator
+- `bc`: boundary condition
+- `fn`: update function
+- `st`: step function
 """
 function update!(
     KS::AbstractSolverSet,

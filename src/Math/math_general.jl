@@ -56,9 +56,9 @@ $(SIGNATURES)
 
 Gauss Legendre integral for fast spectral method
 
-# Arguments
-* ``N``: number of quadrature points, 
-* ``a, b``: integral range
+## Arguments
+* `N`: number of quadrature points, 
+* `a, b`: integral range
 """
 function lgwt(N::Integer, a::Real, b::Real)
     x = zeros(N)

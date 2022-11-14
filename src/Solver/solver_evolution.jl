@@ -4,12 +4,12 @@ $(SIGNATURES)
 Numerical flux solver
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: array of cell-centered solution
-``face``: array of cell interface
-``dt``: time step
-``mode``: flux solver
-``bc``: boundary condition
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
+- `face`: array of cell interface
+- `dt`: time step
+- `mode`: flux solver
+- `bc`: boundary condition
 """
 function evolve!(
     KS::SolverSet,
@@ -363,13 +363,13 @@ $(SIGNATURES)
 Numerical flux solver
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: array of cell-centered solution
-``a1face``: array of cell interface perpendicular to `x` axis
-``a2face``: array of cell interface perpendicular to `y` axis
-``dt``: time step
-``mode``: flux solver
-``bc``: boundary condition
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
+- `a1face`: array of cell interface perpendicular to `x` axis
+- `a2face`: array of cell interface perpendicular to `y` axis
+- `dt`: time step
+- `mode`: flux solver
+- `bc`: boundary condition
 """
 function evolve!(
     KS::SolverSet,

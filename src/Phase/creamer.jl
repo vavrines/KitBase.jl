@@ -25,9 +25,9 @@ $(SIGNATURES)
 
 Cleaner for all duplicate (non unique) entries of quadrature points and triangles
 
-# Arguments
-* ``Points``: quadrature points
-* ``Triangles``: triangulation
+## Arguments
+* `Points`: quadrature points
+* `Triangles`: triangulation
 
 # Outputs
 * new quadrature points and triangulation

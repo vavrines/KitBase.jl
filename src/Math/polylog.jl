@@ -13,23 +13,23 @@ struct Diagnostics end
 """
 $(SIGNATURES)
 
-Calculate the Polylogarithm function ``Li_s(z)`` defined by
-    
+Calculate the Polylogarithm function `Li_s(z)` defined by
+
 ``{Li}_s = \\sum_{n=1}^{\\infty} \\frac{z^n}{n^s}``
 
 It uses double precision complex numbers (not arbitrary precision).
 The goal is an relative error bound 10^{-12}.
  
-# Arguments
-* ``s```::Complex`: the 'fractional' parameter
-* ``z```::Complex`: the point at which to calculate it
+## Arguments
+* `s::Complex`: the 'fractional' parameter
+* `z::Complex`: the point at which to calculate it
 It should also accept input arguments as `Real` or `Rational` or `Integer` but these aren't completely tested.
 There are additional keywords, but these are currently intended for testing not use.
 
-# Outputs
-* ``Li_s(z)``: the result
+## Outputs
+* `Li_s(z)`: the result
 
-# Examples
+## Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> polylog(0.35, 0.2)
 0.23803890574407033
@@ -64,19 +64,19 @@ Calculate the Polylogarithm function ``{Li}_s(z)`` defined by
 It uses double precision complex numbers (not arbitrary precision).
 The goal is an relative error bound 10^{-12}.
  
-# Arguments
-* ``s::```Complex`: the 'fractional' parameter
-* ``z```::Complex`: the point at which to calculate it
+## Arguments
+* `s::Complex`: the 'fractional' parameter
+* `z::Complex`: the point at which to calculate it
 * `::Diagnostics`: use this to indicate that the output should include extra information
 It should also accept input arguments as `Real` or `Rational` or `Integer` but these aren't completely tested.
 There are additional keywords, but these are currently intended for testing not use.
 
-# Outputs
-* ``Li_s(z)``: the result
-* ``n``: the number of elements used in each series
+## Outputs
+* `Li_s(z)`: the result
+* `n`: the number of elements used in each series
 * `series`: the series used to compute results (4 = reciprocal)
 
-# Examples
+## Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> polylog(0.35, 0.2, Diagnostics() )
 (0.23803890574407033, 17, 1)
@@ -477,10 +477,10 @@ $(SIGNATURES)
 
 Calculate harmonic numbers (http://mathworld.wolfram.com/HarmonicNumber.html)
 
-# Arguments
-* ``n```::Integer`: non-negative index of the Harmonic number to calculate
+## Arguments
+* `n::Integer`: non-negative index of the Harmonic number to calculate
 
-# Examples
+## Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> harmonic(2)
 1.5
@@ -509,7 +509,7 @@ $(SIGNATURES)
 Calculate harmonic numbers extended to non-integer arguments using the digamma form.
 
 ## Arguments
-* ``x```::ComplexOrReal{Float64}`: index of the Harmonic number to calculate
+* `x::ComplexOrReal{Float64}`: index of the Harmonic number to calculate
 
 ## Examples
 ```jldoctest; setup = :(using Polylogarithms)
@@ -524,12 +524,12 @@ $(SIGNATURES)
 
 Calculate generalized harmonic numbers (e.g., see http://mathworld.wolfram.com/HarmonicNumber.html)
 
-# Arguments
-* ``n```::Integer`: non-negative index 1 of the Harmonic number to calculate
-* ``r```::Real`: index 2 of the Harmonic number to calculate
+## Arguments
+* `n::Integer`: non-negative index 1 of the Harmonic number to calculate
+* `r::Real`: index 2 of the Harmonic number to calculate
 It should be possible to extend this to complex r, but that requires more testing.
 
-# Examples
+## Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> harmonic(2,1.5)
 1.3535533905932737
@@ -560,11 +560,11 @@ Calculates generalized harmonic numbers (e.g., see http://mathworld.wolfram.com/
 
 Using a better approach which works when both inputs are integers (https://carma.newcastle.edu.au/resources/jon/Preprints/Papers/Published-InPress/Oscillatory%20(Tapas%20II)/Papers/coffey-zeta.pdf, p.341)
  
-# Arguments
-* ``n```::Integer`: non-negative index 1 of the Harmonic number to calculate
-* ``r```::Integer`: index 2 of the Harmonic number to calculate
+## Arguments
+* `n::Integer`: non-negative index 1 of the Harmonic number to calculate
+* `r::Integer`: index 2 of the Harmonic number to calculate
 
-# Examples
+## Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> harmonic(2,1)
 1.5000000000000002
@@ -599,10 +599,10 @@ $(SIGNATURES)
 Provide the first 10 Stieltjes (generalized Euler-Mascheroni) constants (see
 Abramowitz and Stegunm, 23.2.5) or (https://en.wikipedia.org/wiki/Stieltjes_constants).
 
-# Arguments
+## Arguments
 * `n::Integer`: the number of elements to compute.
 
-# Examples
+## Examples
 ```jldoctest; setup = :(using Polylogarithms)
 julia> stieltjes(0)
 0.5772156649015329

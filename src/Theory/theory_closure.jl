@@ -137,11 +137,11 @@ $(SIGNATURES)
 
 Sample distribution functions from entropy closure
 
-# Arguments
-* ``m``: basis function {1, u, u^2, ..., u^n}
-* ``n``: order
-* ``prim``: primitive variables
-* ``pdf``: probability density
+## Arguments
+* `m`: basis function {1, u, u^2, ..., u^n}
+* `n`: order
+* `prim`: primitive variables
+* `pdf`: probability density
 """
 function sample_pdf(m, n::Integer, prim, pdf)
     pdf1 = truncated(pdf, -Inf, 0)

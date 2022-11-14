@@ -8,9 +8,9 @@ $(SIGNATURES)
 Filter of modal solutions
 
 ## Arguments
-- ``u``: modal solution
-- ``args...``: filter parameters including strength, norm, etc.
-- ``filter``: symbolic filter options (`:l2`, `l2opt`, `:l1`, `:lasso`, `:exp`, `:houli`)
+- `u`: modal solution
+- `args...`: filter parameters including strength, norm, etc.
+- `filter`: symbolic filter options (`:l2`, `l2opt`, `:l1`, `:lasso`, `:exp`, `:houli`)
 """
 function modal_filter!(u::AA, args...; filter::Symbol)
     filtstr = "filter_" * string(filter) * "!"

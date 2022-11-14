@@ -5,13 +5,13 @@ Maxwell's diffusive boundary flux
 
 1D continuum
 
-# Arguments
-* ``fw``: fluxes for conservative variables
-* ``bc``: boundary condition for primitive variables
-* ``w``: conservative variables
-* ``inK``: internal degrees of freedom
-* ``dt``: time step
-* ``rot``: rotation indicator (1/-1)
+## Arguments
+* `fw`: fluxes for conservative variables
+* `bc`: boundary condition for primitive variables
+* `w`: conservative variables
+* `inK`: internal degrees of freedom
+* `dt`: time step
+* `rot`: rotation indicator (1/-1)
 """
 function flux_boundary_maxwell!(fw, bc::AV, w, inK, γ, dt, rot)
 

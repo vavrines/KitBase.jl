@@ -4,10 +4,10 @@ $(SIGNATURES)
 Solution algorithm for 1D structured and unstructured mesh
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: vector of cell-centered solution
-``face``: vector of cell interface
-``simTime``: simulation time
+- `KS`: SolverSet
+- `ctr`: vector of cell-centered solution
+- `face`: vector of cell interface
+- `simTime`: simulation time
 """
 function solve!(
     KS::AbstractSolverSet,
@@ -76,11 +76,11 @@ $(SIGNATURES)
 Solution algorithm for 2D structured mesh
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: matrix of cell-centered solution
-``a1face``: maxtrix of cell interface perpendicular to `x` axis
-``a2face``: maxtrix of cell interface perpendicular to `y` axis
-``simTime``: simulation time
+- `KS`: SolverSet
+- `ctr`: matrix of cell-centered solution
+- `a1face`: maxtrix of cell interface perpendicular to `x` axis
+- `a2face`: maxtrix of cell interface perpendicular to `y` axis
+- `simTime`: simulation time
 """
 function solve!(
     KS::AbstractSolverSet,
@@ -146,9 +146,9 @@ $(SIGNATURES)
 Calculate timestep based on the current solution
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: array of cell-centered solution
-``simTime``: simulation time
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
+- `simTime`: simulation time
 """
 function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime)
     tmax = 0.0
