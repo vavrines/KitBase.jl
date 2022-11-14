@@ -7,8 +7,8 @@ $(SIGNATURES)
 
 Maxwell quadrature
 
-# Arguments
-* ``N``: quadrature order (MUST less than 33)
+## Arguments
+* `N`: quadrature order (MUST less than 33)
 """
 function maxwell_quadrature(N::Integer, C = 1::Real)
     @assert N <= 33
@@ -58,12 +58,12 @@ $(SIGNATURES)
 
 Gauss-Legendre quadrature
 
-# Arguments
-* ``n``: quadrature order (MUST be even)
+## Arguments
+* `n`: quadrature order (MUST be even)
 
-# Outputs
-* ``points``: quadrature points in 3D coordinate
-* ``weights``: quadrature weights
+## Outputs
+* `points`: quadrature points in 3D coordinate
+* `weights`: quadrature weights
 """
 function legendre_quadrature(n::Integer)
     pointsxyz = zeros(n * n, 3)
@@ -96,11 +96,11 @@ $(SIGNATURES)
 
 Octaeder quadrature
 
-# Arguments
-* ``n``: quadrature order
-* ``slerpflag``: flag of spherical linear interpolation
+## Arguments
+* `n`: quadrature order
+* `slerpflag`: flag of spherical linear interpolation
 
-# Outputs
+## Outputs
 * points and triangulation
 """
 function octa_quadrature(n::Integer, slerpflag = true::Bool)
@@ -225,11 +225,11 @@ $(SIGNATURES)
 
 Create quadrature weights from points and triangulation
 
-# Arguments
-* ``xyz``: quadrature points
-* ``triangles``: triangulation
+## Arguments
+* `xyz`: quadrature points
+* `triangles`: triangulation
 
-# Outputs
+## Outputs
 * quadrature weights
 """
 function triangle_weights(xyz::AM, triangles::AM)

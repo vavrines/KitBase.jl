@@ -3,12 +3,10 @@ $(SIGNATURES)
 
 Read configuration into dictionary
 
-# Arguments
+## Arguments
+* `filename`: configuration text file
 
-* ``filename``: configuration text file
-
-# Outputs
-
+## Outputs
 * dictionary with values of variables
 """
 function read_cfg(filename::T) where {T<:AbstractString}
@@ -43,13 +41,11 @@ $(SIGNATURES)
 
 Read text into dictionary
 
-# Arguments
+## Arguments
+* `filename`: configuration text file
+* `allowed`: list of allowed attributes
 
-* ``filename``: configuration text file
-* ``allowed``: list of allowed attributes
-
-# Outputs
-
+## Outputs
 * dictionary with values of variables
 """
 function read_dict(filename::T, allowed) where {T<:AbstractString}

@@ -4,8 +4,8 @@ $(SIGNATURES)
 Reconstruct solutions in cells
 
 ## Arguments
-``KS``: SolverSet
-``ctr``: array of cell-centered solution
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
 """
 function reconstruct!(
     KS::SolverSet,

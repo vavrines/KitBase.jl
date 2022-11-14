@@ -33,10 +33,10 @@ $(SIGNATURES)
 
 Calculation of the spherical harmonic for a given order (l,m) in Cartesian coordinates
 
-# Arguments
-- ``l``: degree of spherical harmonics
-- ``m``: order of spherical harmonics
-- ``x, y, z``: Cartesian coordinates
+## Arguments
+- `l`: degree of spherical harmonics
+- `m`: order of spherical harmonics
+- `x, y, z`: Cartesian coordinates
 
 # Outputs
 - spherical harmonic polynomial

@@ -4,7 +4,7 @@ $(SIGNATURES)
 Write solution data
 
 ## Arguments
-* ``mode``: data format (`:bson`, `:jld`, `:vtk`, `:tec`)
+* `mode`: data format (`:bson`, `:jld`, `:vtk`, `:tec`)
 """
 function write_sol(args...; mode = :bson)
     fn = eval(Symbol("write_" * string(mode)))
