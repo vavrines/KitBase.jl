@@ -157,11 +157,11 @@ function flux_hllc!(fw, wL::T, wR::T, γ, dt, len = 1.0) where {T}
         fw .= euler_flux(wR, γ)[1]
     elseif star >= 0 && sL <= 0
         fw .= euler_flux(wL, γ)[1]
-        qstar = hllc_var(primL[1], primL[2], pL, sL, star, γ)
+        qstar = hllc_var(primL, pL, sL, star, γ)
         @. fw += sL * (qstar - wL)
     elseif star <= 0 && sR >= 0
         fw .= euler_flux(wR, γ)[1]
-        qstar = hllc_var(primR[1], primR[2], pR, sR, star, γ)
+        qstar = hllc_var(primR, pR, sR, star, γ)
         @. fw += sR * (qstar - wR)
     end
 
@@ -213,6 +213,24 @@ function hllc_var(d1, u1, p1, s1, star1, γ)
     ustar = [tmp1, tmp1 * star1, tmp1 * (tmp2 + (star1 - u1) * tmp3)]
 
     return ustar
+end
+
+function hllc_var(d1, u1, v1, p1, s1, star1, γ)
+    tmp1 = d1 * (s1 - u1) / (s1 - star1)
+    tmp2 = 0.5 * (u1^2 + v1^2) + p1 / ((γ - 1.0) * d1)
+    tmp3 = star1 + p1 / (d1 * (s1 - u1))
+
+    ustar = [tmp1, tmp1 * star1, tmp1 * v1, tmp1 * (tmp2 + (star1 - u1) * tmp3)]
+
+    return ustar
+end
+
+function hllc_var(prim, p, s, star, γ)
+    if size(prim, 1) == 3
+        return hllc_var(prim[1], prim[2], p, s, star, γ)
+    elseif size(prim, 1) == 4
+        return hllc_var(prim[1], prim[2], prim[3], p, s, star, γ)
+    end
 end
 
 
