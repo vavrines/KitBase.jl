@@ -150,7 +150,7 @@ Calculate timestep based on the current solution
 - `ctr`: array of cell-centered solution
 - `simTime`: simulation time
 """
-function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime)
+function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime = 0.0)
     tmax = 0.0
 
     if ctr[1].w isa Number
@@ -204,7 +204,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
     return dt
 end
 
-function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime)
+function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime = 0.0)
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -261,7 +261,7 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
     return dt
 end
 
-function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime)
+function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime = 0.0)
     tmax = 0.0
 
     if KS.set.nSpecies == 1
