@@ -13,7 +13,8 @@ function solve!(
     KS::AbstractSolverSet,
     ctr::AV{<:AbstractControlVolume},
     face::AV{<:AbstractInterface},
-    simTime,
+    simTime;
+    steady = false,
 )
 
     #--- initial checkpoint ---#
@@ -55,13 +56,18 @@ function solve!(
         if iter % 500 == 0
             println("iter: $(iter), time: $(t), dt: $(dt), res: $(res)")
 
-            #if iter%1000 == 0
-            #    write_jld(KS, ctr, iter)
-            #end
+            if iter%1000 == 0
+                write_jld(KS, ctr, iter)
+            end
         end
 
-        if t > KS.set.maxTime || maximum(res) < 5.e-7
+        if t > KS.set.maxTime
             break
+        end
+        if steady == true
+            if maximum(res) < 5.e-7
+                break
+            end
         end
     end
 
@@ -87,7 +93,8 @@ function solve!(
     ctr::AM{<:AbstractControlVolume},
     a1face::T,
     a2face::T,
-    simTime,
+    simTime;
+    steady = false,
 ) where {T<:AA{<:AbstractInterface,2}}
 
     #--- initial checkpoint ---#
@@ -129,8 +136,13 @@ function solve!(
             println("iter: $(iter), time: $(t), dt: $(dt), res: $(res[1:end])")
         end
 
-        if t > KS.set.maxTime || maximum(res) < 5.e-7
+        if t > KS.set.maxTime
             break
+        end
+        if steady == true
+            if maximum(res) < 5.e-7
+                break
+            end
         end
     end
 
