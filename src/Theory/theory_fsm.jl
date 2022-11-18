@@ -331,7 +331,7 @@ function boltzmann_fft!(
     f_spec ./= size(f, 1) * size(f, 2) * size(f, 3)
     f_spec .= fftshift(f_spec)
 
-    # --- gain term ---#
+    #--- gain term ---#
     f_temp = zeros(axes(f_spec)) .+ 0im
     for i = 1:M*(M-1)
         fg1 = f_spec .* ϕ[:, :, :, i]
@@ -341,7 +341,7 @@ function boltzmann_fft!(
         f_temp .+= fg11 .* fg22
     end
 
-    # --- loss term ---#
+    #--- loss term ---#
     fl1 = f_spec .* phipsi
     fl2 = f_spec
     fl11 = fft(fl1)
