@@ -63,7 +63,7 @@ const KB = KitBase
 const itp = PyNULL()
 
 function __init__()
-    np = nworkers()
+    #=np = nworkers()
     nt = Threads.nthreads()
 
     show_worker(np) = begin
@@ -90,7 +90,7 @@ function __init__()
         CUDA.allowscalar(false)
     else
         @info "Kinetic will run with $(show_worker(np)) and $(show_thread(nt))"
-    end
+    end=#
 
     copy!(itp, pyimport("scipy.interpolate"))
 end
