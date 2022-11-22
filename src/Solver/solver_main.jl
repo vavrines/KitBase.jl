@@ -13,7 +13,8 @@ function solve!(
     KS::AbstractSolverSet,
     ctr::AV{<:AbstractControlVolume},
     face::AV{<:AbstractInterface},
-    simTime,
+    simTime;
+    steady = false,
 )
 
     #--- initial checkpoint ---#
@@ -55,13 +56,18 @@ function solve!(
         if iter % 500 == 0
             println("iter: $(iter), time: $(t), dt: $(dt), res: $(res)")
 
-            #if iter%1000 == 0
-            #    write_jld(KS, ctr, iter)
-            #end
+            if iter%1000 == 0
+                write_jld(KS, ctr, iter)
+            end
         end
 
-        if t > KS.set.maxTime || maximum(res) < 5.e-7
+        if t > KS.set.maxTime
             break
+        end
+        if steady == true
+            if maximum(res) < 5.e-7
+                break
+            end
         end
     end
 
@@ -87,7 +93,8 @@ function solve!(
     ctr::AM{<:AbstractControlVolume},
     a1face::T,
     a2face::T,
-    simTime,
+    simTime;
+    steady = false,
 ) where {T<:AA{<:AbstractInterface,2}}
 
     #--- initial checkpoint ---#
@@ -129,8 +136,13 @@ function solve!(
             println("iter: $(iter), time: $(t), dt: $(dt), res: $(res[1:end])")
         end
 
-        if t > KS.set.maxTime || maximum(res) < 5.e-7
+        if t > KS.set.maxTime
             break
+        end
+        if steady == true
+            if maximum(res) < 5.e-7
+                break
+            end
         end
     end
 
@@ -150,7 +162,7 @@ Calculate timestep based on the current solution
 - `ctr`: array of cell-centered solution
 - `simTime`: simulation time
 """
-function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime)
+function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime = 0.0)
     tmax = 0.0
 
     if ctr[1].w isa Number
@@ -204,7 +216,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
     return dt
 end
 
-function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime)
+function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime = 0.0)
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -261,7 +273,7 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
     return dt
 end
 
-function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime)
+function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime = 0.0)
     tmax = 0.0
 
     if KS.set.nSpecies == 1

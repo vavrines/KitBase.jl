@@ -7,13 +7,7 @@ $(SIGNATURES)
 
 Transform primitive -> conservative variables
 """
-function prim_conserve(prim::AV, γ)
-    if eltype(prim) <: Integer
-        W = similar(prim, Float64)
-    else
-        W = similar(prim)
-    end
-
+function prim_conserve!(W::AV, prim::AV, γ)
     if length(prim) == 3 # 1D
         W[1] = prim[1]
         W[2] = prim[1] * prim[2]
@@ -34,6 +28,47 @@ function prim_conserve(prim::AV, γ)
     else
         throw("prim -> w : dimension error")
     end
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+
+Rykov model
+"""
+function prim_conserve!(W::AV, prim::AV, γ, Kr)
+    if length(prim) == 5 # 1D
+        W[1] = prim[1]
+        W[2] = prim[1] * prim[2]
+        W[3] = 0.5 * prim[1] / prim[3] / (γ - 1.0) + 0.5 * prim[1] * prim[2]^2
+        W[4] = 0.25 * prim[1] * Kr / prim[5]
+    elseif length(prim) == 6 # 2D
+        W[1] = prim[1]
+        W[2] = prim[1] * prim[2]
+        W[3] = prim[1] * prim[3]
+        W[4] = 0.5 * prim[1] / prim[4] / (γ - 1.0) + 0.5 * prim[1] * (prim[2]^2 + prim[3]^2)
+        W[5] = 0.25 * prim[1] * Kr / prim[6]
+    else
+        throw("prim -> w : dimension error")
+    end
+
+    return W
+end
+
+
+"""
+$(SIGNATURES)
+
+Transform primitive -> conservative variables
+"""
+function prim_conserve(prim::AV, γ)
+    if eltype(prim) <: Integer
+        W = similar(prim, Float64)
+    else
+        W = similar(prim)
+    end
+    prim_conserve!(W, prim, γ)
 
     return W
 end
@@ -64,23 +99,25 @@ function prim_conserve(prim::AV, γ, Kr)
     else
         W = similar(prim, length(prim) - 1)
     end
+    prim_conserve!(W, prim, γ, Kr)
+    
+    return W
+end
 
-    if length(prim) == 5 # 1D
-        W[1] = prim[1]
-        W[2] = prim[1] * prim[2]
-        W[3] = 0.5 * prim[1] / prim[3] / (γ - 1.0) + 0.5 * prim[1] * prim[2]^2
-        W[4] = 0.25 * prim[1] * Kr / prim[5]
-    elseif length(prim) == 6 # 2D
-        W[1] = prim[1]
-        W[2] = prim[1] * prim[2]
-        W[3] = prim[1] * prim[3]
-        W[4] = 0.5 * prim[1] / prim[4] / (γ - 1.0) + 0.5 * prim[1] * (prim[2]^2 + prim[3]^2)
-        W[5] = 0.25 * prim[1] * Kr / prim[6]
-    else
-        throw("prim -> w : dimension error")
+
+"""
+$(SIGNATURES)
+
+Transform multi-component primitive -> conservative variables
+"""
+function mixture_prim_conserve!(w, prim::AM, γ)
+    for j in axes(w, 2)
+        _w = @view w[:, j]
+        _prim = @view prim[:, j]
+        prim_conserve!(_w, _prim, γ)
     end
 
-    return W
+    return w
 end
 
 
@@ -95,12 +132,64 @@ function mixture_prim_conserve(prim::AM, γ)
     else
         w = similar(prim)
     end
-
-    for j in axes(w, 2)
-        w[:, j] .= prim_conserve(prim[:, j], γ)
-    end
+    mixture_prim_conserve!(w, prim, γ)
 
     return w
+end
+
+
+"""
+$(SIGNATURES)
+
+vector: primitive vector for Euler, Navier-Stokes and extended equations
+"""
+function conserve_prim!(prim, W::AV, γ)
+    if length(W) == 3 # 1D
+        prim[1] = W[1]
+        prim[2] = W[2] / W[1]
+        prim[3] = 0.5 * W[1] / (γ - 1.0) / (W[3] - 0.5 * W[2]^2 / W[1])
+    elseif length(W) == 4 # 2D
+        prim[1] = W[1]
+        prim[2] = W[2] / W[1]
+        prim[3] = W[3] / W[1]
+        prim[4] = 0.5 * W[1] / (γ - 1.0) / (W[4] - 0.5 * (W[2]^2 + W[3]^2) / W[1])
+    elseif length(W) == 5 # 3D
+        prim[1] = W[1]
+        prim[2] = W[2] / W[1]
+        prim[3] = W[3] / W[1]
+        prim[4] = W[4] / W[1]
+        prim[5] = 0.5 * W[1] / (γ - 1.0) / (W[5] - 0.5 * (W[2]^2 + W[3]^2 + W[4]^2) / W[1])
+    else
+        throw("w -> prim : dimension dismatch")
+    end
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+
+Rykov model
+"""
+function conserve_prim!(prim, w::AV, K, Kr)
+    if length(w) == 4 # 1D
+        prim[1] = w[1]
+        prim[2] = w[2] / w[1]
+        prim[3] = 0.25 * w[1] * (K + Kr + 1.0) / (w[3] - 0.5 * w[2]^2 / w[1])
+        prim[4] = 0.25 * w[1] * (K + 1.0) / (w[3] - w[4] - 0.5 * w[2]^2 / w[1])
+        prim[5] = 0.25 * w[1] * Kr / w[4]
+    elseif length(w) == 5 # 2D
+        prim[1] = w[1]
+        prim[2] = w[2] / w[1]
+        prim[3] = w[3] / w[1]
+        prim[4] = 0.25 * w[1] * (K + Kr + 2.0) / (w[4] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
+        prim[5] = 0.25 * w[1] * (K + 2.0) / (w[4] - w[5] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
+        prim[6] = 0.25 * w[1] * Kr / w[5]
+    else
+        throw("w -> prim : dimension dismatch")
+    end
+
+    return nothing
 end
 
 
@@ -129,25 +218,7 @@ function conserve_prim(W::AV, γ)
     else
         prim = similar(W)
     end
-
-    if length(W) == 3 # 1D
-        prim[1] = W[1]
-        prim[2] = W[2] / W[1]
-        prim[3] = 0.5 * W[1] / (γ - 1.0) / (W[3] - 0.5 * W[2]^2 / W[1])
-    elseif length(W) == 4 # 2D
-        prim[1] = W[1]
-        prim[2] = W[2] / W[1]
-        prim[3] = W[3] / W[1]
-        prim[4] = 0.5 * W[1] / (γ - 1.0) / (W[4] - 0.5 * (W[2]^2 + W[3]^2) / W[1])
-    elseif length(W) == 5 # 3D
-        prim[1] = W[1]
-        prim[2] = W[2] / W[1]
-        prim[3] = W[3] / W[1]
-        prim[4] = W[4] / W[1]
-        prim[5] = 0.5 * W[1] / (γ - 1.0) / (W[5] - 0.5 * (W[2]^2 + W[3]^2 + W[4]^2) / W[1])
-    else
-        throw("w -> prim : dimension dismatch")
-    end
+    conserve_prim!(prim, W, γ)
 
     return prim
 end
@@ -178,25 +249,25 @@ function conserve_prim(w::AV, K, Kr)
     else
         prim = similar(w, length(w) + 1)
     end
-
-    if length(w) == 4 # 1D
-        prim[1] = w[1]
-        prim[2] = w[2] / w[1]
-        prim[3] = 0.25 * w[1] * (K + Kr + 1.0) / (w[3] - 0.5 * w[2]^2 / w[1])
-        prim[4] = 0.25 * w[1] * (K + 1.0) / (w[3] - w[4] - 0.5 * w[2]^2 / w[1])
-        prim[5] = 0.25 * w[1] * Kr / w[4]
-    elseif length(w) == 5 # 2D
-        prim[1] = w[1]
-        prim[2] = w[2] / w[1]
-        prim[3] = w[3] / w[1]
-        prim[4] = 0.25 * w[1] * (K + Kr + 2.0) / (w[4] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
-        prim[5] = 0.25 * w[1] * (K + 2.0) / (w[4] - w[5] - 0.5 * (w[2]^2 + w[3]^2) / w[1])
-        prim[6] = 0.25 * w[1] * Kr / w[5]
-    else
-        throw("w -> prim : dimension dismatch")
-    end
+    conserve_prim!(prim, w, K, Kr)
 
     return prim
+end
+
+
+"""
+$(SIGNATURES)
+
+Transform multi-component conservative -> primitive variables
+"""
+function mixture_conserve_prim!(prim, W::AM, γ)
+    for j in axes(prim, 2)
+        _prim = @view prim[:, j]
+        _w = @view W[:, j]
+        conserve_prim!(_prim, _w, γ)
+    end
+
+    return nothing
 end
 
 
@@ -211,10 +282,7 @@ function mixture_conserve_prim(W::AM, γ)
     else
         prim = similar(W)
     end
-
-    for j in axes(prim, 2)
-        prim[:, j] .= conserve_prim(W[:, j], γ)
-    end
+    mixture_conserve_prim!(prim, W, γ)
 
     return prim
 end

@@ -3,7 +3,8 @@
 # ============================================================
 
 export heat_capacity_ratio, internal_dof, sound_speed
-export prim_conserve, conserve_prim, mixture_prim_conserve, mixture_conserve_prim
+export prim_conserve, prim_conserve!, mixture_prim_conserve, mixture_prim_conserve!
+export conserve_prim, conserve_prim!, mixture_conserve_prim, mixture_conserve_prim!
 export moments_conserve, diatomic_moments_conserve, mixture_moments_conserve, flux_conserve!
 export discrete_moments, pressure, stress, heat_flux
 export maxwellian, energy_maxwellian, maxwellian!, f_maxwellian
