@@ -84,8 +84,8 @@ Solution algorithm for 2D structured mesh
 ## Arguments
 - `KS`: SolverSet
 - `ctr`: matrix of cell-centered solution
-- `a1face`: maxtrix of cell interface perpendicular to `x` axis
-- `a2face`: maxtrix of cell interface perpendicular to `y` axis
+- `a1face`: matrix of cell interface perpendicular to `x` axis
+- `a2face`: matrix of cell interface perpendicular to `y` axis
 - `simTime`: simulation time
 """
 function solve!(
