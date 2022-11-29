@@ -3,7 +3,7 @@ $(TYPEDEF)
 
 1D physical space with structured mesh
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -41,7 +41,7 @@ $(TYPEDEF)
 
 2D physical space with structured mesh
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -185,7 +185,7 @@ $(TYPEDEF)
 
 2D Circular space in polar coordinates
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -352,7 +352,7 @@ x
    |     |/  
   2 ----- 3
 
-# Fields
+## Fields
 
 $(FIELDS)
 """

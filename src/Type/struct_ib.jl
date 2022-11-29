@@ -7,7 +7,7 @@ $(TYPEDEF)
 
 Initial & boundary conditions with no distribution function
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -29,7 +29,7 @@ $(TYPEDEF)
 
 Initial & boundary conditions with 1 distribution function
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -96,7 +96,7 @@ $(TYPEDEF)
 
 Initial & boundary conditions with 2 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -176,7 +176,7 @@ $(TYPEDEF)
 
 Initial & boundary conditions with 3 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -196,7 +196,7 @@ $(TYPEDEF)
 
 Initial & boundary conditions with 4 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """

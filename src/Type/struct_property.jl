@@ -3,13 +3,13 @@ $(TYPEDEF)
 
 Fluid property for scalar conservation laws
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
-@with_kw mutable struct Scalar{TA,TB} <: AbstractProperty
-    a::TA = 1.0
-    μᵣ::TB = 1e-8
+@with_kw mutable struct Scalar{T,F} <: AbstractProperty
+    a::T = 1.0
+    μᵣ::F = 1e-8
 end
 
 
@@ -18,11 +18,11 @@ $(TYPEDEF)
 
 Radiation property for linear Boltzmann equation
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
-@with_kw mutable struct Radiation{T1,T2,T3,T4} <: AbstractProperty
+@with_kw mutable struct Radiation{T1,T2,T3,T4<:Integer} <: AbstractProperty
     Kn::T1 = 1.0
     σs::T2 = 1.0
     σa::T2 = 0.0
@@ -30,7 +30,7 @@ $(FIELDS)
     np::T4 = 1000
 end
 
-function Radiation(_Kn::Union{Real,AV}, _ss::Union{Real,AV}, _sa::Union{Real,AV})
+function Radiation(_Kn, _ss::Union{Real,AV}, _sa::Union{Real,AV})
     Kn = deepcopy(_Kn)
     σs = deepcopy(_ss)
     σa = deepcopy(_sa)
@@ -46,7 +46,7 @@ $(TYPEDEF)
 
 Gas property
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -71,7 +71,7 @@ $(TYPEDEF)
 
 Diatomic gas property
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -99,7 +99,7 @@ $(TYPEDEF)
 
 Multi-component gas property
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -121,7 +121,7 @@ $(TYPEDEF)
 
 1D plasma property
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -251,7 +251,7 @@ $(TYPEDEF)
 
 2D plasma property
 
-# Fields
+## Fields
 
 $(FIELDS)
 """

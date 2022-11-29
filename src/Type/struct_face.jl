@@ -12,7 +12,7 @@ $(TYPEDEF)
 
 Cell interface with no distribution function
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -31,7 +31,7 @@ $(TYPEDEF)
 
 Cell interface with no distribution function
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -51,7 +51,7 @@ $(TYPEDEF)
 
 Cell interface with no distribution function
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -116,7 +116,7 @@ $(TYPEDEF)
 1D cell interface with no distribution function
 Note that deepcopy constructor is needed to work with StructArrays
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -135,7 +135,7 @@ $(TYPEDEF)
 1D cell interface with 1 distribution function
 Note that deepcopy constructor is needed to work with StructArrays
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -159,7 +159,7 @@ $(TYPEDEF)
 
 1D cell interface with 2 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -192,7 +192,7 @@ $(TYPEDEF)
 
 1D cell interface with 3 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -257,7 +257,7 @@ $(TYPEDEF)
 
 1D cell interface with 4 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -316,7 +316,7 @@ $(TYPEDEF)
 
 2D cell interface with no distribution function
 
-# Fields
+## Fields
 
 $(FIELDS)    
 """
@@ -351,7 +351,7 @@ $(TYPEDEF)
 
 2D cell interface with 1 distribution function
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -389,7 +389,7 @@ $(TYPEDEF)
 
 2D cell interface with 2 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -429,7 +429,7 @@ $(TYPEDEF)
 
 2D cell interface with 3 distribution functions
 
-# Fields
+## Fields
 
 $(FIELDS)
 """

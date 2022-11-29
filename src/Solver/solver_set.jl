@@ -3,7 +3,7 @@ $(TYPEDEF)
 
 Structure of solver setup
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
