@@ -22,12 +22,12 @@ Radiation property for linear Boltzmann equation
 
 $(FIELDS)
 """
-@with_kw mutable struct Radiation{T1,T2,T3,T4<:Integer} <: AbstractProperty
-    Kn::T1 = 1.0
-    σs::T2 = 1.0
-    σa::T2 = 0.0
-    m::T3 = 1e-3
-    np::T4 = 1000
+@with_kw mutable struct Radiation{T,A,F,I<:Integer} <: AbstractProperty
+    Kn::T = 1.0
+    σs::A = 1.0
+    σa::A = 0.0
+    m::F = 1e-3
+    np::I = 1000
 end
 
 function Radiation(_Kn, _ss::Union{Real,AV}, _sa::Union{Real,AV})
