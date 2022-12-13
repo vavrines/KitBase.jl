@@ -1,7 +1,7 @@
 """
 KitBase.jl: The lightweight module of physical formulations in Kinetic.jl
 
-Copyright (c) 2020-2022 Tianbai Xiao <tianbaixiao@gmail.com>
+Copyright (c) 2020-2023 Tianbai Xiao <tianbaixiao@gmail.com>
 """
 
 module KitBase
@@ -15,6 +15,8 @@ export KB
 import Base: *
 import BSON
 import JLD2
+import NonlinearSolve
+import SciMLNLSolve: NLSolveJL
 using Base.Threads: @threads
 using CSV
 using CUDA

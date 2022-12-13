@@ -358,3 +358,18 @@ vs2 = KitBase.VSpace2D()
 KitBase.collision_invariant(rand(4), vs2)
 vs3 = KitBase.VSpace3D()
 KitBase.collision_invariant(rand(5), vs3)
+
+#--- quantum ---#
+f0 = 0.5 * (1 / π)^0.5 .* (exp.(-(vs.u .- 0.99) .^ 2) .+ exp.(-(vs.u .+ 0.99) .^ 2))
+w0 = moments_conserve(f0, vs.u, vs.weights)
+prim0 = quantum_conserve_prim(w0, 2, :fd)
+quantum_prim_conserve(prim0, 2, :fd)
+prim0 = quantum_conserve_prim(w0, 2, :be)
+quantum_prim_conserve(prim0, 2, :be)
+
+f0 = 0.5 * (1 / π)^0.5 .* (exp.(-(vs2.u .- 0.99) .^ 2) .+ exp.(-(vs2.u .+ 0.99) .^ 2)) .* exp.(-vs2.v .^ 2)
+w0 = moments_conserve(f0, vs2.u, vs2.v, vs2.weights)
+prim0 = quantum_conserve_prim(w0, 2, :fd)
+quantum_prim_conserve(prim0, 2, :fd)
+prim0 = quantum_conserve_prim(w0, 2, :be)
+quantum_prim_conserve(prim0, 2, :be)
