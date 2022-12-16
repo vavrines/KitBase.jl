@@ -1,7 +1,7 @@
 # KitBase.jl
 
 [![version](https://juliahub.com/docs/KitBase/version.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS)
-![CI](https://img.shields.io/github/workflow/status/vavrines/KitBase.jl/CI)
+![CI](https://img.shields.io/github/actions/workflow/status/vavrines/KitBase.jl/ci.yml?branch=main)
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://xiaotianbai.com/Kinetic.jl/stable/)
 [![codecov](https://img.shields.io/codecov/c/github/vavrines/KitBase.jl)](https://codecov.io/gh/vavrines/KitBase.jl)
 [![deps](https://juliahub.com/docs/KitBase/deps.svg)](https://juliahub.com/ui/Packages/KitBase/YOFTS?t=2)
