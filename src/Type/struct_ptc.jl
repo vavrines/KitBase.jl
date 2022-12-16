@@ -7,7 +7,7 @@ $(TYPEDEF)
 
 Struct of arrays for particle simulation
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -61,7 +61,7 @@ $(TYPEDEF)
 
 1D particle
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -95,7 +95,7 @@ $(TYPEDEF)
 
 2D particle
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -143,7 +143,7 @@ $(TYPEDEF)
 
 1D control volume in correspondence with particle simulation
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -216,7 +216,7 @@ $(TYPEDEF)
 
 2D control volume in correspondence with particle simulation
 
-# Fields
+## Fields
 
 $(FIELDS)
 """

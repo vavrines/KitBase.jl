@@ -7,7 +7,7 @@ $(TYPEDEF)
 
 1D velocity space
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -126,7 +126,7 @@ $(TYPEDEF)
 
 2D velocity space
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -344,7 +344,7 @@ $(TYPEDEF)
 
 3D velocity space
 
-# Fields
+## Fields
 
 $(FIELDS)
 """
@@ -727,7 +727,7 @@ $(TYPEDEF)
 
 Unstructured velocity space
 
-# Fields
+## Fields
 
 $(FIELDS)
 """

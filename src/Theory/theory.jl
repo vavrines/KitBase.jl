@@ -17,6 +17,8 @@ export hs_boltz_kn, kernel_mode, fsm_kernel, boltzmann_fft, boltzmann_fft!
 export boltzmann_ode!, bgk_ode!, esbgk_ode!
 export chapman_enskog, collision_invariant
 export optimize_closure, realizable_reconstruct, moment_basis, sample_pdf, kinetic_entropy
+export be_integral, fd_integral, be_equilibrium, fd_equilibrium
+export quantum_conserve_prim, quantum_prim_conserve
 
 include("theory_macro.jl")
 include("theory_flux.jl")
@@ -28,3 +30,4 @@ include("theory_fsm.jl")
 include("theory_moments.jl")
 include("theory_particle.jl")
 include("theory_closure.jl")
+include("theory_quantum.jl")
