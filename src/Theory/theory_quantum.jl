@@ -87,7 +87,7 @@ function quantum_conserve_prim(w, β, it = :fd)
     fn = eval(Symbol(string(it) * "_integral"))
 
     prob = Aprob(w, β, it)
-    sol = NonlinearSolve.solve(prob, NLSolveJL())
+    sol = NonlinearSolve.solve(prob, NLSolveJL(), reltol = 1e-9)
     @assert sol.u[1] != 0
     prim[1] = sol.u[1]
     prim[2] = w[2] / w[1]
