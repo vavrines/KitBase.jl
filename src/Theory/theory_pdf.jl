@@ -466,22 +466,34 @@ $(SIGNATURES)
 
 Construct a collision invariant of the Boltzmann equation
 """
+function collision_invariant(α::AV, u)
+    return @. exp(α[1] + α[2] * u + α[3] * u^2 / 2)
+end
+
 function collision_invariant(α::AV, vs::AbstractVelocitySpace1D)
-    return @. exp(α[1] + α[2] * vs.u + α[3] * vs.u^2 / 2)
+    return collision_invariant(α, vs.u)
+end
+
+function collision_invariant(α::AV, u, v)
+    return @. exp(α[1] + α[2] * u + α[3] * v + α[4] * (u^2 + v^2) / 2)
 end
 
 function collision_invariant(α::AV, vs::AbstractVelocitySpace2D)
-    return @. exp(α[1] + α[2] * vs.u + α[3] * vs.v + α[4] * (vs.u^2 + vs.v^2) / 2)
+    return collision_invariant(α, vs.u, vs.v)
+end
+
+function collision_invariant(α::AV, u, v, w)
+    return @. exp(
+        α[1] +
+        α[2] * u +
+        α[3] * v +
+        α[4] * w +
+        α[5] * (u^2 + v^2 + w^2) / 2,
+    )
 end
 
 function collision_invariant(α::AV, vs::AbstractVelocitySpace3D)
-    return @. exp(
-        α[1] +
-        α[2] * vs.u +
-        α[3] * vs.v +
-        α[4] * vs.w +
-        α[5] * (vs.u^2 + vs.v^2 + vs.w^2) / 2,
-    )
+    return collision_invariant(α, vs.u, vs.v, vs.w)
 end
 
 function collision_invariant(α::AM, vs::AbstractVelocitySpace)
