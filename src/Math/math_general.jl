@@ -172,3 +172,41 @@ $(SIGNATURES)
 Calculate L∞ error
 """
 L∞_error(u::T, ue::T, Δx) where {T<:AA} = maximum(abs.(u .- ue) .* Δx)
+
+
+"""
+$(SIGNATURES)
+
+Discrete Dirac delta function
+"""
+dirac_delta(r) = dirac_delta(r, Class{2})
+
+function dirac_delta(r, ::Type{Class{1}})
+	if abs(r) <= 1
+		return 0.125 * (3 - 2 * abs(r) + sqrt(1 + 4 * abs(r) - 4 * r^2))
+	elseif 1 < abs(r) <= 2
+		return 0.125 * (5 - 2 * abs(r) - sqrt(-7 + 12 * abs(r) - 4 * r^2))
+	else
+		return 0.0
+	end
+end
+
+function dirac_delta(r, ::Type{Class{2}})
+	if abs(r) <= 2
+		return 0.25 * (1 + cos(0.5 * π * abs(r)))
+	else
+		return 0.0
+	end
+end
+
+function dirac_delta(r, ::Type{Class{3}})
+	if abs(r) <= 0.5
+		return 3 / 8 + π / 32 - r^2 / 4
+	elseif 0.5 < abs(r) <= 1.5
+		return 1 / 4 + (1 - abs(r)) / 8 * sqrt(-2 + 8 * abs(r) - 4 * r^2) - asin(sqrt(2) * (abs(r) - 1)) / 8
+	elseif 1.5 < abs(r) <= 2.5
+		return 17 / 16 - π / 64 - 3 * abs(r) / 4 + r^2 / 8 + (abs(r) - 2) / 16 * sqrt(-14 + 16 * abs(r) - 4 * r^2) + asin(sqrt(2) * (abs(r) - 2)) / 16
+	else
+		return 0.0
+	end
+end

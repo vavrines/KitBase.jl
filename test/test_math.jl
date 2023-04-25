@@ -154,3 +154,7 @@ KitBase.Q_closed(1, 1, 1)
 KitBase.c_closed(1, 0, 1)
 KitBase.c_closed(1, 1, 1)
 KitBase.c_closed(1, 2, 1)
+
+KitBase.dirac_delta(1)
+KitBase.dirac_delta(1, KitBase.Class{1})
+KitBase.dirac_delta(1, KitBase.Class{3})
