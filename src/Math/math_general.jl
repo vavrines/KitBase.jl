@@ -210,3 +210,5 @@ function dirac_delta(r, ::Type{Class{3}})
 		return 0.0
 	end
 end
+
+dirac_delta(x, y, Δx, Δy) = 1 / (Δx * Δy) * dirac_delta(x / Δx) * dirac_delta(y / Δy)
