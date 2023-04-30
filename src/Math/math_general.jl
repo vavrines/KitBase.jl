@@ -179,7 +179,7 @@ $(SIGNATURES)
 
 Discrete Dirac delta function
 """
-dirac_delta(r) = dirac_delta(r, Class{2})
+dirac_delta(r) = dirac_delta(r, Class{1})
 
 function dirac_delta(r, ::Type{Class{1}})
 	if abs(r) <= 1
@@ -212,3 +212,5 @@ function dirac_delta(r, ::Type{Class{3}})
 end
 
 dirac_delta(x, y, Δx, Δy) = 1 / (Δx * Δy) * dirac_delta(x / Δx) * dirac_delta(y / Δy)
+
+dirac_delta(x, y, Δx, Δy, T) = 1 / (Δx * Δy) * dirac_delta(x / Δx, T) * dirac_delta(y / Δy, T)
