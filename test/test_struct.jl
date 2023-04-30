@@ -18,6 +18,7 @@ Setup(
     "maxwell",
     0.5, # cfl
     10.0, # time
+    false,
 ) |> show
 config_ntuple(u0 = -8, c = 1)
 

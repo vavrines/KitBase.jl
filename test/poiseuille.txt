@@ -14,6 +14,7 @@ limiter = vanleer
 boundary = fix
 cfl = 0.5
 maxTime = 0.2
+hasForce = false
 
 # phase space
 x0 = 0.0

@@ -17,6 +17,7 @@ Config = @with_kw (
     interpOrder = 1,
     limiter = "vanleer",
     boundary = ["fix", "fix"],
+    hasForce = false,
     cfl = 0.5,
     t0 = 0,
     t1 = 1,
@@ -116,6 +117,7 @@ $(FIELDS)
     boundary::E = ["fix", "fix"]
     cfl::F = 0.5
     maxTime::G = 0.1
+    hasForce::Bool = false
 end
 
 function Setup(
@@ -130,6 +132,7 @@ function Setup(
     bc::T,
     cfl,
     time,
+    hasForce,
 ) where {T<:Union{AbstractString,Symbol}}
     boundary = begin
         if parse(Int, space[1]) == 1
@@ -151,6 +154,7 @@ function Setup(
         boundary,
         cfl,
         time,
+        hasForce,
     )
 end
 
@@ -171,6 +175,7 @@ function set_setup(;
     boundary,
     cfl,
     maxTime,
+    hasForce,
     kwargs...,
 )
     set = Setup(
@@ -185,6 +190,7 @@ function set_setup(;
         boundary,
         cfl,
         maxTime,
+        hasForce,
     )
 
     return set

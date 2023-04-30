@@ -16,24 +16,26 @@ Control volume with no distribution function
 
 $(FIELDS)
 """
-mutable struct ControlVolume{T1,T2,T3,ND} <: AbstractControlVolume
+mutable struct ControlVolume{T1,T2,T3,T4,ND} <: AbstractControlVolume
     w::T1
     prim::T2
     sw::T3
+    a::T4
 end
 
-function ControlVolume(w, prim, sw)
+function ControlVolume(w, prim, sw, a)
     n = size(w, 1) - 2
-    return ControlVolume{typeof(w),typeof(prim),typeof(sw),n}(w, prim, sw)
+    return ControlVolume{typeof(w),typeof(prim),typeof(sw),typeof(a),n}(w, prim, sw, a)
 end
 
-function Base.show(io::IO, ctr::ControlVolume{A,B,C,N}) where {A,B,C,N}
+function Base.show(io::IO, ctr::ControlVolume{A,B,C,D,N}) where {A,B,C,D,N}
     print(
         io,
         "ControlVolume$(N)D{$A,$B,$C}\n",
         "conservative vars: $(ctr.w)\n",
         "primitive vars: $(ctr.prim)\n",
         "conservative slopes: $(ctr.sw)\n",
+        "auxiliary field: $(ctr.a)\n",
     )
 end
 
@@ -47,20 +49,28 @@ Control volume with 1 distribution function
 
 $(FIELDS)
 """
-struct ControlVolume1F{T1,T2,T3,T4,ND} <: AbstractControlVolume
+struct ControlVolume1F{T1,T2,T3,T4,T5,ND} <: AbstractControlVolume
     w::T1
     prim::T1
     sw::T2
     f::T3
     sf::T4
+    a::T5
 end
 
-function ControlVolume1F(w, prim, sw, f, sf)
+function ControlVolume1F(w, prim, sw, f, sf, a)
     n = size(w, 1) - 2
-    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),n}(w, prim, sw, f, sf)
+    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),typeof(a),n}(
+        w,
+        prim,
+        sw,
+        f,
+        sf,
+        a,
+    )
 end
 
-function Base.show(io::IO, ctr::ControlVolume1F{A,B,C,D,N}) where {A,B,C,D,N}
+function Base.show(io::IO, ctr::ControlVolume1F{A,B,C,D,E,N}) where {A,B,C,D,E,N}
     print(
         io,
         "ControlVolume$(N)D1F{$A,$B,$C,$D}\n",
@@ -69,6 +79,7 @@ function Base.show(io::IO, ctr::ControlVolume1F{A,B,C,D,N}) where {A,B,C,D,N}
         "conservative slopes: $(ctr.sw)\n",
         "pdf vars: f\n",
         "pdf slopes: sf\n",
+        "auxiliary field: $(ctr.a)\n",
     )
 end
 
@@ -82,7 +93,7 @@ Control volume with 2 distribution functions
 
 $(FIELDS)
 """
-struct ControlVolume2F{T1,T2,T3,T4,ND} <: AbstractControlVolume
+struct ControlVolume2F{T1,T2,T3,T4,T5,ND} <: AbstractControlVolume
     w::T1
     prim::T1
     sw::T2
@@ -90,11 +101,12 @@ struct ControlVolume2F{T1,T2,T3,T4,ND} <: AbstractControlVolume
     b::T3
     sh::T4
     sb::T4
+    a::T5
 end
 
-function ControlVolume2F(w, prim, sw, h, b, sh, sb)
+function ControlVolume2F(w, prim, sw, h, b, sh, sb, a)
     n = size(w, 1) - 2
-    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),n}(
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),typeof(a),n}(
         w,
         prim,
         sw,
@@ -102,10 +114,11 @@ function ControlVolume2F(w, prim, sw, h, b, sh, sb)
         b,
         sh,
         sb,
+        a,
     )
 end
 
-function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}
+function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,E,N}) where {A,B,C,D,E,N}
     print(
         io,
         "ControlVolume$(N)D2F{$A,$B,$C,$D}\n",
@@ -114,6 +127,7 @@ function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,N}) where {A,B,C,D,N}
         "conservative slopes: $(ctr.sw)\n",
         "pdf vars: f\n",
         "pdf slopes: sf\n",
+        "auxiliary field: $(ctr.a)\n",
     )
 end
 
@@ -128,7 +142,7 @@ $(SIGNATURES)
 
 Construct control volume...
 """
-function ControlVolume(W, PRIM, ND::Integer)
+function ControlVolume(W, PRIM, ND::Integer; auxiliary = false::Bool)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = begin
@@ -138,14 +152,25 @@ function ControlVolume(W, PRIM, ND::Integer)
             slope_array(w)
         end
     end
+    a = begin
+        if auxiliary
+            if ND == 1
+                eltype(w)(0)
+            else
+                zeros(eltype(w), ND)
+            end
+        else
+            nothing
+        end
+    end
 
-    return ControlVolume{typeof(w),typeof(prim),typeof(sw),ND}(w, prim, sw)
+    return ControlVolume{typeof(w),typeof(prim),typeof(sw),typeof(a),ND}(w, prim, sw, a)
 end
 
 """
 $(SIGNATURES)
 """
-function ControlVolume(W, PRIM, F, ND::Integer)
+function ControlVolume(W, PRIM, F, ND::Integer; auxiliary = false::Bool)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     f = deepcopy(F)
@@ -156,14 +181,32 @@ function ControlVolume(W, PRIM, F, ND::Integer)
             slope_array(w), slope_array(f)
         end
     end
+    a = begin
+        if auxiliary
+            if ND == 1
+                eltype(w)(0)
+            else
+                zeros(eltype(w), ND)
+            end
+        else
+            nothing
+        end
+    end
 
-    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),ND}(w, prim, sw, f, sf)
+    return ControlVolume1F{typeof(w),typeof(sw),typeof(f),typeof(sf),typeof(a),ND}(
+        w,
+        prim,
+        sw,
+        f,
+        sf,
+        a,
+    )
 end
 
 """
 $(SIGNATURES)
 """
-function ControlVolume(W, PRIM, H, B, ND::Integer)
+function ControlVolume(W, PRIM, H, B, ND::Integer; auxiliary = false::Bool)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     h = deepcopy(H)
@@ -175,8 +218,19 @@ function ControlVolume(W, PRIM, H, B, ND::Integer)
             slope_array(w), slope_array(h), slope_array(b)
         end
     end
+    a = begin
+        if auxiliary
+            if ND == 1
+                eltype(w)(0)
+            else
+                zeros(eltype(w), ND)
+            end
+        else
+            nothing
+        end
+    end
 
-    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),ND}(
+    return ControlVolume2F{typeof(w),typeof(sw),typeof(h),typeof(sh),typeof(a),ND}(
         w,
         prim,
         sw,
@@ -184,6 +238,7 @@ function ControlVolume(W, PRIM, H, B, ND::Integer)
         b,
         sh,
         sb,
+        a,
     )
 end
 

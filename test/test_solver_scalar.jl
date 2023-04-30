@@ -11,6 +11,7 @@ set = Setup(
     "period", # boundary
     0.5, # cfl
     1.0, # simulation time
+    false,
 )
 pSpace = PSpace1D(0.0, 1.0, 100, 1)
 vSpace = nothing

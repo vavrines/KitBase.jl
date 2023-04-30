@@ -71,7 +71,12 @@ function read_dict(filename::T, allowed) where {T<:AbstractString}
             #vars[stripped] = strip(val)
             tmp = tryparse(Float64, val)
             if isa(tmp, Nothing)
-                vars[stripped] = strip(val)
+                tmp1 = tryparse(Bool, val)
+                if isa(tmp1, Nothing)
+                    vars[stripped] = strip(val)
+                else
+                    vars[stripped] = tmp1
+                end
             else
                 vars[stripped] = isinteger(tmp) ? Int(tmp) : tmp
             end
@@ -105,7 +110,12 @@ function read_dict(filename::T) where {T<:AbstractString}
 
         tmp = tryparse(Float64, val)
         if isa(tmp, Nothing)
-            vars[stripped] = strip(val)
+            tmp1 = tryparse(Bool, val)
+            if isa(tmp1, Nothing)
+                vars[stripped] = strip(val)
+            else
+                vars[stripped] = tmp1
+            end
         else
             vars[stripped] = isinteger(tmp) ? Int(tmp) : tmp
         end

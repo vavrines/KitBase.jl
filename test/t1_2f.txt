@@ -10,6 +10,7 @@ limiter = vanleer # limiter function
 boundary = maxwell # boundary condition
 cfl = 0.8 # CFL number
 maxTime = 0.001 # maximal simulation time
+hasForce = false
 
 # physical space
 mesh = t1.msh
