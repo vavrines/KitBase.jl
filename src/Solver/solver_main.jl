@@ -56,7 +56,7 @@ function solve!(
         if iter % 500 == 0
             println("iter: $(iter), time: $(t), dt: $(dt), res: $(res)")
 
-            if iter%1000 == 0
+            if iter % 1000 == 0
                 write_jld(KS, ctr, iter)
             end
         end
@@ -273,7 +273,11 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
     return dt
 end
 
-function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractUnstructControlVolume}, simTime = 0.0)
+function timestep(
+    KS::AbstractSolverSet,
+    ctr::AV{<:AbstractUnstructControlVolume},
+    simTime = 0.0,
+)
     tmax = 0.0
 
     if KS.set.nSpecies == 1

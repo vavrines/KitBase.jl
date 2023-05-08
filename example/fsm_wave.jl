@@ -1,7 +1,13 @@
 using KitBase, Plots
 using KitBase.ProgressMeter: @showprogress
 
-set = Setup(space = "1d1f3v", collision = "fsm", interpOrder = 1, boundary = "period", maxTime = 1.0)
+set = Setup(
+    space = "1d1f3v",
+    collision = "fsm",
+    interpOrder = 1,
+    boundary = "period",
+    maxTime = 1.0,
+)
 ps = PSpace1D(0.0, 1.0, 100, 1)
 vs = VSpace3D(-8, 8, 48, -8, 8, 28, -8, 8, 28)
 

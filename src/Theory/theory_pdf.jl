@@ -483,13 +483,7 @@ function collision_invariant(α::AV, vs::AbstractVelocitySpace2D)
 end
 
 function collision_invariant(α::AV, u, v, w)
-    return @. exp(
-        α[1] +
-        α[2] * u +
-        α[3] * v +
-        α[4] * w +
-        α[5] * (u^2 + v^2 + w^2) / 2,
-    )
+    return @. exp(α[1] + α[2] * u + α[3] * v + α[4] * w + α[5] * (u^2 + v^2 + w^2) / 2)
 end
 
 function collision_invariant(α::AV, vs::AbstractVelocitySpace3D)

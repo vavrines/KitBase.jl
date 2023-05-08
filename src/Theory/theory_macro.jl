@@ -57,7 +57,9 @@ function prim_conserve!(W::AV, prim::AV, γ, Kr)
         W[2] = prim[1] * prim[2]
         W[3] = prim[1] * prim[3]
         W[4] = prim[1] * prim[4]
-        W[5] = 0.5 * prim[1] / prim[5] / (γ - 1.0) + 0.5 * prim[1] * (prim[2]^2 + prim[3]^2 + prim[4]^2)
+        W[5] =
+            0.5 * prim[1] / prim[5] / (γ - 1.0) +
+            0.5 * prim[1] * (prim[2]^2 + prim[3]^2 + prim[4]^2)
         W[6] = 0.25 * prim[1] * Kr / prim[7]
     else
         throw("prim -> w : dimension error")
@@ -110,7 +112,7 @@ function prim_conserve(prim::AV, γ, Kr)
         W = similar(prim, length(prim) - 1)
     end
     prim_conserve!(W, prim, γ, Kr)
-    
+
     return W
 end
 
@@ -203,8 +205,11 @@ function conserve_prim!(prim, w::AV, K, Kr)
         prim[2] = w[2] / w[1]
         prim[3] = w[3] / w[1]
         prim[4] = w[4] / w[1]
-        prim[5] = 0.25 * w[1] * (K + Kr + 2.0) / (w[5] - 0.5 * (w[2]^2 + w[3]^2 + w[4]^2) / w[1])
-        prim[6] = 0.25 * w[1] * (K + 2.0) / (w[5] - w[6] - 0.5 * (w[2]^2 + w[3]^2 + w[4]^2) / w[1])
+        prim[5] =
+            0.25 * w[1] * (K + Kr + 2.0) / (w[5] - 0.5 * (w[2]^2 + w[3]^2 + w[4]^2) / w[1])
+        prim[6] =
+            0.25 * w[1] * (K + 2.0) /
+            (w[5] - w[6] - 0.5 * (w[2]^2 + w[3]^2 + w[4]^2) / w[1])
         prim[7] = 0.25 * w[1] * Kr / w[6]
     else
         throw("w -> prim : dimension dismatch")
