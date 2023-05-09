@@ -35,7 +35,7 @@ end
 """
 $(SIGNATURES)
 
-Rykov model
+Polyatomic gas
 
 * w: ρ, ρV⃗, ρEₜ, ρEᵣ
 * prim: ρ, V⃗, λ, λₜ, λᵣ
@@ -103,7 +103,7 @@ prim_conserve(ρ, U, V, W, λ, γ) = prim_conserve([ρ, U, V, W, λ], γ)
 """
 $(SIGNATURES)
 
-Rykov model
+Polyatomic gas
 """
 function prim_conserve(prim::AV, γ, Kr)
     if eltype(prim) <: Integer
@@ -181,7 +181,7 @@ end
 """
 $(SIGNATURES)
 
-Rykov model
+Polyatomic gas
 
 * w: ρ, ρV⃗, ρEₜ, ρEᵣ
 * prim: ρ, V⃗, λ, λₜ, λᵣ

@@ -165,7 +165,7 @@ f = maxwellian(vs.u, vs.v, vs.w, prim)
 KitBase.esbgk_ode!(zero(f), f, (vs.u, vs.v, vs.w, vs.weights, prim, 2 / 3, 1), 0.0)
 
 # Rykov
-KitBase.maxwellian!(
+KitBase.polyatomic_maxwellian!(
     zeros(16),
     zeros(16),
     zeros(16),
@@ -177,7 +177,7 @@ KitBase.maxwellian!(
     4,
     2,
 )
-KitBase.maxwellian!(
+KitBase.polyatomic_maxwellian!(
     zeros(8, 8),
     zeros(8, 8),
     zeros(8, 8),
@@ -235,6 +235,38 @@ KitBase.rykov!(
     1 / 1.55,
     0.2354,
     0.3049,
+)
+
+# BIP
+KitBase.polyatomic_maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    rand(5),
+    2,
+    2,
+)
+KitBase.polyatomic_maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    randn(16),
+    rand(6),
+    1,
+    2,
+)
+KitBase.polyatomic_maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    randn(16),
+    randn(16),
+    rand(7),
+    1,
+    2,
 )
 
 KitBase.f_maxwellian(rand(16, 2))

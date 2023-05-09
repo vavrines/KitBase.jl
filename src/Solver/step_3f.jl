@@ -56,7 +56,7 @@ function step!(
     MHR = similar(h)
     MBR = similar(b)
     MRR = similar(r)
-    maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, u, prim, K, Kr)
+    polyatomic_maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, u, prim, K, Kr)
     τ_old = vhs_collision_time(prim[1:end-1], μᵣ, ω)
     Zr = rykov_zr(1.0 / prim[4], T₀, Z₀)
     Er0_old = 0.5 * sum(@. weights * ((1.0 / Zr) * MRR + (1.0 - 1.0 / Zr) * MRT))
@@ -69,7 +69,7 @@ function step!(
     @. AVG += abs(w)
 
     #--- calculate M^{n+1} and tau^{n+1} ---#
-    maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, u, prim, K, Kr)
+    polyatomic_maxwellian!(MHT, MBT, MRT, MHR, MBR, MRR, u, prim, K, Kr)
 
     SHT = similar(h)
     SBT = similar(b)

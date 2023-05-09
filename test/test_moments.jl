@@ -84,8 +84,9 @@ w3 = rand(16, 16, 16)
 KitBase.discrete_moments(f3, u3, w3, 1)
 KitBase.moments_conserve(f3, u3, u3, u3, w3)
 
-KitBase.diatomic_moments_conserve(f1, f1, f1, u1, w1)
-KitBase.diatomic_moments_conserve(f2, f2, f2, u2, u2, w2)
+KitBase.polyatomic_moments_conserve(f1, f1, f1, u1, w1)
+KitBase.polyatomic_moments_conserve(f2, f2, f2, u2, u2, w2, VDF{3,2})
+KitBase.polyatomic_moments_conserve(f3, f3, u3, u3, u3, w3, VDF{2,3})
 
 KitBase.pressure(rand(3))
 KitBase.pressure(f1, rand(3), u1, w1)

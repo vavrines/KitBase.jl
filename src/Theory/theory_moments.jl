@@ -338,54 +338,6 @@ end
 """
 $(SIGNATURES)
 
-Calculate conservative moments of diatomic particle distribution
-"""
-function diatomic_moments_conserve(h::X, b::X, r::X, u::T, ω::T) where {X<:AV,T<:AV}
-    w = similar(h, 4)
-    w[1] = discrete_moments(h, u, ω, 0)
-    w[2] = discrete_moments(h, u, ω, 1)
-    w[3] =
-        0.5 * (
-            discrete_moments(h, u, ω, 2) +
-            discrete_moments(b, u, ω, 0) +
-            discrete_moments(r, u, ω, 0)
-        )
-    w[4] = 0.5 * discrete_moments(r, u, ω, 0)
-
-    return w
-end
-
-"""
-$(SIGNATURES)
-"""
-function diatomic_moments_conserve(
-    h0::X,
-    h1::X,
-    h2::X,
-    u::T,
-    v::T,
-    ω::T,
-) where {X<:AA,T<:AA}
-    w = similar(h0, 5)
-    w[1] = discrete_moments(h0, u, ω, 0)
-    w[2] = discrete_moments(h0, u, ω, 1)
-    w[3] = discrete_moments(h0, v, ω, 1)
-    w[4] =
-        0.5 * (
-            discrete_moments(h0, u, ω, 2) +
-            discrete_moments(h0, v, ω, 2) +
-            discrete_moments(h1, u, ω, 0) +
-            discrete_moments(h2, u, ω, 0)
-        )
-    w[5] = 0.5 * discrete_moments(h2, u, ω, 0)
-
-    return w
-end
-
-
-"""
-$(SIGNATURES)
-
 Calculate slope-related conservative moments
 `a = a1 + u * a2 + 0.5 * u^2 * a3`
 
@@ -725,6 +677,87 @@ function heat_flux(
 
     return q
 
+end
+
+# ------------------------------------------------------------
+# Polyatomic gas
+# ------------------------------------------------------------
+
+"""
+$(SIGNATURES)
+
+Calculate conservative moments of polyatomic distribution function
+"""
+function polyatomic_moments_conserve(h::X, b::X, r::X, u::T, ω::T) where {X<:AV,T<:AV}
+    w = similar(h, 4)
+    w[1] = discrete_moments(h, u, ω, 0)
+    w[2] = discrete_moments(h, u, ω, 1)
+    w[3] =
+        0.5 * (
+            discrete_moments(h, u, ω, 2) +
+            discrete_moments(b, u, ω, 0) +
+            discrete_moments(r, u, ω, 0)
+        )
+    w[4] = 0.5 * discrete_moments(r, u, ω, 0)
+
+    return w
+end
+
+"""
+$(SIGNATURES)
+"""
+function polyatomic_moments_conserve(
+    h0::X,
+    h1::X,
+    h2::X,
+    u::T,
+    v::T,
+    ω::T,
+    ::Type{VDF{3,2}}
+) where {X<:AA,T<:AA}
+    w = similar(h0, 5)
+    w[1] = discrete_moments(h0, u, ω, 0)
+    w[2] = discrete_moments(h0, u, ω, 1)
+    w[3] = discrete_moments(h0, v, ω, 1)
+    w[4] =
+        0.5 * (
+            discrete_moments(h0, u, ω, 2) +
+            discrete_moments(h0, v, ω, 2) +
+            discrete_moments(h1, u, ω, 0) +
+            discrete_moments(h2, u, ω, 0)
+        )
+    w[5] = 0.5 * discrete_moments(h2, u, ω, 0)
+
+    return w
+end
+
+"""
+$(SIGNATURES)
+"""
+function polyatomic_moments_conserve(
+    h::X,
+    r::X,
+    u::T,
+    v::T,
+    w::T,
+    ω::T,
+    ::Type{VDF{2,3}}
+) where {X<:AA,T<:AA}
+    cons = similar(h, 6)
+    cons[1] = discrete_moments(h, u, ω, 0)
+    cons[2] = discrete_moments(h, u, ω, 1)
+    cons[3] = discrete_moments(h, v, ω, 1)
+    cons[4] = discrete_moments(h, w, ω, 1)
+    cons[5] =
+        0.5 * (
+            discrete_moments(h, u, ω, 2) +
+            discrete_moments(h, v, ω, 2) +
+            discrete_moments(h, w, ω, 2) +
+            discrete_moments(r, u, ω, 0)
+        )
+    cons[6] = 0.5 * discrete_moments(r, u, ω, 0)
+
+    return cons
 end
 
 # ------------------------------------------------------------
