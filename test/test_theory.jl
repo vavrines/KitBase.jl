@@ -165,7 +165,7 @@ f = maxwellian(vs.u, vs.v, vs.w, prim)
 KitBase.esbgk_ode!(zero(f), f, (vs.u, vs.v, vs.w, vs.weights, prim, 2 / 3, 1), 0.0)
 
 # Rykov
-KitBase.maxwellian!(
+KitBase.polyatomic_maxwellian!(
     zeros(16),
     zeros(16),
     zeros(16),
@@ -177,7 +177,7 @@ KitBase.maxwellian!(
     4,
     2,
 )
-KitBase.maxwellian!(
+KitBase.polyatomic_maxwellian!(
     zeros(8, 8),
     zeros(8, 8),
     zeros(8, 8),
@@ -235,6 +235,38 @@ KitBase.rykov!(
     1 / 1.55,
     0.2354,
     0.3049,
+)
+
+# BIP
+KitBase.polyatomic_maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    rand(5),
+    2,
+    2,
+)
+KitBase.polyatomic_maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    randn(16),
+    rand(6),
+    1,
+    2,
+)
+KitBase.polyatomic_maxwellian!(
+    zeros(16),
+    zeros(16),
+    zeros(16),
+    randn(16),
+    randn(16),
+    randn(16),
+    rand(7),
+    1,
+    2,
 )
 
 KitBase.f_maxwellian(rand(16, 2))
@@ -367,7 +399,9 @@ quantum_prim_conserve(prim0, 2, :fd)
 prim0 = quantum_conserve_prim(w0, 2, :be)
 quantum_prim_conserve(prim0, 2, :be)
 
-f0 = 0.5 * (1 / π)^0.5 .* (exp.(-(vs2.u .- 0.99) .^ 2) .+ exp.(-(vs2.u .+ 0.99) .^ 2)) .* exp.(-vs2.v .^ 2)
+f0 =
+    0.5 * (1 / π)^0.5 .* (exp.(-(vs2.u .- 0.99) .^ 2) .+ exp.(-(vs2.u .+ 0.99) .^ 2)) .*
+    exp.(-vs2.v .^ 2)
 w0 = moments_conserve(f0, vs2.u, vs2.v, vs2.weights)
 prim0 = quantum_conserve_prim(w0, 2, :fd)
 quantum_prim_conserve(prim0, 2, :fd)

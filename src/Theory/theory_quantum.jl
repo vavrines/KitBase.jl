@@ -59,20 +59,30 @@ function Aeq_1d(u, p)
     ρ, ρe, β, fn = p
     return 4 * β^2 * fn(-0.5, u)^3 * ρe - ρ^3 * fn(0.5, u)
 end
-const Aprob0_1d = NonlinearSolve.NonlinearProblem{false}(Aeq_1d, 0.3, (0.556, 0.19, 2.0, fd_integral))
+const Aprob0_1d =
+    NonlinearSolve.NonlinearProblem{false}(Aeq_1d, 0.3, (0.556, 0.19, 2.0, fd_integral))
 
 function Aeq_2d(u, p)
     ρ, ρe, β, fn = p
     return 2 * β * fn(0.0, u)^2 * ρe - ρ^2 * fn(1.0, u)
 end
-const Aprob0_2d = NonlinearSolve.NonlinearProblem{false}(Aeq_2d, 0.66, (1.77, 1.75, 2.0, fd_integral))
+const Aprob0_2d =
+    NonlinearSolve.NonlinearProblem{false}(Aeq_2d, 0.66, (1.77, 1.75, 2.0, fd_integral))
 
 function Aprob(w, β, it = :fd)
     fn = eval(Symbol(string(it) * "_integral"))
     if length(w) == 3
-        return NonlinearSolve.remake(Aprob0_1d, u0 = w[1], p = (w[1], w[end] - w[2]^2 / w[1] / 2, β, fn))
+        return NonlinearSolve.remake(
+            Aprob0_1d,
+            u0 = w[1],
+            p = (w[1], w[end] - w[2]^2 / w[1] / 2, β, fn),
+        )
     else
-        return NonlinearSolve.remake(Aprob0_2d, u0 = w[1], p = (w[1], w[end] - (w[2]^2 + w[3]^2) / w[1] / 2, β, fn))
+        return NonlinearSolve.remake(
+            Aprob0_2d,
+            u0 = w[1],
+            p = (w[1], w[end] - (w[2]^2 + w[3]^2) / w[1] / 2, β, fn),
+        )
     end
 end
 
@@ -120,7 +130,9 @@ function quantum_prim_conserve(prim, β, it = :fd)
         w[1] = fn(0.0, prim[1]) * β / prim[end]
         w[2] = w[1] * prim[2]
         w[3] = w[1] * prim[2]
-        w[4] = 0.5 * fn(1.0, prim[1]) * β / (prim[end])^2 + 0.5 * w[1] * (prim[2]^2 + prim[3]^2)
+        w[4] =
+            0.5 * fn(1.0, prim[1]) * β / (prim[end])^2 +
+            0.5 * w[1] * (prim[2]^2 + prim[3]^2)
     end
     return w
 end

@@ -2,7 +2,7 @@
 # Mathematical Methods
 # ============================================================
 
-export linspace, heaviside, fortsign, mat_split
+export linspace, heaviside, fortsign, mat_split, dirac_delta
 export finite_difference
 export central_diff, central_diff!, central_diff2, central_diff2!
 export upwind_diff, upwind_diff!, unstruct_diff

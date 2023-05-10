@@ -10,6 +10,7 @@ limiter = minmod
 boundary = extra
 cfl = 0.3
 maxTime = 0.1
+hasForce = false
 
 # physical space
 x0 = 0

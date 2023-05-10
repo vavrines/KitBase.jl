@@ -93,7 +93,7 @@ function init_fvm(
                     funcprim(w, γ)
                 end
             end
-            ctr[i] = ControlVolume(funcar(w), funcar(prim), 1)
+            ctr[i] = ControlVolume(funcar(w), funcar(prim), 1; auxiliary = KS.set.hasForce)
         end
 
         for i = 1:KS.ps.nx+1
@@ -110,7 +110,13 @@ function init_fvm(
             w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
             prim = funcprim(w, γ)
             f = KS.ib.ff(KS.ps.x[i], KS.ib.p)
-            ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(f), 1)
+            ctr[i] = ControlVolume(
+                funcar(w),
+                funcar(prim),
+                funcar(f),
+                1;
+                auxiliary = KS.set.hasForce,
+            )
         end
 
         for i = 1:KS.ps.nx+1
@@ -128,7 +134,14 @@ function init_fvm(
             w = KS.ib.fw(KS.ps.x[i], KS.ib.p)
             prim = funcprim(w, γ)
             h, b = KS.ib.ff(KS.ps.x[i], KS.ib.p)
-            ctr[i] = ControlVolume(funcar(w), funcar(prim), funcar(h), funcar(b), 1)
+            ctr[i] = ControlVolume(
+                funcar(w),
+                funcar(prim),
+                funcar(h),
+                funcar(b),
+                1;
+                auxiliary = KS.set.hasForce,
+            )
         end
 
         for i = 1:KS.ps.nx+1
@@ -236,7 +249,8 @@ function init_fvm(
             w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
 
-            ctr[i, j] = ControlVolume(funcar(w), funcar(prim), 2)
+            ctr[i, j] =
+                ControlVolume(funcar(w), funcar(prim), 2; auxiliary = KS.set.hasForce)
         end
 
         for j = 1:ny
@@ -262,7 +276,13 @@ function init_fvm(
             w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
             h = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
-            ctr[i, j] = ControlVolume(funcar(w), funcar(prim), funcar(h), 2)
+            ctr[i, j] = ControlVolume(
+                funcar(w),
+                funcar(prim),
+                funcar(h),
+                2;
+                auxiliary = KS.set.hasForce,
+            )
         end
 
         for j = 1:ny
@@ -295,7 +315,14 @@ function init_fvm(
             prim = funcprim(w, KS.gas.γ)
             h, b = KS.ib.ff(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
 
-            ctr[i, j] = ControlVolume(funcar(w), funcar(prim), funcar(h), funcar(b), 2)
+            ctr[i, j] = ControlVolume(
+                funcar(w),
+                funcar(prim),
+                funcar(h),
+                funcar(b),
+                2;
+                auxiliary = KS.set.hasForce,
+            )
         end
 
         for j = 1:ny

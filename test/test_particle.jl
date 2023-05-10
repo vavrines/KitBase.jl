@@ -88,6 +88,7 @@ begin
         boundary,
         cfl,
         maxTime,
+        hasForce,
     )
     pSpace = KitBase.PSpace1D(x0, x1, nx, nxg)
     vSpace = KitBase.VSpace1D(umin, umax, nu; type = vMeshType, ng = nug)
