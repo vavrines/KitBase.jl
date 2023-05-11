@@ -119,6 +119,29 @@ end
 """
 $(TYPEDEF)
 
+Multi-component gas property with internal degrees of freedom
+
+## Fields
+
+$(FIELDS)
+"""
+@with_kw struct PolyatomicMixture{TA,TI,TF,TV} <: AbstractGas
+    Kn::TA = 1e-2
+    Ma::TA = 0.0
+    Pr::TA = 1.0
+    K::TI = 2.0
+    Kr::TI = 2.0
+    γ::TF = 7 / 5
+    T₀::TF = 89.1 / 273
+    Z₀::TF = 18.1
+    m::TV = [1.0, 0.5]
+    n::TV = [0.5, 0.5]
+end
+
+
+"""
+$(TYPEDEF)
+
 1D plasma property
 
 ## Fields

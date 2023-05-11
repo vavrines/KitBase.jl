@@ -868,6 +868,57 @@ end
 """
 $(SIGNATURES)
 
+Compute Maxwellian for polyatomic gas mixture
+"""
+function mixture_polyatomic_maxwellian!(M1, M2, M3, u, prim, K, Kr)
+    for i in axes(M1)[end]
+        _M1 = extract_last(M1, i)
+        _M2 = extract_last(M2, i)
+        _M3 = extract_last(M3, i)
+        _u = extract_last(u, i)
+        polyatomic_maxwellian!(_M1, _M2, _M3, _u, prim[:, i], K, Kr)
+    end
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+"""
+function mixture_polyatomic_maxwellian!(M1, M2, M3, u, v, prim, K, Kr)
+    for i in axes(M1)[end]
+        _M1 = extract_last(M1, i)
+        _M2 = extract_last(M2, i)
+        _M3 = extract_last(M3, i)
+        _u = extract_last(u, i)
+        _v = extract_last(v, i)
+        polyatomic_maxwellian!(_M1, _M2, _M3, _u, _v, prim[:, i], K, Kr)
+    end
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+"""
+function mixture_polyatomic_maxwellian!(M1, M2, M3, u, v, w, prim, K, Kr)
+    for i in axes(M1)[end]
+        _M1 = extract_last(M1, i)
+        _M2 = extract_last(M2, i)
+        _M3 = extract_last(M3, i)
+        _u = extract_last(u, i)
+        _v = extract_last(v, i)
+        _w = extract_last(w, i)
+        polyatomic_maxwellian!(_M1, _M2, _M3, _u, _v, _w, prim[:, i], K, Kr)
+    end
+
+    return nothing
+end
+
+
+"""
+$(SIGNATURES)
+
 Reduced Maxwellian distribution related to energy for mixture
 """
 function mixture_energy_maxwellian(h::AM, prim::AM, K)

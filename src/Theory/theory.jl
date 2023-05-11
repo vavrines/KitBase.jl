@@ -5,10 +5,13 @@
 export heat_capacity_ratio, internal_dof, sound_speed
 export prim_conserve, prim_conserve!, mixture_prim_conserve, mixture_prim_conserve!
 export conserve_prim, conserve_prim!, mixture_conserve_prim, mixture_conserve_prim!
-export moments_conserve, polyatomic_moments_conserve, mixture_moments_conserve, flux_conserve!
+export moments_conserve, mixture_moments_conserve, flux_conserve!
+export polyatomic_moments_conserve, polyatomic_moments_conserve!
+export mixture_polyatomic_moments_conserve
 export discrete_moments, pressure, stress, heat_flux
 export maxwellian, energy_maxwellian, maxwellian!, f_maxwellian
-export polyatomic_maxwellian!, rykov_zr, rykov!
+export polyatomic_maxwellian!, mixture_polyatomic_maxwellian!
+export rykov_zr, rykov!
 export mixture_maxwellian, mixture_energy_maxwellian, mixture_maxwellian!
 export shakhov, shakhov!, esbgk
 export reduce_distribution, full_distribution, shift_pdf!

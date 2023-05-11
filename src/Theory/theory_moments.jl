@@ -688,8 +688,7 @@ $(SIGNATURES)
 
 Calculate conservative moments of polyatomic distribution function
 """
-function polyatomic_moments_conserve(h::X, b::X, r::X, u::T, ω::T) where {X<:AV,T<:AV}
-    w = similar(h, 4)
+function polyatomic_moments_conserve!(w, h::X, b::X, r::X, u::T, ω::T) where {X<:AV,T<:AV}
     w[1] = discrete_moments(h, u, ω, 0)
     w[2] = discrete_moments(h, u, ω, 1)
     w[3] =
@@ -700,6 +699,73 @@ function polyatomic_moments_conserve(h::X, b::X, r::X, u::T, ω::T) where {X<:AV
         )
     w[4] = 0.5 * discrete_moments(r, u, ω, 0)
 
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+"""
+function polyatomic_moments_conserve!(
+    w,
+    h0::X,
+    h1::X,
+    h2::X,
+    u::T,
+    v::T,
+    ω::T,
+    ::Type{VDF{3,2}}
+) where {X<:AA,T<:AA}
+    w[1] = discrete_moments(h0, u, ω, 0)
+    w[2] = discrete_moments(h0, u, ω, 1)
+    w[3] = discrete_moments(h0, v, ω, 1)
+    w[4] =
+        0.5 * (
+            discrete_moments(h0, u, ω, 2) +
+            discrete_moments(h0, v, ω, 2) +
+            discrete_moments(h1, u, ω, 0) +
+            discrete_moments(h2, u, ω, 0)
+        )
+    w[5] = 0.5 * discrete_moments(h2, u, ω, 0)
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+"""
+function polyatomic_moments_conserve!(
+    cons,
+    h::X,
+    r::X,
+    u::T,
+    v::T,
+    w::T,
+    ω::T,
+    ::Type{VDF{2,3}}
+) where {X<:AA,T<:AA}
+    cons[1] = discrete_moments(h, u, ω, 0)
+    cons[2] = discrete_moments(h, u, ω, 1)
+    cons[3] = discrete_moments(h, v, ω, 1)
+    cons[4] = discrete_moments(h, w, ω, 1)
+    cons[5] =
+        0.5 * (
+            discrete_moments(h, u, ω, 2) +
+            discrete_moments(h, v, ω, 2) +
+            discrete_moments(h, w, ω, 2) +
+            discrete_moments(r, u, ω, 0)
+        )
+    cons[6] = 0.5 * discrete_moments(r, u, ω, 0)
+
+    return nothing
+end
+
+
+"""
+$(SIGNATURES)
+"""
+function polyatomic_moments_conserve(h::X, b::X, r::X, u::T, ω::T) where {X<:AV,T<:AV}
+    w = similar(h, 4)
+    polyatomic_moments_conserve!(w, h, b, r, u, ω)
     return w
 end
 
@@ -716,18 +782,7 @@ function polyatomic_moments_conserve(
     ::Type{VDF{3,2}}
 ) where {X<:AA,T<:AA}
     w = similar(h0, 5)
-    w[1] = discrete_moments(h0, u, ω, 0)
-    w[2] = discrete_moments(h0, u, ω, 1)
-    w[3] = discrete_moments(h0, v, ω, 1)
-    w[4] =
-        0.5 * (
-            discrete_moments(h0, u, ω, 2) +
-            discrete_moments(h0, v, ω, 2) +
-            discrete_moments(h1, u, ω, 0) +
-            discrete_moments(h2, u, ω, 0)
-        )
-    w[5] = 0.5 * discrete_moments(h2, u, ω, 0)
-
+    polyatomic_moments_conserve!(w, h0, h1, h2, u, v, ω, VDF{3,2})
     return w
 end
 
@@ -744,19 +799,7 @@ function polyatomic_moments_conserve(
     ::Type{VDF{2,3}}
 ) where {X<:AA,T<:AA}
     cons = similar(h, 6)
-    cons[1] = discrete_moments(h, u, ω, 0)
-    cons[2] = discrete_moments(h, u, ω, 1)
-    cons[3] = discrete_moments(h, v, ω, 1)
-    cons[4] = discrete_moments(h, w, ω, 1)
-    cons[5] =
-        0.5 * (
-            discrete_moments(h, u, ω, 2) +
-            discrete_moments(h, v, ω, 2) +
-            discrete_moments(h, w, ω, 2) +
-            discrete_moments(r, u, ω, 0)
-        )
-    cons[6] = 0.5 * discrete_moments(r, u, ω, 0)
-
+    polyatomic_moments_conserve!(cons, h, r, u, v, w, ω, VDF{2,3})
     return cons
 end
 
@@ -1103,4 +1146,66 @@ function mixture_moments_conserve_slope(
 
     return au
 
+end
+
+
+"""
+$(SIGNATURES)
+
+Compute conservative moments of polyatomic gas mixture
+"""
+function mixture_polyatomic_moments_conserve(h, b, r, u, ω)
+    w = similar(h, 4, size(h)[end])
+    for i in axes(w, 2)
+        _w = @view w[:, i]
+        _h = extract_last(h, i)
+        _b = extract_last(b, i)
+        _r = extract_last(r, i)
+        _u = extract_last(u, i)
+        _ω = extract_last(ω, i)
+
+        polyatomic_moments_conserve!(_w, _h, _b, _r, _u, _ω)
+    end
+    
+    return w
+end
+
+"""
+$(SIGNATURES)
+"""
+function mixture_polyatomic_moments_conserve(h, b, r, u, v, ω, ::Type{VDF{3,2}})
+    w = similar(h, 5, size(h)[end])
+    for i in axes(w, 2)
+        _w = @view w[:, i]
+        _h = extract_last(h, i)
+        _b = extract_last(b, i)
+        _r = extract_last(r, i)
+        _u = extract_last(u, i)
+        _v = extract_last(v, i)
+        _ω = extract_last(ω, i)
+
+        polyatomic_moments_conserve!(_w, _h, _b, _r, _u, _v, _ω, VDF{3,2})
+    end
+    
+    return w
+end
+
+"""
+$(SIGNATURES)
+"""
+function mixture_polyatomic_moments_conserve(h, r, u, v, w, ω, ::Type{VDF{2,3}})
+    cons = similar(h, 6, size(h)[end])
+    for i in axes(cons, 2)
+        _cons = @view cons[:, i]
+        _h = extract_last(h, i)
+        _r = extract_last(r, i)
+        _u = extract_last(u, i)
+        _v = extract_last(v, i)
+        _w = extract_last(w, i)
+        _ω = extract_last(ω, i)
+
+        polyatomic_moments_conserve!(_cons, _h, _r, _u, _v, _w, _ω, VDF{2,3})
+    end
+    
+    return cons
 end
