@@ -34,7 +34,6 @@ using OffsetArrays
 using Optim
 using Parameters
 using Printf
-using PyCall
 using RecipesBase
 using Reexport
 using SpecialFunctions
@@ -62,39 +61,5 @@ include("Boundary/boundary.jl")
 include("Solver/solver.jl")
 
 const KB = KitBase
-const itp = PyNULL()
-
-function __init__()
-    #=np = nworkers()
-    nt = Threads.nthreads()
-
-    show_worker(np) = begin
-        if np == 1
-            "$np worker"
-        else
-            "$np workers"
-        end
-    end
-    show_thread(nt) = begin
-        if nt == 1
-            "$nt thread"
-        else
-            "$nt threads"
-        end
-    end
-
-    if has_cuda()
-        @info "Kinetic will run with $(show_worker(np)), $(show_thread(nt)) and CUDA"
-        for (i, dev) in enumerate(CUDA.devices())
-            @info "$i: $(CUDA.name(dev))"
-        end
-        #@info "Scalar operation is disabled in CUDA"
-        CUDA.allowscalar(false)
-    else
-        @info "Kinetic will run with $(show_worker(np)) and $(show_thread(nt))"
-    end=#
-
-    copy!(itp, pyimport("scipy.interpolate"))
-end
 
 end

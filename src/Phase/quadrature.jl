@@ -10,46 +10,37 @@ Maxwell quadrature
 ## Arguments
 * `N`: quadrature order (MUST less than 33)
 """
-function maxwell_quadrature(N::Integer, C = 1::Real)
-    @assert N <= 33
+function maxwell_quadrature(N2, C = 1.0)
+    N = N2 ÷ 2
 
-    py"""
-    import numpy as np
-    from numpy import linalg as LA
+    a = zeros(N)
+    b = zeros(N)
+    a[1] = 1.0 / sqrt(pi)
+    a[2] = 2.0 / sqrt(pi) / (pi - 2.0)
+    b[2] = a[1] / (a[1] + a[2]) / 2.0
 
-    def dvGH(N2,C):
-        N = N2//2
+    for i in 3:N
+        b[i] = (i - 2) + 1.0 / 2.0 - b[i - 1] - a[i - 1]^2
+        a[i] = ((i-1)^2 / (4.0 * b[i]) - b[i - 1] - 1.0 / 2) / a[i - 1] - a[i - 1]
+    end
 
-        a = np.zeros(N)
-        b = np.zeros(N)
-        a[0] = 1.0/np.sqrt(np.pi)
-        a[1] = 2.0/np.sqrt(np.pi)/(np.pi-2.0)
-        b[1] = a[0]/( a[0] + a[1])/2.0
+    J = Diagonal(a) + diagm(1=>sqrt.(b[2:N])) + diagm(-1=>sqrt.(b[2:N]))
 
-        for i in range(2,N):
-            b[i] = (i-1)+1.0/2.0-b[i-1]-a[i-1]**2
-            a[i] = (i**2/4.0/b[i]-b[i-1]-1.0/2)/a[i-1]-a[i-1]
+    v, V = eigen(J)
 
-        J = np.diag(a) + np.diag(np.sqrt(b[1:N]),1) \
-        + np.diag(np.sqrt(b[1:N]),-1)
+    w = V[1, :] .^ 2 .* sqrt(pi) / 2.0
 
-        v,V = LA.eig(J)
+    vw = [v w]
+    vw = sortslices(vw, dims=1, by=x->x[1])
+    v = vw[:, 1]
+    w = vw[:, 2]
 
-        w = V[0,:]*V[0,:]*np.sqrt(np.pi)/2.0
+    Xis = vcat(-reverse(v), v)
+    weights = vcat(reverse(w), w)
+    weights .*= exp.(Xis .^ 2) .* C
+    Xis .*= C
 
-        vw = np.transpose(np.vstack((v,w)))
-        vw = vw[vw[:,0].argsort()]
-        v = vw[:,0]
-        w = vw[:,1]
-
-        Xis = np.hstack((-np.flipud(v),v))
-        weights = np.hstack((np.flipud(w),w))
-        weights = weights*np.exp(Xis**2)*C
-        Xis = Xis*C
-        return (Xis, weights)
-    """
-
-    p, w = py"dvGH"(N, C)
+    return Xis, weights
 end
 
 

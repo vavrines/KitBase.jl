@@ -358,12 +358,6 @@ u13d = [uuni1d[i] for i = 1:16, j = 1:16, k = 1:16]
 v13d = [vuni1d[j] for i = 1:16, j = 1:16, k = 1:16]
 w13d = [wuni1d[k] for i = 1:16, j = 1:16, k = 1:16]
 vuni = hcat(u13d[:], v13d[:], w13d[:])
-KitBase.boltzmann_nuode!(
-    zeros(16, 16, 16),
-    rand(16, 16, 16),
-    (5.0, 5, phi, psi, phipsi, u, v, w, vnu, uuni1d, vuni1d, wuni1d, vuni),
-    0.0,
-)
 
 τ = KitBase.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)

@@ -1,6 +1,9 @@
 using KitBase, Plots
 using Base.Threads: @threads
 using KitBase.ProgressMeter: @showprogress
+using PyCall
+
+itp = pyimport("scipy.interpolate")
 
 set = Setup(
     case = "cylinder",
