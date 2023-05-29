@@ -132,6 +132,21 @@ function mixture_prim_conserve!(w, prim::AM, γ)
     return w
 end
 
+"""
+$(SIGNATURES)
+
+Transform multi-component polyatomic primitive -> conservative variables
+"""
+function mixture_prim_conserve!(w, prim::AM, γ, Kr)
+    for j in axes(w, 2)
+        _w = @view w[:, j]
+        _prim = @view prim[:, j]
+        prim_conserve!(_w, _prim, γ, Kr)
+    end
+
+    return w
+end
+
 
 """
 $(SIGNATURES)
@@ -145,6 +160,22 @@ function mixture_prim_conserve(prim::AM, γ)
         w = similar(prim)
     end
     mixture_prim_conserve!(w, prim, γ)
+
+    return w
+end
+
+"""
+$(SIGNATURES)
+
+Transform multi-component primitive -> conservative variables
+"""
+function mixture_prim_conserve(prim::AM, γ, Kr)
+    if eltype(prim) <: Integer
+        w = similar(prim, Float64, size(prim, 1) - 1, size(prim, 2))
+    else
+        w = similar(prim, size(prim, 1) - 1, size(prim, 2))
+    end
+    mixture_prim_conserve!(w, prim, γ, Kr)
 
     return w
 end
@@ -296,6 +327,21 @@ function mixture_conserve_prim!(prim, W::AM, γ)
     return nothing
 end
 
+"""
+$(SIGNATURES)
+
+Transform multi-component polyatomic conservative -> primitive variables
+"""
+function mixture_conserve_prim!(prim, W::AM, K, Kr)
+    for j in axes(prim, 2)
+        _prim = @view prim[:, j]
+        _w = @view W[:, j]
+        conserve_prim!(_prim, _w, K, Kr)
+    end
+
+    return nothing
+end
+
 
 """
 $(SIGNATURES)
@@ -309,6 +355,22 @@ function mixture_conserve_prim(W::AM, γ)
         prim = similar(W)
     end
     mixture_conserve_prim!(prim, W, γ)
+
+    return prim
+end
+
+"""
+$(SIGNATURES)
+
+Transform multi-component polyatomic conservative -> primitive variables
+"""
+function mixture_conserve_prim(W::AM, K, Kr)
+    if eltype(W) <: Integer
+        prim = similar(W, Float64, size(W, 1) + 1, size(W, 2))
+    else
+        prim = similar(W, size(W, 1) + 1, size(W, 2))
+    end
+    mixture_conserve_prim!(prim, W, K, Kr)
 
     return prim
 end

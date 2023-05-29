@@ -12,11 +12,18 @@ KitBase.conserve_prim(prim, 3.0)
 KitBase.conserve_prim(prim[1], prim[2], prim[3], 3.0)
 KitBase.mixture_conserve_prim(mprim, 3.0)
 
-# Rykov
+# polyatomic
 KitBase.prim_conserve([1.0, 0.0, 1.0, 1.0, 1.0], 5 / 3, 2)
 KitBase.prim_conserve([1.0, 0.0, 0.0, 1.0, 1.0, 1.0], 5 / 3, 2)
 KitBase.conserve_prim([1.0, 0.0, 1.0, 0.1], 5 / 3, 2)
 KitBase.conserve_prim([1.0, 0.0, 0.0, 1.0, 0.1], 5 / 3, 2)
+# multi-species polyatomic
+KitBase.mixture_prim_conserve(rand(5, 2), 5 / 3, 2)
+KitBase.mixture_prim_conserve(rand(6, 2), 5 / 3, 2)
+KitBase.mixture_prim_conserve(rand(7, 2), 5 / 3, 2)
+KitBase.mixture_conserve_prim(rand(4, 2), 2, 2)
+KitBase.mixture_conserve_prim(rand(5, 2), 1, 2)
+KitBase.mixture_conserve_prim(rand(6, 2), 0, 2)
 
 prim = [1.0, 0.2, 0.3, -0.1, 1.0]
 mprim = hcat(prim, prim)
@@ -269,6 +276,38 @@ KitBase.polyatomic_maxwellian!(
     2,
 )
 
+# multi-species BIP
+KitBase.mixture_polyatomic_maxwellian!(
+    zeros(16, 2),
+    zeros(16, 2),
+    zeros(16, 2),
+    randn(16, 2),
+    rand(5, 2),
+    2,
+    2,
+)
+KitBase.mixture_polyatomic_maxwellian!(
+    zeros(16, 2),
+    zeros(16, 2),
+    zeros(16, 2),
+    randn(16, 2),
+    randn(16, 2),
+    rand(6, 2),
+    1,
+    2,
+)
+KitBase.mixture_polyatomic_maxwellian!(
+    zeros(16, 2),
+    zeros(16, 2),
+    zeros(16, 2),
+    randn(16, 2),
+    randn(16, 2),
+    randn(16, 2),
+    rand(7, 2),
+    0,
+    2,
+)
+
 KitBase.f_maxwellian(rand(16, 2))
 KitBase.f_maxwellian(rand(16, 2), rand(16, 2))
 
@@ -319,12 +358,6 @@ u13d = [uuni1d[i] for i = 1:16, j = 1:16, k = 1:16]
 v13d = [vuni1d[j] for i = 1:16, j = 1:16, k = 1:16]
 w13d = [wuni1d[k] for i = 1:16, j = 1:16, k = 1:16]
 vuni = hcat(u13d[:], v13d[:], w13d[:])
-KitBase.boltzmann_nuode!(
-    zeros(16, 16, 16),
-    rand(16, 16, 16),
-    (5.0, 5, phi, psi, phipsi, u, v, w, vnu, uuni1d, vuni1d, wuni1d, vuni),
-    0.0,
-)
 
 τ = KitBase.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
 KitBase.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)

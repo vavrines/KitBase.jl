@@ -4,3 +4,4 @@ dev/sol.vtu
 .vscode/*
 .vscode
 LocalPreferences.toml
+.DS_Store

@@ -1,6 +1,8 @@
 using KitBase, Plots
 using Base.Threads: @threads
 using KitBase.ProgressMeter: @showprogress
+using PyCall
+itp = pyimport("scipy.interpolate")
 
 set = Setup(
     case = "cylinder",
@@ -101,8 +103,8 @@ function ib_force!(ps, ctr, lps)
         vfield[i, j] = ctr[i, j].prim[3]
     end
 
-    ucurve = KB.itp.RegularGridInterpolator((ps.x[:, 1], ps.y[1, :]), ufield)
-    vcurve = KB.itp.RegularGridInterpolator((ps.x[:, 1], ps.y[1, :]), vfield)
+    ucurve = itp.RegularGridInterpolator((ps.x[:, 1], ps.y[1, :]), ufield)
+    vcurve = itp.RegularGridInterpolator((ps.x[:, 1], ps.y[1, :]), vfield)
     vls = hcat(ucurve(lps), vcurve(lps))
 
     fls = zero(vls)

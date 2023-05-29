@@ -17,7 +17,8 @@ export AbstractParticle, AbstractParticle1D, AbstractParticle2D
 
 export Class, Dimension, VDF
 export Setup, Config, config_ntuple, set_setup
-export Scalar, Radiation, Gas, DiatomicGas, Mixture, Plasma1D, Plasma2D, set_property
+export Scalar, Radiation, Gas, DiatomicGas, Mixture, PolyatomicMixture, Plasma1D, Plasma2D
+export set_property
 export IB, IB1F, IB2F, IB3F, IB4F, set_ib
 export ControlVolume, ControlVolume1F, ControlVolume2F
 export ControlVolume1D, ControlVolume1D1F, ControlVolume1D2F

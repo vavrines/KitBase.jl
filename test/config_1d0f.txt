@@ -14,7 +14,7 @@ limiter = vanleer # limiter function
 boundary = fix # boundary condition
 cfl = 0.95 # CFL number
 maxTime = 0.0001 # maximal simulation time
-hasForce = false
+# hasForce = false # test default force value
 
 # phase space
 x0 = -35.0
