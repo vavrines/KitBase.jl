@@ -132,7 +132,7 @@ function Setup(
     bc::T,
     cfl,
     time,
-    hasForce,
+    hasForce = false,
 ) where {T<:Union{AbstractString,Symbol}}
     boundary = begin
         if parse(Int, space[1]) == 1
@@ -175,7 +175,7 @@ function set_setup(;
     boundary,
     cfl,
     maxTime,
-    hasForce,
+    hasForce = false,
     kwargs...,
 )
     set = Setup(
