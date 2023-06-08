@@ -70,6 +70,7 @@ KitBase.write_vtk(ps.points, ps.cellid, randn(size(ps.cellid, 1)))
 #--- IB ---#
 ps = KB.PSpace2D(0, 3, 15, 0, 2, 10, 1, 1)
 radius = 1
+
 flags = ones(Int, axes(ps.x))
 for i in axes(flags, 1), j in axes(flags, 2)
     if (ps.x[i, j] - 3)^2 + ps.y[i, j]^2 < radius # (x-3)^2+y^2=1
@@ -80,13 +81,8 @@ flags[0, :] .= -1
 flags[ps.nx+1, :] .= -1
 flags[:, 0] .= -1
 flags[:, ps.ny+1] .= -1
-for j = 1:ps.ny, i = 1:ps.nx
-    if flags[i, j] == 0
-        if 1 in [flags[i-1, j], flags[i+1, j], flags[i, j-1], flags[i, j+1]]
-            flags[i, j] = -2
-        end
-    end
-end
+KB.ghost_flag!(ps, flags)
+
 ghost_ids = findall(flags .== -2)
 xbis = [Vector{Float64}(undef, 2) for iter = 1:length(ghost_ids)]
 nbis = zero.(xbis)

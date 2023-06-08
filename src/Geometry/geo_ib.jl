@@ -29,6 +29,31 @@ end
 """
 $(SIGNATURES)
 
+Label ghost cells
+"""
+function ghost_flag!(ps::AbstractPhysicalSpace2D, flags)
+    for j = 1:ps.ny
+        for i = 1:ps.nx
+            if flags[i, j] == 0
+                if 1 in [flags[i-1, j], flags[i+1, j], flags[i, j-1], flags[i, j+1]]
+                    flags[i, j] = -2
+                end
+            end
+        end
+    end
+
+    @threads for j = 1:ps.ny
+        for i = 1:ps.nx
+            if flags[i, j] == 1
+                @assert 0 ∉ [flags[i-1, j], flags[i+1, j], flags[i, j-1], flags[i, j+1]] @show i j
+            end
+        end
+    end
+end
+
+"""
+$(SIGNATURES)
+
 Compute location of image points
 """
 function ip_location(ps::AbstractPhysicalSpace2D, gids, xbis)
