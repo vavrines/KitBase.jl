@@ -34,7 +34,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1},T5<:AA{<:FN,1}}
+) where {T1<:AV,T2<:AV,T3<:AV,T4<:AV,T5<:AV}
 
     @assert collision == :rykov
 

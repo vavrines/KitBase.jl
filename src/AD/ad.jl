@@ -7,7 +7,7 @@ $(SIGNATURES)
 
 Calculate derivatives of Maxwellian
 """
-function ∂maxwellian(u::Real, ρ, U, λ)
+function ∂maxwellian(u, ρ, U, λ)
     Mu = u -> maxwellian(u, ρ, U, λ)
     return ForwardDiff.derivative(Mu, u)
 end
@@ -15,7 +15,7 @@ end
 """
 $(SIGNATURES)
 """
-∂maxwellian(u::Real, prim::AV) = ∂maxwellian(u, prim[1], prim[2], prim[end])
+∂maxwellian(u, prim::AV) = ∂maxwellian(u, prim[1], prim[2], prim[end])
 
 """
 $(SIGNATURES)

@@ -4,14 +4,14 @@ $(SIGNATURES)
 Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
 """
 function em_coefficients(
-    prim::AM{X},
-    E::AV{Y},
-    B::AV{Z},
+    prim::AM,
+    E::AV,
+    B::AV,
     mr,
     lD,
     rL,
     dt,
-) where {X<:Real,Y<:Real,Z<:Real}
+)
 
     if eltype(prim) <: Int
         A = zeros(9, 9)

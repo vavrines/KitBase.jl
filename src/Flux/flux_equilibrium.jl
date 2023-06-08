@@ -7,17 +7,17 @@ function flux_equilibrium!(
     fw::T1,
     wL::T2,
     wR::T2,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
-    Pr::Real,
-    dt::Real,
-    dxL::Real,
-    dxR::Real,
-    swL = zeros(eltype(fw), axes(wL))::T1,
-    swR = zeros(eltype(fw), axes(wR))::T1,
-) where {T1<:AA{<:FN,1},T2<:AA{<:Real,1}} # 1D
+    inK,
+    γ,
+    μᵣ,
+    ω,
+    Pr,
+    dt,
+    dxL,
+    dxR,
+    swL::T1,
+    swR::T1,
+) where {T1<:AV,T2<:AV} # 1D
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -111,18 +111,18 @@ function flux_equilibrium!(
     fw::T1,
     wL::T2,
     wR::T2,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
-    Pr::Real,
-    dt::Real,
-    dxL::Real,
-    dxR::Real,
-    dy::Real,
-    swL = zeros(eltype(fw), axes(wL))::T1,
-    swR = zeros(eltype(fw), axes(wR))::T1,
-) where {T1<:AA{<:FN,1},T2<:AA{<:Real,1}}
+    inK,
+    γ,
+    μᵣ,
+    ω,
+    Pr,
+    dt,
+    dxL,
+    dxR,
+    dy,
+    swL::T1,
+    swR::T1,
+) where {T1<:AV,T2<:AV}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)

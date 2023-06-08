@@ -592,7 +592,7 @@ function heat_flux(
     u::Z,
     v::Z,
     ω::Z,
-) where {X<:AA{<:FN,2},Z<:AA{<:FN,2}}
+) where {X<:AM,Z<:AM}
 
     q = similar(h, 2)
 

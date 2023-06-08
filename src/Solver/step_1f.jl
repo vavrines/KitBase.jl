@@ -300,7 +300,7 @@ $(SIGNATURES)
 function step!(
     w::T3,
     prim::T3,
-    f::T4,
+    f::AA3,
     fwL::T1,
     ffL::T2,
     fwR::T1,
@@ -320,7 +320,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AV,T2<:AA{<:FN,3},T3<:AV,T4<:AA{<:FN,3}}
+) where {T1<:AV,T2<:AA3,T3<:AV}
 
     @assert collision == :fsm
 

@@ -250,8 +250,8 @@ $(SIGNATURES)
 1D1F1V
 """
 function flux_kcu!(
-    fw::X,
-    ff::Y,
+    fw::AV,
+    ff::AV,
     wL::Z,
     fL::A,
     wR::Z,
@@ -264,7 +264,7 @@ function flux_kcu!(
     visIdx,
     Pr,
     dt,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1},Z<:AA{<:Real,1},A<:AA{<:FN,1},B<:AA{<:FN,1}} # 1D1F1V
+) where {Z<:AV,A<:AV,B<:AV} # 1D1F1V
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -320,8 +320,8 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kcu!(
-    fw::X,
-    ff::Y,
+    fw::AM,
+    ff::AM,
     wL::Z,
     fL::A,
     wR::Z,
@@ -336,7 +336,7 @@ function flux_kcu!(
     ne,
     Kn,
     dt,
-) where {X<:AA{<:FN,2},Y<:AA{<:FN,2},Z<:AA{<:Real,2},A<:AA{<:FN,2},B<:AA{<:FN,2}}
+) where {Z<:AM,A<:AM,B<:AM}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -399,7 +399,7 @@ $(SIGNATURES)
 1D1F3V
 """
 function flux_kcu!(
-    fw::X,
+    fw::AV,
     ff::Y,
     wL::Z,
     fL::A,
@@ -416,7 +416,7 @@ function flux_kcu!(
     Pr,
     dt,
     len = 1.0,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,3},Z<:AA{<:Real,1},A<:AA{<:FN,3},B<:AA{<:FN,3}} # 1D1F1V
+) where {Y<:AA3,Z<:AV,A<:AA3,B<:AA3} # 1D1F1V
 
     # upwind reconstruction
     δ = heaviside.(uVelo)
@@ -475,7 +475,7 @@ $(SIGNATURES)
 1D2F1V
 """
 function flux_kcu!(
-    fw::X,
+    fw::AV,
     fh::Y,
     fb::Y,
     wL::Z,
@@ -492,7 +492,7 @@ function flux_kcu!(
     visIdx,
     Pr,
     dt,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1},Z<:AA{<:Real,1},A<:AA{<:FN,1},B<:AA{<:FN,1}}
+) where {Y<:AV,Z<:AV,A<:AV,B<:AV}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -550,7 +550,7 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kcu!(
-    fw::T1,
+    fw::AM,
     fh::T2,
     fb::T2,
     wL::T3,
@@ -569,7 +569,7 @@ function flux_kcu!(
     ne,
     Kn,
     dt,
-) where {T1<:AA{<:FN,2},T2<:AA{<:FN,2},T3<:AA{<:Real,2},T4<:AA{<:FN,2},T5<:AA{<:FN,2}}
+) where {T2<:AM,T3<:AM,T4<:AM,T5<:AM}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -642,7 +642,7 @@ $(SIGNATURES)
 1D4F1V
 """
 function flux_kcu!(
-    fw::X,
+    fw::AV,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -665,7 +665,7 @@ function flux_kcu!(
     visIdx,
     Pr,
     dt,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1},Z<:AA{<:Real,1},A<:AA{<:FN,1},B<:AA{<:FN,1}}
+) where {Y<:AV,Z<:AV,A<:AV,B<:AV}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -732,7 +732,7 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kcu!(
-    fw::X,
+    fw::AM,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -758,7 +758,7 @@ function flux_kcu!(
     Kn,
     dt,
     isMHD = false::Bool,
-) where {X<:AA{<:FN,2},Y<:AA{<:FN,2},Z<:AA{<:Real,2},A<:AA{<:FN,2},B<:AA{<:FN,2}}
+) where {Y<:AM,Z<:AM,A<:AM,B<:AM}
 
     #--- upwind reconstruction ---#
     δ = heaviside.(u)
@@ -844,8 +844,8 @@ $(SIGNATURES)
 2D1F2V
 """
 function flux_kcu!(
-    fw::X,
-    ff::Y,
+    fw::AV,
+    ff::AM,
     wL::Z,
     fL::A,
     wR::Z,
@@ -860,7 +860,7 @@ function flux_kcu!(
     Pr,
     dt,
     len,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,2},Z<:AA{<:Real,1},A<:AA{<:FN,2},B<:AA{<:FN,2}}
+) where {Z<:AV,A<:AM,B<:AM}
 
     # reconstruct initial distribution
     δ = heaviside.(u)
@@ -915,7 +915,7 @@ $(SIGNATURES)
 2D2F2V
 """
 function flux_kcu!(
-    fw::T1,
+    fw::AV,
     fh::T2,
     fb::T2,
     wL::T3,
@@ -934,7 +934,7 @@ function flux_kcu!(
     Pr,
     dt,
     len,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,2},T3<:AA{<:Real,1},T4<:AA{<:FN,2},T5<:AA{<:FN,2}}
+) where {T2<:AM,T3<:AV,T4<:AM,T5<:AM}
 
     # reconstruct initial distribution
     δ = heaviside.(u)
@@ -992,7 +992,7 @@ $(SIGNATURES)
 2D3F2V
 """
 function flux_kcu!(
-    fw::X,
+    fw::AV,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -1014,7 +1014,7 @@ function flux_kcu!(
     Pr,
     dt,
     len,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,2},Z<:AA{<:Real,1},A<:AA{<:FN,2},B<:AA{<:FN,2}}
+) where {Y<:AM,Z<:AV,A<:AM,B<:AM}
 
     # reconstruct initial distribution
     δ = heaviside.(u)
@@ -1077,7 +1077,7 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kcu!(
-    fw::X,
+    fw::AM,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -1102,7 +1102,7 @@ function flux_kcu!(
     dt,
     len,
     isMHD = false::Bool,
-) where {X<:AA{<:FN,2},Y<:AA{<:FN,3},Z<:AA{<:Real,2},A<:AA{<:FN,3},B<:AA{<:FN,3}}
+) where {Y<:AA3,Z<:AM,A<:AA3,B<:AA3}
 
     # reconstruct initial distribution
     δ = heaviside.(u)

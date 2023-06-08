@@ -230,14 +230,14 @@ Gas kinetic Navier-Stokes flux
 Continuous case
 """
 function flux_gks!(
-    fw::X,
+    fw::AV,
     w::Y,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
+    inK,
+    γ,
+    μᵣ,
+    ω,
     sw = zero(w)::Y,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
+) where {Y<:AV}
 
     prim = conserve_prim(w, γ)
     mus = gauss_moments(prim, inK)
@@ -279,19 +279,19 @@ $(SIGNATURES)
 1D
 """
 function flux_gks!(
-    fw::X,
+    fw::AV,
     wL::Y,
     wR::Y,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
-    dt::Real,
-    dxL::Real,
-    dxR::Real,
-    swL = zero(wL)::Y,
-    swR = zero(wR)::Y,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
+    inK,
+    γ,
+    μᵣ,
+    ω,
+    dt,
+    dxL,
+    dxR,
+    swL::Y,
+    swR::Y,
+) where {Y<:AV}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -375,7 +375,7 @@ $(SIGNATURES)
 Gas mixture
 """
 function flux_gks!(
-    fw::X,
+    fw::AM,
     wL::Y,
     wR::Y,
     inK,
@@ -386,11 +386,11 @@ function flux_gks!(
     ne,
     Kn,
     dt,
-    dxL::Real,
-    dxR::Real,
-    swL = zero(wL)::Y,
-    swR = zero(wR)::Y,
-) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
+    dxL,
+    dxR,
+    swL::Y,
+    swR::Y,
+) where {Y<:AM}
 
     primL = mixture_conserve_prim(wL, γ)
     primR = mixture_conserve_prim(wR, γ)
@@ -485,11 +485,11 @@ $(SIGNATURES)
 1D1F1V
 """
 function flux_gks!(
-    fw::T1,
-    fh::T2,
+    fw::AV,
+    fh::AV,
     wL::T3,
     wR::T3,
-    u::T4,
+    u::AV,
     inK,
     γ,
     visRef,
@@ -499,7 +499,7 @@ function flux_gks!(
     dxR,
     swL::T3,
     swR::T3,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1}}
+) where {T3<:AV}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -614,12 +614,12 @@ $(SIGNATURES)
 1D2F1V
 """
 function flux_gks!(
-    fw::T1,
+    fw::AV,
     fh::T2,
     fb::T2,
     wL::T3,
     wR::T3,
-    u::T4,
+    u::AV,
     inK,
     γ,
     visRef,
@@ -629,7 +629,7 @@ function flux_gks!(
     dxR,
     swL::T3,
     swR::T3,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1}}
+) where {T2<:AV,T3<:AV}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -787,20 +787,20 @@ $(SIGNATURES)
 2D & 2D
 """
 function flux_gks!(
-    fw::X,
+    fw::AV,
     wL::Y,
     wR::Y,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
-    dt::Real,
-    dxL::Real,
-    dxR::Real,
-    dy::Real,
-    swL = zero(wL)::Y,
-    swR = zero(wR)::Y,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
+    inK,
+    γ,
+    μᵣ,
+    ω,
+    dt,
+    dxL,
+    dxR,
+    dy,
+    swL::Y,
+    swR::Y,
+) where {Y<:AV}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -886,7 +886,7 @@ $(SIGNATURES)
 Mixture
 """
 function flux_gks!(
-    fw::X,
+    fw::AM,
     wL::Y,
     wR::Y,
     inK,
@@ -900,9 +900,9 @@ function flux_gks!(
     dxL,
     dxR,
     len,
-    swL = zero(wL)::Y,
-    swR = zero(wR)::Y,
-) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
+    swL::Y,
+    swR::Y,
+) where {Y<:AM}
 
     primL = mixture_conserve_prim(wL, γ)
     primR = mixture_conserve_prim(wR, γ)
@@ -1002,23 +1002,23 @@ $(SIGNATURES)
 2D1F2V
 """
 function flux_gks!(
-    fw::T1,
-    ff::T2,
+    fw::AV,
+    ff::AM,
     wL::T3,
     wR::T3,
     u::T4,
     v::T4,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
-    dt::Real,
-    dxL::Real,
-    dxR::Real,
-    dy::Real,
+    inK,
+    γ,
+    μᵣ,
+    ω,
+    dt,
+    dxL,
+    dxR,
+    dy,
     swL::T3,
     swR::T3,
-) where {T1<:AV{<:FN},T2<:AM{<:FN},T3<:AV{<:FN},T4<:AM{<:FN}}
+) where {T3<:AV,T4<:AM}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -1165,24 +1165,24 @@ $(SIGNATURES)
 2D2F2V
 """
 function flux_gks!(
-    fw::T1,
+    fw::AV,
     fh::T2,
     fb::T2,
     wL::T3,
     wR::T3,
     u::T4,
     v::T4,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
-    dt::Real,
-    dxL::Real,
-    dxR::Real,
-    dy::Real,
+    inK,
+    γ,
+    μᵣ,
+    ω,
+    dt,
+    dxL,
+    dxR,
+    dy,
     swL::T3,
     swR::T3,
-) where {T1<:AV{<:FN},T2<:AM{<:FN},T3<:AV{<:FN},T4<:AM{<:FN}}
+) where {T2<:AM,T3<:AV,T4<:AM}
 
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
@@ -1415,17 +1415,17 @@ $(SIGNATURES)
 Flux reconstruction
 """
 function flux_gks!(
-    fw::X,
+    fw::AV,
     wL::Y,
     wR::Y,
-    inK::Real,
-    γ::Real,
-    μᵣ::Real,
-    ω::Real,
-    dt::Real,
+    inK,
+    γ,
+    μᵣ,
+    ω,
+    dt,
     swL = zero(wL)::Y,
     swR = zero(wR)::Y,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1}}
+) where {Y<:AV}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 

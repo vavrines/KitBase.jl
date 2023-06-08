@@ -6,7 +6,7 @@ Unified gas kinetic scheme (UGKS)
 1D2F1V
 """
 function flux_ugks!(
-    fw::T1,
+    fw::AV,
     fh::T2,
     fb::T2,
     wL::T3,
@@ -29,7 +29,7 @@ function flux_ugks!(
     sbL = zeros(eltype(bL), axes(bL))::T4,
     shR = zeros(eltype(hR), axes(hR))::T4,
     sbR = zeros(eltype(bR), axes(bR))::T4,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,1},T3<:AA{<:Real,1},T4<:AA{<:FN,1},T5<:AA{<:FN,1}} # 1D2F flux
+) where {T2<:AV,T3<:AV,T4<:AV,T5<:AV} # 1D2F flux
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)
@@ -120,7 +120,7 @@ $(SIGNATURES)
 2D2F2V
 """
 function flux_ugks!(
-    fw::T1,
+    fw::AV,
     fh::T2,
     fb::T2,
     wL::T3,
@@ -145,7 +145,7 @@ function flux_ugks!(
     sbL = zeros(eltype(bL), axes(bL))::T4,
     shR = zeros(eltype(hR), axes(hR))::T4,
     sbR = zeros(eltype(bR), axes(bR))::T4,
-) where {T1<:AA{<:FN,1},T2<:AA{<:FN,2},T3<:AA{<:Real,1},T4<:AA{<:FN,2},T5<:AA{<:FN,2}} # 2D2F flux
+) where {T2<:AM,T3<:AV,T4<:AM,T5<:AM} # 2D2F flux
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)
@@ -266,7 +266,7 @@ $(SIGNATURES)
 3F2V with AAP model
 """
 function flux_ugks!(
-    fw::T1,
+    fw::AM,
     fh0::T2,
     fh1::T2,
     fh2::T2,
@@ -298,7 +298,7 @@ function flux_ugks!(
     sh0R = zeros(eltype(h0R), axes(h0R))::T4,
     sh1R = zeros(eltype(h1R), axes(h1R))::T4,
     sh2R = zeros(eltype(h2R), axes(h2R))::T4,
-) where {T1<:AA{<:FN,2},T2<:AA{<:FN,3},T3<:AA{<:Real,2},T4<:AA{<:FN,3},T5<:AA{<:FN,3}}
+) where {T2<:AA3,T3<:AM,T4<:AA3,T5<:AA3}
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)

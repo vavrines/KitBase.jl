@@ -34,7 +34,7 @@ function flux_em!(
     χ,
     ν,
     dt,
-) where {T1<:AA{<:FN,1},T2<:AA{<:Real,1},T3<:AA{<:Real,2},T4<:AA{<:Real,1}}
+) where {T1<:AV,T2<:AV,T3<:AM,T4<:AV}
 
 
     @assert length(femL) == length(femR) == 8
@@ -142,7 +142,7 @@ function flux_emx!(
     χ,
     ν,
     dt,
-) where {X<:AA{<:FN,1},Y<:AA{<:Real,1},A<:AA{<:Real,2},B<:AA{<:Real,1}}
+) where {X<:AV,Y<:AV,A<:AM,B<:AV}
 
     slop = zeros(8, 8)
     slop[3, 1] = -0.5 * sol^2 * (BR[2] - BL[2]) + 0.5 * sol * (ER[3] - EL[3])
@@ -240,35 +240,35 @@ $(SIGNATURES)
 Wave propagation method for 2D Maxwell's equations in y direction
 """
 function flux_emy!(
-    femL::AA{<:Real,1},
-    femR::AA{<:Real,1},
-    femRU::AA{<:Real,1},
-    femRD::AA{<:Real,1},
-    femLU::AA{<:Real,1},
-    femLD::AA{<:Real,1},
-    ELL::AA{<:Real,1},
-    BLL::AA{<:Real,1},
-    EL::AA{<:Real,1},
-    BL::AA{<:Real,1},
-    ER::AA{<:Real,1},
-    BR::AA{<:Real,1},
-    ERR::AA{<:Real,1},
-    BRR::AA{<:Real,1},
-    ϕL::Real,
-    ϕR::Real,
-    ψL::Real,
-    ψR::Real,
-    dxL::Real,
-    dxR::Real,
-    A1p::AA{<:Real,2},
-    A1n::AA{<:Real,2},
-    A2p::AA{<:Real,2},
-    A2n::AA{<:Real,2},
-    D::AA{<:Real,1},
-    sol::Real,
-    χ::Real,
-    ν::Real,
-    dt::Real,
+    femL::AV,
+    femR::AV,
+    femRU::AV,
+    femRD::AV,
+    femLU::AV,
+    femLD::AV,
+    ELL::AV,
+    BLL::AV,
+    EL::AV,
+    BL::AV,
+    ER::AV,
+    BR::AV,
+    ERR::AV,
+    BRR::AV,
+    ϕL,
+    ϕR,
+    ψL,
+    ψR,
+    dxL,
+    dxR,
+    A1p::AM,
+    A1n::AM,
+    A2p::AM,
+    A2n::AM,
+    D::AV,
+    sol,
+    χ,
+    ν,
+    dt,
 )
 
     slop = zeros(8, 8)

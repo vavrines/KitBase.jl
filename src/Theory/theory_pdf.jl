@@ -195,7 +195,7 @@ function full_distribution(
     w::Z,
     ρ,
     γ = 5 / 3,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1},Z<:AA{<:FN,3}}
+) where {X<:AV,Y<:AV,Z<:AA3}
 
     @assert length(h) == size(v, 1) throw(
         DimensionMismatch("reduced and full distribution function mismatch"),
@@ -225,7 +225,7 @@ full_distribution(
     w::Z,
     prim::A,
     γ = 5 / 3,
-) where {X<:AA{<:FN,1},Y<:AA{<:FN,1},Z<:AA{<:FN,3},A<:AA{<:Real,1}} =
+) where {X<:AV,Y<:AV,Z<:AA3,A<:AV} =
     full_distribution(h, b, u, weights, v, w, prim[1], γ)
 
 
@@ -234,8 +234,7 @@ $(SIGNATURES)
 
 Shift distribution function by external force
 """
-function shift_pdf!(f::AV{T}, a, du, dt) where {T<:Real}
-
+function shift_pdf!(f::AV, a, du, dt)
     q0 = eachindex(f) |> first # for OffsetArray
     q1 = eachindex(f) |> last
 
@@ -269,7 +268,6 @@ function shift_pdf!(f::AV{T}, a, du, dt) where {T<:Real}
     f[q1] = f[q1-1]
 
     return nothing
-
 end
 
 """
@@ -277,15 +275,13 @@ $(SIGNATURES)
 
 Multi-component gas
 """
-function shift_pdf!(f::AM{X}, a::AV{Y}, du::AV{Z}, dt) where {X<:Real,Y<:Real,Z<:Real}
-
+function shift_pdf!(f::AM, a::AV, du::AV, dt)
     for j in axes(f, 2)
         _f = @view f[:, j]
         shift_pdf!(_f, a[j], du[j], dt)
     end
 
     return nothing
-
 end
 
 
@@ -295,12 +291,12 @@ $(SIGNATURES)
 Recover discrete Chapman-Enskog expansion
 """
 function chapman_enskog(
-    u::AV{T1},
-    prim::AV{T2},
-    a::AV{T3},
-    A::AV{T3},
-    τ::Real,
-) where {T1<:FN,T2<:Real,T3<:Real}
+    u::AV,
+    prim::AV,
+    a::AV,
+    A::AV,
+    τ,
+)
 
     M = maxwellian(u, prim)
     f = @. M * (
@@ -316,12 +312,12 @@ end
 $(SIGNATURES)
 """
 function chapman_enskog(
-    u::AV{T1},
-    prim::AV{<:RN},
-    sw::AV{<:RN},
-    K::Real,
-    τ::Real,
-) where {T1}
+    u::AV,
+    prim::AV,
+    sw::AV,
+    K,
+    τ,
+)
 
     Mu, Mxi, _, _1 = gauss_moments(prim, K)
     a = pdf_slope(prim, sw, K)
@@ -338,12 +334,12 @@ $(SIGNATURES)
 function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
-    prim::AV{T2},
-    a::AV{T3},
-    b::AV{T3},
-    A::AV{T3},
-    τ::Real,
-) where {T1<:FN,T2<:Real,T3<:Real}
+    prim::AV,
+    a::AV,
+    b::AV,
+    A::AV,
+    τ,
+) where {T1}
 
     M = maxwellian(u, v, prim)
     f = @. M * (
@@ -362,11 +358,11 @@ $(SIGNATURES)
 function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
-    prim::AV{<:RN},
-    swx::AV{<:RN},
-    swy::AV{<:RN},
-    K::Real,
-    τ::Real,
+    prim::AV,
+    swx::AV,
+    swy::AV,
+    K,
+    τ,
 ) where {T1}
 
     Mu, Mv, Mxi, _, _1 = gauss_moments(prim, K)
@@ -390,13 +386,13 @@ function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
     w::AA{T1},
-    prim::AV{T2},
-    a::AV{T3},
-    b::AV{T3},
-    c::AV{T3},
-    A::AV{T3},
-    τ::Real,
-) where {T1<:FN,T2<:Real,T3<:Real}
+    prim::AV,
+    a::AV,
+    b::AV,
+    c::AV,
+    A::AV,
+    τ,
+) where {T1}
 
     M = maxwellian(u, v, w, prim)
     f = @. M * (
@@ -436,12 +432,12 @@ function chapman_enskog(
     u::AA{T1},
     v::AA{T1},
     w::AA{T1},
-    prim::AV{<:RN},
-    swx::AV{<:RN},
-    swy::AV{<:RN},
-    swz::AV{<:RN},
-    K::Real,
-    τ::Real,
+    prim::AV,
+    swx::AV,
+    swy::AV,
+    swz::AV,
+    K,
+    τ,
 ) where {T1}
 
     Mu, Mv, Mw, _, _1 = gauss_moments(prim, K)

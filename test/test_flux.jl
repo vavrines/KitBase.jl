@@ -41,7 +41,7 @@ KitBase.flux_gks!(zeros(3), [1.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
 KitBase.flux_gks!(zeros(4), [1.0, 0.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
 KitBase.flux_gks!(zeros(5), [1.0, 0.0, 0.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
 
-KitBase.flux_gks!(fw, wL, wR, inK, γ, 1e-3, 0.72, dt, dx, dx)
+KitBase.flux_gks!(fw, wL, wR, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
 KitBase.flux_gks!(
     zeros(4),
     [1.0, 0.3, 0.0, 1.0],
@@ -54,6 +54,8 @@ KitBase.flux_gks!(
     dx,
     dx,
     dx,
+    zeros(4),
+    zeros(4)
 ) # 2D
 KitBase.flux_gks!(
     zeros(4, 2),
@@ -616,7 +618,7 @@ KitBase.flux_boundary_specular!(
 )
 
 #--- pure equilibrium flux ---#
-KitBase.flux_equilibrium!(fw, wL, wR, inK, γ, 1e-3, 0.81, 0.72, dt, dx, dx)
+KitBase.flux_equilibrium!(fw, wL, wR, inK, γ, 1e-3, 0.81, 0.72, dt, dx, dx, zeros(3), zeros(3))
 KitBase.flux_equilibrium!(
     zeros(4),
     zeros(4),
@@ -630,6 +632,8 @@ KitBase.flux_equilibrium!(
     dx,
     dx,
     dx,
+    zeros(4),
+    zeros(4),
 )
 
 #--- electromagnetic flux ---#
