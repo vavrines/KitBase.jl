@@ -134,3 +134,39 @@ function ip_connectivity(ps::AbstractPhysicalSpace2D, xips, flags)
 
     return ip_cids, ip_nids, ip_bids
 end
+
+"""
+$(SIGNATURES)
+
+Compute coefficients for bilinear interpolation
+"""
+function bilinear_coeffs(ps::AbstractPhysicalSpace2D, xbis, nbis, nids, bids, W0)
+    M = Matrix{Float64}[]
+    for id in nids
+        xf = ps.x[id]
+        yf = ps.y[id]
+        push!(M, [1 xf yf xf * yf])
+    end
+
+    if length(W0) > length(nids)
+        for id in bids
+            xb, yb = xbis[id]
+            push!(M, [1 xb yb xb * yb])
+        end
+        W = W0
+    else
+        for id in bids
+            nx, ny = nbis[id]
+            xb, yb = xbis[id]
+            push!(M, [0 nx ny xb * ny + yb * nx])
+        end
+        W = [W0; zeros(length(bids))]
+    end
+    M = vcat(M...)
+    
+    return M \ W
+end
+
+function bilinear_coeffs(ps::AbstractPhysicalSpace2D, ib::SharpIB, idx, W0)
+    return bilinear_coeffs(ps, ib.xb, ib.nb, ib.idin[idx], ib.idib[idx], W0)
+end

@@ -97,4 +97,5 @@ for iter in axes(xbis, 1)
 end
 xips = KB.ip_location(ps, ghost_ids, xbis)
 ip_cids, ip_nids, ip_bids = KB.ip_connectivity(ps, xips, flags)
-SharpIB(flags, ghost_ids, xbis, nbis, xips, ip_cids, ip_nids, ip_bids)
+ib = SharpIB(flags, ghost_ids, xbis, nbis, xips, ip_cids, ip_nids, ip_bids)
+KB.bilinear_coeffs(ps, ib, 1, rand(2))
