@@ -6,10 +6,12 @@ export PSpace1D, PSpace2D, CSpace2D, PSpace3D, UnstructPSpace
 export set_geometry
 export global_frame, local_frame, local_velocity, unit_normal, point_distance
 export uniform_mesh, ndgrid, meshgrid, find_idx
+export SharpIB
 
 include("geo_general.jl")
 include("geo_struct.jl")
 include("geo_unstruct.jl")
+include("geo_ib.jl")
 
 """
 $(SIGNATURES)
