@@ -14,12 +14,6 @@ KB.L1_error(rand(3), rand(3), 1e-2)
 KB.L2_error(rand(3), rand(3), 1e-2)
 KB.L∞_error(rand(3), rand(3), 1e-2)
 
-u = Float64[0, 1, 2, 3, 2, 1, 0]
-dx = 1.0
-KitBase.finite_difference(u, dx; method = :central, bc = :period)
-KitBase.finite_difference(u, dx; method = :central, bc = :none)
-KitBase.finite_difference(u, dx, -1; method = :upwind, bc = :none)
-
 x = randn(16)
 y = randn(16)
 KitBase.@nametuple x y # NamedTuple constructor
