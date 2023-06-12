@@ -71,7 +71,7 @@ Maxwell quadrature
 ## Arguments
 * `N`: quadrature order (MUST less than 33)
 """
-function maxwell_quadrature(N::Integer, C = 1::Real)
+function maxwell_quadrature(N::Integer, C = 1)
     @assert N <= 33
 
     py"""

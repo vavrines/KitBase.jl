@@ -105,10 +105,10 @@ function step!(
     fw3::T1,
     γ,
     Δs,
-    dirc::T2,
+    dirc::AV,
     RES,
     AVG,
-) where {T1<:AV{<:FN},T2<:AV{<:Real}}
+) where {T1<:AV}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)
@@ -140,7 +140,7 @@ function step!(
     RES,
     AVG,
     collision,
-) where {T1<:AA{<:FN,1}}
+) where {T1<:AV}
 
     #--- store W^n and calculate shakhov term ---#
     w_old = deepcopy(w)

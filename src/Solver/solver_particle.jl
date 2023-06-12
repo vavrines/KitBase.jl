@@ -338,7 +338,7 @@ function bgk_collision!(
     ctr::AA{ControlVolumeParticle1D,1},
     ptc::Particle,
     face::AA{Interface1D,1},
-    res::AA{<:FN,1},
+    res::AV,
 )
 
     sum_res = zeros(3)
@@ -648,7 +648,7 @@ function particle_collision!(
     ctr::AA{ControlVolumeParticle1D,1},
     ptc_temp::AA{Particle1D,1},
     face::AA{Interface1D,1},
-    res::AA{<:FN,1},
+    res::AV,
     coll = :bgk::Symbol,
 ) where {T<:AbstractSolverSet}
 

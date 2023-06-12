@@ -66,3 +66,36 @@ KitBase.find_idx(randn(20), 0.13, mode = :nonuniform)
 cd(@__DIR__)
 ps = KitBase.UnstructPSpace("t1.msh")
 KitBase.write_vtk(ps.points, ps.cellid, randn(size(ps.cellid, 1)))
+
+#--- IB ---#
+ps = KB.PSpace2D(0, 3, 15, 0, 2, 10, 1, 1)
+radius = 1
+
+flags = ones(Int, axes(ps.x))
+for i in axes(flags, 1), j in axes(flags, 2)
+    if (ps.x[i, j] - 3)^2 + ps.y[i, j]^2 < radius # (x-3)^2+y^2=1
+        flags[i, j] = 0
+    end
+end
+flags[0, :] .= -1
+flags[ps.nx+1, :] .= -1
+flags[:, 0] .= -1
+flags[:, ps.ny+1] .= -1
+KB.ghost_flag!(ps, flags)
+
+ghost_ids = findall(flags .== -2)
+xbis = [Vector{Float64}(undef, 2) for iter = 1:length(ghost_ids)]
+nbis = zero.(xbis)
+for iter in axes(xbis, 1)
+    idx = ghost_ids[iter]
+
+    θ = atan(ps.y[idx] / (3 - ps.x[idx]))
+    xbis[iter][1] = 3 - radius * cos(θ)
+    xbis[iter][2] = radius * sin(θ)
+
+    nbis[iter] .= [- radius * cos(θ), radius * sin(θ)]
+end
+xips = KB.ip_location(ps, ghost_ids, xbis)
+ip_cids, ip_nids, ip_bids = KB.ip_connectivity(ps, xips, flags)
+ib = SharpIB(flags, ghost_ids, xbis, nbis, xips, ip_cids, ip_nids, ip_bids)
+KB.bilinear_coeffs(ps, ib, 1, rand(2))

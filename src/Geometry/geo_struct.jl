@@ -404,7 +404,7 @@ ndgrid(v::AV) = copy(v)
 """
 $(SIGNATURES)
 """
-function ndgrid(v1::AV{T}, v2::AV{T}) where {T}
+function ndgrid(v1::AV, v2::AV)
     m, n = length(v1), length(v2)
     v1 = reshape(v1, m, 1)
     v2 = reshape(v2, 1, n)
@@ -443,12 +443,12 @@ $(SIGNATURES)
 
 Equivalent structured mesh generator as matlab...
 """
-meshgrid(v::AV{T}) where {T} = meshgrid(v, v)
+meshgrid(v::AV) = meshgrid(v, v)
 
 """
 $(SIGNATURES)
 """
-function meshgrid(x::T, y::T) where {T<:AV{<:Real}}
+function meshgrid(x::AV, y::AV)
     X = [i for j in y, i in x]
     Y = [j for j in y, i in x]
 
@@ -458,7 +458,7 @@ end
 """
 $(SIGNATURES)
 """
-function meshgrid(x::T, y::T, z::T) where {T<:AV{<:Real}}
+function meshgrid(x::AV, y::AV, z::AV)
     X = [i for k in z, j in y, i in x]
     Y = [j for k in z, j in y, i in x]
     Z = [k for k in z, j in y, i in x]
@@ -472,7 +472,7 @@ $(SIGNATURES)
 
 Find the location index of a point in mesh
 """
-function find_idx(x::AV{<:Real}, p::Real; mode = :nonuniform::Symbol)
+function find_idx(x::AV, p; mode = :nonuniform::Symbol)
     if mode == :uniform
         dx = x[2] - x[1]
         return Int(ceil((p - x[1] + 0.5 * dx) / dx)) # point location

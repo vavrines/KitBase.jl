@@ -12,7 +12,6 @@ Struct of arrays for particle simulation
 $(FIELDS)
 """
 mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
-
     m::T1
     x::T2
     v::T3
@@ -52,7 +51,6 @@ mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
             tc,
         )
     end
-
 end
 
 
@@ -66,7 +64,6 @@ $(TYPEDEF)
 $(FIELDS)
 """
 mutable struct Particle1D{T1,T2,T3} <: AbstractParticle1D
-
     m::T1
     x::T1
     v::T2
@@ -86,7 +83,6 @@ mutable struct Particle1D{T1,T2,T3} <: AbstractParticle1D
 
         new{typeof(m),typeof(v),typeof(idx)}(m, x, v, e, idx, flag, tc)
     end
-
 end
 
 
@@ -100,7 +96,6 @@ $(TYPEDEF)
 $(FIELDS)
 """
 mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
-
     m::T1
     x::T1
     y::T1
@@ -134,7 +129,6 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
 
         new{typeof(m),typeof(v),typeof(idx)}(m, x, y, v, e, idx, idy, flag, tc)
     end
-
 end
 
 
@@ -148,7 +142,6 @@ $(TYPEDEF)
 $(FIELDS)
 """
 mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1D
-
     x::F
     dx::F
 
@@ -207,7 +200,6 @@ mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1
             remainder,
         )
     end
-
 end
 
 
@@ -221,7 +213,6 @@ $(TYPEDEF)
 $(FIELDS)
 """
 mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
-
     x::F
     y::F
     dx::F
@@ -290,5 +281,4 @@ mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
         )
 
     end
-
 end

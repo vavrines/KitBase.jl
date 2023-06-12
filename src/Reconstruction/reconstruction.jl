@@ -46,18 +46,18 @@ $(SIGNATURES)
 
 In-place two-cell reconstruction
 """
-function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
+function reconstruct2!(sw::AV, wL::Y, wR::Y, Δx) where {Y<:AA{<:Real,1}}
     sw .= (wR .- wL) ./ Δx
 end
 
-function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
+function reconstruct2!(sw::AM, wL::Y, wR::Y, Δx) where {Y<:AM}
     for j in axes(sw, 2)
         swj = @view sw[:, j]
         reconstruct2!(swj, wL[:, j], wR[:, j], Δx)
     end
 end
 
-function reconstruct2!(sw::X, wL::Y, wR::Y, Δx) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
+function reconstruct2!(sw::AA3, wL::Y, wR::Y, Δx) where {Y<:AA3}
     for k in axes(sw, 3), j in axes(sw, 2)
         swjk = @view sw[:, j, k]
         reconstruct2!(swjk, wL[:, j, k], wR[:, j, k], Δx)
@@ -137,14 +137,14 @@ $(SIGNATURES)
 In-place three-cell reconstruction
 """
 function reconstruct3!(
-    sw::X,
+    sw::AV,
     wL::Y,
     wN::Y,
     wR::Y,
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:FN,1},Y<:AA{<:Real,1}}
+) where {Y<:AV}
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
 
@@ -154,14 +154,14 @@ function reconstruct3!(
 end
 
 function reconstruct3!(
-    sw::X,
+    sw::AM,
     wL::Y,
     wN::Y,
     wR::Y,
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:FN,2},Y<:AA{<:Real,2}}
+) where {Y<:AM}
     for j in axes(sw, 2)
         swj = @view sw[:, j]
         reconstruct3!(swj, wL[:, j], wN[:, j], wR[:, j], ΔxL, ΔxR, limiter)
@@ -171,14 +171,14 @@ function reconstruct3!(
 end
 
 function reconstruct3!(
-    sw::X,
+    sw::AA3,
     wL::Y,
     wN::Y,
     wR::Y,
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:FN,3},Y<:AA{<:Real,3}}
+) where {Y<:AA3}
     for k in axes(sw, 3), j in axes(sw, 2)
         swjk = @view sw[:, j, k]
         reconstruct3!(swjk, wL[:, j, k], wN[:, j, k], wR[:, j, k], ΔxL, ΔxR, limiter)
@@ -188,14 +188,14 @@ function reconstruct3!(
 end
 
 function reconstruct3!(
-    sw::X,
+    sw::AA4,
     wL::Y,
     wN::Y,
     wR::Y,
     ΔxL,
     ΔxR,
     limiter = :vanleer::Symbol,
-) where {X<:AA{<:FN,4},Y<:AA{<:Real,4}}
+) where {Y<:AA4}
     for l in axes(sw, 4), k in axes(sw, 3), j in axes(sw, 2)
         sjkl = @view sw[:, j, k, l]
         reconstruct3!(

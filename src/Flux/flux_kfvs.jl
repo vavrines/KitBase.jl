@@ -207,11 +207,11 @@ Kinetic flux vector splitting (KFVS) flux
 function flux_kfvs(
     fL::Y,
     fR::Y,
-    u::AV{<:FN},
+    u::AV,
     dt,
     sfL = zero(fL)::Y,
     sfR = zero(fR)::Y,
-) where {Y<:AV{<:FN}}
+) where {Y<:AV}
 
     ff = similar(fL)
     flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)
@@ -228,14 +228,14 @@ Kinetic flux vector splitting (KFVS) flux
 1F1V for pure DOM
 """
 function flux_kfvs!(
-    ff::AV{<:FN},
+    ff::AV,
     fL::Y,
     fR::Y,
-    u::AV{<:FN},
+    u::AV,
     dt,
     sfL = zero(fL)::Y,
     sfR = zero(fR)::Y,
-) where {Y<:AV{<:FN}} # 1F1V flux for pure DOM
+) where {Y<:AV} # 1F1V flux for pure DOM
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -256,8 +256,8 @@ $(SIGNATURES)
 1F1V
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
-    ff::AV{<:FN},
+    fw::AV,
+    ff::AV,
     fL::Z,
     fR::Z,
     u::A,
@@ -265,7 +265,7 @@ function flux_kfvs!(
     dt,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {Z<:AV{<:FN},A<:AV{<:FN}}
+) where {Z<:AV,A<:AV}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -290,8 +290,8 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kfvs!(
-    fw::AM{<:FN},
-    ff::AM{<:FN},
+    fw::AM,
+    ff::AM,
     fL::Z,
     fR::Z,
     u::A,
@@ -299,7 +299,7 @@ function flux_kfvs!(
     dt,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {Z<:AM{<:FN},A<:AM{<:FN}}
+) where {Z<:AM,A<:AM}
 
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
@@ -324,7 +324,7 @@ $(SIGNATURES)
 2F1V
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
+    fw::AV,
     fh::Y,
     fb::Y,
     hL::Z,
@@ -338,7 +338,7 @@ function flux_kfvs!(
     sbL = zero(bL)::Z,
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
-) where {Y<:AV{<:FN},Z<:AV{<:FN},A<:AV{<:FN}}
+) where {Y<:AV,Z<:AV,A<:AV}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -369,7 +369,7 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kfvs!(
-    fw::AM{<:FN},
+    fw::AM,
     fh::Y,
     fb::Y,
     hL::Z,
@@ -383,7 +383,7 @@ function flux_kfvs!(
     sbL = zero(bL)::Z,
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
-) where {Y<:AM{<:FN},Z<:AM{<:FN},A<:AM{<:FN}}
+) where {Y<:AM,Z<:AM,A<:AM}
 
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
@@ -413,7 +413,7 @@ $(SIGNATURES)
 3F1V @ Rykov
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
+    fw::AV,
     fh::Y,
     fb::Y,
     fr::Y,
@@ -432,7 +432,7 @@ function flux_kfvs!(
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
     srR = zero(rR)::Z,
-) where {Y<:AV{<:FN},Z<:AV{<:FN},A<:AV{<:FN}}
+) where {Y<:AV,Z<:AV,A<:AV}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -468,19 +468,19 @@ $(SIGNATURES)
 1F3V
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
-    ff::AA{<:FN,3},
+    fw::AV,
+    ff::AA3,
     fL::Z,
     fR::Z,
     u::A,
     v::A,
     w::A,
     ω::A,
-    dt::Real,
-    len = 1.0::Real,
+    dt,
+    len = 1.0,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {Z<:AA{<:FN,3},A<:AA{<:FN,3}}
+) where {Z<:AA3,A<:AA3}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -510,7 +510,7 @@ $(SIGNATURES)
 4F1V
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
+    fw::AV,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -534,7 +534,7 @@ function flux_kfvs!(
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
     sh3R = zero(h3R)::Z,
-) where {Y<:AV{<:FN},Z<:AV{<:FN},A<:AV{<:FN}}
+) where {Y<:AV,Z<:AV,A<:AV}
 
     # upwind reconstruction
     δ = heaviside.(u)
@@ -573,7 +573,7 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kfvs!(
-    fw::AM{<:FN},
+    fw::AM,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -597,7 +597,7 @@ function flux_kfvs!(
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
     sh3R = zero(h3R)::Z,
-) where {Y<:AM{<:FN},Z<:AM{<:FN},A<:AM{<:FN}}
+) where {Y<:AM,Z<:AM,A<:AM}
 
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
@@ -644,8 +644,8 @@ $(SIGNATURES)
 1F2V
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
-    ff::Union{AV{<:FN},AM{<:FN}},
+    fw::AV,
+    ff::Union{AV,AM},
     fL::Z,
     fR::Z,
     u::A,
@@ -655,7 +655,7 @@ function flux_kfvs!(
     len,
     sfL = zero(fL)::Z,
     sfR = zero(fR)::Z,
-) where {Z<:Union{AV{<:FN},AM{<:FN}},A<:Union{AV{<:FN},AM{<:FN}}}
+) where {Z<:Union{AV,AM},A<:Union{AV,AM}}
 
     #--- upwind reconstruction ---#
     δ = heaviside.(u)
@@ -684,7 +684,7 @@ $(SIGNATURES)
 2F2V
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
+    fw::AV,
     fh::Y,
     fb::Y,
     hL::Z,
@@ -701,9 +701,9 @@ function flux_kfvs!(
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
 ) where {
-    Y<:Union{AV{<:FN},AM{<:FN}},
-    Z<:Union{AV{<:FN},AM{<:FN}},
-    A<:Union{AV{<:FN},AM{<:FN}},
+    Y<:Union{AV,AM},
+    Z<:Union{AV,AM},
+    A<:Union{AV,AM},
 }
 
     #--- upwind reconstruction ---#
@@ -739,7 +739,7 @@ $(SIGNATURES)
 3F2V
 """
 function flux_kfvs!(
-    fw::AV{<:FN},
+    fw::AV,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -760,7 +760,7 @@ function flux_kfvs!(
     sh0R = zero(h0R)::Z,
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
-) where {Y<:AM{<:FN},Z<:AM{<:FN},A<:AM{<:FN}}
+) where {Y<:AM,Z<:AM,A<:AM}
 
     #--- upwind reconstruction ---#
     δ = heaviside.(u)
@@ -799,7 +799,7 @@ $(SIGNATURES)
 Mixture
 """
 function flux_kfvs!(
-    fw::AM{<:FN},
+    fw::AM,
     fh0::Y,
     fh1::Y,
     fh2::Y,
@@ -820,7 +820,7 @@ function flux_kfvs!(
     sh0R = zero(h0R)::Z,
     sh1R = zero(h1R)::Z,
     sh2R = zero(h2R)::Z,
-) where {Y<:AA{<:FN,3},Z<:AA{<:FN,3},A<:AA{<:FN,3}}
+) where {Y<:AA3,Z<:AA3,A<:AA3}
 
     #--- reconstruct initial distribution ---#
     δ = heaviside.(u)

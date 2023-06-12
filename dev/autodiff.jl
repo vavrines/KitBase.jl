@@ -43,7 +43,7 @@ plot(vs.u, dm)
 
 #　These things can be built into a function
 
-function ∂maxwellian(u::Real, ρ, U, λ)
+function ∂maxwellian(u, ρ, U, λ)
     Mu = u -> maxwellian(u, ρ, U, λ)
     return ForwardDiff.derivative(Mu, u)
 end
