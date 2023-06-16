@@ -127,7 +127,7 @@ begin
             primR
         end
     end
-    ib = KitBase.IB(fw, bc)
+    ib = KitBase.IB(fw, bc, nothing)
 
     ks = KitBase.SolverSet(set, pSpace, vSpace, gas, ib, pwd())
 end

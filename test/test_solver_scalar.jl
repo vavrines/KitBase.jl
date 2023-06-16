@@ -18,7 +18,7 @@ vSpace = nothing
 property = Scalar(1.0, 1e-6)
 w0 = 1.0
 prim0 = conserve_prim(w0, property.a)
-ib = IB((x, y) -> sin(2π * x))
+ib = IB((x, y) -> sin(2π * x), nothing, nothing)
 ks = SolverSet(set, pSpace, vSpace, property, ib)
 SolverSet(set, pSpace, property)
 
