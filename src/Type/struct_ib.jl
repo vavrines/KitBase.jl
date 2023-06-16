@@ -11,13 +11,11 @@ Initial & boundary conditions with no distribution function
 
 $(FIELDS)
 """
-mutable struct IB{T} <: AbstractCondition
-    fw::Function
+mutable struct IB{TF,T,NT} <: AbstractCondition
+    fw::TF
     bc::T
-    p::NamedTuple
+    p::NT
 end
-
-IB(fw, bc = nothing) = IB{typeof(bc)}(fw, bc, NamedTuple())
 
 (m::IB)(args...) = begin
     m.fw(args..., m.p), m.bc(args..., m.p)
@@ -33,63 +31,17 @@ Initial & boundary conditions with 1 distribution function
 
 $(FIELDS)
 """
-mutable struct IB1F{T} <: AbstractCondition
-    fw::Function
-    ff::Function
+mutable struct IB1F{TF1,TF2,T,NT} <: AbstractCondition
+    fw::TF1
+    ff::TF2
     bc::T
-    p::NamedTuple
+    p::NT
 end
 
 (m::IB1F)(args...) = begin
     m.fw(args..., m.p), m.ff(args..., m.p), m.bc(args..., m.p)
 end
 
-#=
-function IB1F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
-    bc = function (args...)
-        w = fw(args...)
-        prim = begin
-            if ndims(w) == 1
-                conserve_prim(w, gas.γ)
-            else
-                mixture_conserve_prim(w, gas.γ)
-            end
-        end
-
-        return prim
-    end
-
-    ff = function (args...)
-        prim = bc(args...)
-
-        M = begin
-            if !isdefined(vs, :v)
-                if ndims(prim) == 1
-                    maxwellian(vs.u, prim)
-                else
-                    mixture_maxwellian(vs.u, prim)
-                end
-            elseif !isdefined(vs, :w)
-                if ndims(prim) == 1
-                    maxwellian(vs.u, vs.v, prim)
-                else
-                    mixture_maxwellian(vs.u, vs.v, prim)
-                end
-            else
-                if ndims(prim) == 1
-                    maxwellian(vs.u, vs.v, vs.w, prim)
-                else
-                    mixture_maxwellian(vs.u, vs.v, vs.w, prim)
-                end
-            end
-        end
-
-        return M
-    end
-
-    return IB1F{typeof(bc)}(fw, ff, bc)
-end
-=#
 
 """
 $(TYPEDEF)
@@ -100,76 +52,17 @@ Initial & boundary conditions with 2 distribution functions
 
 $(FIELDS)
 """
-mutable struct IB2F{T} <: AbstractCondition
-    fw::Function
-    ff::Function
+mutable struct IB2F{TF1,TF2,T,NT} <: AbstractCondition
+    fw::TF1
+    ff::TF2
     bc::T
-    p::NamedTuple
+    p::NT
 end
 
 (m::IB2F)(args...) = begin
     m.fw(args..., m.p), m.ff(args..., m.p)[1], m.ff(args..., m.p)[2], m.bc(args..., m.p)
 end
 
-#=
-function IB2F(fw, vs::AbstractVelocitySpace, gas::AbstractProperty)
-    bc = function (args...)
-        w = fw(args...)
-        prim = begin
-            if ndims(w) == 1
-                conserve_prim(w, gas.γ)
-            else
-                mixture_conserve_prim(w, gas.γ)
-            end
-        end
-
-        return prim
-    end
-
-    ff = function (args...)
-        prim = bc(args...)
-
-        if !isdefined(vs, :v)
-            if ndims(prim) == 1
-                H = maxwellian(vs.u, prim)
-                B = H .* gas.K / 2 / prim[end]
-            else
-                H = mixture_maxwellian(vs.u, prim)
-                B = zero(H)
-                for j in axes(B, 2)
-                    B[:, j] = H[:, j] * gas.K / (2.0 * prim[end, j])
-                end
-            end
-        elseif !isdefined(vs, :w)
-            if ndims(prim) == 1
-                H = maxwellian(vs.u, vs.v, prim)
-                B = H .* gas.K / 2 / prim[end]
-            else
-                H = mixture_maxwellian(vs.u, vs.v, prim)
-                B = zero(H)
-                for j in axes(B, 3)
-                    B[:, :, j] = H[:, :, j] * gas.K / (2.0 * prim[end, j])
-                end
-            end
-        else
-            if ndims(prim) == 1
-                H = maxwellian(vs.u, vs.v, vs.w, prim)
-                B = H .* gas.K / 2 / prim[end]
-            else
-                H = mixture_maxwellian(vs.u, vs.v, vs.w, prim)
-                B = zero(H)
-                for j in axes(B, 4)
-                    B[:, :, :, j] = H[:, :, :, j] * gas.K / (2.0 * prim[end, j])
-                end
-            end
-        end
-
-        return H, B
-    end
-
-    return IB2F{typeof(bc)}(fw, ff, bc)
-end
-=#
 
 """
 $(TYPEDEF)
@@ -180,14 +73,14 @@ Initial & boundary conditions with 3 distribution functions
 
 $(FIELDS)
 """
-mutable struct IB3F{T} <: AbstractCondition
-    fw::Function
-    ff::Function
-    fE::Function
-    fB::Function
-    fL::Function
+mutable struct IB3F{TF1,TF2,TF3,TF4,TF5,T,NT} <: AbstractCondition
+    fw::TF1
+    ff::TF2
+    fE::TF3
+    fB::TF4
+    fL::TF5
     bc::T
-    p::NamedTuple
+    p::NT
 end
 
 
@@ -200,14 +93,14 @@ Initial & boundary conditions with 4 distribution functions
 
 $(FIELDS)
 """
-mutable struct IB4F{T} <: AbstractCondition
-    fw::Function
-    ff::Function
-    fE::Function
-    fB::Function
-    fL::Function
+mutable struct IB4F{TF1,TF2,TF3,TF4,TF5,T,NT} <: AbstractCondition
+    fw::TF1
+    ff::TF2
+    fE::TF3
+    fB::TF4
+    fL::TF5
     bc::T
-    p::NamedTuple
+    p::NT
 end
 
 
@@ -233,19 +126,19 @@ function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
     ib = begin
         if parse(Int, set.space[3]) == 0
             fw, bc, p = config_ib(set, pSpace, vSpace, gas)
-            IB{typeof(bc)}(fw, bc, p)
+            IB(fw, bc, p)
         elseif parse(Int, set.space[3]) in [3, 4] && gas isa AbstractPlasma
             fw, ff, fE, fB, fL, bc, p = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
-            eval(Symbol(iname)){typeof(bc)}(fw, ff, fE, fB, fL, bc, p)
+            eval(Symbol(iname))(fw, ff, fE, fB, fL, bc, p)
         elseif set.case == "cavity"
             fw, ff, bc, p = config_ib(set, pSpace, vSpace, gas, Um, Vm, Tm)
             iname = "IB" * set.space[3] * "F"
-            eval(Symbol(iname)){typeof(bc)}(fw, ff, bc, p)
+            eval(Symbol(iname))(fw, ff, bc, p)
         else
             fw, ff, bc, p = config_ib(set, pSpace, vSpace, gas)
             iname = "IB" * set.space[3] * "F"
-            eval(Symbol(iname)){typeof(bc)}(fw, ff, bc, p)
+            eval(Symbol(iname))(fw, ff, bc, p)
         end
     end
 
