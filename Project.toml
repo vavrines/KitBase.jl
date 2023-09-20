@@ -35,7 +35,7 @@ WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 [compat]
 BSON = "0.3"
 CSV = "0.8, 0.9, 0.10"
-CUDA = "^2, ^3, ^4"
+CUDA = "^2, ^3, ^4, 5"
 Distributions = "0.21, 0.22, 0.23, 0.24, 0.25"
 FFTW = "^1"
 FastGaussQuadrature = "0.2, 0.3, 0.4, 0.5"
