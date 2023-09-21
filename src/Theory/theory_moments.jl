@@ -480,8 +480,14 @@ pressure(h, b, prim, u, ω, K) =
 """
 $(SIGNATURES)
 """
-pressure(h, b, prim, u, v, ω, K) =
+pressure(h, b, prim, u, v, ω, K, ::Type{VDF{2,2}}) =
     (sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2) * h) + sum(@. ω * b)) / (K + 2.0)
+
+"""
+$(SIGNATURES)
+"""
+pressure(f, prim, u, v, w, ω, K, ::Type{VDF{1,3}}) =
+    sum(@. ω * ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2) * f) / (K + 3.0)
 
 
 """
