@@ -1,7 +1,7 @@
 name = "KitBase"
 uuid = "86eed249-3a28-466f-8d3a-596821e1af9a"
 authors = ["Tianbai Xiao <tianbaixiao@gmail.com>"]
-version = "0.9.16"
+version = "0.9.17"
 
 [deps]
 BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
@@ -44,7 +44,7 @@ FiniteMesh = "0.3"
 ForwardDiff = "0.10"
 JLD2 = "0.4"
 MultivariatePolynomials = "0.3, 0.4, 0.5"
-NonlinearSolve = "^1"
+NonlinearSolve = "^1, ^2"
 OffsetArrays = "1.8"
 Optim = "^1"
 Parameters = "0.12"
