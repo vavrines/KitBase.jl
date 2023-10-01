@@ -30,7 +30,7 @@ There are additional keywords, but these are currently intended for testing not 
 * `Li_s(z)`: the result
 
 ## Examples
-```jldoctest; setup = :(using Polylogarithms)
+```
 julia> polylog(0.35, 0.2)
 0.23803890574407033
 ```
@@ -77,7 +77,7 @@ There are additional keywords, but these are currently intended for testing not 
 * `series`: the series used to compute results (4 = reciprocal)
 
 ## Examples
-```jldoctest; setup = :(using Polylogarithms)
+```
 julia> polylog(0.35, 0.2, Diagnostics() )
 (0.23803890574407033, 17, 1)
 ```
@@ -481,7 +481,7 @@ Calculate harmonic numbers (http://mathworld.wolfram.com/HarmonicNumber.html)
 * `n::Integer`: non-negative index of the Harmonic number to calculate
 
 ## Examples
-```jldoctest; setup = :(using Polylogarithms)
+```
 julia> harmonic(2)
 1.5
 ```
@@ -512,7 +512,7 @@ Calculate harmonic numbers extended to non-integer arguments using the digamma f
 * `x::ComplexOrReal{Float64}`: index of the Harmonic number to calculate
 
 ## Examples
-```jldoctest; setup = :(using Polylogarithms)
+```
 julia> harmonic(2.0)
 1.5000000000000016
 ```
@@ -530,7 +530,7 @@ Calculate generalized harmonic numbers (e.g., see http://mathworld.wolfram.com/H
 It should be possible to extend this to complex r, but that requires more testing.
 
 ## Examples
-```jldoctest; setup = :(using Polylogarithms)
+```
 julia> harmonic(2,1.5)
 1.3535533905932737
 ```
@@ -565,7 +565,7 @@ Using a better approach which works when both inputs are integers (https://carma
 * `r::Integer`: index 2 of the Harmonic number to calculate
 
 ## Examples
-```jldoctest; setup = :(using Polylogarithms)
+```
 julia> harmonic(2,1)
 1.5000000000000002
 ```
@@ -603,7 +603,7 @@ Abramowitz and Stegunm, 23.2.5) or (https://en.wikipedia.org/wiki/Stieltjes_cons
 * `n::Integer`: the number of elements to compute.
 
 ## Examples
-```jldoctest; setup = :(using Polylogarithms)
+```
 julia> stieltjes(0)
 0.5772156649015329
 ```
