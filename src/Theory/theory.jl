@@ -23,6 +23,7 @@ export chapman_enskog, collision_invariant
 export optimize_closure, realizable_reconstruct, moment_basis, sample_pdf, kinetic_entropy
 export be_integral, fd_integral, be_equilibrium, fd_equilibrium
 export quantum_conserve_prim, quantum_prim_conserve
+export hermite_derivative, hermite_force
 
 include("theory_macro.jl")
 include("theory_flux.jl")
