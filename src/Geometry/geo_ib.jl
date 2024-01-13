@@ -102,16 +102,16 @@ function ip_connectivity(ps::AbstractPhysicalSpace2D, xips, flags)
         end
 
         # id of non-immersed neighboring cell
-        if flags[idx - 1, idy - 1] == 1
+        if flags[idx-1, idy-1] == 1
             push!(ip_nids[iter], CartesianIndex(idx - 1, idy - 1))
         end
-        if flags[idx, idy - 1] == 1
+        if flags[idx, idy-1] == 1
             push!(ip_nids[iter], CartesianIndex(idx, idy - 1))
         end
         if flags[idx, idy] == 1
             push!(ip_nids[iter], CartesianIndex(idx, idy))
         end
-        if flags[idx - 1, idy] == 1
+        if flags[idx-1, idy] == 1
             push!(ip_nids[iter], CartesianIndex(idx - 1, idy))
         end
     end
@@ -163,7 +163,7 @@ function bilinear_coeffs(ps::AbstractPhysicalSpace2D, xbis, nbis, nids, bids, W0
         W = [W0; zeros(length(bids))]
     end
     M = vcat(M...)
-    
+
     return M \ W
 end
 

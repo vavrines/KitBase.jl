@@ -245,15 +245,7 @@ KitBase.rykov!(
 )
 
 # BIP
-KitBase.polyatomic_maxwellian!(
-    zeros(16),
-    zeros(16),
-    zeros(16),
-    randn(16),
-    rand(5),
-    2,
-    2,
-)
+KitBase.polyatomic_maxwellian!(zeros(16), zeros(16), zeros(16), randn(16), rand(5), 2, 2)
 KitBase.polyatomic_maxwellian!(
     zeros(16),
     zeros(16),

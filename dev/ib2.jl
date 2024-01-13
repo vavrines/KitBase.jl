@@ -92,7 +92,7 @@ for iter in axes(xbis, 1)
     xbis[iter, 1] = 3 - radius * cos(θ)
     xbis[iter, 2] = radius * sin(θ)
 
-    nbis[iter, :] .= [- radius * cos(θ), radius * sin(θ)]
+    nbis[iter, :] .= [-radius * cos(θ), radius * sin(θ)]
 end
 
 xips = zero(xbis)
@@ -108,16 +108,16 @@ for iter in axes(xips, 1)
     idx = Int(round(xips[iter, 1] / ps.dx[1]) + 1)
     idy = Int(round(xips[iter, 2] / ps.dy[1]) + 1)
 
-    if flags[idx - 1, idy - 1] == 1
+    if flags[idx-1, idy-1] == 1
         push!(ip_nids[iter], CartesianIndex(idx - 1, idy - 1))
     end
-    if flags[idx, idy - 1] == 1
+    if flags[idx, idy-1] == 1
         push!(ip_nids[iter], CartesianIndex(idx, idy - 1))
     end
     if flags[idx, idy] == 1
         push!(ip_nids[iter], CartesianIndex(idx, idy))
     end
-    if flags[idx - 1, idy] == 1
+    if flags[idx-1, idy] == 1
         push!(ip_nids[iter], CartesianIndex(idx - 1, idy))
     end
 end
@@ -164,7 +164,7 @@ function interp_coeffs(ps, xbis, nbis, nids, bids, W0)
         W = [W0; zeros(length(bids))]
     end
     M = vcat(M...)
-    
+
     return M \ W
 end
 
@@ -211,7 +211,7 @@ function update_ghost!(ps, ctr, xbis, nbis, ip_nids, ip_bids, ghost_ids)
     for iter in eachindex(ip_nids)
         nid = ip_nids[iter]
         bid = ip_bids[iter]
-        
+
         xf = xips[iter, 1]
         yf = xips[iter, 2]
         pos = [1, xf, yf, xf * yf]
@@ -220,7 +220,7 @@ function update_ghost!(ps, ctr, xbis, nbis, ip_nids, ip_bids, ghost_ids)
         w1 = [ctr[idx].prim[2] for idx in nid]
         w2 = zeros(length(bid))
         w = [w1; w2]
-        
+
         C = interp_coeffs(ps, xbis, nbis, nid, bid, w)
         U1 = C' * pos
 
@@ -228,33 +228,33 @@ function update_ghost!(ps, ctr, xbis, nbis, ip_nids, ip_bids, ghost_ids)
         w1 = [ctr[idx].prim[3] for idx in nid]
         w2 = zeros(length(bid))
         w = [w1; w2]
-        
+
         C = interp_coeffs(ps, xbis, nbis, nid, bid, w)
         V1 = C' * pos
 
         # T
-        w1 = [1/ctr[idx].prim[4] for idx in nid]
+        w1 = [1 / ctr[idx].prim[4] for idx in nid]
         w2 = ones(length(bid))
         w = [w1; w2]
-        
+
         C = interp_coeffs(ps, xbis, nbis, nid, bid, w)
         T1 = C' * pos
 
         # p
         w1 = [0.5 * ctr[idx].prim[1] / ctr[idx].prim[4] for idx in nid]
         w = w1
-        
+
         C = interp_coeffs(ps, xbis, nbis, nid, bid, w)
         P1 = C' * pos
 
-        ρ1 = 2*P1/T1
+        ρ1 = 2 * P1 / T1
 
         T0 = 2 - T1
         ρ0 = ρ1 * T1 / T0
 
 
         idx = ghost_ids[iter]
-        ctr[idx].prim .= [ρ0, -U1, -V1, 1/T0]
+        ctr[idx].prim .= [ρ0, -U1, -V1, 1 / T0]
         ctr[idx].w .= prim_conserve(ctr[idx].prim, ks.gas.γ)
     end
 end

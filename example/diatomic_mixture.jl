@@ -6,7 +6,7 @@ cf = config_ntuple(
     cfl = 0.5,
     maxTime = 5.0,
     umin = -5.0,
-    umax = 5.0, 
+    umax = 5.0,
     nu = 48,
     knudsen = 0.01,
     prandtl = 0.72,
@@ -19,22 +19,15 @@ cf = config_ntuple(
 γ = heat_capacity_ratio(cf.inK, cf.inKr, 1)
 
 set = set_setup(; cf...)
-gas = PolyatomicMixture(
-    Kn = cf.knudsen,
-    Pr = cf.prandtl,
-    K = cf.inK,
-    Kr = cf.inKr,
-)
+gas = PolyatomicMixture(Kn = cf.knudsen, Pr = cf.prandtl, K = cf.inK, Kr = cf.inKr)
 
 vs = MVSpace1D(cf.umin, cf.umax, -8, 8, cf.nu)
 
-_h0 = 
-    0.5 * (1 / π)^1.5 .*
-    (exp.(-(vs.u[:, 1] .- 1) .^ 2) .+ exp.(-(vs.u[:, 1] .+ 1) .^ 2))
+_h0 = 0.5 * (1 / π)^1.5 .* (exp.(-(vs.u[:, 1] .- 1) .^ 2) .+ exp.(-(vs.u[:, 1] .+ 1) .^ 2))
 _b0 = @. _h0 * gas.K / 2.0 / 1.0
 _r0 = @. _h0 * gas.Kr / 2.0 / 5.0
 
-_h1 = 
+_h1 =
     0.5 * (1 / π)^1.5 .*
     (exp.(-(vs.u[:, 2] .- 1.5) .^ 2) .+ exp.(-(vs.u[:, 2] .+ 1.5) .^ 2)) .* gas.m[2]
 _b1 = @. _h1 * gas.K / 2.0 / 1.0

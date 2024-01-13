@@ -730,7 +730,10 @@ $(SIGNATURES)
 BIP model (3V)
 """
 function polyatomic_maxwellian!(M1, M2, M3, u, v, w, prim, K, Kr)
-    @. M1 = prim[1] * (prim[6] / π) * exp(-prim[6] * ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2))
+    @. M1 =
+        prim[1] *
+        (prim[6] / π) *
+        exp(-prim[6] * ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2))
     @. M2 = M1 * K / (2.0 * prim[6])
     @. M3 = M1 * Kr / (2.0 * prim[7])
 
