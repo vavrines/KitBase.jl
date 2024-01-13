@@ -28,7 +28,7 @@ function step(w, prim, prim1, h, b, r, dt)
 
     w[end] = polyatomic_moments_conserve(h, b, r, vs.u, vs.weights)[end]
     prim .= conserve_prim(w, gas.K, gas.Kr)
-    
+
     return nothing
 end
 

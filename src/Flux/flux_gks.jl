@@ -229,15 +229,7 @@ Gas kinetic Navier-Stokes flux
 
 Continuous case
 """
-function flux_gks!(
-    fw::AV,
-    w::Y,
-    inK,
-    γ,
-    μᵣ,
-    ω,
-    sw = zero(w)::Y,
-) where {Y<:AV}
+function flux_gks!(fw::AV, w::Y, inK, γ, μᵣ, ω, sw = zero(w)::Y) where {Y<:AV}
 
     prim = conserve_prim(w, γ)
     mus = gauss_moments(prim, inK)

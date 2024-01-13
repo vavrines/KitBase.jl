@@ -591,14 +591,7 @@ $(SIGNATURES)
 
 2F2V
 """
-function heat_flux(
-    h::X,
-    b::X,
-    prim::AV,
-    u::Z,
-    v::Z,
-    ω::Z,
-) where {X<:AM,Z<:AM}
+function heat_flux(h::X, b::X, prim::AV, u::Z, v::Z, ω::Z) where {X<:AM,Z<:AM}
 
     q = similar(h, 2)
 
@@ -719,7 +712,7 @@ function polyatomic_moments_conserve!(
     u::T,
     v::T,
     ω::T,
-    ::Type{VDF{3,2}}
+    ::Type{VDF{3,2}},
 ) where {X<:AA,T<:AA}
     w[1] = discrete_moments(h0, u, ω, 0)
     w[2] = discrete_moments(h0, u, ω, 1)
@@ -747,7 +740,7 @@ function polyatomic_moments_conserve!(
     v::T,
     w::T,
     ω::T,
-    ::Type{VDF{2,3}}
+    ::Type{VDF{2,3}},
 ) where {X<:AA,T<:AA}
     cons[1] = discrete_moments(h, u, ω, 0)
     cons[2] = discrete_moments(h, u, ω, 1)
@@ -785,7 +778,7 @@ function polyatomic_moments_conserve(
     u::T,
     v::T,
     ω::T,
-    ::Type{VDF{3,2}}
+    ::Type{VDF{3,2}},
 ) where {X<:AA,T<:AA}
     w = similar(h0, 5)
     polyatomic_moments_conserve!(w, h0, h1, h2, u, v, ω, VDF{3,2})
@@ -802,7 +795,7 @@ function polyatomic_moments_conserve(
     v::T,
     w::T,
     ω::T,
-    ::Type{VDF{2,3}}
+    ::Type{VDF{2,3}},
 ) where {X<:AA,T<:AA}
     cons = similar(h, 6)
     polyatomic_moments_conserve!(cons, h, r, u, v, w, ω, VDF{2,3})
@@ -1172,7 +1165,7 @@ function mixture_polyatomic_moments_conserve(h, b, r, u, ω)
 
         polyatomic_moments_conserve!(_w, _h, _b, _r, _u, _ω)
     end
-    
+
     return w
 end
 
@@ -1192,7 +1185,7 @@ function mixture_polyatomic_moments_conserve(h, b, r, u, v, ω, ::Type{VDF{3,2}}
 
         polyatomic_moments_conserve!(_w, _h, _b, _r, _u, _v, _ω, VDF{3,2})
     end
-    
+
     return w
 end
 
@@ -1212,6 +1205,6 @@ function mixture_polyatomic_moments_conserve(h, r, u, v, w, ω, ::Type{VDF{2,3}}
 
         polyatomic_moments_conserve!(_cons, _h, _r, _u, _v, _w, _ω, VDF{2,3})
     end
-    
+
     return cons
 end

@@ -700,11 +700,7 @@ function flux_kfvs!(
     sbL = zero(bL)::Z,
     shR = zero(hR)::Z,
     sbR = zero(bR)::Z,
-) where {
-    Y<:Union{AV,AM},
-    Z<:Union{AV,AM},
-    A<:Union{AV,AM},
-}
+) where {Y<:Union{AV,AM},Z<:Union{AV,AM},A<:Union{AV,AM}}
 
     #--- upwind reconstruction ---#
     δ = heaviside.(u)

@@ -225,8 +225,7 @@ full_distribution(
     w::Z,
     prim::A,
     γ = 5 / 3,
-) where {X<:AV,Y<:AV,Z<:AA3,A<:AV} =
-    full_distribution(h, b, u, weights, v, w, prim[1], γ)
+) where {X<:AV,Y<:AV,Z<:AA3,A<:AV} = full_distribution(h, b, u, weights, v, w, prim[1], γ)
 
 
 """
@@ -290,13 +289,7 @@ $(SIGNATURES)
 
 Recover discrete Chapman-Enskog expansion
 """
-function chapman_enskog(
-    u::AV,
-    prim::AV,
-    a::AV,
-    A::AV,
-    τ,
-)
+function chapman_enskog(u::AV, prim::AV, a::AV, A::AV, τ)
 
     M = maxwellian(u, prim)
     f = @. M * (
@@ -311,13 +304,7 @@ end
 """
 $(SIGNATURES)
 """
-function chapman_enskog(
-    u::AV,
-    prim::AV,
-    sw::AV,
-    K,
-    τ,
-)
+function chapman_enskog(u::AV, prim::AV, sw::AV, K, τ)
 
     Mu, Mxi, _, _1 = gauss_moments(prim, K)
     a = pdf_slope(prim, sw, K)
@@ -331,15 +318,7 @@ end
 """
 $(SIGNATURES)
 """
-function chapman_enskog(
-    u::AA{T1},
-    v::AA{T1},
-    prim::AV,
-    a::AV,
-    b::AV,
-    A::AV,
-    τ,
-) where {T1}
+function chapman_enskog(u::AA{T1}, v::AA{T1}, prim::AV, a::AV, b::AV, A::AV, τ) where {T1}
 
     M = maxwellian(u, v, prim)
     f = @. M * (
@@ -355,15 +334,7 @@ end
 """
 $(SIGNATURES)
 """
-function chapman_enskog(
-    u::AA{T1},
-    v::AA{T1},
-    prim::AV,
-    swx::AV,
-    swy::AV,
-    K,
-    τ,
-) where {T1}
+function chapman_enskog(u::AA{T1}, v::AA{T1}, prim::AV, swx::AV, swy::AV, K, τ) where {T1}
 
     Mu, Mv, Mxi, _, _1 = gauss_moments(prim, K)
     a = pdf_slope(prim, swx, K)
@@ -489,4 +460,73 @@ end
 function collision_invariant(α::AM, vs::AbstractVelocitySpace)
     M = [collision_invariant(α[:, j], vs) for j in axes(α, 2)]
     return hcat(M...)
+end
+
+
+"""
+$(SIGNATURES)
+
+Calculate the derivatives of distribution function using Hermite polynomials
+
+## Arguments
+* `f`: particle distribution function
+* `u`: quadrature nodes in velocity space
+* `weights`: quadrature weights in velocity space
+* `prim`: primitive variables
+* `norder`: order of Hermite polynomials
+
+## Outputs
+* `df`: derivatives of distribution function in velocity space
+"""
+function hermite_derivative(f::AV, u::AV, weights::AV, prim, norder)
+    # factorial
+    factor = OffsetArray{eltype(f)}(undef, 0:norder)
+    factor[0] = 1.0
+    for i = 1:norder
+        factor[i] = 1.0
+        for j = 1:i
+            factor[i] *= j
+        end
+    end
+
+    # temperature
+    t = 1.0 / prim[3]
+
+    # scaled velocity
+    v = @. (u - prim[2]) / sqrt(t) * sqrt(2.0)
+    w = @. exp(-v^2 / 2.0) / sqrt(2.0 * π)
+
+    # Hermite polynomials
+    ncx = length(f)
+    hp = OffsetArray{eltype(f)}(undef, 0:norder+1, ncx)
+    hp[0, :] .= 1.0
+    hp[1, :] .= v
+    hp[2, :] .= v .^ 2 .- 1.0
+    for i = 3:norder+1
+        hp[i, :] .= @. v * hp[i-1, :] - (i - 1.0) * hp[i-2, :] # recursive formula
+    end
+
+    # moments of f
+    fmoments = OffsetArray{eltype(f)}(undef, 0:norder)
+    for i = 0:norder
+        fmoments[i] = sum(f .* weights .* hp[i, :]) * sqrt(2.0 / t)
+    end
+
+    # derivatives of f
+    df = zero(f)
+    for i = 0:norder
+        df .+= fmoments[i] * hp[i+1, :] / factor[i]
+    end
+    @. df *= -sqrt(2.0 / t) * w
+
+    return df
+end
+
+"""
+$(SIGNATURES)
+
+Calculate the forcing term of distribution function in the Boltzmann equation
+"""
+function hermite_force(f::AV, u::AV, weights::AV, prim, norder, a)
+    return hermite_derivative(f, u, weights, prim, norder) .* a
 end

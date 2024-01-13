@@ -245,15 +245,7 @@ KitBase.rykov!(
 )
 
 # BIP
-KitBase.polyatomic_maxwellian!(
-    zeros(16),
-    zeros(16),
-    zeros(16),
-    randn(16),
-    rand(5),
-    2,
-    2,
-)
+KitBase.polyatomic_maxwellian!(zeros(16), zeros(16), zeros(16), randn(16), rand(5), 2, 2)
 KitBase.polyatomic_maxwellian!(
     zeros(16),
     zeros(16),
@@ -440,3 +432,9 @@ prim0 = quantum_conserve_prim(w0, 2, :fd)
 quantum_prim_conserve(prim0, 2, :fd)
 prim0 = quantum_conserve_prim(w0, 2, :be)
 quantum_prim_conserve(prim0, 2, :be)
+
+#--- Hermite ---#
+vs = VSpace1D(-5, 5, 36)
+prim = [2.0, 0.5, 0.6]
+f = maxwellian(vs.u, prim)
+df = hermite_force(f, vs.u, vs.weights, prim, 11, 1.0)

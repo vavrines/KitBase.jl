@@ -93,7 +93,7 @@ for iter in axes(xbis, 1)
     xbis[iter][1] = 3 - radius * cos(θ)
     xbis[iter][2] = radius * sin(θ)
 
-    nbis[iter] .= [- radius * cos(θ), radius * sin(θ)]
+    nbis[iter] .= [-radius * cos(θ), radius * sin(θ)]
 end
 xips = KB.ip_location(ps, ghost_ids, xbis)
 ip_cids, ip_nids, ip_bids = KB.ip_connectivity(ps, xips, flags)

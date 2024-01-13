@@ -106,6 +106,28 @@ KitBase.heat_flux(f2, f2, f2, rand(4), u2, u2, w2)
 KitBase.heat_flux(f3, rand(5), u3, u3, u3, w3)
 
 # multi-species polyatomic
-KitBase.mixture_polyatomic_moments_conserve(rand(8, 2), rand(8, 2), rand(8, 2), randn(8, 2), rand(8, 2))
-KitBase.mixture_polyatomic_moments_conserve(rand(8, 2), rand(8, 2), rand(8, 2), randn(8, 2), randn(8, 2), rand(8, 2), VDF{3,2})
-KitBase.mixture_polyatomic_moments_conserve(rand(8, 2), rand(8, 2), randn(8, 2), randn(8, 2), randn(8, 2), rand(8, 2), VDF{2,3})
+KitBase.mixture_polyatomic_moments_conserve(
+    rand(8, 2),
+    rand(8, 2),
+    rand(8, 2),
+    randn(8, 2),
+    rand(8, 2),
+)
+KitBase.mixture_polyatomic_moments_conserve(
+    rand(8, 2),
+    rand(8, 2),
+    rand(8, 2),
+    randn(8, 2),
+    randn(8, 2),
+    rand(8, 2),
+    VDF{3,2},
+)
+KitBase.mixture_polyatomic_moments_conserve(
+    rand(8, 2),
+    rand(8, 2),
+    randn(8, 2),
+    randn(8, 2),
+    randn(8, 2),
+    rand(8, 2),
+    VDF{2,3},
+)

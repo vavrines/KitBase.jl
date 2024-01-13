@@ -55,7 +55,7 @@ KitBase.flux_gks!(
     dx,
     dx,
     zeros(4),
-    zeros(4)
+    zeros(4),
 ) # 2D
 KitBase.flux_gks!(
     zeros(4, 2),
@@ -618,7 +618,21 @@ KitBase.flux_boundary_specular!(
 )
 
 #--- pure equilibrium flux ---#
-KitBase.flux_equilibrium!(fw, wL, wR, inK, γ, 1e-3, 0.81, 0.72, dt, dx, dx, zeros(3), zeros(3))
+KitBase.flux_equilibrium!(
+    fw,
+    wL,
+    wR,
+    inK,
+    γ,
+    1e-3,
+    0.81,
+    0.72,
+    dt,
+    dx,
+    dx,
+    zeros(3),
+    zeros(3),
+)
 KitBase.flux_equilibrium!(
     zeros(4),
     zeros(4),
