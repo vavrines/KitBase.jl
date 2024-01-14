@@ -10,6 +10,10 @@ KitBase.update!(ks, ctr, a1face, a2face, dt, zeros(4); coll = :bgk, bc = :extra)
 KitBase.update!(ks, ctr, a1face, a2face, dt, zeros(4); coll = :bgk, bc = :period)
 KitBase.update!(ks, ctr, a1face, a2face, dt, zeros(4); coll = :bgk, bc = :mirror)
 
+# boundary
+c1 = deepcopy(ctr[1])
+KB.bc_riemann!(c1, ctr[1], ks.vs.u, [1.0, 0.5, 0.0, 1.0], 5 / 3, 2, [1.0 / √2, 1.0 / √2])
+
 ks, ctr, a1face, a2face, simTime = KitBase.initialize("config_2d1f.txt")
 KitBase.reconstruct!(ks, ctr)
 KitBase.update!(ks, ctr, a1face, a2face, dt, zeros(4); coll = :bgk, bc = :maxwell)
