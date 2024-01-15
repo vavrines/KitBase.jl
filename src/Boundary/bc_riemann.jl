@@ -5,7 +5,7 @@ Inflow/outflow boundary condition using Riemann invariants
 
   - `ctr`: ghost control volume
   - `ctr0`: interior control volume
-  - `u`: velocity collocation points
+  - `u`,`v`: velocity collocation points
   - `prim`: primitive variables in the reference state
   - `γ`: heat capacity ratio
   - `K`: internal degrees of freedom
@@ -15,6 +15,7 @@ function bc_riemann!(
     ctr::T,
     ctr0::T,
     u,
+    v,
     prim,
     γ,
     K,
@@ -50,7 +51,7 @@ function bc_riemann!(
     ctr.prim .= global_frame([ρb, Ub, Vb, 0.5 * ρb / pb], n[1], n[2])
     ctr.w .= prim_conserve(ctr.prim, γ)
     ctr.sw .= 0.0
-    ctr.h .= maxwellian(u, ctr.prim)
+    ctr.h .= maxwellian(u, v, ctr.prim)
     ctr.b .= energy_maxwellian(ctr.h, ctr.prim, K)
     ctr.sh .= 0.0
     ctr.sb .= 0.0
