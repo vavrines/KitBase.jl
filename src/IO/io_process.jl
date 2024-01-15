@@ -17,10 +17,10 @@ end
 
 function extract_sol(ps::AbstractPhysicalSpace2D, ctr)
     nx, ny = begin
-        if KS.ps isa CSpace2D
-            KS.ps.nr, KS.ps.nθ
+        if ps isa CSpace2D
+            ps.nr, ps.nθ
         else
-            KS.ps.nx, KS.ps.ny
+            ps.nx, ps.ny
         end
     end
 
