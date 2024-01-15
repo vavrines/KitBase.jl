@@ -16,7 +16,15 @@ function extract_sol(ps::AbstractPhysicalSpace1D, ctr)
 end
 
 function extract_sol(ps::AbstractPhysicalSpace2D, ctr)
-    sol = zeros(ps.nx, ps.ny, axes(ctr[1].prim)...)
+    nx, ny = begin
+        if KS.ps isa CSpace2D
+            KS.ps.nr, KS.ps.nθ
+        else
+            KS.ps.nx, KS.ps.ny
+        end
+    end
+
+    sol = zeros(nx, ny, axes(ctr[1].prim)...)
     if ndims(sol) == 3
         for i in axes(sol, 1), j in axes(sol, 2)
             sol[i, j, :] .= ctr[i, j].prim
