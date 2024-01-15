@@ -504,3 +504,16 @@ function kinetic_entropy(α::AA, m::AA, weights::AV)
     B = KitBase.maxwell_boltzmann_dual_prime.(α' * m)[:]
     return sum(maxwell_boltzmann.(B) .* weights)
 end
+
+
+"""
+$(SIGNATURES)
+
+Calculate entropy from fluid variables
+"""
+fluid_entropy(ρ, c, γ) = c^2 / γ / ρ^(γ - 1.0)
+
+function fluid_entropy(prim::AV, γ)
+    c = sound_speed(prim, γ)
+    return fluid_entropy(prim[1], c, γ)
+end
