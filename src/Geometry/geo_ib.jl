@@ -73,7 +73,7 @@ $(SIGNATURES)
 Compute connectivity information of image points
 """
 function ip_connectivity(ps::AbstractPhysicalSpace2D, xips, flags)
-    ip_cids = Vector{CartesianIndex}(undef, 28)
+    ip_cids = Vector{CartesianIndex}(undef, length(xips))
     ip_nids = [CartesianIndex[] for i in eachindex(xips)]
     for iter in eachindex(xips)
         x, y = xips[iter]
