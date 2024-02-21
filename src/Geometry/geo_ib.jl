@@ -5,15 +5,24 @@ $(TYPEDEF)
 
 Structure of sharp-interface immersed boundary
 
+_R. Ghias et. al., A sharp interface immersed boundary method for compressible viscous ﬂows,
+J. Comput. Phys., 225, 528-553, 2007._
+
+## Nomenclature
+- solid cell: cells located in the solid
+- ghost cell (GC): solid cells used for boundary fluids computation
+- image point (IP): mirrored point of ghost cell with respect to the solid boundary
+- boundary intercept (BI): intersection of the GC-IP line and solid boundary
+
 ## Definition
 - `flags`: type of cell -> 1: fluid; 0: solid; -1: outer; -2: ghost
-- `idg`: index of ghost cells
-- `xb`: location of body intercept points
-- `nb`: normal vectors of body intercept points
-- `xi`: location of image points
-- `idic`: index of cell in which image points fall
-- `idin`: index of face intersection of interpolation stencil
-- `idib`: index of body intercept points in interpolation stencil
+- `idg`: Cartesian index of ghost cells (GC)
+- `xb`: location of body intercept (BI) points
+- `nb`: normal vectors of body intercept (BI) points
+- `xi`: location of image points (IP)
+- `idic`: index of cell in which image points (IP) fall
+- `idin`: index of face intersection for image points (IP) interpolation stencil
+- `idib`: index of body intercept (BI) points for image points (IP) interpolation stencil (Since the cells enclosing IP can include GC)
 """
 struct SharpIB{TI,TC,TF,T1,T2,T3} <: AbstractImmersedBoundary
     flags::TI
@@ -30,6 +39,8 @@ end
 $(SIGNATURES)
 
 Label ghost cells
+
+Should only be used with preprocessing of geometric and external boundary conditions
 """
 function ghost_flag!(ps::AbstractPhysicalSpace2D, flags)
     for j = 1:ps.ny
@@ -73,7 +84,7 @@ $(SIGNATURES)
 Compute connectivity information of image points
 """
 function ip_connectivity(ps::AbstractPhysicalSpace2D, xips, flags)
-    ip_cids = Vector{CartesianIndex}(undef, 28)
+    ip_cids = Vector{CartesianIndex}(undef, length(xips))
     ip_nids = [CartesianIndex[] for i in eachindex(xips)]
     for iter in eachindex(xips)
         x, y = xips[iter]
