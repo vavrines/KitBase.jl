@@ -438,3 +438,11 @@ vs = VSpace1D(-5, 5, 36)
 prim = [2.0, 0.5, 0.6]
 f = maxwellian(vs.u, prim)
 df = hermite_force(f, vs.u, vs.weights, prim, 11, 1.0)
+
+#--- Riemann solution ---#
+KB.sample_riemann_solution(
+    [-0.5, -0.2, 0.1, 0.3, 0.5],
+    0.2,
+    KB.HydroStatus(1.0, 0.0, 1.0, 1.4),
+    KB.HydroStatus(0.125, 0.0, 0.1, 1.4),
+)

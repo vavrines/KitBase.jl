@@ -16,6 +16,7 @@ import Base: *
 import BSON
 import JLD2
 import NonlinearSolve
+import Roots: Order1, find_zero
 import SciMLNLSolve: NLSolveJL
 using Base.Threads: @threads
 using CSV
