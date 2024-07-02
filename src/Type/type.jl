@@ -50,7 +50,7 @@ function copy_ctr!(
     ctr::T,
     ctr0::T,
 ) where {T<:Union{ControlVolume,ControlVolume1D,ControlVolume2D,ControlVolumeUS}}
-    ctr.w = ctr0.w
+    ctr.w .= ctr0.w
     ctr.prim .= ctr0.prim
     ctr.sw = ctr0.sw
 
