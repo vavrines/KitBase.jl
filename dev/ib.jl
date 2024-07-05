@@ -117,7 +117,7 @@ function ib_force!(ps, ctr, lps)
         for k in axes(fls, 1)
             δx = ps.x[i, j] - xs[k, 1]
             δy = ps.y[i, j] - ys[k, 1]
-            δ = dirac_delta(δx, δy, h, h)
+            δ = KB.dirac_delta(δx, δy, h, h)
             ctr[i, j].a[1] += fls[k, 1] * δ * ΔV
             ctr[i, j].a[2] += fls[k, 2] * δ * ΔV
         end

@@ -103,27 +103,27 @@ end
 # abs(μ) < 1.0e-14
 s, z = 1.5, 1.0
 μ, t = get_μt(z)
-polylog(s, z)
+KB.polylog(s, z)
 
 # abs(z) <= 0.5 && abs(z) < t
 z = 0.1
 μ, t = get_μt(z)
-polylog(s, z)
+KB.polylog(s, z)
 
 # t <= T && (abs(round(real(s)) - s) > tau_threshold || real(s) <= 0)
 s, z = -1.0, 1.0
 μ, t = get_μt(z)
-polylog(s, z)
+KB.polylog(s, z)
 
 # t <= T = 0.512
 s, z = 1.5, 0.5
 μ, t = get_μt(z)
-polylog(s, z)
+KB.polylog(s, z)
 
 # else
 s, z = 1.0, 100.0
 μ, t = get_μt(z)
-polylog(s, z)
+KB.polylog(s, z)
 
 KitBase.harmonic(9)
 KitBase.harmonic(9.0)
