@@ -12,17 +12,16 @@ end
 
 const KB = KitBase
 
-import Base: *
 import BSON
+import CSV
 import JLD2
 import NonlinearSolve
 import Roots: Order1, find_zero
 import SciMLNLSolve: NLSolveJL
+
 using Base.Threads: @threads
-using CSV
 using CUDA
 using Dates
-using Distributed
 using Distributions
 using FastGaussQuadrature
 using FFTW
@@ -41,6 +40,7 @@ using StaticArrays
 using StructArrays
 using TypedPolynomials
 using WriteVTK
+
 @reexport using FiniteMesh
 using FiniteMesh.DocStringExtensions
 using FiniteMesh.ProgressMeter
