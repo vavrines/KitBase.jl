@@ -2,6 +2,10 @@
 $(SIGNATURES)
 
 Generate array to store spatial slopes of solutions
+
+## Arguments
+* `w`: physical quantities
+* `reduction`: reduction true -> 2D, false -> 3D
 """
 slope_array(w::Number; kwargs...) = deepcopy(w)
 
