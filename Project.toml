@@ -1,7 +1,7 @@
 name = "KitBase"
 uuid = "86eed249-3a28-466f-8d3a-596821e1af9a"
 authors = ["Tianbai Xiao <tianbaixiao@gmail.com>"]
-version = "0.9.24"
+version = "0.9.25"
 
 [deps]
 BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
@@ -36,6 +36,7 @@ WriteVTK = "64499a7a-5c06-52f2-abe2-ccb03c286192"
 BSON = "0.3"
 CSV = "0.8, 0.9, 0.10"
 CUDA = "^2, ^3, ^4, ^5"
+Dates = "<0.0.1, 1"
 Distributions = "0.21, 0.22, 0.23, 0.24, 0.25"
 FFTW = "^1"
 FastGaussQuadrature = "0.2, 0.3, 0.4, 0.5, ^1"
@@ -43,11 +44,13 @@ FileIO = "^1"
 FiniteMesh = "0.3"
 ForwardDiff = "0.10"
 JLD2 = "0.4"
+LinearAlgebra = "<0.0.1, 1"
 MultivariatePolynomials = "0.3, 0.4, 0.5"
 NonlinearSolve = "^1, ^2, ^3"
 OffsetArrays = "^1"
 Optim = "^1"
 Parameters = "0.12"
+Printf = "<0.0.1, 1"
 RecipesBase = "^1"
 Reexport = "^1"
 Roots = "^2"
@@ -60,7 +63,6 @@ WriteVTK = "^1"
 julia = "^1"
 
 [extras]
-CPUSummary = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
