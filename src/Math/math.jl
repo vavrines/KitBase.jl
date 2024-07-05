@@ -2,10 +2,8 @@
 # Mathematical Methods
 # ============================================================
 
-export linspace, heaviside
-
 include("math_general.jl")
 include("math_difference.jl")
-include("sphere_harmonics.jl")
-include("sphere_monomials.jl")
-include("polylog.jl")
+include("math_harmonics.jl")
+include("math_monomials.jl")
+include("math_polylog.jl")
