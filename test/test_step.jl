@@ -3,14 +3,14 @@ begin
     fwR = zeros(3)
     γ = 5 / 3
     prim = [1.0, 0.0, 1.0]
-    w = KitBase.prim_conserve(prim, γ)
+    w = KB.prim_conserve(prim, γ)
     dx = 1e-2
     dt = 1e-3
     res = zeros(3)
     avg = zeros(3)
 end
 
-KitBase.step!(w, prim, fwL, fwR, γ, dx, res, avg)
+KB.step!(w, prim, fwL, fwR, γ, dx, res, avg)
 
 begin
     ffL = zeros(16)
@@ -20,7 +20,7 @@ begin
     ω = ones(16)
 end
 
-KitBase.step!(
+KB.step!(
     w,
     prim,
     f,
@@ -41,8 +41,8 @@ KitBase.step!(
     :bgk,
 )
 
-KitBase.step!(
-    KitBase.prim_conserve([1.0, 0.0, 0.0, 0.0, 1.0], γ),
+KB.step!(
+    KB.prim_conserve([1.0, 0.0, 0.0, 0.0, 1.0], γ),
     [1.0, 0.0, 0.0, 0.0, 1.0],
     rand(16, 16, 16),
     zeros(5),
@@ -64,7 +64,7 @@ KitBase.step!(
     :bgk,
 )
 
-KitBase.step!(
+KB.step!(
     w,
     prim,
     f,
@@ -88,7 +88,7 @@ KitBase.step!(
     avg,
     :bgk,
 )
-KitBase.step!(
+KB.step!(
     hcat(w, w),
     hcat(prim, prim),
     hcat(f, f),
@@ -117,9 +117,9 @@ KitBase.step!(
 )
 
 # fsm
-KitBase.step!(
+KB.step!(
     [1.0, 0.0, 0.0, 0.0, 1.0],
-    KitBase.conserve_prim([1.0, 0.0, 0.0, 0.0, 1.0], 5 / 3),
+    KB.conserve_prim([1.0, 0.0, 0.0, 0.0, 1.0], 5 / 3),
     rand(16, 16, 16),
     zeros(5),
     zeros(16, 16, 16),
@@ -137,9 +137,9 @@ KitBase.step!(
     zeros(5),
     :fsm,
 )
-KitBase.step!(
+KB.step!(
     [1.0, 0.0, 0.0, 0.0, 1.0],
-    KitBase.conserve_prim([1.0, 0.0, 0.0, 0.0, 1.0], 5 / 3),
+    KB.conserve_prim([1.0, 0.0, 0.0, 0.0, 1.0], 5 / 3),
     rand(16, 16, 16),
     zeros(5),
     zeros(16, 16, 16),
@@ -163,9 +163,9 @@ KitBase.step!(
 )
 
 # Rykov
-KitBase.step!(
+KB.step!(
     [1.0, 0.0, 1.0, 0.1],
-    KitBase.conserve_prim([1.0, 0.0, 1.0, 0.1], 2, 2),
+    KB.conserve_prim([1.0, 0.0, 1.0, 0.1], 2, 2),
     f,
     f,
     f,

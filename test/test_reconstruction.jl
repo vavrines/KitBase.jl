@@ -1,48 +1,48 @@
 sL = 0.13
 sR = -0.27
 
-KitBase.linear(sL, sR)
-KitBase.vanleer(sL, sR)
-KitBase.vanleer(sL, sR, sR)
-KitBase.vanleer(sL, sR, sR, 3)
-KitBase.minmod(sL, sR)
-KitBase.minmod(sL, sR, sR)
-KitBase.minmod(sL, sR, sR, 3)
-KitBase.vanalbaba(sL, sR)
-KitBase.superbee(0.5, 0.9)
-KitBase.superbee(-1.0, -0.8)
-KitBase.superbee(0.51, 2.01)
-KitBase.weno5(-2.0, -1.0, 0.0, 1.0, 2.0)
+KB.linear(sL, sR)
+KB.vanleer(sL, sR)
+KB.vanleer(sL, sR, sR)
+KB.vanleer(sL, sR, sR, 3)
+KB.minmod(sL, sR)
+KB.minmod(sL, sR, sR)
+KB.minmod(sL, sR, sR, 3)
+KB.vanalbaba(sL, sR)
+KB.superbee(0.5, 0.9)
+KB.superbee(-1.0, -0.8)
+KB.superbee(0.51, 2.01)
+KB.weno5(-2.0, -1.0, 0.0, 1.0, 2.0)
 
 wL = rand(3)
 wR = randn(3)
 dx = 1e-2
 
-KitBase.reconstruct2(sL, sR, dx)
-KitBase.reconstruct2(wL, wR, dx)
-KitBase.reconstruct2(randn(3, 2), randn(3, 2), dx)
-KitBase.reconstruct2(randn(3, 2, 2), randn(3, 2, 2), dx)
+KB.reconstruct2(sL, sR, dx)
+KB.reconstruct2(wL, wR, dx)
+KB.reconstruct2(randn(3, 2), randn(3, 2), dx)
+KB.reconstruct2(randn(3, 2, 2), randn(3, 2, 2), dx)
 
-KitBase.reconstruct2!(similar(wL), wL, wR, dx)
-KitBase.reconstruct2!(randn(3, 2), randn(3, 2), randn(3, 2), dx)
-KitBase.reconstruct2!(randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), dx)
+KB.reconstruct2!(similar(wL), wL, wR, dx)
+KB.reconstruct2!(randn(3, 2), randn(3, 2), randn(3, 2), dx)
+KB.reconstruct2!(randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), dx)
 
 wN = rand(3)
 
-KitBase.reconstruct3(sL, rand(), sR, dx, dx, :linear)
-KitBase.reconstruct3(sL, rand(), sR, dx, dx, :vanleer)
-KitBase.reconstruct3(sL, rand(), sR, dx, dx, :minmod)
-KitBase.reconstruct3(wL, wN, wR, dx, dx, :linear)
-KitBase.reconstruct3(wL, wN, wR, dx, dx, :vanleer)
-KitBase.reconstruct3(wL, wN, wR, dx, dx, :minmod)
-KitBase.reconstruct3(randn(3, 2), randn(3, 2), randn(3, 2), dx, dx)
-KitBase.reconstruct3(randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), dx, dx)
+KB.reconstruct3(sL, rand(), sR, dx, dx, :linear)
+KB.reconstruct3(sL, rand(), sR, dx, dx, :vanleer)
+KB.reconstruct3(sL, rand(), sR, dx, dx, :minmod)
+KB.reconstruct3(wL, wN, wR, dx, dx, :linear)
+KB.reconstruct3(wL, wN, wR, dx, dx, :vanleer)
+KB.reconstruct3(wL, wN, wR, dx, dx, :minmod)
+KB.reconstruct3(randn(3, 2), randn(3, 2), randn(3, 2), dx, dx)
+KB.reconstruct3(randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), dx, dx)
 
-KitBase.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :linear)
-KitBase.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :vanleer)
-KitBase.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :minmod)
-KitBase.reconstruct3!(randn(3, 2), randn(3, 2), randn(3, 2), randn(3, 2), dx, dx)
-KitBase.reconstruct3!(
+KB.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :linear)
+KB.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :vanleer)
+KB.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :minmod)
+KB.reconstruct3!(randn(3, 2), randn(3, 2), randn(3, 2), randn(3, 2), dx, dx)
+KB.reconstruct3!(
     randn(3, 2, 2),
     randn(3, 2, 2),
     randn(3, 2, 2),
@@ -50,7 +50,7 @@ KitBase.reconstruct3!(
     dx,
     dx,
 )
-KitBase.reconstruct3!(
+KB.reconstruct3!(
     randn(3, 2, 2, 2),
     randn(3, 2, 2, 2),
     randn(3, 2, 2, 2),
@@ -59,7 +59,7 @@ KitBase.reconstruct3!(
     dx,
 )
 
-KitBase.weno5(-2.0, -1.0, 0.0, 1.0, 2.0)
+KB.weno5(-2.0, -1.0, 0.0, 1.0, 2.0)
 
 #--- filter ---#
 let deg = 2, u = rand(deg + 1)

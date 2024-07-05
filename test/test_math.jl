@@ -2,12 +2,12 @@ x0 = 0
 x1 = 1
 nx = 5
 
-KitBase.linspace(x0, x1, nx)
-KitBase.heaviside(x0)
-KitBase.fortsign(x0, x1)
+KB.linspace(x0, x1, nx)
+KB.heaviside(x0)
+KB.fortsign(x0, x1)
 
-KitBase.mat_split(randn(2, 2))
-KitBase.mat_split(randn(3, 3))
+KB.mat_split(randn(2, 2))
+KB.mat_split(randn(3, 3))
 
 KB.convergence_order(1e-2, 1e-3)
 KB.L1_error(rand(3), rand(3), 1e-2)
@@ -16,67 +16,67 @@ KB.L∞_error(rand(3), rand(3), 1e-2)
 
 x = randn(16)
 y = randn(16)
-KitBase.@nametuple x y # NamedTuple constructor
-KitBase.central_diff(y, x)
-KitBase.central_diff(y, x0)
-KitBase.central_diff2(y, x)
-KitBase.central_diff2(y, x0)
+KB.@nametuple x y # NamedTuple constructor
+KB.central_diff(y, x)
+KB.central_diff(y, x0)
+KB.central_diff2(y, x)
+KB.central_diff2(y, x0)
 
 res = similar(x)
-KitBase.central_diff!(res, y, x)
-KitBase.central_diff!(res, y, x0)
-KitBase.central_diff2!(res, y, x)
-KitBase.central_diff2!(res, y, x0)
+KB.central_diff!(res, y, x)
+KB.central_diff!(res, y, x0)
+KB.central_diff2!(res, y, x)
+KB.central_diff2!(res, y, x0)
 
-KitBase.upwind_diff(y, x; stream = :right)
-KitBase.upwind_diff(y, x; stream = :left)
-KitBase.upwind_diff(y, x0)
+KB.upwind_diff(y, x; stream = :right)
+KB.upwind_diff(y, x; stream = :left)
+KB.upwind_diff(y, x0)
 
-KitBase.upwind_diff!(res, y, x)
-KitBase.upwind_diff!(res, y, x0)
+KB.upwind_diff!(res, y, x)
+KB.upwind_diff!(res, y, x0)
 
-KitBase.unstruct_diff(y, x, 4; mode = :central)
-KitBase.unstruct_diff(y, x, 4; mode = :upwind)
-KitBase.unstruct_diff(sin, randn(12), 4, 1)
-KitBase.unstruct_diff(sin, randn(12), 4, 2)
+KB.unstruct_diff(y, x, 4; mode = :central)
+KB.unstruct_diff(y, x, 4; mode = :upwind)
+KB.unstruct_diff(sin, randn(12), 4, 1)
+KB.unstruct_diff(sin, randn(12), 4, 2)
 
-KitBase.lgwt(12, -1, 1)
+KB.lgwt(12, -1, 1)
 
 #--- entropy closure ---#
-KitBase.maxwell_boltzmann(rand())
-KitBase.maxwell_boltzmann_prime(rand())
-KitBase.maxwell_boltzmann_dual(rand())
-KitBase.maxwell_boltzmann_dual_prime(rand())
+KB.maxwell_boltzmann(rand())
+KB.maxwell_boltzmann_prime(rand())
+KB.maxwell_boltzmann_dual(rand())
+KB.maxwell_boltzmann_dual_prime(rand())
 
 quadratureorder = 2
-points, weights = KitBase.octa_quadrature(quadratureorder)
+points, weights = KB.octa_quadrature(quadratureorder)
 nq = size(points, 1)
 L = 1
 ne = (L + 1)^2
 
 α = zeros(ne)
 u = [2.0, 0.0, 0.0, 0.0]
-m = KitBase.eval_spherharmonic(points, L)
+m = KB.eval_spherharmonic(points, L)
 
-KitBase.eval_sphermonomial(rand(6), L)
-KitBase.eval_sphermonomial(points, L)
+KB.eval_sphermonomial(rand(6), L)
+KB.eval_sphermonomial(points, L)
 
-KitBase.kinetic_entropy(α, m, weights)
+KB.kinetic_entropy(α, m, weights)
 
 using KitBase.TypedPolynomials
 @polyvar _x _y _z
-KitBase.rlylm(2, 2, _x, _y, _z)
+KB.rlylm(2, 2, _x, _y, _z)
 
-res = KitBase.optimize_closure(α, m, weights, u, KitBase.maxwell_boltzmann_dual)
-u1 = KitBase.realizable_reconstruct(
+res = KB.optimize_closure(α, m, weights, u, KB.maxwell_boltzmann_dual)
+u1 = KB.realizable_reconstruct(
     res.minimizer,
     m,
     weights,
-    KitBase.maxwell_boltzmann_dual_prime,
+    KB.maxwell_boltzmann_dual_prime,
 )
 
-using Distributions
-u = KitBase.linspace(-5, 5, 100)
+using KitBase.Distributions
+u = KB.linspace(-5, 5, 100)
 m = moment_basis(u, 4)
 mm = moment_basis(u, u, 4)
 mmm = moment_basis(u, u, u, 4)
@@ -122,32 +122,32 @@ s, z = 1.0, 100.0
 μ, t = get_μt(z)
 KB.polylog(s, z)
 
-KitBase.harmonic(9)
-KitBase.harmonic(9.0)
-KitBase.harmonic(0, 9.0)
-KitBase.harmonic(1, 9.0)
-KitBase.harmonic(2, 9.0)
-KitBase.harmonic(2, 1)
+KB.harmonic(9)
+KB.harmonic(9.0)
+KB.harmonic(0, 9.0)
+KB.harmonic(1, 9.0)
+KB.harmonic(2, 9.0)
+KB.harmonic(2, 1)
 
-KitBase.f_crandall(0, 0)
-KitBase.f_crandall(0, 1)
-KitBase.f_crandall(1, 0)
-KitBase.f_crandall(1, 1)
+KB.f_crandall(0, 0)
+KB.f_crandall(0, 1)
+KB.f_crandall(1, 0)
+KB.f_crandall(1, 1)
 
-KitBase.g_crandall(1)
-KitBase.b_crandall(1, 1, 1)
-KitBase.c_crandall(1, 1, 1)
+KB.g_crandall(1)
+KB.b_crandall(1, 1, 1)
+KB.c_crandall(1, 1, 1)
 
-KitBase.Q(1, 0, 1)
-KitBase.Q(1, 1, 1)
-KitBase.Q_closed(1, 1, 1)
+KB.Q(1, 0, 1)
+KB.Q(1, 1, 1)
+KB.Q_closed(1, 1, 1)
 
-KitBase.c_closed(1, 0, 1)
-KitBase.c_closed(1, 1, 1)
-KitBase.c_closed(1, 2, 1)
+KB.c_closed(1, 0, 1)
+KB.c_closed(1, 1, 1)
+KB.c_closed(1, 2, 1)
 
-KitBase.dirac_delta(1)
-KitBase.dirac_delta(1, KitBase.Class{2})
-KitBase.dirac_delta(1, KitBase.Class{3})
-KitBase.dirac_delta(1, 1, 0.1, 0.1)
-KitBase.dirac_delta(1, 1, 0.1, 0.1, KitBase.Class{3})
+KB.dirac_delta(1)
+KB.dirac_delta(1, KB.Class{2})
+KB.dirac_delta(1, KB.Class{3})
+KB.dirac_delta(1, 1, 0.1, 0.1)
+KB.dirac_delta(1, 1, 0.1, 0.1, KB.Class{3})
