@@ -60,7 +60,7 @@ function extract_wall(bc, h, b, u, v, ω, inK, γ, rot)
     bWall = B .* δ .+ b .* (1.0 .- δ)
 
     w = moments_conserve(hWall, bWall, u, v, ω, VDF{2,2})
-    prim = conserve_prim(w, γ)    
+    prim = conserve_prim(w, γ)
 
     wp = pressure(hWall, bWall, prim, u, v, ω, inK, VDF{2,2})
     ws = sum(ω .* u * v * hWall)
@@ -73,15 +73,5 @@ function extract_wall(ctr, bc, vs, inK, γ, n, rot)
     vn, vt = local_velocity(vs.u, vs.v, n)
     bcL = local_frame(bc, n)
 
-    return extract_wall(
-        bcL,
-        ctr.h,
-        ctr.b,
-        vn,
-        vt,
-        vs.weights,
-        inK,
-        γ,
-        rot,
-    )
+    return extract_wall(bcL, ctr.h, ctr.b, vn, vt, vs.weights, inK, γ, rot)
 end
