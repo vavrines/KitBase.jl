@@ -35,7 +35,7 @@ export Flux1D, Flux2D
 export Particle, Particle1D, Particle2D
 export ControlVolumeParticle1D, ControlVolumeParticle2D
 
-include("abstract.jl")
+include("struct_abstract.jl")
 include("struct_dispatch.jl")
 include("struct_setup.jl")
 include("struct_property.jl")
