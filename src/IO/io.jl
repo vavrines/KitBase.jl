@@ -2,9 +2,7 @@
 # I / O Methods
 # ============================================================
 
-export extract_sol, extract_wall
-export read_cfg, read_dict
-export write_sol, write_jld, write_bson, write_vtk, write_tec
+export read_cfg, read_dict, extract_sol, write_sol
 
 include("io_process.jl")
 include("io_read.jl")

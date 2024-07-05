@@ -2,6 +2,8 @@
 # Mathematical Methods
 # ============================================================
 
+export linspace, heaviside
+
 include("math_general.jl")
 include("math_difference.jl")
 include("math_harmonics.jl")

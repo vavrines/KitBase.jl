@@ -2,8 +2,6 @@
 # Initial & Boundary Conditions of Specific Problems
 # ============================================================
 
-export config_ib
-
 include("cfg_advection.jl")
 include("cfg_rh.jl")
 include("cfg_sod.jl")
