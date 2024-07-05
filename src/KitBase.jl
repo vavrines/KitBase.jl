@@ -1,7 +1,7 @@
 """
-KitBase.jl: The lightweight module of physical formulations in Kinetic.jl
+KitBase.jl: The lightweight module of solution algorithms in Kinetic.jl
 
-Copyright (c) 2020-2023 Tianbai Xiao <tianbaixiao@gmail.com>
+Copyright (c) 2020-2024 Tianbai Xiao <tianbaixiao@gmail.com>
 """
 
 module KitBase
@@ -10,7 +10,7 @@ if VERSION < v"1.3"
     @warn "To use all the features of Kinetic, please upgrade to Julia 1.3 or newer."
 end
 
-export KB
+const KB = KitBase
 
 import Base: *
 import BSON
@@ -47,7 +47,7 @@ using FiniteMesh.ProgressMeter
 
 include("Data/data.jl")
 include("Macro/macro.jl")
-include("Type/type.jl")
+include("Struct/struct.jl")
 include("IO/io.jl")
 include("Math/math.jl")
 include("Geometry/geometry.jl")
@@ -60,6 +60,6 @@ include("Config/config.jl")
 include("Boundary/boundary.jl")
 include("Solver/solver.jl")
 
-const KB = KitBase
+export KB
 
 end
