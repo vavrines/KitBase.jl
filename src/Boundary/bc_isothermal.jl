@@ -2,6 +2,11 @@
 # Isothermal Wall Functions
 # ============================================================
 
+"""
+$(SIGNATURES)
+
+Isothermal boundary condition
+"""
 function bc_isothermal!(
     ctr::T,
     ctr1::T,

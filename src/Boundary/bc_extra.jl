@@ -2,6 +2,11 @@
 # Extrapolation Functions
 # ============================================================
 
+"""
+$(SIGNATURES)
+
+Extrapolation boundary condition
+"""
 function bc_extra!(ctr::AV, ng = 1::Integer; dirc)
     if Symbol(dirc) in (:xl, :xL)
         for i = 1:ng
@@ -17,6 +22,9 @@ function bc_extra!(ctr::AV, ng = 1::Integer; dirc)
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function bc_extra!(ctr::AM, ng = 1::Integer; dirc)
     if Symbol(dirc) in (:xl, :xL)
         for j in axes(ctr, 2), i = 1:ng

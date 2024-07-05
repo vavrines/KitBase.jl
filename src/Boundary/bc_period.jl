@@ -2,6 +2,11 @@
 # Period Functions
 # ============================================================
 
+"""
+$(SIGNATURES)
+
+Periodic boundary condition
+"""
 function bc_period!(ctr::AV, ng = 1)
     nx = length(ctr) - 2 * ng
 
@@ -13,6 +18,9 @@ function bc_period!(ctr::AV, ng = 1)
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function bc_period!(ctr::AM, ng; dirc)
     if dirc == :x
         nx = size(ctr, 1) - 2 * ng
