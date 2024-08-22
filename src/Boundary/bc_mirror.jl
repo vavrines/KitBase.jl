@@ -2,6 +2,11 @@
 # Mirroring Functions
 # ============================================================
 
+"""
+$(SIGNATURES)
+
+Mirror boundary condition
+"""
 function bc_mirror!(ctr::AM, ng = 1::Integer; dirc)
     if Symbol(dirc) in (:xl, :xL)
         for j in axes(ctr, 2), i = 1:ng
@@ -26,6 +31,9 @@ function bc_mirror!(ctr::AM, ng = 1::Integer; dirc)
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function bc_mirror!(ctr::T, ctr0::T, dirc) where {T<:Union{ControlVolume,ControlVolume2D}}
     copy_ctr!(ctr, ctr0)
 
@@ -42,6 +50,9 @@ function bc_mirror!(ctr::T, ctr0::T, dirc) where {T<:Union{ControlVolume,Control
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function bc_mirror!(
     ctr::T,
     ctr0::T,
@@ -73,6 +84,9 @@ function bc_mirror!(
     return nothing
 end
 
+"""
+$(SIGNATURES)
+"""
 function bc_mirror!(
     ctr::T,
     ctr0::T,

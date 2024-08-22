@@ -3,15 +3,15 @@ begin
     γ = 5 / 3
     wL = [1.13, 0.13, 0.8]
     wR = [0.3, -0.2, 1.5]
-    primL = KitBase.conserve_prim(wL, γ)
-    primR = KitBase.conserve_prim(wR, γ)
+    primL = KB.conserve_prim(wL, γ)
+    primR = KB.conserve_prim(wR, γ)
 
     u = collect(-5.0:0.2:5.0)
     ω = ones(length(u)) / length(u)
 
-    hL = KitBase.maxwellian(u, primL)
+    hL = KB.maxwellian(u, primL)
     bL = hL .* inK ./ (2.0 * primL[end])
-    hR = KitBase.maxwellian(u, primR)
+    hR = KB.maxwellian(u, primR)
     bR = hR .* inK ./ (2.0 * primR[end])
 
     dt = 1e-3
@@ -23,26 +23,26 @@ begin
 end
 
 #--- fluid flux ---#
-KitBase.flux_upwind(rand(), rand(), rand(2), rand(2), dt)
-KitBase.flux_lax!(fw, wL, wR, γ, dt, dx)
-KitBase.flux_hll!(fw, wL, wR, γ, dt)
-KitBase.flux_hllc!(fw, wL, wR, γ, dt)
+KB.flux_upwind(rand(), rand(), rand(2), rand(2), dt)
+KB.flux_lax!(fw, wL, wR, γ, dt, dx)
+KB.flux_hll!(fw, wL, wR, γ, dt)
+KB.flux_hllc!(fw, wL, wR, γ, dt)
 fw1 = zeros(4)
-KitBase.flux_hllc!(fw1, [wL[1:2]; 0.0; wL[end]], [wR[1:2]; 0.0; wR[end]], γ, dt)
-KitBase.flux_roe!(fw, wL, wR, γ, dt)
-KitBase.flux_roe!(zeros(4), [1.0, 0.3, 0.0, 1.0], [0.3, -0.1, 0.0, 2.0], γ, dt)
+KB.flux_hllc!(fw1, [wL[1:2]; 0.0; wL[end]], [wR[1:2]; 0.0; wR[end]], γ, dt)
+KB.flux_roe!(fw, wL, wR, γ, dt)
+KB.flux_roe!(zeros(4), [1.0, 0.3, 0.0, 1.0], [0.3, -0.1, 0.0, 2.0], γ, dt)
 
 #--- gks flux ---#
-KitBase.flux_gks(0.3, 1e-3, dt)
-KitBase.flux_gks(0.3, 1e-3, dt, 1e-1, 1.0)
-KitBase.flux_gks(1.0, 0.125, 1e-3, dt, 1e-2, 1e-2)
+KB.flux_gks(0.3, 1e-3, dt)
+KB.flux_gks(0.3, 1e-3, dt, 1e-1, 1.0)
+KB.flux_gks(1.0, 0.125, 1e-3, dt, 1e-2, 1e-2)
 
-KitBase.flux_gks!(zeros(3), [1.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
-KitBase.flux_gks!(zeros(4), [1.0, 0.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
-KitBase.flux_gks!(zeros(5), [1.0, 0.0, 0.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
+KB.flux_gks!(zeros(3), [1.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
+KB.flux_gks!(zeros(4), [1.0, 0.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
+KB.flux_gks!(zeros(5), [1.0, 0.0, 0.0, 0.0, 2.0], inK, γ, 1e-3, 0.72)
 
-KitBase.flux_gks!(fw, wL, wR, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
-KitBase.flux_gks!(
+KB.flux_gks!(fw, wL, wR, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
+KB.flux_gks!(
     zeros(4),
     [1.0, 0.3, 0.0, 1.0],
     [0.3, -0.1, 0.0, 2.0],
@@ -57,7 +57,7 @@ KitBase.flux_gks!(
     zeros(4),
     zeros(4),
 ) # 2D
-KitBase.flux_gks!(
+KB.flux_gks!(
     zeros(4, 2),
     hcat([1.0, 0.3, 0.0, 1.0], [1.0, 0.3, 0.0, 1.0]),
     hcat([0.3, -0.1, 0.0, 2.0], [0.3, -0.1, 0.0, 2.0]),
@@ -75,7 +75,7 @@ KitBase.flux_gks!(
     zeros(4, 2),
     zeros(4, 2),
 ) # mixture
-KitBase.flux_gks!(
+KB.flux_gks!(
     zeros(4),
     [1.0, 0.3, 0.0, 1.0],
     [0.3, -0.1, 0.0, 2.0],
@@ -87,9 +87,9 @@ KitBase.flux_gks!(
 ) # FR
 
 # discrete
-KitBase.flux_gks!(fw, fh, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
-KitBase.flux_gks!(fw, fh, fb, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
-KitBase.flux_gks!(
+KB.flux_gks!(fw, fh, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
+KB.flux_gks!(fw, fh, fb, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
+KB.flux_gks!(
     zeros(4),
     zeros(16, 16),
     [1.0, 0.3, 0.0, 1.0],
@@ -107,7 +107,7 @@ KitBase.flux_gks!(
     zeros(4),
     zeros(4),
 ) # 2D
-KitBase.flux_gks!(
+KB.flux_gks!(
     zeros(4),
     zeros(16, 16),
     zeros(16, 16),
@@ -127,7 +127,7 @@ KitBase.flux_gks!(
     zeros(4),
 ) # 2D
 
-KitBase.flux_ugks!(
+KB.flux_ugks!(
     fw,
     fh,
     fb,
@@ -148,7 +148,7 @@ KitBase.flux_ugks!(
     dx,
     dx,
 )
-KitBase.flux_ugks!(
+KB.flux_ugks!(
     zeros(4),
     zeros(28, 28),
     zeros(28, 28),
@@ -171,7 +171,7 @@ KitBase.flux_ugks!(
     dx,
     dx,
 )
-KitBase.flux_ugks!(
+KB.flux_ugks!(
     zeros(5, 2),
     zeros(16, 16, 2),
     zeros(16, 16, 2),
@@ -201,10 +201,10 @@ KitBase.flux_ugks!(
 )
 
 #--- kfvs flux ---#
-KitBase.flux_kfvs(hL, hR, u, dt)
-KitBase.flux_kfvs!(fh, hL, hR, u, dt)
-KitBase.flux_kfvs!(fw, fh, hL, hR, u, ω, dt)
-KitBase.flux_kfvs!(
+KB.flux_kfvs(hL, hR, u, dt)
+KB.flux_kfvs!(fh, hL, hR, u, dt)
+KB.flux_kfvs!(fw, fh, hL, hR, u, ω, dt)
+KB.flux_kfvs!(
     zeros(3, 2),
     zeros(16, 2),
     rand(16, 2),
@@ -213,8 +213,8 @@ KitBase.flux_kfvs!(
     ones(16, 2),
     dt,
 )
-KitBase.flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, ω, dt)
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(fw, fh, fb, hL, bL, hR, bR, u, ω, dt)
+KB.flux_kfvs!(
     zeros(3, 2),
     zeros(16, 2),
     zeros(16, 2),
@@ -226,8 +226,8 @@ KitBase.flux_kfvs!(
     ones(16, 2),
     dt,
 )
-KitBase.flux_kfvs!(zeros(4), fh, fb, zero(fh), hL, bL, bL, hR, bR, bR, u, ω, dt) # Rykov
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(zeros(4), fh, fb, zero(fh), hL, bL, bL, hR, bR, bR, u, ω, dt) # Rykov
+KB.flux_kfvs!(
     zeros(5),
     zeros(16, 16, 16),
     rand(16, 16, 16),
@@ -238,7 +238,7 @@ KitBase.flux_kfvs!(
     ones(16, 16, 16),
     dt,
 )
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(
     zeros(5),
     zeros(16, 16, 16),
     rand(16, 16, 16),
@@ -250,7 +250,7 @@ KitBase.flux_kfvs!(
     dt,
     1.0,
 )
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(
     zeros(5),
     zeros(16),
     zeros(16),
@@ -268,7 +268,7 @@ KitBase.flux_kfvs!(
     ones(16),
     dt,
 )
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(
     zeros(5, 2),
     zeros(16, 2),
     zeros(16, 2),
@@ -286,7 +286,7 @@ KitBase.flux_kfvs!(
     ones(16, 2),
     dt,
 )
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(
     zeros(4),
     zeros(16, 16),
     rand(16, 16),
@@ -297,7 +297,7 @@ KitBase.flux_kfvs!(
     dt,
     dx,
 )
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(
     zeros(4),
     zeros(16, 16),
     zeros(16, 16),
@@ -312,7 +312,7 @@ KitBase.flux_kfvs!(
     dx,
 )
 # 3F2V
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(
     zeros(5),
     zeros(16, 16),
     zeros(16, 16),
@@ -329,7 +329,7 @@ KitBase.flux_kfvs!(
     dt,
     dx,
 )
-KitBase.flux_kfvs!(
+KB.flux_kfvs!(
     zeros(5, 2),
     zeros(16, 16, 2),
     zeros(16, 16, 2),
@@ -349,8 +349,8 @@ KitBase.flux_kfvs!(
 
 #--- kinetic central-upwind flux ---#
 # 1F1V
-KitBase.flux_kcu!(fw, fh, wL, hL, wR, hR, u, ω, inK, γ, 1e-3, 0.81, 0.72, dt)
-KitBase.flux_kcu!(
+KB.flux_kcu!(fw, fh, wL, hL, wR, hR, u, ω, inK, γ, 1e-3, 0.81, 0.72, dt)
+KB.flux_kcu!(
     hcat(fw, fw),
     hcat(fh, fh),
     hcat(wL, wL),
@@ -369,8 +369,8 @@ KitBase.flux_kcu!(
     dt,
 )
 # 2F1V
-KitBase.flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, ω, inK, γ, 1e-3, 0.81, 0.72, dt)
-KitBase.flux_kcu!(
+KB.flux_kcu!(fw, fh, fb, wL, hL, bL, wR, hR, bR, u, ω, inK, γ, 1e-3, 0.81, 0.72, dt)
+KB.flux_kcu!(
     zeros(3, 2),
     zeros(16, 2),
     zeros(16, 2),
@@ -392,7 +392,7 @@ KitBase.flux_kcu!(
     dt,
 )
 # 4F1V
-KitBase.flux_kcu!(
+KB.flux_kcu!(
     zeros(5),
     zeros(16),
     zeros(16),
@@ -417,7 +417,7 @@ KitBase.flux_kcu!(
     0.72,
     dt,
 )
-KitBase.flux_kcu!(
+KB.flux_kcu!(
     zeros(5, 2),
     zeros(16, 2),
     zeros(16, 2),
@@ -445,7 +445,7 @@ KitBase.flux_kcu!(
     dt,
 )
 # 1F2V
-KitBase.flux_kcu!(
+KB.flux_kcu!(
     zeros(4),
     zeros(16, 16),
     zeros(4),
@@ -464,7 +464,7 @@ KitBase.flux_kcu!(
     dx,
 )
 # 2F2V
-KitBase.flux_kcu!(
+KB.flux_kcu!(
     zeros(4),
     zeros(16, 16),
     zeros(16, 16),
@@ -486,7 +486,7 @@ KitBase.flux_kcu!(
     dx,
 )
 # 3F2V
-KitBase.flux_kcu!(
+KB.flux_kcu!(
     zeros(5),
     zeros(16, 16),
     zeros(16, 16),
@@ -510,7 +510,7 @@ KitBase.flux_kcu!(
     dt,
     dx,
 )
-KitBase.flux_kcu!(
+KB.flux_kcu!(
     zeros(5, 2),
     zeros(16, 16, 2),
     zeros(16, 16, 2),
@@ -538,8 +538,8 @@ KitBase.flux_kcu!(
 )
 
 #--- boundary flux ---#
-KitBase.flux_boundary_maxwell!(zeros(3), rand(3), [1.0, 0.0, 1.0], 2.0, 5 / 3, 1e-3, 1)
-KitBase.flux_boundary_maxwell!(
+KB.flux_boundary_maxwell!(zeros(3), rand(3), [1.0, 0.0, 1.0], 2.0, 5 / 3, 1e-3, 1)
+KB.flux_boundary_maxwell!(
     zeros(4),
     rand(4),
     [1.0, 0.0, 0.0, 1.0],
@@ -549,7 +549,7 @@ KitBase.flux_boundary_maxwell!(
     1e-2,
     1,
 )
-KitBase.flux_boundary_maxwell!(
+KB.flux_boundary_maxwell!(
     zeros(3),
     zeros(16),
     zeros(16),
@@ -562,7 +562,7 @@ KitBase.flux_boundary_maxwell!(
     dt,
     1,
 )
-KitBase.flux_boundary_maxwell!(
+KB.flux_boundary_maxwell!(
     zeros(4),
     zeros(16, 16),
     zeros(16, 16),
@@ -577,7 +577,7 @@ KitBase.flux_boundary_maxwell!(
     dx,
     1,
 )
-KitBase.flux_boundary_maxwell!(
+KB.flux_boundary_maxwell!(
     zeros(5),
     zeros(16, 16, 16),
     [1.0, 0.3, 0.1, 0.1, 0.89],
@@ -591,7 +591,7 @@ KitBase.flux_boundary_maxwell!(
     1,
 )
 # mixture
-KitBase.flux_boundary_maxwell!(
+KB.flux_boundary_maxwell!(
     zeros(3, 2),
     zeros(16, 2),
     zeros(16, 2),
@@ -605,8 +605,8 @@ KitBase.flux_boundary_maxwell!(
     1,
 )
 
-KitBase.flux_boundary_specular!(zeros(3), zeros(16), rand(16), randn(16), ones(16), dt)
-KitBase.flux_boundary_specular!(
+KB.flux_boundary_specular!(zeros(3), zeros(16), rand(16), randn(16), ones(16), dt)
+KB.flux_boundary_specular!(
     zeros(3),
     zeros(16),
     zeros(16),
@@ -618,7 +618,7 @@ KitBase.flux_boundary_specular!(
 )
 
 #--- pure equilibrium flux ---#
-KitBase.flux_equilibrium!(
+KB.flux_equilibrium!(
     fw,
     wL,
     wR,
@@ -633,7 +633,7 @@ KitBase.flux_equilibrium!(
     zeros(3),
     zeros(3),
 )
-KitBase.flux_equilibrium!(
+KB.flux_equilibrium!(
     zeros(4),
     zeros(4),
     zeros(4),
@@ -693,7 +693,7 @@ An[8, 8] = -(sol * ν) / 2.0
 # eigenvalues
 D = [sol, sol, sol * χ, sol * ν, -sol, -sol, -sol * χ, -sol * ν]
 
-KitBase.flux_em!(
+KB.flux_em!(
     zeros(8),
     zeros(8),
     randn(3),
@@ -718,7 +718,7 @@ KitBase.flux_em!(
     1.0,
     dt,
 )
-KitBase.flux_emx!(
+KB.flux_emx!(
     zeros(8),
     zeros(8),
     zeros(8),
@@ -749,7 +749,7 @@ KitBase.flux_emx!(
     1.0,
     dt,
 )
-KitBase.flux_emy!(
+KB.flux_emy!(
     zeros(8),
     zeros(8),
     zeros(8),

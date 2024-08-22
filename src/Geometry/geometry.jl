@@ -3,10 +3,8 @@
 # ============================================================
 
 export PSpace1D, PSpace2D, CSpace2D, PSpace3D, UnstructPSpace
-export set_geometry
-export global_frame, local_frame, local_velocity, unit_normal, point_distance
-export uniform_mesh, ndgrid, meshgrid, find_idx
-export AbstractImmersedBoundary, SharpIB
+export global_frame, local_frame, uniform_mesh
+export SharpIB
 
 include("geo_general.jl")
 include("geo_struct.jl")

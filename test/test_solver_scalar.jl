@@ -22,7 +22,7 @@ ib = IB((x, y) -> sin(2π * x), nothing, nothing)
 ks = SolverSet(set, pSpace, vSpace, property, ib)
 SolverSet(set, pSpace, property)
 
-ctr, face = KitBase.init_fvm(ks)
+ctr, face = KB.init_fvm(ks)
 for i in eachindex(ctr)
     ctr[i].w = sin(2π * ks.ps.x[i])
 end

@@ -2,24 +2,9 @@
 # Type Hierarchy
 # ============================================================
 
-export AbstractSolverSet
-export AbstractSetup, AbstractCondition
-export AbstractProperty, AbstractGas, AbstractPlasma
-export AbstractPhysicalSpace, AbstractPhysicalSpace1D, AbstractPhysicalSpace2D
-export AbstractStructPhysicalSpace, AbstractUnstructPhysicalSpace
-export AbstractVelocitySpace, AbstractVelocitySpace1D, AbstractVelocitySpace2D
-export AbstractControlVolume, AbstractControlVolume1D, AbstractControlVolume2D
-export AbstractUnstructControlVolume
-export AbstractInterface, AbstractInterface1D, AbstractInterface2D
-export AbstractSolution, AbstractSolution1D, AbstractSolution2D
-export AbstractFlux, AbstractFlux1D, AbstractFlux2D
-export AbstractParticle, AbstractParticle1D, AbstractParticle2D
-
-export Class, Dimension, VDF
-export Setup, Config, config_ntuple, set_setup
+export Setup, Config, config_ntuple
 export Scalar, Radiation, Gas, DiatomicGas, Mixture, PolyatomicMixture, Plasma1D, Plasma2D
-export set_property
-export IB, IB1F, IB2F, IB3F, IB4F, set_ib
+export IB, IB1F, IB2F, IB3F, IB4F
 export ControlVolume, ControlVolume1F, ControlVolume2F
 export ControlVolume1D, ControlVolume1D1F, ControlVolume1D2F
 export ControlVolume1D3F, ControlVolume1D4F
@@ -32,10 +17,8 @@ export Solution, Solution1F, Solution2F
 export Solution1D, Solution2D
 export Flux, Flux1F, Flux2F
 export Flux1D, Flux2D
-export Particle, Particle1D, Particle2D
-export ControlVolumeParticle1D, ControlVolumeParticle2D
 
-include("abstract.jl")
+include("struct_abstract.jl")
 include("struct_dispatch.jl")
 include("struct_setup.jl")
 include("struct_property.jl")

@@ -1,5 +1,5 @@
-using Test, KitBase
-using Plots
+using Test, KitBase, Plots
+using KitBase: Class, Dimension, VDF
 
 cd(@__DIR__)
 include("test_data.jl")

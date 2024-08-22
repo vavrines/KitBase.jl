@@ -1,22 +1,33 @@
 # spherical quadrature
-KitBase.legendre_quadrature(6)
-KitBase.octa_quadrature(8)
+KB.legendre_quadrature(6)
+KB.octa_quadrature(8)
 
-KitBase.VSpace1D() |> show
-KitBase.VSpace2D() |> show
-KitBase.VSpace3D() |> show
-KitBase.MVSpace1D() |> show
-KitBase.MVSpace2D() |> show
-KitBase.MVSpace3D() |> show
+KB.VSpace1D() |> show
+KB.VSpace2D() |> show
+KB.VSpace3D() |> show
+KB.MVSpace1D() |> show
+KB.MVSpace2D() |> show
+KB.MVSpace3D() |> show
 
-KitBase.VSpace1D(-5, 5, 16, type = "newton")
-KitBase.VSpace1D(-5, 5, 16, type = "algebra")
-KitBase.VSpace2D(-5, 5, 16, -5, 5, 16, type = "newton")
-KitBase.VSpace2D(-5, 5, 16, -5, 5, 16, type = "algebra")
-KitBase.VSpace2D(-5, 5, 16, -5, 5, 16, type = "maxwell")
-KitBase.VSpace3D(-5, 5, 16, -5, 5, 16, -5, 5, 16, type = "newton")
-KitBase.VSpace3D(-5, 5, 16, -5, 5, 16, -5, 5, 16, type = "algebra")
-KitBase.MVSpace1D(-5, 5, -5, 5, 16, type = "newton")
-KitBase.MVSpace2D(-5, 5, -5, 5, 16, -5, 5, -5, 5, 16, type = "newton")
-KitBase.MVSpace3D(-5, 5, -5, 5, 8, -5, 5, -5, 5, 8, -5, 5, -5, 5, 8, type = "newton")
-KitBase.UnstructVSpace(-1, 1, 16, rand(16), ones(16))
+KB.VSpace1D(-5, 5, 16, type = "newton")
+KB.VSpace1D(-5, 5, 16, type = "algebra")
+KB.VSpace2D(-5, 5, 16, -5, 5, 16, type = "newton")
+KB.VSpace2D(-5, 5, 16, -5, 5, 16, type = "algebra")
+KB.VSpace2D(-5, 5, 16, -5, 5, 16, type = "maxwell")
+KB.VSpace3D(-5, 5, 16, -5, 5, 16, -5, 5, 16, type = "newton")
+KB.VSpace3D(-5, 5, 16, -5, 5, 16, -5, 5, 16, type = "algebra")
+KB.MVSpace1D(-5, 5, -5, 5, 16, type = "newton")
+KB.MVSpace2D(-5, 5, -5, 5, 16, -5, 5, -5, 5, 16, type = "newton")
+KB.MVSpace3D(-5, 5, -5, 5, 8, -5, 5, -5, 5, 8, -5, 5, -5, 5, 8, type = "newton")
+KB.UnstructVSpace(-1, 1, 16, rand(16), ones(16))
+
+mesh_quadrature(-5, -5, 8; type = "rectangle")
+mesh_quadrature(-5, -5, 9; type = "newton")
+mesh_quadrature(-5, -5, 8; type = "algebra")
+mesh_quadrature(-5, -5, 8, -5, -5, 8; type = "rectangle")
+mesh_quadrature(-5, -5, 9, -5, -5, 9; type = "newton")
+mesh_quadrature(-5, -5, 8, -5, -5, 8; type = "algebra")
+mesh_quadrature(-5, -5, 8, -5, -5, 8; type = "maxwell")
+mesh_quadrature(-5, -5, 8, -5, -5, 8, -5, -5, 8; type = "rectangle")
+mesh_quadrature(-5, -5, 9, -5, -5, 9, -5, -5, 9; type = "newton")
+mesh_quadrature(-5, -5, 8, -5, -5, 8, -5, -5, 8; type = "algebra")
