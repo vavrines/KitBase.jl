@@ -18,7 +18,6 @@ Scalar
 `flux_gks` is called since there is no in-place operation for scalar
 """
 function flux_gks!(face::Interface, ctrL, ctrR, gas::Scalar, p, dt = 1.0)
-
     dxL, dxR = p[1:2]
 
     face.fw = flux_gks(
@@ -34,7 +33,6 @@ function flux_gks!(face::Interface, ctrL, ctrR, gas::Scalar, p, dt = 1.0)
     )
 
     return nothing
-
 end
 
 """
@@ -43,7 +41,6 @@ $(SIGNATURES)
 Gas
 """
 function flux_gks!(face::Interface, ctrL, ctrR, gas::Gas, p, dt = 1.0)
-
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
@@ -51,8 +48,8 @@ function flux_gks!(face::Interface, ctrL, ctrR, gas::Gas, p, dt = 1.0)
             face.fw,
             ctrL.w .+ dxL .* ctrL.sw,
             ctrR.w .- dxR .* ctrR.sw,
-            gas.γ,
             gas.K,
+            gas.γ,
             gas.μᵣ,
             gas.ω,
             dt,
@@ -65,7 +62,6 @@ function flux_gks!(face::Interface, ctrL, ctrR, gas::Gas, p, dt = 1.0)
     end
 
     return nothing
-
 end
 
 """
@@ -74,7 +70,6 @@ $(SIGNATURES)
 Mixture
 """
 function flux_gks!(face::Interface, ctrL, ctrR, gas::Mixture, p, dt = 1.0)
-
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
@@ -82,8 +77,8 @@ function flux_gks!(face::Interface, ctrL, ctrR, gas::Mixture, p, dt = 1.0)
             face.fw,
             ctrL.w .+ dxL .* ctrL.sw,
             ctrR.w .- dxR .* ctrR.sw,
-            gas.γ,
             gas.K,
+            gas.γ,
             gas.mi,
             gas.ni,
             gas.me,
@@ -99,7 +94,6 @@ function flux_gks!(face::Interface, ctrL, ctrR, gas::Mixture, p, dt = 1.0)
     end
 
     return nothing
-
 end
 
 # ------------------------------------------------------------
