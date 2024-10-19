@@ -5,9 +5,8 @@ RHS-ODE of BGK equation
 """
 function bgk_ode!(df, f::AA{T}, p, t) where {T}
     M, τ = p
-    df .= (M .- f) ./ τ
+    return df .= (M .- f) ./ τ
 end
-
 
 """
 $(SIGNATURES)
@@ -18,9 +17,8 @@ function esbgk_ode!(df, f::AA{T}, p, t) where {T}
     gs = p[1:end-1]
     τ = p[end]
     G = esbgk(f, gs...)
-    df .= (G .- f) ./ τ
+    return df .= (G .- f) ./ τ
 end
-
 
 """
 $(SIGNATURES)
@@ -71,7 +69,6 @@ mieussens_frequency(η, ::Type{Class{3}}) = @. 0.0365643 * (1 + 10 * η^2.081754
 
 mieussens_frequency(η, ::Type{Class{4}}) = @. 0.1503991 * (1 + 0.92897 * η^4) # usually this isn't used
 
-
 """
 $(SIGNATURES)
 
@@ -101,212 +98,146 @@ function aap_hs_prim(prim::AM, tau::AV, mi, ni, me, ne, kn)
     mixprim = similar(prim)
 
     if size(prim, 1) == 3
-
         mixprim[1, :] = deepcopy(prim[1, :])
         mixprim[2, 1] =
             prim[2, 1] +
             tau[1] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[2, 2] - prim[2, 1])
         mixprim[2, 2] =
             prim[2, 2] +
             tau[2] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[2, 1] - prim[2, 2])
         mixprim[3, 1] =
-            1.0 / (
-                1.0 / prim[end, 1] - 2.0 / 3.0 * (mixprim[2, 1] - prim[2, 1])^2 +
-                tau[1] / kn * 2.0 * mi / (mi + me) *
-                (
-                    4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                    sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-                ) *
-                (
-                    1.0 / prim[end, 2] * me / mi - 1.0 / prim[end, 1] +
-                    2.0 / 3.0 * me / mi * (prim[2, 2] - prim[2, 1])^2
-                )
-            )
+            1.0 / (1.0 / prim[end, 1] - 2.0 / 3.0 * (mixprim[2, 1] - prim[2, 1])^2 +
+             tau[1] / kn * 2.0 * mi / (mi + me) *
+             (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+              sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
+             (1.0 / prim[end, 2] * me / mi - 1.0 / prim[end, 1] +
+              2.0 / 3.0 * me / mi * (prim[2, 2] - prim[2, 1])^2))
         mixprim[3, 2] =
-            1.0 / (
-                1.0 / prim[end, 2] - 2.0 / 3.0 * (mixprim[2, 2] - prim[2, 2])^2 +
-                tau[2] / kn * 2.0 * me / (mi + me) *
-                (
-                    4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                    sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-                ) *
-                (
-                    1.0 / prim[end, 1] * mi / me - 1.0 / prim[end, 2] +
-                    2.0 / 3.0 * mi / me * (prim[2, 1] - prim[2, 2])^2
-                )
-            )
+            1.0 / (1.0 / prim[end, 2] - 2.0 / 3.0 * (mixprim[2, 2] - prim[2, 2])^2 +
+             tau[2] / kn * 2.0 * me / (mi + me) *
+             (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+              sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
+             (1.0 / prim[end, 1] * mi / me - 1.0 / prim[end, 2] +
+              2.0 / 3.0 * mi / me * (prim[2, 1] - prim[2, 2])^2))
 
     elseif size(prim, 1) == 4
-
         mixprim[1, :] = deepcopy(prim[1, :])
         mixprim[2, 1] =
             prim[2, 1] +
             tau[1] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[2, 2] - prim[2, 1])
         mixprim[2, 2] =
             prim[2, 2] +
             tau[2] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[2, 1] - prim[2, 2])
         mixprim[3, 1] =
             prim[3, 1] +
             tau[1] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[3, 2] - prim[3, 1])
         mixprim[3, 2] =
             prim[3, 2] +
             tau[2] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[3, 1] - prim[3, 2])
         mixprim[4, 1] =
-            1.0 / (
-                1.0 / prim[end, 1] - 2.0 / 3.0 * (mixprim[2, 1] - prim[2, 1])^2 -
-                2.0 / 3.0 * (mixprim[3, 1] - prim[3, 1])^2 +
-                tau[1] / kn * 2.0 * mi / (mi + me) *
-                (
-                    4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                    sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-                ) *
-                (
-                    1.0 / prim[end, 2] * me / mi - 1.0 / prim[end, 1] +
-                    2.0 / 3.0 * me / mi * (prim[2, 2] - prim[2, 1])^2 +
-                    2.0 / 3.0 * me / mi * (prim[3, 2] - prim[3, 1])^2
-                )
-            )
+            1.0 / (1.0 / prim[end, 1] - 2.0 / 3.0 * (mixprim[2, 1] - prim[2, 1])^2 -
+             2.0 / 3.0 * (mixprim[3, 1] - prim[3, 1])^2 +
+             tau[1] / kn * 2.0 * mi / (mi + me) *
+             (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+              sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
+             (1.0 / prim[end, 2] * me / mi - 1.0 / prim[end, 1] +
+              2.0 / 3.0 * me / mi * (prim[2, 2] - prim[2, 1])^2 +
+              2.0 / 3.0 * me / mi * (prim[3, 2] - prim[3, 1])^2))
         mixprim[4, 2] =
-            1.0 / (
-                1.0 / prim[end, 2] - 2.0 / 3.0 * (mixprim[2, 2] - prim[2, 2])^2 -
-                2.0 / 3.0 * (mixprim[3, 2] - prim[3, 2])^2 +
-                tau[2] / kn * 2.0 * me / (mi + me) *
-                (
-                    4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                    sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-                ) *
-                (
-                    1.0 / prim[end, 1] * mi / me - 1.0 / prim[end, 2] +
-                    2.0 / 3.0 * mi / me * (prim[2, 1] - prim[2, 2])^2 +
-                    2.0 / 3.0 * mi / me * (prim[3, 1] - prim[3, 2])^2
-                )
-            )
+            1.0 / (1.0 / prim[end, 2] - 2.0 / 3.0 * (mixprim[2, 2] - prim[2, 2])^2 -
+             2.0 / 3.0 * (mixprim[3, 2] - prim[3, 2])^2 +
+             tau[2] / kn * 2.0 * me / (mi + me) *
+             (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+              sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
+             (1.0 / prim[end, 1] * mi / me - 1.0 / prim[end, 2] +
+              2.0 / 3.0 * mi / me * (prim[2, 1] - prim[2, 2])^2 +
+              2.0 / 3.0 * mi / me * (prim[3, 1] - prim[3, 2])^2))
 
     elseif size(prim, 1) == 5
-
         mixprim[1, :] = deepcopy(prim[1, :])
         mixprim[2, 1] =
             prim[2, 1] +
             tau[1] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[2, 2] - prim[2, 1])
         mixprim[2, 2] =
             prim[2, 2] +
             tau[2] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[2, 1] - prim[2, 2])
         mixprim[3, 1] =
             prim[3, 1] +
             tau[1] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[3, 2] - prim[3, 1])
         mixprim[3, 2] =
             prim[3, 2] +
             tau[2] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[3, 1] - prim[3, 2])
         mixprim[4, 1] =
             prim[4, 1] +
             tau[1] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[4, 2] - prim[4, 1])
         mixprim[4, 2] =
             prim[4, 2] +
             tau[2] / kn *
-            (
-                4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-            ) *
+            (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+             sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
             (prim[4, 1] - prim[4, 2])
         mixprim[5, 1] =
-            1.0 / (
-                1.0 / prim[end, 1] - 2.0 / 3.0 * (mixprim[2, 1] - prim[2, 1])^2 -
-                2.0 / 3.0 * (mixprim[3, 1] - prim[3, 1])^2 -
-                2.0 / 3.0 * (mixprim[4, 1] - prim[4, 1])^2 +
-                tau[1] / kn * 2.0 * mi / (mi + me) *
-                (
-                    4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
-                    sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-                ) *
-                (
-                    1.0 / prim[end, 2] * me / mi - 1.0 / prim[end, 1] +
-                    2.0 / 3.0 * me / mi * (prim[2, 2] - prim[2, 1])^2 +
-                    2.0 / 3.0 * me / mi * (prim[3, 2] - prim[3, 1])^2 +
-                    2.0 / 3.0 * me / mi * (prim[4, 2] - prim[4, 1])^2
-                )
-            )
+            1.0 / (1.0 / prim[end, 1] - 2.0 / 3.0 * (mixprim[2, 1] - prim[2, 1])^2 -
+             2.0 / 3.0 * (mixprim[3, 1] - prim[3, 1])^2 -
+             2.0 / 3.0 * (mixprim[4, 1] - prim[4, 1])^2 +
+             tau[1] / kn * 2.0 * mi / (mi + me) *
+             (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 2] / (ni + ne) / (mi + me) *
+              sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
+             (1.0 / prim[end, 2] * me / mi - 1.0 / prim[end, 1] +
+              2.0 / 3.0 * me / mi * (prim[2, 2] - prim[2, 1])^2 +
+              2.0 / 3.0 * me / mi * (prim[3, 2] - prim[3, 1])^2 +
+              2.0 / 3.0 * me / mi * (prim[4, 2] - prim[4, 1])^2))
         mixprim[5, 2] =
-            1.0 / (
-                1.0 / prim[end, 2] - 2.0 / 3.0 * (mixprim[2, 2] - prim[2, 2])^2 -
-                2.0 / 3.0 * (mixprim[3, 2] - prim[3, 2])^2 -
-                2.0 / 3.0 * (mixprim[4, 2] - prim[4, 2])^2 +
-                tau[2] / kn * 2.0 * me / (mi + me) *
-                (
-                    4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
-                    sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])
-                ) *
-                (
-                    1.0 / prim[end, 1] * mi / me - 1.0 / prim[end, 2] +
-                    2.0 / 3.0 * mi / me * (prim[2, 1] - prim[2, 2])^2 +
-                    2.0 / 3.0 * mi / me * (prim[3, 1] - prim[3, 2])^2 +
-                    2.0 / 3.0 * mi / me * (prim[4, 1] - prim[4, 2])^2
-                )
-            )
+            1.0 / (1.0 / prim[end, 2] - 2.0 / 3.0 * (mixprim[2, 2] - prim[2, 2])^2 -
+             2.0 / 3.0 * (mixprim[3, 2] - prim[3, 2])^2 -
+             2.0 / 3.0 * (mixprim[4, 2] - prim[4, 2])^2 +
+             tau[2] / kn * 2.0 * me / (mi + me) *
+             (4.0 * sqrt(2.0) / (3.0 * sqrt(π)) * prim[1, 1] / (ni + ne) / (mi + me) *
+              sqrt(1.0 / prim[end, 1] + 1.0 / prim[end, 2])) *
+             (1.0 / prim[end, 1] * mi / me - 1.0 / prim[end, 2] +
+              2.0 / 3.0 * mi / me * (prim[2, 1] - prim[2, 2])^2 +
+              2.0 / 3.0 * mi / me * (prim[3, 1] - prim[3, 2])^2 +
+              2.0 / 3.0 * mi / me * (prim[4, 1] - prim[4, 2])^2))
 
     else
-
         throw("AAP mixture: dimension dismatch")
-
     end
 
     return mixprim
 end
-
 
 """
 $(SIGNATURES)
@@ -329,7 +260,6 @@ function aap_hs_collision_time(prim::AM, mi, ni, me, ne, kn)
 
     return 1.0 ./ ν
 end
-
 
 """
 $(SIGNATURES)

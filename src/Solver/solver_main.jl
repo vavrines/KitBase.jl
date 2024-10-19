@@ -14,7 +14,7 @@ function solve!(
     ctr::AV{<:AbstractControlVolume},
     face::AV{<:AbstractInterface},
     simTime;
-    steady = false,
+    steady=false,
 )
 
     #--- initial checkpoint ---#
@@ -29,7 +29,7 @@ function solve!(
 
     #--- main loop ---#
     #while true
-    @showprogress for iter = 1:nt
+    @showprogress for iter in 1:nt
         #dt = timestep(KS, ctr, simTime)
         reconstruct!(KS, ctr)
         evolve!(
@@ -37,8 +37,8 @@ function solve!(
             ctr,
             face,
             dt;
-            mode = symbolize(KS.set.flux),
-            bc = symbolize(KS.set.boundary),
+            mode=symbolize(KS.set.flux),
+            bc=symbolize(KS.set.boundary),
         )
         update!(
             KS,
@@ -46,8 +46,8 @@ function solve!(
             face,
             dt,
             res;
-            coll = symbolize(KS.set.collision),
-            bc = symbolize(KS.set.boundary),
+            coll=symbolize(KS.set.collision),
+            bc=symbolize(KS.set.boundary),
         )
 
         #iter += 1
@@ -73,7 +73,6 @@ function solve!(
 
     write_jld(KS, ctr, simTime)
     return t
-
 end
 
 """
@@ -94,7 +93,7 @@ function solve!(
     a1face::T,
     a2face::T,
     simTime;
-    steady = false,
+    steady=false,
 ) where {T<:AA{<:AbstractInterface,2}}
 
     #--- initial checkpoint ---#
@@ -108,7 +107,7 @@ function solve!(
     res = zero(ctr[1].w)
 
     #--- main loop ---#
-    @showprogress for iter = 1:nt
+    @showprogress for iter in 1:nt
         reconstruct!(KS, ctr)
         evolve!(
             KS,
@@ -116,8 +115,8 @@ function solve!(
             a1face,
             a2face,
             dt;
-            mode = symbolize(KS.set.flux),
-            bc = symbolize(KS.set.boundary),
+            mode=symbolize(KS.set.flux),
+            bc=symbolize(KS.set.boundary),
         )
         update!(
             KS,
@@ -126,8 +125,8 @@ function solve!(
             a2face,
             dt,
             res;
-            coll = symbolize(KS.set.collision),
-            bc = symbolize(KS.set.boundary),
+            coll=symbolize(KS.set.collision),
+            bc=symbolize(KS.set.boundary),
         )
 
         t += dt
@@ -148,9 +147,7 @@ function solve!(
 
     write_jld(KS, ctr, simTime)
     return t
-
 end
-
 
 """
 $(SIGNATURES)
@@ -162,20 +159,18 @@ Calculate timestep based on the current solution
 - `ctr`: array of cell-centered solution
 - `simTime`: simulation time
 """
-function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime = 0.0)
+function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTime=0.0)
     tmax = 0.0
 
     if ctr[1].w isa Number
-
-        @inbounds @threads for i = 1:KS.ps.nx
+        @inbounds @threads for i in 1:KS.ps.nx
             prim = ctr[i].prim
             vmax = abs(ctr[i].prim[2])
             tmax = max(tmax, vmax / KS.ps.dx[i])
         end
 
     elseif KS.set.nSpecies == 1
-
-        @inbounds @threads for i = 1:KS.ps.nx
+        @inbounds @threads for i in 1:KS.ps.nx
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
             vmax = begin
@@ -189,8 +184,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
         end
 
     elseif KS.set.nSpecies == 2
-
-        @inbounds @threads for i = 1:KS.ps.nx
+        @inbounds @threads for i in 1:KS.ps.nx
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
             vmax = begin
@@ -207,7 +201,6 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
                 tmax = max(tmax, vmax / KS.ps.dx[i])
             end
         end
-
     end
 
     dt = KS.set.cfl / tmax
@@ -216,7 +209,7 @@ function timestep(KS::AbstractSolverSet, ctr::AV{<:AbstractControlVolume}, simTi
     return dt
 end
 
-function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime = 0.0)
+function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTime=0.0)
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -228,9 +221,8 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
     tmax = 0.0
 
     if KS.set.nSpecies == 1
-
-        @inbounds @threads for j = 1:ny
-            for i = 1:nx
+        @inbounds @threads for j in 1:ny
+            for i in 1:nx
                 prim = ctr[i, j].prim
                 sos = sound_speed(prim, KS.gas.γ)
                 umax, vmax = begin
@@ -245,9 +237,8 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
         end
 
     elseif KS.set.nSpecies == 2
-
-        @inbounds @threads for j = 1:ny
-            for i = 1:nx
+        @inbounds @threads for j in 1:ny
+            for i in 1:nx
                 prim = ctr[i, j].prim
                 sos = sound_speed(prim, KS.gas.γ)
                 umax = max(maximum(KS.vs.u1), maximum(abs.(prim[2, :]))) + sos
@@ -264,7 +255,6 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
                 end
             end
         end
-
     end
 
     dt = KS.set.cfl / tmax
@@ -276,12 +266,11 @@ end
 function timestep(
     KS::AbstractSolverSet,
     ctr::AV{<:AbstractUnstructControlVolume},
-    simTime = 0.0,
+    simTime=0.0,
 )
     tmax = 0.0
 
     if KS.set.nSpecies == 1
-
         @inbounds @threads for i in eachindex(ctr)
             prim = ctr[i].prim
             sos = sound_speed(prim, KS.gas.γ)
@@ -294,7 +283,6 @@ function timestep(
         end
 
     elseif KS.set.nSpecies == 2
-
     end
 
     dt = KS.set.cfl / tmax

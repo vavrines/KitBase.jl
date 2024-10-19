@@ -38,7 +38,6 @@ $(SIGNATURES)
 maxwellian(u, v, w, prim::AV) =
     maxwellian(u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
-
 """
 $(SIGNATURES)
 
@@ -56,7 +55,6 @@ $(SIGNATURES)
 """
 maxwellian!(M::AV, u::AV, prim::AV) = maxwellian!(M, u, prim[1], prim[2], prim[end])
 
-
 """
 $(SIGNATURES)
 
@@ -72,7 +70,6 @@ $(SIGNATURES)
 """
 maxwellian!(M::AA, u::T, v::T, prim::AV) where {T<:AA} =
     maxwellian!(M, u, v, prim[1], prim[2], prim[3], prim[end])
-
 
 """
 $(SIGNATURES)
@@ -90,7 +87,6 @@ $(SIGNATURES)
 maxwellian!(M::AA, u::T, v::T, w::T, prim::AV) where {T<:AA} =
     maxwellian!(M, u, v, w, prim[1], prim[2], prim[3], prim[4], prim[5])
 
-
 """
 $(SIGNATURES)
 
@@ -103,13 +99,12 @@ $(SIGNATURES)
 """
 energy_maxwellian(h, prim::AV, K) = energy_maxwellian(h, prim[end], K)
 
-
 """
 $(SIGNATURES)
 
 Compute Maxwellian directly from distribution function
 """
-function f_maxwellian(f::AV, u::AV, weights::AV, γ = 3)
+function f_maxwellian(f::AV, u::AV, weights::AV, γ=3)
     w = moments_conserve(f, u, weights)
     prim = conserve_prim(w, γ)
 
@@ -119,19 +114,16 @@ end
 """
 $(SIGNATURES)
 """
-f_maxwellian(
-    f::AV,
-    vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D,
-    γ = 3,
-) = f_maxwellian(f, vs.u, vs.weights, γ)
+f_maxwellian(f::AV, vs=VSpace1D(-6, 6, size(f, 1); precision=Float32)::VSpace1D, γ=3) =
+    f_maxwellian(f, vs.u, vs.weights, γ)
 
 """
 $(SIGNATURES)
 """
 function f_maxwellian(
     f::AM,
-    vs = VSpace1D(-6, 6, size(f, 1); precision = Float32)::VSpace1D,
-    γ = 3,
+    vs=VSpace1D(-6, 6, size(f, 1); precision=Float32)::VSpace1D,
+    γ=3,
 )
     M = [f_maxwellian(f[:, i], vs, γ) for i in axes(f, 2)]
 
@@ -141,7 +133,7 @@ end
 """
 $(SIGNATURES)
 """
-function f_maxwellian(h::AV, b::AV, u::AV, weights::AV, γ = 5 / 3)
+function f_maxwellian(h::AV, b::AV, u::AV, weights::AV, γ=5 / 3)
     w = moments_conserve(h, b, u, weights)
     prim = conserve_prim(w, γ)
     H = maxwellian(u, prim)
@@ -153,15 +145,15 @@ end
 f_maxwellian(
     h::AV,
     b::AV,
-    vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D,
-    γ = 5 / 3,
+    vs=VSpace1D(-6, 6, size(h, 1); precision=Float32)::VSpace1D,
+    γ=5 / 3,
 ) = f_maxwellian(h, b, vs.u, vs.weights, γ)
 
 function f_maxwellian(
     h::AM,
     b::AM,
-    vs = VSpace1D(-6, 6, size(h, 1); precision = Float32)::VSpace1D,
-    γ = 5 / 3,
+    vs=VSpace1D(-6, 6, size(h, 1); precision=Float32)::VSpace1D,
+    γ=5 / 3,
 )
     H = zero(h)
     B = zero(b)
@@ -199,7 +191,6 @@ $(SIGNATURES)
 2F1V
 """
 function shakhov(u::AV, H::T, B::T, q, prim::AV, Pr, K) where {T<:AV}
-
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        (u - prim[2]) *
        q *
@@ -212,7 +203,6 @@ function shakhov(u::AV, H::T, B::T, q, prim::AV, Pr, K) where {T<:AV}
        B
 
     return H_plus, B_plus
-
 end
 
 """
@@ -221,14 +211,12 @@ $(SIGNATURES)
 1F2V
 """
 function shakhov(u::T, v::T, M::T1, q::AV, prim::AV, Pr)::T1 where {T<:AM,T1<:AM}
-
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
        (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) - 5.0) *
        M
 
     return M_plus
-
 end
 
 """
@@ -237,7 +225,6 @@ $(SIGNATURES)
 2F2V
 """
 function shakhov(u::T, v::T, H::X, B::X, q::AV, prim::AV, Pr, K) where {T<:AM,X<:AM}
-
     H_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
        (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0) *
@@ -248,7 +235,6 @@ function shakhov(u::T, v::T, H::X, B::X, q::AV, prim::AV, Pr, K) where {T<:AM,X<
        B
 
     return H_plus, B_plus
-
 end
 
 """
@@ -265,16 +251,13 @@ function shakhov(
     prim::AV,
     Pr,
 )::T1 where {T<:AA{T2,3},T1<:AA{T3,3}} where {T2,T3}
-
     M_plus = @. 0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
        ((u - prim[2]) * q[1] + (v - prim[3]) * q[2] + (w - prim[4]) * q[3]) *
        (2.0 * prim[end] * ((u - prim[2])^2 + (v - prim[3])^2 + (w - prim[4])^2) - 5.0) *
        M
 
     return M_plus
-
 end
-
 
 """
 $(SIGNATURES)
@@ -299,7 +282,6 @@ $(SIGNATURES)
 2F1V
 """
 function shakhov!(SH::T1, SB::T1, u::AV, H::T1, B::T1, q, prim, Pr, K) where {T1<:AV}
-
     @. SH =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
         (u - prim[2]) *
@@ -314,7 +296,6 @@ function shakhov!(SH::T1, SB::T1, u::AV, H::T1, B::T1, q, prim, Pr, K) where {T1
         B
 
     return nothing
-
 end
 
 """
@@ -323,7 +304,6 @@ $(SIGNATURES)
 1F2V
 """
 function shakhov!(S::T1, u::T2, v::T2, M::T1, q::AV, prim, Pr) where {T1<:AM,T2<:AM}
-
     @. S =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -331,7 +311,6 @@ function shakhov!(S::T1, u::T2, v::T2, M::T1, q::AV, prim, Pr) where {T1<:AM,T2<
         M
 
     return nothing
-
 end
 
 """
@@ -351,7 +330,6 @@ function shakhov!(
     Pr,
     K,
 ) where {T1<:AM,T2<:AM}
-
     @. SH =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
@@ -364,7 +342,6 @@ function shakhov!(
         B
 
     return nothing
-
 end
 
 """
@@ -382,7 +359,6 @@ function shakhov!(
     prim,
     Pr,
 ) where {T1<:AA{T3,3},T2<:AA{T4,3}} where {T3,T4}
-
     @. S =
         0.8 * (1.0 - Pr) * prim[end]^2 / prim[1] *
         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2] + (w - prim[4]) * q[3]) *
@@ -390,7 +366,6 @@ function shakhov!(
         M
 
     return nothing
-
 end
 
 # ------------------------------------------------------------
@@ -489,7 +464,6 @@ function polyatomic_maxwellian!(
     K,
     Kr,
 ) where {T}
-
     @. Ht = prim[1] * sqrt(prim[4] / π) * exp(-prim[4] * (u - prim[2])^2)
     @. Bt = Ht * K / (2.0 * prim[4])
     @. Rt = Ht * Kr / (2.0 * prim[5])
@@ -499,7 +473,6 @@ function polyatomic_maxwellian!(
     @. Rr = Hr * Kr / (2.0 * prim[3])
 
     return nothing
-
 end
 
 """
@@ -520,7 +493,6 @@ function polyatomic_maxwellian!(
     K,
     Kr,
 ) where {T1,T2}
-
     @. Ht = prim[1] * (prim[5] / π) * exp(-prim[5] * ((u - prim[2])^2 + (v - prim[3])^2))
     @. Bt = Ht * K / (2.0 * prim[5])
     @. Rt = Ht * Kr / (2.0 * prim[6])
@@ -530,9 +502,7 @@ function polyatomic_maxwellian!(
     @. Rr = Hr * Kr / (2.0 * prim[4])
 
     return nothing
-
 end
-
 
 """
 $(SIGNATURES)
@@ -569,55 +539,41 @@ function rykov!(
     ω0,
     ω1,
 ) where {T1,T2,T3}
-
     @. Ht_plus =
-        (
-            0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
-            (u - prim[2]) *
-            q[1] *
-            (2.0 * prim[4] * (u - prim[2])^2 + K - 5.0)
-        ) * Ht
+        (0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+         (u - prim[2]) *
+         q[1] *
+         (2.0 * prim[4] * (u - prim[2])^2 + K - 5.0)) * Ht
     @. Bt_plus =
-        (
-            0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
-            (u - prim[2]) *
-            q[1] *
-            (2.0 * prim[4] * (u - prim[2])^2 + K - 3.0)
-        ) * Bt
+        (0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+         (u - prim[2]) *
+         q[1] *
+         (2.0 * prim[4] * (u - prim[2])^2 + K - 3.0)) * Bt
     @. Rt_plus =
-        (
-            0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
-            (u - prim[2]) *
-            q[1] *
-            (2.0 * prim[4] * (u - prim[2])^2 + K - 5.0) +
-            4.0 * (1 - σ) * (u - prim[2]) * q[2] / prim[1] * prim[4] * prim[5]
-        ) * Rt
+        (0.8 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+         (u - prim[2]) *
+         q[1] *
+         (2.0 * prim[4] * (u - prim[2])^2 + K - 5.0) +
+         4.0 * (1 - σ) * (u - prim[2]) * q[2] / prim[1] * prim[4] * prim[5]) * Rt
 
     @. Hr_plus =
-        (
-            0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
-            (u - prim[2]) *
-            q[1] *
-            (2.0 * prim[3] * (u - prim[2])^2 + K - 5.0)
-        ) * Hr
+        (0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
+         (u - prim[2]) *
+         q[1] *
+         (2.0 * prim[3] * (u - prim[2])^2 + K - 5.0)) * Hr
     @. Br_plus =
-        (
-            0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
-            (u - prim[2]) *
-            q[1] *
-            (2.0 * prim[3] * (u - prim[2])^2 + K - 3.0)
-        ) * Br
+        (0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
+         (u - prim[2]) *
+         q[1] *
+         (2.0 * prim[3] * (u - prim[2])^2 + K - 3.0)) * Br
     @. Rr_plus =
-        (
-            0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
-            (u - prim[2]) *
-            q[1] *
-            (2.0 * prim[3] * (u - prim[2])^2 + K - 5.0) +
-            4.0 * ω1 * (1 - σ) * (u - prim[2]) * q[2] / prim[1] * prim[3] * prim[3]
-        ) * Rr
+        (0.8 * ω0 * (1.0 - Pr) * prim[3]^2 / prim[1] *
+         (u - prim[2]) *
+         q[1] *
+         (2.0 * prim[3] * (u - prim[2])^2 + K - 5.0) +
+         4.0 * ω1 * (1 - σ) * (u - prim[2]) * q[2] / prim[1] * prim[3] * prim[3]) * Rr
 
     return nothing
-
 end
 
 """
@@ -646,55 +602,40 @@ function rykov!(
     ω0,
     ω1,
 ) where {T1,T2,T3}
-
     @. Ht_plus =
-        (
-            0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
-            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-            (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0)
-        ) * Ht
+        (0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
+         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+         (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0)) * Ht
     @. Bt_plus =
-        (
-            0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
-            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-            (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0)
-        ) * Bt
+        (0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
+         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+         (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0)) * Bt
     @. Rt_plus =
-        (
-            0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
-            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-            (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5) +
-            4.0 * (1 - σ) * ((u - prim[2]) * q[3] + (v - prim[3]) * q[4]) / prim[1] *
-            prim[5] *
-            prim[6]
-        ) * Rt
+        (0.8 * (1.0 - Pr) * prim[5]^2 / prim[1] *
+         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+         (2.0 * prim[5] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5) +
+         4.0 * (1 - σ) * ((u - prim[2]) * q[3] + (v - prim[3]) * q[4]) / prim[1] *
+         prim[5] *
+         prim[6]) * Rt
 
     @. Hr_plus =
-        (
-            0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
-            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-            (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0)
-        ) * Hr
+        (0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+         (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0)) * Hr
     @. Br_plus =
-        (
-            0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
-            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-            (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0)
-        ) * Br
+        (0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+         (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 3.0)) * Br
     @. Rr_plus =
-        (
-            0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
-            ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
-            (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0) +
-            4.0 * ω1 * (1 - σ) * ((u - prim[2]) * q[3] + (v - prim[3]) * q[4]) / prim[1] *
-            prim[4] *
-            prim[4]
-        ) * Rr
+        (0.8 * ω0 * (1.0 - Pr) * prim[4]^2 / prim[1] *
+         ((u - prim[2]) * q[1] + (v - prim[3]) * q[2]) *
+         (2.0 * prim[4] * ((u - prim[2])^2 + (v - prim[3])^2) + K - 5.0) +
+         4.0 * ω1 * (1 - σ) * ((u - prim[2]) * q[3] + (v - prim[3]) * q[4]) / prim[1] *
+         prim[4] *
+         prim[4]) * Rr
 
     return nothing
-
 end
-
 
 """
 $(SIGNATURES)
@@ -782,7 +723,6 @@ function mixture_maxwellian(u::X, v::X, w::X, prim::AM) where {X<:AA}
     return mixM
 end
 
-
 """
 $(SIGNATURES)
 
@@ -810,28 +750,24 @@ function mixture_maxwellian!(
     v::T2,
     prim::AM,
 ) where {T1,T2<:AA{T3,3}} where {T3}
-
     @inbounds for k in axes(M, 3)
         _M = @view M[:, :, k]
         maxwellian!(_M, u[:, :, k], v[:, :, k], prim[:, k])
     end
 
     return nothing
-
 end
 
 """
 $(SIGNATURES)
 """
 function mixture_maxwellian!(M::AM, u::T, v::T, prim::AM) where {T<:AM}
-
     @inbounds for k in axes(M, 2)
         _M = @view M[:, k]
         maxwellian!(_M, u[:, k], v[:, k], prim[:, k])
     end
 
     return nothing
-
 end
 
 """
@@ -846,27 +782,22 @@ function mixture_maxwellian!(
     w::T2,
     prim::AM,
 ) where {T1,T2<:AA{T3,4}} where {T3}
-
     @inbounds for l in axes(M, 4)
         _M = @view M[:, :, :, l]
         maxwellian!(_M, u[:, :, :, l], v[:, :, :, l], w[:, :, :, l], prim[:, l])
     end
 
     return nothing
-
 end
 
 function mixture_maxwellian!(M::AM, u::T, v::T, w::T, prim::AM) where {T<:AM}
-
     @inbounds for l in axes(M, 2)
         _M = @view M[:, l]
         maxwellian!(_M, u[:, l], v[:, l], w[:, l], prim[:, l])
     end
 
     return nothing
-
 end
-
 
 """
 $(SIGNATURES)
@@ -917,7 +848,6 @@ function mixture_polyatomic_maxwellian!(M1, M2, M3, u, v, w, prim, K, Kr)
 
     return nothing
 end
-
 
 """
 $(SIGNATURES)

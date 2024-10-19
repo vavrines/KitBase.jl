@@ -2,10 +2,10 @@ using KitBase, Plots, OffsetArrays
 using ProgressMeter: @showprogress
 using Base.Threads: @threads
 
-set = Setup(space = "1d1f1v", boundary = "fix", maxTime = 0.1)
+set = Setup(; space="1d1f1v", boundary="fix", maxTime=0.1)
 ps = PSpace1D(0, 1, 100, 1)
 vs = VSpace1D(-5, 5, 28)
-gas = Gas(Kn = 5e-4, K = 0.0, γ = 3.0)
+gas = Gas(; Kn=5e-4, K=0.0, γ=3.0)
 ib = begin
     _fw = function (x)
         # wave
@@ -91,7 +91,7 @@ for i in eachindex(ctr)
 end
 
 face = Array{Interface1F}(undef, ks.ps.nx + 1)
-for i = 1:ks.ps.nx+1
+for i in 1:ks.ps.nx+1
     fw = zeros(size(m, 1))
     ff = zero(ks.vs.u)
     face[i] = Interface(fw, ff, 1)
@@ -100,7 +100,7 @@ end
 function rc!(ks, ctr, p)
     m, α = p
 
-    @inbounds @threads for i = 0:ks.ps.nx+1
+    @inbounds @threads for i in 0:ks.ps.nx+1
         res = KitBase.optimize_closure(α, m, ks.vs.weights, ctr[i].w, exp)
         ctr[i].f .= exp.(res.minimizer' * m)'
     end
@@ -109,7 +109,7 @@ end
 function ev!(ks, ctr, face, p)
     m, dt = p
 
-    @inbounds @threads for i = 1:ks.ps.nx+1
+    @inbounds @threads for i in 1:ks.ps.nx+1
         flux_kfvs!(face[i].ff, ctr[i-1].f, ctr[i].f, ks.vs.u, dt)
         for j in axes(face[i].fw, 1)
             face[i].fw[j] = sum(ks.vs.weights .* m[j, :] .* face[i].ff)
@@ -120,13 +120,13 @@ end
 function up!(ks, ctr, face, p)
     m, dt = p
 
-    @inbounds @threads for i = 1:ks.ps.nx
+    @inbounds @threads for i in 1:ks.ps.nx
         M = maxwellian(ks.vs.u, ctr[i].prim)
         τ = vhs_collision_time(ctr[i].prim, ks.gas.μᵣ, ks.gas.ω)
         q = @. (M - ctr[i].f) / τ
 
         Q = zeros(size(m, 1))
-        for j = 4:size(m, 1)
+        for j in 4:size(m, 1)
             @inbounds Q[j] = sum(ks.vs.weights .* m[j, :] .* q)
         end
 
@@ -139,7 +139,7 @@ t = 0.0
 dt = timestep(ks, ctr, t)
 nt = ks.set.maxTime ÷ dt |> Int
 
-@showprogress for iter = 1:nt
+@showprogress for iter in 1:nt
     rc!(ks, ctr, (m, α))
     ev!(ks, ctr, face, (m, dt))
     up!(ks, ctr, face, (m, dt))

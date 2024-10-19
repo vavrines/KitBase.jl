@@ -75,16 +75,7 @@ KB.flux_gks!(
     zeros(4, 2),
     zeros(4, 2),
 ) # mixture
-KB.flux_gks!(
-    zeros(4),
-    [1.0, 0.3, 0.0, 1.0],
-    [0.3, -0.1, 0.0, 2.0],
-    inK,
-    γ,
-    1e-3,
-    0.72,
-    dt,
-) # FR
+KB.flux_gks!(zeros(4), [1.0, 0.3, 0.0, 1.0], [0.3, -0.1, 0.0, 2.0], inK, γ, 1e-3, 0.72, dt) # FR
 
 # discrete
 KB.flux_gks!(fw, fh, wL, wR, u, inK, γ, 1e-3, 0.72, dt, dx, dx, zeros(3), zeros(3))
@@ -618,21 +609,7 @@ KB.flux_boundary_specular!(
 )
 
 #--- pure equilibrium flux ---#
-KB.flux_equilibrium!(
-    fw,
-    wL,
-    wR,
-    inK,
-    γ,
-    1e-3,
-    0.81,
-    0.72,
-    dt,
-    dx,
-    dx,
-    zeros(3),
-    zeros(3),
-)
+KB.flux_equilibrium!(fw, wL, wR, inK, γ, 1e-3, 0.81, 0.72, dt, dx, dx, zeros(3), zeros(3))
 KB.flux_equilibrium!(
     zeros(4),
     zeros(4),

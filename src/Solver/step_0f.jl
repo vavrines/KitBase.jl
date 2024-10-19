@@ -24,7 +24,6 @@ $(SIGNATURES)
 1D0F
 """
 function step!(w::Y, prim::Y, fwL::X, fwR::X, γ, dx, RES, AVG) where {X<:AV,Y<:AV}
-
     w_old = deepcopy(w)
 
     @. w += (fwL - fwR) / dx
@@ -34,7 +33,6 @@ function step!(w::Y, prim::Y, fwL::X, fwR::X, γ, dx, RES, AVG) where {X<:AV,Y<:
     @. AVG += abs(w)
 
     return nothing
-
 end
 
 """
@@ -89,7 +87,6 @@ function step!(
 
     @. RES += (w_old - w)^2
     @. AVG += abs(w)
-
 end
 
 """
@@ -120,7 +117,6 @@ function step!(
     #--- record residuals ---#
     @. RES += (w - w_old)^2
     @. AVG += abs(w)
-
 end
 
 """
@@ -152,5 +148,4 @@ function step!(
     #--- record residuals ---#
     @. RES += (w - w_old)^2
     @. AVG += abs(w)
-
 end

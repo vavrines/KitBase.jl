@@ -18,15 +18,15 @@ Generate PhysicalSpace
 """
 function set_geometry(;
     space,
-    x0 = nothing,
-    x1 = nothing,
-    nx = nothing,
-    nxg = nothing,
-    y0 = nothing,
-    y1 = nothing,
-    ny = nothing,
-    nyg = nothing,
-    mesh = nothing,
+    x0=nothing,
+    x1=nothing,
+    nx=nothing,
+    nxg=nothing,
+    y0=nothing,
+    y1=nothing,
+    ny=nothing,
+    nyg=nothing,
+    mesh=nothing,
     kwargs...,
 )
     try

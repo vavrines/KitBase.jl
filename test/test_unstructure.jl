@@ -28,7 +28,7 @@ ks = KB.SolverSet(set, ps, vs, gas, ib)
 ctr, face = KB.init_fvm(ks, ks.ps)
 dt = KB.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
-for iter = 1:nt
+for iter in 1:nt
     KB.reconstruct!(ks, ctr)
     KB.evolve!(ks, ctr, face, dt)
     #=

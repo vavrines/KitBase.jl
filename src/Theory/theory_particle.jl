@@ -4,7 +4,7 @@ $(SIGNATURES)
 Sample particle velocity from Maxwellian. Unconstraint methods use Box-Muller sampling,
 while constraint one depends on Distributions.jl.
 """
-function sample_maxwell(λ::Real, v = 0.0::Real)
+function sample_maxwell(λ::Real, v=0.0::Real)
     rd1 = rand()
     rd2 = rand()
 
@@ -15,7 +15,6 @@ end
 $(SIGNATURES)
 """
 function sample_maxwell(prim::T) where {T<:AA{<:Real,1}}
-
     u = prim[2]
     if length(prim) == 3
         v = 0.0
@@ -32,7 +31,6 @@ function sample_maxwell(prim::T) where {T<:AA{<:Real,1}}
     rd2 = rand(3)
 
     return @. sqrt(-log(rd1) / prim[end]) * sin(2.0 * π * rd2) + [u, v, w]
-
 end
 
 """
@@ -73,14 +71,12 @@ function sample_maxwell(prim::T, l, u) where {T<:AA{<:Real,1}}
     return rand(d, 3) + [u, v, w]
 end
 
-
 """
 $(SIGNATURES)
 
 Calculate the time interval until next collision
 """
 next_collision_time(τ) = -τ * log(rand())
-
 
 """
 $(SIGNATURES)

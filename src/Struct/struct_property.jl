@@ -12,7 +12,6 @@ $(FIELDS)
     μᵣ::F = 1e-8
 end
 
-
 """
 $(TYPEDEF)
 
@@ -40,7 +39,6 @@ function Radiation(_Kn, _ss::Union{Real,AV}, _sa::Union{Real,AV})
     return Radiation{typeof(Kn),typeof(σs),typeof(m),typeof(np)}(Kn, σs, σa, m, np)
 end
 
-
 """
 $(TYPEDEF)
 
@@ -64,7 +62,6 @@ $(FIELDS)
     np::T11 = 1000
     fsm::T12 = nothing
 end
-
 
 """
 $(TYPEDEF)
@@ -93,7 +90,6 @@ $(FIELDS)
     ω₂::TF = 0.3049
 end
 
-
 """
 $(TYPEDEF)
 
@@ -114,7 +110,6 @@ $(FIELDS)
     me::H = 0.5
     ne::I = 0.5
 end
-
 
 """
 $(TYPEDEF)
@@ -137,7 +132,6 @@ $(FIELDS)
     m::TV = [1.0, 0.5]
     n::TV = [0.5, 0.5]
 end
-
 
 """
 $(TYPEDEF)
@@ -267,7 +261,6 @@ function Plasma1D(
         D,
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -443,7 +436,6 @@ function Plasma2D(
     )
 end
 
-
 """
 $(SIGNATURES)
 
@@ -470,16 +462,15 @@ function gas_property(;
     knudsen,
     mach,
     prandtl,
-    omega = 0.5,
-    alphaRef = 1.0,
-    omegaRef = 0.5,
-    mi = nothing,
-    ni = nothing,
-    me = nothing,
-    ne = nothing,
+    omega=0.5,
+    alphaRef=1.0,
+    omegaRef=0.5,
+    mi=nothing,
+    ni=nothing,
+    me=nothing,
+    ne=nothing,
     kwargs...,
 )
-
     Dx = parse(Int, space[1]) # this is type instable
     γD = map(parse(Int, space[3]), parse(Int, space[5])) do x, y # (x)f(y)v
         if x == 0
@@ -503,16 +494,16 @@ function gas_property(;
     if nSpecies == 1
         μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
 
-        gas = Gas(
-            Kn = knudsen,
-            Ma = mach,
-            Pr = prandtl,
-            K = inK,
-            γ = γ,
-            ω = omega,
-            αᵣ = alphaRef,
-            ωᵣ = omegaRef,
-            μᵣ = μᵣ,
+        gas = Gas(;
+            Kn=knudsen,
+            Ma=mach,
+            Pr=prandtl,
+            K=inK,
+            γ=γ,
+            ω=omega,
+            αᵣ=alphaRef,
+            ωᵣ=omegaRef,
+            μᵣ=μᵣ,
         )
     elseif nSpecies == 2
         kne = knudsen * (me / mi)
@@ -520,7 +511,6 @@ function gas_property(;
     end
 
     return gas
-
 end
 
 function gas_property(
@@ -534,10 +524,9 @@ function gas_property(
     alphaRef,
     omegaRef,
     collision,
-    nm = 5,
+    nm=5,
     kwargs...,
 )
-
     @assert collision == "fsm"
 
     Dx = parse(Int, space[1])
@@ -563,19 +552,18 @@ function gas_property(
     μᵣ = ref_vhs_vis(knudsen, alphaRef, omegaRef)
     fsm = fsm_kernel(vs, μᵣ, nm, alphaRef)
 
-    return Gas(
-        Kn = knudsen,
-        Ma = mach,
-        Pr = prandtl,
-        K = inK,
-        γ = γ,
-        ω = omega,
-        αᵣ = alphaRef,
-        ωᵣ = omegaRef,
-        μᵣ = μᵣ,
-        fsm = fsm,
+    return Gas(;
+        Kn=knudsen,
+        Ma=mach,
+        Pr=prandtl,
+        K=inK,
+        γ=γ,
+        ω=omega,
+        αᵣ=alphaRef,
+        ωᵣ=omegaRef,
+        μᵣ=μᵣ,
+        fsm=fsm,
     )
-
 end
 
 function plasma_property(;
@@ -595,7 +583,6 @@ function plasma_property(;
     bnu,
     kwargs...,
 )
-
     Dx = parse(Int, space[1])
     γD = map(parse(Int, space[3]), parse(Int, space[5])) do x, y # (x)f(y)v
         if x == 0
@@ -654,5 +641,4 @@ function plasma_property(;
     end
 
     return gas
-
 end

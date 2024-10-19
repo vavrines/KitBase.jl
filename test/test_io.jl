@@ -7,10 +7,10 @@ ks, ctr, face, simTime = KB.initialize(D)
 
 ks, ctr, face, simTime = KB.initialize("config.txt")
 KB.write_sol(ks, ctr)
-KB.write_sol(ks, ctr; mode = :jld)
+KB.write_sol(ks, ctr; mode=:jld)
 
 KB.plot_line(ks, ctr)
-plot(ks, ctr, legend = :none)
+plot(ks, ctr; legend=:none)
 
 # tecplot writer
 x = rand(5)

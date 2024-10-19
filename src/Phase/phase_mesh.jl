@@ -10,7 +10,7 @@ Generate 1D mesh with quadrature rule
 - `type`: quadrature type, default is "rectangle"
 - `precision`: precision of the quadrature rule, default is Float64
 """
-function mesh_quadrature(U0, U1, NU::Integer; type = "rectangle", precision = Float64)
+function mesh_quadrature(U0, U1, NU::Integer; type="rectangle", precision=Float64)
     δ = (U1 - U0) / NU
     u = Array{precision}(undef, NU)
     du = similar(u)
@@ -30,7 +30,7 @@ function mesh_quadrature(U0, U1, NU::Integer; type = "rectangle", precision = Fl
         end
     elseif type == "algebra" # algebraic
         _nu = NU + 1
-        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i in 1:_nu]
         u .= (_u[1:end-1] .+ _u[2:end]) ./ 2
         du .= _u[2:end] - _u[1:end-1]
         weights .= du
@@ -60,10 +60,9 @@ function mesh_quadrature(
     V0,
     V1,
     NV::TI;
-    type = "rectangle",
-    precision = Float64,
+    type="rectangle",
+    precision=Float64,
 ) where {TI<:Integer}
-
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     u = Array{precision}(undef, NU, NV)
@@ -94,8 +93,8 @@ function mesh_quadrature(
     elseif type == "algebra"
         _nu = NU + 1
         _nv = NV + 1
-        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
-        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i in 1:_nu]
+        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j in 1:_nv]
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
         u1, v1 = meshgrid(__u, __v)
@@ -151,7 +150,6 @@ function mesh_quadrature(
     end
 
     return u, v, du, dv, weights
-
 end
 
 """
@@ -176,10 +174,9 @@ function mesh_quadrature(
     W0,
     W1,
     NW::TI;
-    type = "rectangle",
-    precision = Float64,
+    type="rectangle",
+    precision=Float64,
 ) where {TI<:Integer}
-
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     δw = (W1 - W0) / NW
@@ -222,9 +219,9 @@ function mesh_quadrature(
         _nu = NU + 1
         _nv = NV + 1
         _nw = NW + 1
-        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
-        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
-        _w = [W1 / (_nw - 1)^3 * (-_nw + 1 + 2 * (k - 1))^3 for k = 1:_nw]
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i in 1:_nu]
+        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j in 1:_nv]
+        _w = [W1 / (_nw - 1)^3 * (-_nw + 1 + 2 * (k - 1))^3 for k in 1:_nw]
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
         __w = (_w[1:end-1] .+ _w[2:end]) ./ 2
@@ -249,5 +246,4 @@ function mesh_quadrature(
     end
 
     return u, v, w, du, dv, dw, weights
-
 end

@@ -12,7 +12,7 @@ function central_diff(y::T, x::T) where {T<:AV{<:Number}}
 
     dy[i0] = (y[i0+1] - y[i0]) / (x[i0+1] - x[i0] + 1e-7)
     dy[i1] = (y[i1] - y[i1-1]) / (x[i1] - x[i1-1] + 1e-7)
-    for i = i0+1:i1-1
+    for i in i0+1:i1-1
         dy[i] = (y[i+1] - y[i-1]) / (x[i+1] - x[i-1] + 1e-7)
     end
 
@@ -29,7 +29,6 @@ function central_diff(y::AV{T}, dx) where {T}
     return dy
 end
 
-
 """
 $(SIGNATURES)
 
@@ -41,7 +40,7 @@ function central_diff2(y::T, x::T) where {T<:AV{<:Number}}
     i0 = eachindex(y) |> first
     i1 = eachindex(y) |> last
 
-    for i = i0+1:i1-1
+    for i in i0+1:i1-1
         dy[i] = (y[i+1] - 2.0 * y[i] + y[i-1]) / (x[i+1] - x[i-1])^2
     end
 
@@ -58,7 +57,6 @@ function central_diff2(y::AV{T}, dx) where {T}
     return dy
 end
 
-
 """
 $(SIGNATURES)
 
@@ -73,7 +71,7 @@ function central_diff!(dy::AV{T1}, y::T2, x::T2) where {T1,T2<:AV{<:Number}}
 
     dy[i0] = (y[i0+1] - y[i0]) / (x[i0+1] - x[i0] + 1e-7)
     dy[i1] = (y[i1] - y[i1-1]) / (x[i1] - x[i1-1] + 1e-7)
-    for i = i0+1:i1-1
+    for i in i0+1:i1-1
         dy[i] = (y[i+1] - y[i-1]) / (x[i+1] - x[i-1] + 1e-7)
     end
 
@@ -90,7 +88,6 @@ function central_diff!(dy::AV{T1}, y::AV{T2}, dx) where {T1,T2}
     return nothing
 end
 
-
 """
 $(SIGNATURES)
     
@@ -104,7 +101,7 @@ function central_diff2!(dy::AV{T1}, y::T2, x::T2) where {T1,T2<:AV{<:Number}}
 
     dy[i0] = 0.0
     dy[i1] = 0.0
-    for i = i0+1:i1-1
+    for i in i0+1:i1-1
         dy[i] = (y[i+1] - 2.0 * y[i] + y[i-1]) / (x[i+1] - x[i-1])^2
     end
 
@@ -121,13 +118,12 @@ function central_diff2!(dy::AV{T1}, y::AV{T2}, dx) where {T1,T2}
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
 Upwind difference
 """
-function upwind_diff(y::AV{T1}, x::AV{T2}; stream = :right::Symbol) where {T1,T2}
+function upwind_diff(y::AV{T1}, x::AV{T2}; stream=:right::Symbol) where {T1,T2}
     dy = zeros(eltype(y), axes(y))
 
     idx = eachindex(y) |> collect
@@ -136,12 +132,12 @@ function upwind_diff(y::AV{T1}, x::AV{T2}; stream = :right::Symbol) where {T1,T2
 
     if stream == :right
         dy[i0] = 0.0
-        for i = i0+1:i1
+        for i in i0+1:i1
             dy[i] = (y[i] - y[i-1]) / (x[i] - x[i-1] + 1e-7)
         end
     elseif stream == :left
         dy[i1] = 0.0
-        for i = i0:i1-1
+        for i in i0:i1-1
             dy[i] = (y[i+1] - y[i]) / (x[i+1] - x[i] + 1e-7)
         end
     else
@@ -154,13 +150,12 @@ end
 """
 $(SIGNATURES)
 """
-function upwind_diff(y::AV{T}, dx; stream = :right::Symbol) where {T}
+function upwind_diff(y::AV{T}, dx; stream=:right::Symbol) where {T}
     x = linspace(0, length(y) - 1, length(y)) .* dx
-    dy = upwind_diff(y, x, stream = stream)
+    dy = upwind_diff(y, x; stream=stream)
 
     return dy
 end
-
 
 """
 $(SIGNATURES)
@@ -171,9 +166,8 @@ function upwind_diff!(
     dy::AV{T1},
     y::AV{T2},
     x::AV{T3};
-    stream = :right::Symbol,
+    stream=:right::Symbol,
 ) where {T1,T2,T3}
-
     @assert axes(dy) == axes(y) == axes(x)
 
     idx = eachindex(y) |> collect
@@ -182,12 +176,12 @@ function upwind_diff!(
 
     if stream == :right
         dy[i0] = 0.0
-        for i = i0+1:i1
+        for i in i0+1:i1
             dy[i] = (y[i] - y[i-1]) / (x[i] - x[i-1] + 1e-7)
         end
     elseif stream == :left
         dy[i1] = 0.0
-        for i = i0:i1-1
+        for i in i0:i1-1
             dy[i] = (y[i+1] - y[i]) / (x[i+1] - x[i] + 1e-7)
         end
     else
@@ -195,19 +189,17 @@ function upwind_diff!(
     end
 
     return nothing
-
 end
 
 """
 $(SIGNATURES)
 """
-function upwind_diff!(dy::AV{T1}, y::AV{T2}, dx; stream = :right::Symbol) where {T1,T2}
+function upwind_diff!(dy::AV{T1}, y::AV{T2}, dx; stream=:right::Symbol) where {T1,T2}
     x = linspace(0, length(y) - 1, length(y)) .* dx
-    upwind_diff!(dy, y, x, stream = stream)
+    upwind_diff!(dy, y, x; stream=stream)
 
     return nothing
 end
-
 
 """
 $(SIGNATURES)
@@ -218,14 +210,13 @@ function unstruct_diff(
     u::AV{T1},
     x::AV{T2},
     nx::Integer;
-    mode = :central::Symbol,
+    mode=:central::Symbol,
 ) where {T1,T2}
-
     uu = reshape(u, (nx, :))
     xx = reshape(x, (nx, :))
 
     dux = similar(xx)
-    for i = 1:nx
+    for i in 1:nx
         if mode == :central
             dux[i, :] .= central_diff(uu[i, :], xx[i, :])
         elseif mode == :upwind
@@ -236,7 +227,6 @@ function unstruct_diff(
     end
 
     return reshape(dux, (1, :))
-
 end
 
 """
@@ -247,9 +237,8 @@ function unstruct_diff(
     x::AV{T},
     nx::Integer,
     dim::Integer;
-    mode = :central::Symbol,
+    mode=:central::Symbol,
 ) where {T}
-
     uu = reshape(u.(x), (nx, :))
     xx = reshape(x, (nx, :))
     dux = zeros(eltype(x), axes(xx))
@@ -273,5 +262,4 @@ function unstruct_diff(
     end
 
     return dux[:]
-
 end

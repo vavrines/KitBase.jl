@@ -52,7 +52,6 @@ function step!(
     for i in eachindex(u)
         f[i] = (f[i] + (ffL[i] - ffR[i]) / dx + dt / τ * M[i]) / (1.0 + dt / τ)
     end
-
 end
 
 """
@@ -113,7 +112,6 @@ function step!(
             (f[i, j, k] + (ffL[i, j, k] - ffR[i, j, k]) / dx + dt / τ * M[i, j, k]) /
             (1.0 + dt / τ)
     end
-
 end
 
 """
@@ -141,7 +139,6 @@ function step!(
     AVG,
     collision,
 ) where {T1<:AV,T2<:AA{T5,3},T3<:AV,T4<:AA{T6,3}} where {T5,T6}
-
     @assert collision == :fsm
 
     w_old = deepcopy(w)
@@ -157,7 +154,6 @@ function step!(
     for k in axes(f, 3), j in axes(f, 2), i in axes(f, 1)
         f[i, j, k] += (ffL[i, j, k] - ffR[i, j, k]) / dx + dt * Q[i, j, k]
     end
-
 end
 
 """
@@ -222,7 +218,6 @@ function step!(
             (h[i] + (fhL[i] - fhR[i] + fhD[i] - fhU[i]) / Δs + dt / τ * MH[i]) /
             (1.0 + dt / τ)
     end
-
 end
 
 """
@@ -284,12 +279,9 @@ function step!(
     #--- update distribution function ---#
     for i in eachindex(u)
         f[i] =
-            (
-                f[i] - (ff1[i] * dirc[1] + ff2[i] * dirc[2] + ff3[i] * dirc[3]) / Δs +
-                dt / τ * M[i]
-            ) / (1.0 + dt / τ)
+            (f[i] - (ff1[i] * dirc[1] + ff2[i] * dirc[2] + ff3[i] * dirc[3]) / Δs +
+             dt / τ * M[i]) / (1.0 + dt / τ)
     end
-
 end
 
 """
@@ -321,7 +313,6 @@ function step!(
     AVG,
     collision,
 ) where {T1<:AV,T2<:AA3,T3<:AV}
-
     @assert collision == :fsm
 
     w_old = deepcopy(w)
@@ -342,5 +333,4 @@ function step!(
     end
 
     return nothing
-
 end

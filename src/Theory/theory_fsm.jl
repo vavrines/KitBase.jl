@@ -5,9 +5,8 @@ RHS-ODE of Boltzmann equation
 """
 function boltzmann_ode!(df, f::AA{T,3}, p, t) where {T}
     Kn, M, phi, psi, phipsi = p
-    df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
+    return df .= boltzmann_fft(f, Kn, M, phi, psi, phipsi)
 end
-
 
 """
 $(SIGNATURES)
@@ -16,7 +15,6 @@ Calculate effective Knudsen number for fast spectral method with hard sphere (HS
 """
 hs_boltz_kn(mu_ref, alpha) =
     64 * sqrt(2.0)^alpha / 5.0 * gamma((alpha + 3) / 2) * gamma(2.0) * sqrt(pi) * mu_ref
-
 
 """
 $(TYPEDSIGNATURES)
@@ -35,14 +33,13 @@ function kernel_mode(
     vnum::I,
     wnum::I,
     alpha::R2;
-    quad_num = 64::I,
+    quad_num=64::I,
 ) where {I<:Integer,R,R1,R2}
-
     supp = sqrt(2.0) * 2.0 * max(umax, vmax, wmax) / (3.0 + sqrt(2.0))
 
-    fre_vx = range(-π / du, (unum ÷ 2 - 1) * 2.0 * π / unum / du, length = unum)
-    fre_vy = range(-π / dv, (vnum ÷ 2 - 1) * 2.0 * π / vnum / dv, length = vnum)
-    fre_vz = range(-π / dw, (wnum ÷ 2 - 1) * 2.0 * π / wnum / dw, length = wnum)
+    fre_vx = range(-π / du, (unum ÷ 2 - 1) * 2.0 * π / unum / du; length=unum)
+    fre_vy = range(-π / dv, (vnum ÷ 2 - 1) * 2.0 * π / vnum / dv; length=vnum)
+    fre_vz = range(-π / dw, (wnum ÷ 2 - 1) * 2.0 * π / wnum / dw; length=wnum)
 
     # abscissa, gweight = gausslegendre(quad_num)
     # @. abscissa = (0. * (1. - abscissa) + supp * (1. + abscissa)) / 2
@@ -53,19 +50,19 @@ function kernel_mode(
     phi = zeros(unum, vnum, wnum, M * (M - 1))
     psi = zeros(unum, vnum, wnum, M * (M - 1))
     phipsi = zeros(unum, vnum, wnum)
-    for loop = 1:M-1
+    for loop in 1:M-1
         theta = π / M * loop
-        for loop2 = 1:M
+        for loop2 in 1:M
             theta2 = π / M * loop2
             idx = (loop - 1) * M + loop2
-            for k = 1:wnum, j = 1:vnum, i = 1:unum
+            for k in 1:wnum, j in 1:vnum, i in 1:unum
                 s =
                     fre_vx[i] * sin(theta) * cos(theta2) +
                     fre_vy[j] * sin(theta) * sin(theta2) +
                     fre_vz[k] * cos(theta)
                 # phi
                 int_temp = 0.0
-                for id = 1:quad_num
+                for id in 1:quad_num
                     int_temp +=
                         2.0 * gweight[id] * cos(s * abscissa[id]) * (abscissa[id]^alpha)
                 end
@@ -87,7 +84,6 @@ function kernel_mode(
     end
 
     return phi, psi, phipsi
-
 end
 
 """
@@ -102,33 +98,32 @@ function kernel_mode(
     vnum::I,
     wnum::I,
     alpha::R1;
-    quad_num = 64::I,
+    quad_num=64::I,
 ) where {I<:Integer,R,R1}
-
     supp = sqrt(2.0) * 2.0 * max(umax, vmax, wmax) / (3.0 + sqrt(2.0))
 
-    fre_vx = [i * π / umax for i = -unum÷2:unum÷2-1]
-    fre_vy = [i * π / vmax for i = -vnum÷2:vnum÷2-1]
-    fre_vz = [i * π / wmax for i = -wnum÷2:wnum÷2-1]
+    fre_vx = [i * π / umax for i in -unum÷2:unum÷2-1]
+    fre_vy = [i * π / vmax for i in -vnum÷2:vnum÷2-1]
+    fre_vz = [i * π / wmax for i in -wnum÷2:wnum÷2-1]
 
     abscissa, gweight = KitBase.lgwt(quad_num, 0, supp)
 
     phi = zeros(unum, vnum, wnum, M * (M - 1))
     psi = zeros(unum, vnum, wnum, M * (M - 1))
     phipsi = zeros(unum, vnum, wnum)
-    for loop = 1:M-1
+    for loop in 1:M-1
         theta = π / M * loop
-        for loop2 = 1:M
+        for loop2 in 1:M
             theta2 = π / M * loop2
             idx = (loop - 1) * M + loop2
-            for k = 1:wnum, j = 1:vnum, i = 1:unum
+            for k in 1:wnum, j in 1:vnum, i in 1:unum
                 s =
                     fre_vx[i] * sin(theta) * cos(theta2) +
                     fre_vy[j] * sin(theta) * sin(theta2) +
                     fre_vz[k] * cos(theta)
                 # phi
                 int_temp = 0.0
-                for id = 1:quad_num
+                for id in 1:quad_num
                     int_temp +=
                         2.0 * gweight[id] * cos(s * abscissa[id]) * (abscissa[id]^alpha)
                 end
@@ -150,7 +145,6 @@ function kernel_mode(
     end
 
     return phi, psi, phipsi
-
 end
 
 """
@@ -164,18 +158,17 @@ function kernel_mode(
     dv::TR1,
     unum::TI,
     vnum::TI;
-    quad_num = 64::TI,
+    quad_num=64::TI,
 ) where {TI<:Integer,TR,TR1}
-
     supp = sqrt(2.0) * 2.0 * max(umax, vmax) / (3.0 + sqrt(2.0))
 
-    fre_vx = range(-π / du, (unum ÷ 2 - 1) * 2.0 * π / unum / du, length = unum)
-    fre_vy = range(-π / dv, (vnum ÷ 2 - 1) * 2.0 * π / vnum / dv, length = vnum)
+    fre_vx = range(-π / du, (unum ÷ 2 - 1) * 2.0 * π / unum / du; length=unum)
+    fre_vy = range(-π / dv, (vnum ÷ 2 - 1) * 2.0 * π / vnum / dv; length=vnum)
     Fre_vx, Fre_vy = ndgrid(fre_vx, fre_vy)
 
     αp = zeros(unum, vnum, M)
     αq = zeros(unum, vnum, M)
-    for lp = 1:M
+    for lp in 1:M
         θ = lp * π / M
 
         s = Fre_vx * cos(θ + π / 2) + Fre_vy * sin(θ + π / 2)
@@ -193,16 +186,14 @@ function kernel_mode(
     end
 
     return αp, αq, α0
-
 end
-
 
 """
 $(TYPEDSIGNATURES)
 
 Create pre-computed kernel for fast spectral method
 """
-function fsm_kernel(vs::AbstractVelocitySpace, μ, nm = 5, α = 1.0)
+function fsm_kernel(vs::AbstractVelocitySpace, μ, nm=5, α=1.0)
     kn_bz = hs_boltz_kn(μ, α)
 
     phi, psi, phipsi = kernel_mode(
@@ -219,9 +210,8 @@ function fsm_kernel(vs::AbstractVelocitySpace, μ, nm = 5, α = 1.0)
         α,
     )
 
-    return (Kn = kn_bz, nm = nm, ϕ = phi, ψ = psi, χ = phipsi)
+    return (Kn=kn_bz, nm=nm, ϕ=phi, ψ=psi, χ=phipsi)
 end
-
 
 """
 $(TYPEDSIGNATURES)
@@ -236,7 +226,6 @@ function boltzmann_fft(
     ψ::Y,
     phipsi::AA{<:Real,3},
 ) where {Y<:AA{<:Real,4}}
-
     f = begin
         if f0 isa Array
             f0
@@ -252,7 +241,7 @@ function boltzmann_fft(
 
     #--- gain term ---#
     f_temp = zeros(axes(f_spec)) .+ 0im
-    for i = 1:M*(M-1)
+    for i in 1:M*(M-1)
         fg1 = f_spec .* ϕ[:, :, :, i]
         fg2 = f_spec .* ψ[:, :, :, i]
         fg11 = fft(fg1)
@@ -270,14 +259,12 @@ function boltzmann_fft(
     Q = @. 4.0 * π^2 / Kn / M^2 * real(f_temp)
 
     return Q
-
 end
 
 """
 $(SIGNATURES)
 """
 boltzmann_fft(f, p) = boltzmann_fft(f, p.Kn, p.nm, p.ϕ, p.ψ, p.χ)
-
 
 """
 $(TYPEDSIGNATURES)
@@ -293,7 +280,6 @@ function boltzmann_fft!(
     ψ::T,
     phipsi::AA{<:Real,3},
 ) where {T<:AA{<:Real,4}}
-
     f = begin
         if f0 isa Array
             f0
@@ -309,7 +295,7 @@ function boltzmann_fft!(
 
     #--- gain term ---#
     f_temp = zeros(axes(f_spec)) .+ 0im
-    for i = 1:M*(M-1)
+    for i in 1:M*(M-1)
         fg1 = f_spec .* ϕ[:, :, :, i]
         fg2 = f_spec .* ψ[:, :, :, i]
         fg11 = fft(fg1)
@@ -325,7 +311,6 @@ function boltzmann_fft!(
     f_temp .-= fl11 .* fl22
 
     @. Q = 4.0 * π^2 / Kn / M^2 * real(f_temp)
-
 end
 
 """

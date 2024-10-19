@@ -14,7 +14,6 @@ struct Solution{T1,T2,ND} <: AbstractSolution
     ∇w::T2
 end
 
-
 """
 $(TYPEDEF)
 
@@ -27,7 +26,6 @@ struct Solution1F{T1,T2,T3,T4,ND} <: AbstractSolution
     f::T3
     ∇f::T4
 end
-
 
 """
 $(TYPEDEF)
@@ -43,7 +41,6 @@ struct Solution2F{T1,T2,T3,T4,ND} <: AbstractSolution
     ∇h::T4
     ∇b::T4
 end
-
 
 """
 $(SIGNATURES)
@@ -83,7 +80,6 @@ function Solution1D(w::AA, prim::AA, h::AA, b::AA)
         sb,
     )
 end
-
 
 """
 $(SIGNATURES)

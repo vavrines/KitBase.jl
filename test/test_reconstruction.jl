@@ -42,14 +42,7 @@ KB.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :linear)
 KB.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :vanleer)
 KB.reconstruct3!(similar(wL), wL, wN, wR, dx, dx, :minmod)
 KB.reconstruct3!(randn(3, 2), randn(3, 2), randn(3, 2), randn(3, 2), dx, dx)
-KB.reconstruct3!(
-    randn(3, 2, 2),
-    randn(3, 2, 2),
-    randn(3, 2, 2),
-    randn(3, 2, 2),
-    dx,
-    dx,
-)
+KB.reconstruct3!(randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), randn(3, 2, 2), dx, dx)
 KB.reconstruct3!(
     randn(3, 2, 2, 2),
     randn(3, 2, 2, 2),
@@ -65,20 +58,20 @@ KB.weno5(-2.0, -1.0, 0.0, 1.0, 2.0)
 let deg = 2, u = rand(deg + 1)
     ℓ = rand(deg + 1)
 
-    modal_filter!(u, 1e-6; filter = :l2)
-    modal_filter!(u, 1e-6; filter = :l2opt)
-    modal_filter!(u, 1e-6, ℓ; filter = :l1)
-    modal_filter!(u, ℓ; filter = :lasso)
-    modal_filter!(u, 10; filter = :exp)
-    modal_filter!(u, 10; filter = :houli)
+    modal_filter!(u, 1e-6; filter=:l2)
+    modal_filter!(u, 1e-6; filter=:l2opt)
+    modal_filter!(u, 1e-6, ℓ; filter=:l1)
+    modal_filter!(u, ℓ; filter=:lasso)
+    modal_filter!(u, 10; filter=:exp)
+    modal_filter!(u, 10; filter=:houli)
 end
 
 let deg = 2, u = rand(deg + 1, deg + 1)
     ℓ = rand(deg + 1, deg + 1)
 
-    modal_filter!(u, 1e-6, 1e-6; filter = :l2)
-    modal_filter!(u, 1e-6, 1e-6; filter = :l2opt)
-    modal_filter!(u, 1e-6, 1e-6, ℓ; filter = :l1)
-    modal_filter!(u, ℓ; filter = :lasso)
-    modal_filter!(u, 2; filter = :exp)
+    modal_filter!(u, 1e-6, 1e-6; filter=:l2)
+    modal_filter!(u, 1e-6, 1e-6; filter=:l2opt)
+    modal_filter!(u, 1e-6, 1e-6, ℓ; filter=:l1)
+    modal_filter!(u, ℓ; filter=:lasso)
+    modal_filter!(u, 2; filter=:exp)
 end

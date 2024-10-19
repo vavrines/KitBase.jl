@@ -1,25 +1,25 @@
 using KitBase, Plots
 using KitBase.ProgressMeter: @showprogress
 
-cf = config_ntuple(
-    space = "1d3f1v2s",
-    cfl = 0.5,
-    maxTime = 5.0,
-    umin = -5.0,
-    umax = 5.0,
-    nu = 48,
-    knudsen = 0.01,
-    prandtl = 0.72,
-    inK = 2.0,
-    inKr = 2.0,
-    Tr0 = 91.5 / 273,
-    Z0 = 18.1,
+cf = config_ntuple(;
+    space="1d3f1v2s",
+    cfl=0.5,
+    maxTime=5.0,
+    umin=-5.0,
+    umax=5.0,
+    nu=48,
+    knudsen=0.01,
+    prandtl=0.72,
+    inK=2.0,
+    inKr=2.0,
+    Tr0=91.5 / 273,
+    Z0=18.1,
 )
 
 γ = heat_capacity_ratio(cf.inK, cf.inKr, 1)
 
 set = set_setup(; cf...)
-gas = PolyatomicMixture(Kn = cf.knudsen, Pr = cf.prandtl, K = cf.inK, Kr = cf.inKr)
+gas = PolyatomicMixture(; Kn=cf.knudsen, Pr=cf.prandtl, K=cf.inK, Kr=cf.inKr)
 
 vs = MVSpace1D(cf.umin, cf.umax, -8, 8, cf.nu)
 
@@ -47,15 +47,6 @@ mixture_polyatomic_maxwellian!(MH, MB, MR, vs.u, prim0, gas.K, gas.Kr)
 
 w1 = mixture_polyatomic_moments_conserve(MH, MB, MR, vs.u, vs.weights)
 """w1 == w0"""
-
-
-
-
-
-
-
-
-
 
 plot(vs.u[:, 1], h0[:, 1])
 plot!(vs.u[:, 2], h0[:, 2])

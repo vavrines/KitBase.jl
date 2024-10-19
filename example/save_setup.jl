@@ -3,14 +3,14 @@ import KitBase.BSON
 cd(@__DIR__)
 
 # save
-set = Setup(space = "1d1f1v", boundary = "fix", maxTime = 0.1)
+set = Setup(; space="1d1f1v", boundary="fix", maxTime=0.1)
 ps = PSpace1D(0, 1, 100, 1)
 vs = VSpace1D(-5, 5, 28)
-gas = Gas(Kn = 5e-4, K = 0.0, γ = 3.0)
+gas = Gas(; Kn=5e-4, K=0.0, γ=3.0)
 ib = begin
     primL = [1.0, 0.0, 1 / 0.5]
     primR = [0.125, 0.0, 1 / 0.625]
-    p = (γ = gas.γ, u = vs.u, primL = primL, primR = primR)
+    p = (γ=gas.γ, u=vs.u, primL=primL, primR=primR)
     _fw = function (x, p)
         prim = ifelse(x < 0.5, p.primL, p.primR)
         return prim_conserve(prim, p.γ)

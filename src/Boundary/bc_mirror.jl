@@ -7,23 +7,23 @@ $(SIGNATURES)
 
 Mirror boundary condition
 """
-function bc_mirror!(ctr::AM, ng = 1::Integer; dirc)
+function bc_mirror!(ctr::AM, ng=1::Integer; dirc)
     if Symbol(dirc) in (:xl, :xL)
-        for j in axes(ctr, 2), i = 1:ng
+        for j in axes(ctr, 2), i in 1:ng
             bc_mirror!(ctr[1-i, j], ctr[i, j], :x)
         end
     elseif Symbol(dirc) in (:xr, :xR)
         nx = size(ctr, 1) - 2 * ng
-        for j in axes(ctr, 2), i = 1:ng
+        for j in axes(ctr, 2), i in 1:ng
             bc_mirror!(ctr[nx+i, j], ctr[nx-i+1, j], :x)
         end
     elseif Symbol(dirc) in (:yl, :yL)
-        for j = 1:ng, i in axes(ctr, 1)
+        for j in 1:ng, i in axes(ctr, 1)
             bc_mirror!(ctr[i, 1-j], ctr[i, j], :y)
         end
     elseif Symbol(dirc) in (:yr, :yR)
         ny = size(ctr, 2) - 2 * ng
-        for j = 1:ng, i in axes(ctr, 1)
+        for j in 1:ng, i in axes(ctr, 1)
             bc_mirror!(ctr[i, ny+j], ctr[i, ny-j+1], :y)
         end
     end
@@ -68,7 +68,7 @@ function bc_mirror!(
         ctr.prim[2] *= -1.0
         ctr.sw[2, 1] *= -1.0
 
-        for j = 1:nv, i = 1:nu
+        for j in 1:nv, i in 1:nu
             ctr.f[i, j] = ctr0.f[nu+1-i, j]
         end
     elseif Symbol(dirc) == :y
@@ -76,7 +76,7 @@ function bc_mirror!(
         ctr.prim[3] *= -1.0
         ctr.sw[3, 2] *= -1.0
 
-        for j = 1:nv, i = 1:nu
+        for j in 1:nv, i in 1:nu
             ctr.f[i, j] = ctr0.f[i, nv+1-j]
         end
     end
@@ -102,7 +102,7 @@ function bc_mirror!(
         ctr.prim[2] *= -1.0
         ctr.sw[2, 1] *= -1.0
 
-        for j = 1:nv, i = 1:nu
+        for j in 1:nv, i in 1:nu
             ctr.h[i, j] = ctr0.h[nu+1-i, j]
             ctr.b[i, j] = ctr0.b[nu+1-i, j]
         end
@@ -111,7 +111,7 @@ function bc_mirror!(
         ctr.prim[3] *= -1.0
         ctr.sw[3, 2] *= -1.0
 
-        for j = 1:nv, i = 1:nu
+        for j in 1:nv, i in 1:nu
             ctr.h[i, j] = ctr0.h[i, nv+1-j]
             ctr.b[i, j] = ctr0.b[i, nv+1-j]
         end

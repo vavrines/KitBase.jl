@@ -6,20 +6,19 @@ Write solution data
 ## Arguments
 * `mode`: data format (`:bson`, `:jld`, `:vtk`, `:tec`)
 """
-function write_sol(args...; mode = :bson)
+function write_sol(args...; mode=:bson)
     fn = eval(Symbol("write_" * string(mode)))
     fn(args...)
 
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
 Write data into BSON
 """
-function write_bson(KS::AbstractSolverSet, ctr, t = 0)
+function write_bson(KS::AbstractSolverSet, ctr, t=0)
     strIter = string(t)
     fileOut = KS.outputFolder * "data/t=" * strIter * ".bson"
     save(fileOut, Dict("set" => KS, "ctr" => ctr, "t" => t))
@@ -27,13 +26,12 @@ function write_bson(KS::AbstractSolverSet, ctr, t = 0)
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
 Write data into JLD2
 """
-function write_jld(KS::AbstractSolverSet, ctr, t = 0)
+function write_jld(KS::AbstractSolverSet, ctr, t=0)
     strIter = string(t)
     fileOut = KS.outputFolder * "data/t=" * strIter * ".jld2"
     save(fileOut, Dict("set" => KS, "ctr" => ctr, "t" => t))
@@ -41,13 +39,12 @@ function write_jld(KS::AbstractSolverSet, ctr, t = 0)
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
 Write data into VTK
 """
-function write_vtk(points::T, cells, cdata, pdata = zeros(axes(points, 1))) where {T<:AM}
+function write_vtk(points::T, cells, cdata, pdata=zeros(axes(points, 1))) where {T<:AM}
     mcells = [MeshCell(VTKCellTypes.VTK_TRIANGLE, cells[i, :]) for i in axes(cells, 1)]
     vtkfile = vtk_grid("sol", permutedims(points), mcells)
 
@@ -70,7 +67,6 @@ function write_vtk(points::T, cells, cdata, pdata = zeros(axes(points, 1))) wher
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
@@ -90,7 +86,7 @@ function write_tec(x::AV, sol)
         end
 
         varnm = ""
-        for i = 1:len-1
+        for i in 1:len-1
             varnm = varnm * "V" * string(i) * ", "
         end
         varnm = varnm * "V" * string(len)
@@ -145,7 +141,7 @@ function write_tec(x::AM, y::AM, sol)
         end
 
         varnm = ""
-        for i = 1:len-1
+        for i in 1:len-1
             varnm = varnm * "V" * string(i) * ", "
         end
         varnm = varnm * "V" * string(len)
@@ -184,7 +180,6 @@ function write_tec(x::AM, y::AM, sol)
 
     return nothing
 end
-
 
 """
 $(SIGNATURES)

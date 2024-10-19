@@ -28,15 +28,15 @@ KB.central_diff!(res, y, x0)
 KB.central_diff2!(res, y, x)
 KB.central_diff2!(res, y, x0)
 
-KB.upwind_diff(y, x; stream = :right)
-KB.upwind_diff(y, x; stream = :left)
+KB.upwind_diff(y, x; stream=:right)
+KB.upwind_diff(y, x; stream=:left)
 KB.upwind_diff(y, x0)
 
 KB.upwind_diff!(res, y, x)
 KB.upwind_diff!(res, y, x0)
 
-KB.unstruct_diff(y, x, 4; mode = :central)
-KB.unstruct_diff(y, x, 4; mode = :upwind)
+KB.unstruct_diff(y, x, 4; mode=:central)
+KB.unstruct_diff(y, x, 4; mode=:upwind)
 KB.unstruct_diff(sin, randn(12), 4, 1)
 KB.unstruct_diff(sin, randn(12), 4, 2)
 
@@ -68,12 +68,7 @@ using KitBase.TypedPolynomials
 KB.rlylm(2, 2, _x, _y, _z)
 
 res = KB.optimize_closure(α, m, weights, u, KB.maxwell_boltzmann_dual)
-u1 = KB.realizable_reconstruct(
-    res.minimizer,
-    m,
-    weights,
-    KB.maxwell_boltzmann_dual_prime,
-)
+u1 = KB.realizable_reconstruct(res.minimizer, m, weights, KB.maxwell_boltzmann_dual_prime)
 
 using KitBase.Distributions
 u = KB.linspace(-5, 5, 100)

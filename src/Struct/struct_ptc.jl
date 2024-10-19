@@ -27,9 +27,9 @@ mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
         V,
         E,
         IDX,
-        REF = zeros(eltype(IDX), axes(IDX, 1)),
-        FLAG = zeros(eltype(IDX), axes(IDX, 1)),
-        T = zero(M),
+        REF=zeros(eltype(IDX), axes(IDX, 1)),
+        FLAG=zeros(eltype(IDX), axes(IDX, 1)),
+        T=zero(M),
     )
         m = deepcopy(M)
         x = deepcopy(X)
@@ -40,7 +40,7 @@ mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
         flag = deepcopy(FLAG)
         tc = deepcopy(T)
 
-        new{typeof(m),typeof(x),typeof(v),typeof(idx),typeof(flag)}(
+        return new{typeof(m),typeof(x),typeof(v),typeof(idx),typeof(flag)}(
             m,
             x,
             v,
@@ -52,7 +52,6 @@ mutable struct Particle{T1,T2,T3,T4,T5} <: AbstractParticle
         )
     end
 end
-
 
 """
 $(TYPEDEF)
@@ -72,7 +71,7 @@ mutable struct Particle1D{T1,T2,T3} <: AbstractParticle1D
     flag::T3
     tc::T1
 
-    function Particle1D(M, X, V, E, IDX::Integer, FLAG = zero(IDX), T = zero(M))
+    function Particle1D(M, X, V, E, IDX::Integer, FLAG=zero(IDX), T=zero(M))
         m = deepcopy(M)
         x = deepcopy(X)
         v = deepcopy(V)
@@ -81,10 +80,9 @@ mutable struct Particle1D{T1,T2,T3} <: AbstractParticle1D
         flag = deepcopy(FLAG)
         tc = deepcopy(T)
 
-        new{typeof(m),typeof(v),typeof(idx)}(m, x, v, e, idx, flag, tc)
+        return new{typeof(m),typeof(v),typeof(idx)}(m, x, v, e, idx, flag, tc)
     end
 end
-
 
 """
 $(TYPEDEF)
@@ -114,8 +112,8 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
         E,
         IDX::Integer,
         IDY::Integer,
-        FLAG = zero(IDX),
-        T = zero(M)::Real,
+        FLAG=zero(IDX),
+        T=zero(M)::Real,
     )
         m = deepcopy(M)
         x = deepcopy(X)
@@ -127,10 +125,9 @@ mutable struct Particle2D{T1,T2,T3} <: AbstractParticle2D
         flag = deepcopy(FLAG)
         tc = deepcopy(T)
 
-        new{typeof(m),typeof(v),typeof(idx)}(m, x, y, v, e, idx, idy, flag, tc)
+        return new{typeof(m),typeof(v),typeof(idx)}(m, x, y, v, e, idx, idy, flag, tc)
     end
 end
-
 
 """
 $(TYPEDEF)
@@ -163,11 +160,11 @@ mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1
         DX::Real,
         W::AA,
         PRIM::AA,
-        TAU = 0.0::Real,
-        NP = 0::Integer,
-        IP = 0::Integer,
-        VR = 3.0 * sqrt(PRIM[end])::Real,
-        RE = 0::Integer,
+        TAU=0.0::Real,
+        NP=0::Integer,
+        IP=0::Integer,
+        VR=3.0 * sqrt(PRIM[end])::Real,
+        RE=0::Integer,
     )
         x = deepcopy(X)
         dx = deepcopy(DX)
@@ -185,7 +182,7 @@ mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1
         vrmax = deepcopy(VR)
         remainder = deepcopy(RE)
 
-        new{typeof(x),typeof(w),typeof(np)}(
+        return new{typeof(x),typeof(w),typeof(np)}(
             x,
             dx,
             w,
@@ -201,7 +198,6 @@ mutable struct ControlVolumeParticle1D{F,A,I<:Integer} <: AbstractControlVolume1
         )
     end
 end
-
 
 """
 $(TYPEDEF)
@@ -238,13 +234,12 @@ mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
         DY::Real,
         W::AA,
         PRIM::AA,
-        TAU = 0.0::Real,
-        NP = 0::Integer,
-        IP = 0::Integer,
-        VR = 3.0 * sqrt(PRIM[end])::Real,
-        RE = 0::Integer,
+        TAU=0.0::Real,
+        NP=0::Integer,
+        IP=0::Integer,
+        VR=3.0 * sqrt(PRIM[end])::Real,
+        RE=0::Integer,
     )
-
         x = deepcopy(X)
         dx = deepcopy(DX)
         y = deepcopy(Y)
@@ -263,7 +258,7 @@ mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
         vrmax = deepcopy(VR)
         remainder = deepcopy(RE)
 
-        new{typeof(x),typeof(w),typeof(sw),typeof(np)}(
+        return new{typeof(x),typeof(w),typeof(sw),typeof(np)}(
             x,
             dx,
             y,
@@ -279,6 +274,5 @@ mutable struct ControlVolumeParticle2D{F,A,B,I} <: AbstractControlVolume2D
             vrmax,
             remainder,
         )
-
     end
 end

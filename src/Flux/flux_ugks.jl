@@ -25,10 +25,10 @@ function flux_ugks!(
     dt,
     dxL,
     dxR,
-    shL = zeros(eltype(hL), axes(hL))::T4,
-    sbL = zeros(eltype(bL), axes(bL))::T4,
-    shR = zeros(eltype(hR), axes(hR))::T4,
-    sbR = zeros(eltype(bR), axes(bR))::T4,
+    shL=zeros(eltype(hL), axes(hL))::T4,
+    sbL=zeros(eltype(bL), axes(bL))::T4,
+    shR=zeros(eltype(hR), axes(hR))::T4,
+    sbR=zeros(eltype(bR), axes(bR))::T4,
 ) where {T2<:AV,T3<:AV,T4<:AV,T5<:AV} # 1D2F flux
 
     #--- reconstruct initial distribution ---#
@@ -111,7 +111,6 @@ function flux_ugks!(
         Mt[4] * u * b - Mt[5] * u^2 * sb
 
     return nothing
-
 end
 
 """
@@ -141,10 +140,10 @@ function flux_ugks!(
     dxL,
     dxR,
     len,
-    shL = zeros(eltype(hL), axes(hL))::T4,
-    sbL = zeros(eltype(bL), axes(bL))::T4,
-    shR = zeros(eltype(hR), axes(hR))::T4,
-    sbR = zeros(eltype(bR), axes(bR))::T4,
+    shL=zeros(eltype(hL), axes(hL))::T4,
+    sbL=zeros(eltype(bL), axes(bL))::T4,
+    shR=zeros(eltype(hR), axes(hR))::T4,
+    sbR=zeros(eltype(bR), axes(bR))::T4,
 ) where {T2<:AM,T3<:AV,T4<:AM,T5<:AM} # 2D2F flux
 
     #--- reconstruct initial distribution ---#
@@ -225,30 +224,24 @@ function flux_ugks!(
         Mt[1] * u * B +
         Mt[2] *
         u^2 *
-        (
-            aL[1] * B +
-            aL[2] * u * B +
-            aL[3] * v * B +
-            0.5 * aL[4] * ((u^2 + v^2) * B + Mxi[2] * H)
-        ) *
+        (aL[1] * B +
+         aL[2] * u * B +
+         aL[3] * v * B +
+         0.5 * aL[4] * ((u^2 + v^2) * B + Mxi[2] * H)) *
         δ +
         Mt[2] *
         u^2 *
-        (
-            aR[1] * B +
-            aR[2] * u * B +
-            aR[3] * v * B +
-            0.5 * aR[4] * ((u^2 + v^2) * B + Mxi[2] * H)
-        ) *
+        (aR[1] * B +
+         aR[2] * u * B +
+         aR[3] * v * B +
+         0.5 * aR[4] * ((u^2 + v^2) * B + Mxi[2] * H)) *
         (1.0 - δ) +
         Mt[3] *
         u *
-        (
-            aT[1] * B +
-            aT[2] * u * B +
-            aT[3] * v * B +
-            0.5 * aT[4] * ((u^2 + v^2) * B + Mxi[2] * H)
-        ) +
+        (aT[1] * B +
+         aT[2] * u * B +
+         aT[3] * v * B +
+         0.5 * aT[4] * ((u^2 + v^2) * B + Mxi[2] * H)) +
         Mt[4] * u * b - Mt[5] * u^2 * sb
 
     # multiply interface length
@@ -257,7 +250,6 @@ function flux_ugks!(
     fb .*= len
 
     return nothing
-
 end
 
 """
@@ -292,12 +284,12 @@ function flux_ugks!(
     dxL,
     dxR,
     len,
-    sh0L = zeros(eltype(h0L), axes(h0L))::T4,
-    sh1L = zeros(eltype(h1L), axes(h1L))::T4,
-    sh2L = zeros(eltype(h2L), axes(h2L))::T4,
-    sh0R = zeros(eltype(h0R), axes(h0R))::T4,
-    sh1R = zeros(eltype(h1R), axes(h1R))::T4,
-    sh2R = zeros(eltype(h2R), axes(h2R))::T4,
+    sh0L=zeros(eltype(h0L), axes(h0L))::T4,
+    sh1L=zeros(eltype(h1L), axes(h1L))::T4,
+    sh2L=zeros(eltype(h2L), axes(h2L))::T4,
+    sh0R=zeros(eltype(h0R), axes(h0R))::T4,
+    sh1R=zeros(eltype(h1R), axes(h1R))::T4,
+    sh2R=zeros(eltype(h2R), axes(h2R))::T4,
 ) where {T2<:AA3,T3<:AM,T4<:AA3,T5<:AA3}
 
     #--- reconstruct initial distribution ---#
@@ -383,91 +375,71 @@ function flux_ugks!(
         fw[5, j] +=
             Mt[4, j] *
             0.5 *
-            (
-                sum(
-                    ω[:, :, j] .* u[:, :, j] .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
-                    h0[:, :, j],
-                ) + sum(ω[:, :, j] .* u[:, :, j] .* h2[:, :, j])
-            ) -
+            (sum(ω[:, :, j] .* u[:, :, j] .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
+                 h0[:, :, j],) + sum(ω[:, :, j] .* u[:, :, j] .* h2[:, :, j])) -
             Mt[5, j] *
             0.5 *
-            (
-                sum(
-                    ω[:, :, j] .* u[:, :, j] .^ 2 .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
-                    sh0[:, :, j],
-                ) + sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* sh2[:, :, j])
-            )
+            (sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
+                 sh0[:, :, j],) + sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* sh2[:, :, j]))
 
         @. fh0[:, :, j] =
             Mt[1, j] * u[:, :, j] * H0[:, :, j] +
             Mt[2, j] *
             u[:, :, j]^2 *
-            (
-                a[1, j] * H0[:, :, j] +
-                a[2, j] * u[:, :, j] * H0[:, :, j] +
-                a[3, j] * v[:, :, j] * H0[:, :, j] +
-                a[4, j] * u[:, :, j] * H1[:, :, j] +
-                0.5 * a[5, j] * ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])
-            ) +
+            (a[1, j] * H0[:, :, j] +
+             a[2, j] * u[:, :, j] * H0[:, :, j] +
+             a[3, j] * v[:, :, j] * H0[:, :, j] +
+             a[4, j] * u[:, :, j] * H1[:, :, j] +
+             0.5 * a[5, j] * ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])) +
             Mt[3, j] *
             u[:, :, j] *
-            (
-                aT[1, j] * H0[:, :, j] +
-                aT[2, j] * u[:, :, j] * H0[:, :, j] +
-                aT[3, j] * v[:, :, j] * H0[:, :, j] +
-                aT[4, j] * u[:, :, j] * H1[:, :, j] +
-                0.5 * aT[5, j] * ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])
-            ) +
+            (aT[1, j] * H0[:, :, j] +
+             aT[2, j] * u[:, :, j] * H0[:, :, j] +
+             aT[3, j] * v[:, :, j] * H0[:, :, j] +
+             aT[4, j] * u[:, :, j] * H1[:, :, j] +
+             0.5 * aT[5, j] * ((u[:, :, j]^2 + v[:, :, j]^2) * H0[:, :, j] + H2[:, :, j])) +
             Mt[4, j] * u[:, :, j] * h0[:, :, j] - Mt[5, j] * u[:, :, j]^2 * sh0[:, :, j]
         @. fh1[:, :, j] =
             Mt[1, j] * u[:, :, j] * H1[:, :, j] +
             Mt[2, j] *
             u[:, :, j]^2 *
-            (
-                a[1, j] * H1[:, :, j] +
-                a[2, j] * u[:, :, j] * H1[:, :, j] +
-                a[3, j] * v[:, :, j] * H1[:, :, j] +
-                a[4, j] * u[:, :, j] * H2[:, :, j] +
-                0.5 *
-                a[5, j] *
-                ((u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] + Mxi[3, j] * H0[:, :, j])
-            ) +
+            (a[1, j] * H1[:, :, j] +
+             a[2, j] * u[:, :, j] * H1[:, :, j] +
+             a[3, j] * v[:, :, j] * H1[:, :, j] +
+             a[4, j] * u[:, :, j] * H2[:, :, j] +
+             0.5 *
+             a[5, j] *
+             ((u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] + Mxi[3, j] * H0[:, :, j])) +
             Mt[3, j] *
             u[:, :, j] *
-            (
-                aT[1, j] * H1[:, :, j] +
-                aT[2, j] * u[:, :, j] * H1[:, :, j] +
-                aT[3, j] * v[:, :, j] * H1[:, :, j] +
-                aT[4, j] * u[:, :, j] * H2[:, :, j] +
-                0.5 *
-                aT[5, j] *
-                ((u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] + Mxi[3, j] * H0[:, :, j])
-            ) +
+            (aT[1, j] * H1[:, :, j] +
+             aT[2, j] * u[:, :, j] * H1[:, :, j] +
+             aT[3, j] * v[:, :, j] * H1[:, :, j] +
+             aT[4, j] * u[:, :, j] * H2[:, :, j] +
+             0.5 *
+             aT[5, j] *
+             ((u[:, :, j]^2 + v[:, :, j]^2) * H1[:, :, j] + Mxi[3, j] * H0[:, :, j])) +
             Mt[4, j] * u[:, :, j] * h1[:, :, j] - Mt[5, j] * u[:, :, j]^2 * sh1[:, :, j]
         @. fh2[:, :, j] =
             Mt[1, j] * u[:, :, j] * H2[:, :, j] +
             Mt[2, j] *
             u[:, :, j]^2 *
-            (
-                a[1, j] * H2[:, :, j] +
-                a[2, j] * u[:, :, j] * H2[:, :, j] +
-                a[3, j] * v[:, :, j] * H2[:, :, j] +
-                a[4, j] * u[:, :, j] * Mxi[3, j] * H0[:, :, j] +
-                0.5 *
-                a[5, j] *
-                ((u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] + Mxi[4, j] * H0[:, :, j])
-            ) +
+            (a[1, j] * H2[:, :, j] +
+             a[2, j] * u[:, :, j] * H2[:, :, j] +
+             a[3, j] * v[:, :, j] * H2[:, :, j] +
+             a[4, j] * u[:, :, j] * Mxi[3, j] * H0[:, :, j] +
+             0.5 *
+             a[5, j] *
+             ((u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] + Mxi[4, j] * H0[:, :, j])) +
             Mt[3, j] *
             u[:, :, j] *
-            (
-                aT[1, j] * H2[:, :, j] +
-                aT[2, j] * u[:, :, j] * H2[:, :, j] +
-                aT[3, j] * v[:, :, j] * H2[:, :, j] +
-                aT[4, j] * u[:, :, j] * Mxi[3, j] * H0[:, :, j] +
-                0.5 *
-                aT[5, j] *
-                ((u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] + Mxi[4, j] * H0[:, :, j])
-            ) +
+            (aT[1, j] * H2[:, :, j] +
+             aT[2, j] * u[:, :, j] * H2[:, :, j] +
+             aT[3, j] * v[:, :, j] * H2[:, :, j] +
+             aT[4, j] * u[:, :, j] * Mxi[3, j] * H0[:, :, j] +
+             0.5 *
+             aT[5, j] *
+             ((u[:, :, j]^2 + v[:, :, j]^2) * H2[:, :, j] + Mxi[4, j] * H0[:, :, j])) +
             Mt[4, j] * u[:, :, j] * h2[:, :, j] - Mt[5, j] * u[:, :, j]^2 * sh2[:, :, j]
     end
 
@@ -477,5 +449,4 @@ function flux_ugks!(
     @. fh2 *= len
 
     return nothing
-
 end

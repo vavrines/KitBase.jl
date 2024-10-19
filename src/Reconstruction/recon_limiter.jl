@@ -9,7 +9,6 @@ Linear average
 """
 linear(sL, sR) = 0.5 * (sL + sR)
 
-
 """
 $(SIGNATURES)
 
@@ -24,7 +23,7 @@ $(SIGNATURES)
 
 Triangle case
 """
-function vanleer(sL, s, sR, connect = 2)
+function vanleer(sL, s, sR, connect=2)
     δ = begin
         if connect == 2
             (
@@ -50,7 +49,6 @@ function vanleer(sL, s, sR, connect = 2)
     return δ[id]
 end
 
-
 """
 $(SIGNATURES)
 
@@ -63,7 +61,7 @@ $(SIGNATURES)
 
 Triangle case
 """
-function minmod(sL, s, sR, connect = 2)
+function minmod(sL, s, sR, connect=2)
     δ = begin
         if connect == 2
             (
@@ -84,7 +82,6 @@ function minmod(sL, s, sR, connect = 2)
     return δ[id]
 end
 
-
 """
 $(SIGNATURES)
 
@@ -100,14 +97,12 @@ function superbee(sL, sR)
     end
 end
 
-
 """
 $(SIGNATURES)
 
 van Albaba limiter
 """
 vanalbaba(sL, sR) = (sL^2 * sR + sL * sR^2) / (sL^2 + sR^2 + 1.e-7)
-
 
 """
 $(SIGNATURES)

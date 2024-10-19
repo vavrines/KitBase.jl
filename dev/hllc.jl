@@ -6,9 +6,9 @@ ks, ctr, face, t = initialize("config.txt")
 dt = timestep(ks, ctr, t)
 nt = Int(floor(ks.set.maxTime / dt))
 res = zeros(3)
-for iter = 1:nt
+for iter in 1:nt
     #reconstruct!(ks, ctr)
-    evolve!(ks, ctr, face, dt; mode = :hllc)
+    evolve!(ks, ctr, face, dt; mode=:hllc)
     update!(ks, ctr, face, dt, res)
 end
 

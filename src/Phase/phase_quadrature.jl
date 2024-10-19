@@ -10,7 +10,7 @@ Maxwell quadrature
 ## Arguments
 * `N`: quadrature order (MUST less than 33)
 """
-function maxwell_quadrature(N2, C = 1.0)
+function maxwell_quadrature(N2, C=1.0)
     N = N2 ÷ 2
 
     a = zeros(N)
@@ -19,7 +19,7 @@ function maxwell_quadrature(N2, C = 1.0)
     a[2] = 2.0 / sqrt(pi) / (pi - 2.0)
     b[2] = a[1] / (a[1] + a[2]) / 2.0
 
-    for i = 3:N
+    for i in 3:N
         b[i] = (i - 2) + 1.0 / 2.0 - b[i-1] - a[i-1]^2
         a[i] = ((i - 1)^2 / (4.0 * b[i]) - b[i-1] - 1.0 / 2) / a[i-1] - a[i-1]
     end
@@ -31,7 +31,7 @@ function maxwell_quadrature(N2, C = 1.0)
     w = V[1, :] .^ 2 .* sqrt(pi) / 2.0
 
     vw = [v w]
-    vw = sortslices(vw, dims = 1, by = x -> x[1])
+    vw = sortslices(vw; dims=1, by=x -> x[1])
     v = vw[:, 1]
     w = vw[:, 2]
 
@@ -42,7 +42,6 @@ function maxwell_quadrature(N2, C = 1.0)
 
     return Xis, weights
 end
-
 
 """
 $(SIGNATURES)
@@ -64,7 +63,7 @@ function legendre_quadrature(n::Integer)
     mu, gaussweights = gausslegendre(n)
 
     # transform between (mu,phi) and (x,y,z)
-    phi = [(k + 0.5) * pi / n for k = 0:2*n-1] # equidistance in z axis
+    phi = [(k + 0.5) * pi / n for k in 0:2*n-1] # equidistance in z axis
     range = 1:n÷2 # only use upper half of the sphere as quadrature point due to pseudo 3D
 
     x = sqrt.(1.0 .- mu[range] .^ 2) .* cos.(phi)'
@@ -81,7 +80,6 @@ function legendre_quadrature(n::Integer)
     return pointsxyz, weights
 end
 
-
 """
 $(SIGNATURES)
 
@@ -94,14 +92,14 @@ Octaeder quadrature
 ## Outputs
 * points and triangulation
 """
-function octa_quadrature(n::Integer, slerpflag = true::Bool)
+function octa_quadrature(n::Integer, slerpflag=true::Bool)
     points, triangulation = octa_triangle(n, slerpflag)
     weights = triangle_weights(points, triangulation)
 
     return points, weights
 end
 
-function octa_triangle(n::Integer, slerpflag = true::Bool)
+function octa_triangle(n::Integer, slerpflag=true::Bool)
     # integral range
     pt0 = [0.0, 0.0, 1.0]
     pt1 = [0.0, 1.0, 0.0]
@@ -121,7 +119,7 @@ function octa_triangle(n::Integer, slerpflag = true::Bool)
 
     # generate points in planar geometry
     counter = 0
-    for i = 1:n
+    for i in 1:n
         if slerpflag
             if i == 1
                 tmp = pts01[:, 1]
@@ -131,7 +129,7 @@ function octa_triangle(n::Integer, slerpflag = true::Bool)
         else
             tmp = linspace(pts01[i], pts02[i], i)
         end
-        for j = 1:i
+        for j in 1:i
             counter += 1
             if slerpflag
                 pts[:, counter] = tmp[:, j]
@@ -139,11 +137,10 @@ function octa_triangle(n::Integer, slerpflag = true::Bool)
                 pts[:, counter] = tmp[j]
             end
         end
-
     end
 
     # project points onto sphere
-    for i = 1:nptsoctant
+    for i in 1:nptsoctant
         pts[:, i] = pts[:, i] / norm(pts[:, i])
     end
 
@@ -153,8 +150,8 @@ function octa_triangle(n::Integer, slerpflag = true::Bool)
     triangles = zeros(Int64, 3, nTrianglesOctant) # matrix that contains all triangles
 
     counter = 0
-    for i = 1:n
-        for j = 1:i
+    for i in 1:n
+        for j in 1:i
             counter += 1
             ids[i, j] = counter
         end
@@ -163,14 +160,14 @@ function octa_triangle(n::Integer, slerpflag = true::Bool)
     # create triangles
     counter = 0
     tmp = zeros(Int64, 1)
-    for i = 1:n
-        for j = 1:i-1
+    for i in 1:n
+        for j in 1:i-1
             tmp = [ids[i, j], ids[i, j+1], ids[i-1, j]]
             counter += 1
             triangles[:, counter] = tmp
         end
         if i < n
-            for j = 1:i-1
+            for j in 1:i-1
                 tmp = [ids[i, j], ids[i, j+1], ids[i+1, j+1]]
                 counter += 1
                 triangles[:, counter] = tmp
@@ -199,7 +196,7 @@ function octa_triangle(n::Integer, slerpflag = true::Bool)
     ptsAll = deepcopy(hcat(ptsAll, tmp))
 
     trianglesAll = deepcopy(triangles)
-    for i = 1:7
+    for i in 1:7
         trianglesAll = (hcat(trianglesAll, triangles .+ i .* nptsoctant))
     end
     ptsAll, triangulation = unique(ptsAll, trianglesAll)
@@ -209,7 +206,6 @@ function octa_triangle(n::Integer, slerpflag = true::Bool)
 
     return points, triangulation
 end
-
 
 """
 $(SIGNATURES)
@@ -231,7 +227,7 @@ function triangle_weights(xyz::AM, triangles::AM)
     zx = zeros(3)
     mid = zeros(3)
 
-    for n = 1:nTriangles
+    for n in 1:nTriangles
         # get three nodes of a triangle
         i, j, k = triangles[n, :]
 
@@ -271,7 +267,6 @@ function triangle_weights(xyz::AM, triangles::AM)
 
     return weights
 end
-
 
 """
 $(SIGNATURES)

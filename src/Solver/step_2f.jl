@@ -61,7 +61,6 @@ function step!(
         h[i] = (h[i] + (fhL[i] - fhR[i]) / dx + dt / τ * MH[i]) / (1.0 + dt / τ)
         b[i] = (b[i] + (fbL[i] - fbR[i]) / dx + dt / τ * MB[i]) / (1.0 + dt / τ)
     end
-
 end
 
 """
@@ -170,7 +169,6 @@ function step!(
     #--- record residuals ---#
     @. RES += (w_old - w)^2
     @. AVG += abs(w)
-
 end
 
 """
@@ -248,7 +246,6 @@ function step!(
             (b[i] + (fbL[i] - fbR[i] + fbD[i] - fbU[i]) / Δs + dt / τ * MB[i]) /
             (1.0 + dt / τ)
     end
-
 end
 
 """
@@ -318,17 +315,12 @@ function step!(
     #--- update distribution function ---#
     for i in eachindex(u)
         h[i] =
-            (
-                h[i] - (fh1[i] * dirc[1] + fh2[i] * dirc[2] + fh3[i] * dirc[3]) / Δs +
-                dt / τ * MH[i]
-            ) / (1.0 + dt / τ)
+            (h[i] - (fh1[i] * dirc[1] + fh2[i] * dirc[2] + fh3[i] * dirc[3]) / Δs +
+             dt / τ * MH[i]) / (1.0 + dt / τ)
         b[i] =
-            (
-                b[i] - (fb1[i] * dirc[1] + fb2[i] * dirc[2] + fb3[i] * dirc[3]) / Δs +
-                dt / τ * MB[i]
-            ) / (1.0 + dt / τ)
+            (b[i] - (fb1[i] * dirc[1] + fb2[i] * dirc[2] + fb3[i] * dirc[3]) / Δs +
+             dt / τ * MB[i]) / (1.0 + dt / τ)
     end
 
     return nothing
-
 end

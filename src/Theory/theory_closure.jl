@@ -7,7 +7,7 @@ _C. D. Levermore. J. Stat. Phys. 83(5): 1021-1065, 1996._
 """
 function moment_basis(u, n::Integer)
     m = zeros(typeof(u), n + 1)
-    for i = 1:n+1
+    for i in 1:n+1
         m[i] = u^(i - 1)
     end
 
@@ -63,7 +63,6 @@ $(SIGNATURES)
 """
 moment_basis(u::AA, v::AA, w::AA, n::Integer) = hcat(moment_basis.(u, v, w, n)...)
 
-
 """
 $(SIGNATURES)
 
@@ -76,8 +75,8 @@ $(SIGNATURES)
 """
 function moment_index(n, ::Type{Dimension{2}})
     idx = Tuple[]
-    for i = 1:n+1
-        for idu = i-1:-1:0
+    for i in 1:n+1
+        for idu in i-1:-1:0
             idv = i - 1 - idu
             push!(idx, (idu, idv))
         end
@@ -91,9 +90,9 @@ $(SIGNATURES)
 """
 function moment_index(n, ::Type{Dimension{3}})
     idx = Tuple[]
-    for i = 1:n+1
-        for idu = i-1:-1:0
-            for idv = i-1-idu:-1:0
+    for i in 1:n+1
+        for idu in i-1:-1:0
+            for idv in i-1-idu:-1:0
                 idw = i - 1 - idu - idv
                 push!(idx, (idu, idv, idw))
             end
@@ -103,19 +102,17 @@ function moment_index(n, ::Type{Dimension{3}})
     return idx
 end
 
-
 """
 $(SIGNATURES)
 
 Optimizer for the entropy closure: `argmin(<η(α*m)> - α*u)`
 """
-function optimize_closure(α, m, ω, u, η::Function; optimizer = Newton())
+function optimize_closure(α, m, ω, u, η::Function; optimizer=Newton())
     loss(_α) = sum(η.(_α' * m)[:] .* ω) - dot(_α, u)
     res = Optim.optimize(loss, α, optimizer)
 
     return res
 end
-
 
 """
 $(SIGNATURES)
@@ -130,7 +127,6 @@ function realizable_reconstruct(α, m, ω, η_dual_prime::Function)
 
     return u
 end
-
 
 """
 $(SIGNATURES)
@@ -182,7 +178,7 @@ function sample_pdf(m, n::Integer, prim, pdf)
         idx = moment_index(n, Dimension{3})
     end
 
-    for i = cut:lastindex(α)
+    for i in cut:lastindex(α)
         if iseven(sum(idx[i]))
             α[i] = rand(pdf1)
         else

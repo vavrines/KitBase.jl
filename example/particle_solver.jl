@@ -56,7 +56,7 @@ begin
         end
     end
 
-    for i = 1:ks.ps.nx+1
+    for i in 1:ks.ps.nx+1
         face[i] = KitBase.Interface1D(ks.ib.wL)
     end
 
@@ -69,12 +69,12 @@ t = 0.0
 dt = KitBase.timestep(ks, ctr, t)
 res = zeros(3)
 
-function solve!(ks, ctr, ptc, ptc_new, t, dt, res, nt = 10)
-    @showprogress for iter = 1:nt
+function solve!(ks, ctr, ptc, ptc_new, t, dt, res, nt=10)
+    @showprogress for iter in 1:nt
         #for iter in 1:10
         #KitBase.reconstruct!(ks, ctr)
 
-        @inbounds Threads.@threads for i = 1:ks.ps.nx+1
+        @inbounds Threads.@threads for i in 1:ks.ps.nx+1
             KitBase.flux_equilibrium!(
                 face[i].fw,
                 ctr[i-1].w,
@@ -119,10 +119,10 @@ begin
     pltx = ks.ps.x[1:ks.ps.nx]
     plty = zeros(ks.ps.nx, 6)
     for i in eachindex(pltx)
-        for j = 1:2
+        for j in 1:2
             plty[i, j] = ctr[i].wf[j] .+ ctr[i].wp[j]
         end
         plty[i, 3] = ctr[i].wf[end] + ctr[i].wp[end]
     end
-    plot(pltx, plty[:, 1:3], lw = 2, legend = :none)
+    plot(pltx, plty[:, 1:3]; lw=2, legend=:none)
 end

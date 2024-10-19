@@ -54,7 +54,6 @@ function global_frame(w::AV, dirccos::AM)
     return G
 end
 
-
 """
 $(SIGNATURES)
 
@@ -114,7 +113,6 @@ function local_frame(w::AV, dirccos::AM)
     return L
 end
 
-
 """
 $(SIGNATURES)
 """
@@ -126,7 +124,6 @@ function local_velocity(u, v, cosa, sina)
 end
 
 local_velocity(u, v, n) = local_velocity(u, v, n[1], n[2])
-
 
 """
 $(SIGNATURES)
@@ -152,7 +149,6 @@ function unit_normal(p1::T, p2::T, p3::T) where {T<:AV}
 
     return n ./ l
 end
-
 
 """
 $(SIGNATURES)

@@ -1,32 +1,29 @@
 function ylmKCoefficient(l::Integer, m::Integer)
     k = BigInt(4) # BigInt avoids overflow
-    for i = l-m+1:l+m
+    for i in l-m+1:l+m
         k *= i
     end
 
     return sqrt((2.0 * l + 1) / k / π)
 end
 
-
 function ylmCosSinPolynomial(m::Integer, x::Variable, y::Variable)
     sum = 0.0 * (x + y)
-    for j = 0:m÷2
+    for j in 0:m÷2
         sum += (-1)^j * binomial(m, 2 * j) * (y^(2 * j)) * (x^(m - 2 * j))
     end
 
     return sum
 end
 
-
 function ylmSinSinPolynomial(m::Integer, x::Variable, y::Variable)
     sum = 0.0 * (x + y)
-    for j = 0:(m-1)÷2
+    for j in 0:(m-1)÷2
         sum += ((-1)^j) * binomial(m, 2 * j + 1) * (y^(2 * j + 1)) * (x^(m - 2 * j - 1))
     end
 
     return sum
 end
-
 
 """
 $(SIGNATURES)
@@ -48,7 +45,7 @@ function ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
 
     p = 1.0 * (z^2 - 1)^l + 0.0 * (x + y)
 
-    for i = 1:l+abs(m)
+    for i in 1:l+abs(m)
         c = i <= l ? 1 / (2 * i) : 1.0
         p = c * differentiate(p, z)
     end
@@ -61,7 +58,6 @@ function ylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
         return ylmKCoefficient(l, 0) * p
     end
 end
-
 
 """
 $(SIGNATURES)
@@ -80,7 +76,6 @@ function rlylm(l::Integer, m::Integer, x::Variable, y::Variable, z::Variable)
 
     return polynomial(tout)
 end
-
 
 """
 $(SIGNATURES)

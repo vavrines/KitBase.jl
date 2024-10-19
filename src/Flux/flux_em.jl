@@ -35,8 +35,6 @@ function flux_em!(
     ν,
     dt,
 ) where {T1<:AV,T2<:AV,T3<:AM,T4<:AV}
-
-
     @assert length(femL) == length(femR) == 8
 
     slop = zeros(8, 8)
@@ -75,37 +73,31 @@ function flux_em!(
     limiter[4, 8] = 0.0
     limiter[8, 8] = 0.0
 
-    for i = 1:8
+    for i in 1:8
         limiter_theta = sum(slop[:, i] .* limiter[:, i]) / (sum(slop[:, i] .^ 2) + 1.e-7)
         slop[:, i] .*=
             max(0.0, min(min((1.0 + limiter_theta) / 2.0, 2.0), 2.0 * limiter_theta))
     end
 
-    for i = 1:8
+    for i in 1:8
         femL[i] =
             sum(An[i, 1:3] .* (ER .- EL)) +
             sum(An[i, 4:6] .* (BR .- BL)) +
             An[i, 7] * (ϕR - ϕL) +
             An[i, 8] * (ψR - ψL) +
-            0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
-                slop[i, :],
-            )
+            0.5 * sum(fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
+                slop[i, :],)
         femR[i] =
             sum(Ap[i, 1:3] .* (ER .- EL)) +
             sum(Ap[i, 4:6] .* (BR .- BL)) +
             Ap[i, 7] * (ϕR - ϕL) +
             Ap[i, 8] * (ψR - ψL) -
-            0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
-                slop[i, :],
-            )
+            0.5 * sum(fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
+                slop[i, :],)
     end
 
     return nothing
-
 end
-
 
 """
 $(SIGNATURES)
@@ -143,7 +135,6 @@ function flux_emx!(
     ν,
     dt,
 ) where {X<:AV,Y<:AV,A<:AM,B<:AV}
-
     slop = zeros(8, 8)
     slop[3, 1] = -0.5 * sol^2 * (BR[2] - BL[2]) + 0.5 * sol * (ER[3] - EL[3])
     slop[5, 1] = 0.5 * sol * (BR[2] - BL[2]) - 0.5 * (ER[3] - EL[3])
@@ -180,35 +171,31 @@ function flux_emx!(
     limiter[4, 8] = 0.0
     limiter[8, 8] = 0.0
 
-    for i = 1:8
+    for i in 1:8
         limiter_theta = sum(slop[:, i] .* limiter[:, i]) / (sum(slop[:, i] .^ 2) + 1.e-7)
         slop[:, i] .*=
             max(0.0, min(min((1.0 + limiter_theta) / 2.0, 2.0), 2.0 * limiter_theta))
     end
 
-    for i = 1:8
+    for i in 1:8
         femL[i] =
             sum(A1n[i, 1:3] .* (ER .- EL)) +
             sum(A1n[i, 4:6] .* (BR .- BL)) +
             A1n[i, 7] * (ϕR - ϕL) +
             A1n[i, 8] * (ψR - ψL) +
-            0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
-                slop[i, :],
-            )
+            0.5 * sum(fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
+                slop[i, :],)
         femR[i] =
             sum(A1p[i, 1:3] .* (ER .- EL)) +
             sum(A1p[i, 4:6] .* (BR .- BL)) +
             A1p[i, 7] * (ϕR - ϕL) +
             A1p[i, 8] * (ψR - ψL) -
-            0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
-                slop[i, :],
-            )
+            0.5 * sum(fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
+                slop[i, :],)
     end
 
     # high order correction
-    for i = 1:8
+    for i in 1:8
         femL[i] +=
             0.5 *
             sum(fortsign.(1.0, D) .* (1.0 .- dt / (dxL + dxR) * abs.(D)) .* slop[i, :])
@@ -218,7 +205,7 @@ function flux_emx!(
     end
 
     # transverse correction
-    for i = 1:8
+    for i in 1:8
         femRU[i] = sum(A2p[i, :] .* femR)
         femRD[i] = sum(A2n[i, :] .* femR)
         femLU[i] = sum(A2p[i, :] .* femL)
@@ -230,9 +217,7 @@ function flux_emx!(
     femLD .*= -0.5 * dt / (dxL + dxR)
 
     return nothing
-
 end
-
 
 """
 $(SIGNATURES)
@@ -270,7 +255,6 @@ function flux_emy!(
     ν,
     dt,
 )
-
     slop = zeros(8, 8)
     slop[3, 1] = 0.5 * sol^2 * (BR[1] - BL[1]) + 0.5 * sol * (ER[3] - EL[3])
     slop[4, 1] = 0.5 * sol * (BR[1] - BL[1]) + 0.5 * (ER[3] - EL[3])
@@ -307,35 +291,31 @@ function flux_emy!(
     limiter[5, 8] = 0.0
     limiter[8, 8] = 0.0
 
-    for i = 1:8
+    for i in 1:8
         limiter_theta = sum(slop[:, i] .* limiter[:, i]) / (sum(slop[:, i] .^ 2) + 1.e-7)
         slop[:, i] .*=
             max(0.0, min(min((1.0 + limiter_theta) / 2.0, 2.0), 2.0 * limiter_theta))
     end
 
-    for i = 1:8
+    for i in 1:8
         femL[i] =
             sum(A2n[i, 1:3] .* (ER .- EL)) +
             sum(A2n[i, 4:6] .* (BR .- BL)) +
             A2n[i, 7] * (ϕR - ϕL) +
             A2n[i, 8] * (ψR - ψL) +
-            0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
-                slop[i, :],
-            )
+            0.5 * sum(fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
+                slop[i, :],)
         femR[i] =
             sum(A2p[i, 1:3] .* (ER .- EL)) +
             sum(A2p[i, 4:6] .* (BR .- BL)) +
             A2p[i, 7] * (ϕR - ϕL) +
             A2p[i, 8] * (ψR - ψL) -
-            0.5 * sum(
-                fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
-                slop[i, :],
-            )
+            0.5 * sum(fortsign.(1.0, D) .* (1.0 .- dt ./ (0.5 * (dxL + dxR)) .* abs.(D)) .*
+                slop[i, :],)
     end
 
     # high order correction
-    for i = 1:8
+    for i in 1:8
         femL[i] +=
             0.5 *
             sum(fortsign.(1.0, D) .* (1.0 .- dt / (dxL + dxR) .* abs.(D)) .* slop[i, :])
@@ -345,7 +325,7 @@ function flux_emy!(
     end
 
     # transverse correction
-    for i = 1:8
+    for i in 1:8
         femRU[i] = sum(A1p[i, :] .* femR)
         femRD[i] = sum(A1n[i, :] .* femR)
         femLU[i] = sum(A1p[i, :] .* femL)
@@ -357,5 +337,4 @@ function flux_emy!(
     femLD .*= -0.5 * dt / (dxL + dxR)
 
     return nothing
-
 end

@@ -17,7 +17,7 @@ Scalar
 
 `flux_gks` is called since there is no in-place operation for scalar
 """
-function flux_gks!(face::Interface, ctrL, ctrR, gas::Scalar, p, dt = 1.0)
+function flux_gks!(face::Interface, ctrL, ctrR, gas::Scalar, p, dt=1.0)
     dxL, dxR = p[1:2]
 
     face.fw = flux_gks(
@@ -40,7 +40,7 @@ $(SIGNATURES)
 
 Gas
 """
-function flux_gks!(face::Interface, ctrL, ctrR, gas::Gas, p, dt = 1.0)
+function flux_gks!(face::Interface, ctrL, ctrR, gas::Gas, p, dt=1.0)
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
@@ -69,7 +69,7 @@ $(SIGNATURES)
 
 Mixture
 """
-function flux_gks!(face::Interface, ctrL, ctrR, gas::Mixture, p, dt = 1.0)
+function flux_gks!(face::Interface, ctrL, ctrR, gas::Mixture, p, dt=1.0)
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
@@ -105,7 +105,7 @@ $(SIGNATURES)
 
 Gas kinetic scalar flux
 """
-function flux_gks(u, μ, dt, a = 0, su = 0.0)
+function flux_gks(u, μ, dt, a=0, su=0.0)
     prim = ifelse(a == 0, conserve_prim(u), conserve_prim(u, a))
 
     Mu = gauss_moments(prim)[1]
@@ -135,18 +135,7 @@ end
 """
 $(SIGNATURES)
 """
-function flux_gks(
-    uL::T,
-    uR::T,
-    μ,
-    dt,
-    dxL,
-    dxR,
-    a = 0,
-    suL = 0.0,
-    suR = 0.0,
-) where {T<:Real}
-
+function flux_gks(uL::T, uR::T, μ, dt, dxL, dxR, a=0, suL=0.0, suR=0.0) where {T<:Real}
     primL = ifelse(a == 0, conserve_prim(uL), conserve_prim(uL, a))
     primR = ifelse(a == 0, conserve_prim(uR), conserve_prim(uR, a))
 
@@ -212,9 +201,7 @@ function flux_gks(
     # fw += Mt[4] * primL[1] * MuvL + Mt[4] * primR[1] * MuvR
 
     return fw
-
 end
-
 
 """
 $(SIGNATURES)
@@ -223,8 +210,7 @@ Gas kinetic Navier-Stokes flux
 
 Continuous case
 """
-function flux_gks!(fw::AV, w::Y, inK, γ, μᵣ, ω, sw = zero(w)::Y) where {Y<:AV}
-
+function flux_gks!(fw::AV, w::Y, inK, γ, μᵣ, ω, sw=zero(w)::Y) where {Y<:AV}
     prim = conserve_prim(w, γ)
     mus = gauss_moments(prim, inK)
     tau = vhs_collision_time(prim, μᵣ, ω)
@@ -256,7 +242,6 @@ function flux_gks!(fw::AV, w::Y, inK, γ, μᵣ, ω, sw = zero(w)::Y) where {Y<:
     @. fw = prim[1] * (Muv - tau * Mau - tau * Mtu)
 
     return nothing
-
 end
 
 """
@@ -278,7 +263,6 @@ function flux_gks!(
     swL::Y,
     swR::Y,
 ) where {Y<:AV}
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -308,10 +292,8 @@ function flux_gks!(
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
-        -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mxi, 1) .+
-            moments_conserve_slope(gaR, MuR, Mxi, 1)
-        )
+        -prim[1] .* (moments_conserve_slope(gaL, MuL, Mxi, 1) .+
+         moments_conserve_slope(gaR, MuR, Mxi, 1))
     # ga = pdf_slope(prim, sw, inK)
     # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mxi, 1)
     gaT = pdf_slope(prim, sw, inK)
@@ -352,7 +334,6 @@ function flux_gks!(
     # @. fw += Mt[4] * primL[1] * MuvL + Mt[4] * primR[1] * MuvR
 
     return nothing
-
 end
 
 """
@@ -377,7 +358,6 @@ function flux_gks!(
     swL::Y,
     swR::Y,
 ) where {Y<:AM}
-
     primL = mixture_conserve_prim(wL, γ)
     primR = mixture_conserve_prim(wR, γ)
 
@@ -462,7 +442,6 @@ function flux_gks!(
     end
 
     return nothing
-
 end
 
 """
@@ -486,7 +465,6 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {T3<:AV}
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -516,10 +494,8 @@ function flux_gks!(
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
-        -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mxi, 1) .+
-            moments_conserve_slope(gaR, MuR, Mxi, 1)
-        )
+        -prim[1] .* (moments_conserve_slope(gaL, MuL, Mxi, 1) .+
+         moments_conserve_slope(gaR, MuR, Mxi, 1))
     # ga = pdf_slope(prim, sw, inK)
     # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mxi, 1)
     gaT = pdf_slope(prim, sw, inK)
@@ -591,7 +567,6 @@ function flux_gks!(
         (1.0 - δ)
 
     return nothing
-
 end
 
 """
@@ -616,7 +591,6 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {T2<:AV,T3<:AV}
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -646,10 +620,8 @@ function flux_gks!(
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
-        -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mxi, 1) .+
-            moments_conserve_slope(gaR, MuR, Mxi, 1)
-        )
+        -prim[1] .* (moments_conserve_slope(gaL, MuL, Mxi, 1) .+
+         moments_conserve_slope(gaR, MuR, Mxi, 1))
     # ga = pdf_slope(prim, sw, inK)
     # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mxi, 1)
     gaT = pdf_slope(prim, sw, inK)
@@ -760,7 +732,6 @@ function flux_gks!(
         (1.0 - δ)
 
     return nothing
-
 end
 
 # ------------------------------------------------------------
@@ -787,7 +758,6 @@ function flux_gks!(
     swL::Y,
     swR::Y,
 ) where {Y<:AV}
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -817,10 +787,8 @@ function flux_gks!(
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
-        -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mv, Mw, 1, 0, 0) .+
-            moments_conserve_slope(gaR, MuR, Mv, Mw, 1, 0, 0)
-        )
+        -prim[1] .* (moments_conserve_slope(gaL, MuL, Mv, Mw, 1, 0, 0) .+
+         moments_conserve_slope(gaR, MuR, Mv, Mw, 1, 0, 0))
     # ga = pdf_slope(prim, sw, inK)
     # sw =  -prim[1] .* moments_conserve_slope(ga, Mu, Mv, Mw, 1, 0, 0)
     gaT = pdf_slope(prim, sw, inK)
@@ -863,7 +831,6 @@ function flux_gks!(
     fw .*= dy
 
     return nothing
-
 end
 
 """
@@ -889,7 +856,6 @@ function flux_gks!(
     swL::Y,
     swR::Y,
 ) where {Y<:AM}
-
     primL = mixture_conserve_prim(wL, γ)
     primR = mixture_conserve_prim(wR, γ)
 
@@ -979,7 +945,6 @@ function flux_gks!(
     @. fw .* len
 
     return nothing
-
 end
 
 """
@@ -1005,7 +970,6 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {T3<:AV,T4<:AM}
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -1035,10 +999,8 @@ function flux_gks!(
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
-        -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mv, Mxi, 1, 0) .+
-            moments_conserve_slope(gaR, MuR, Mv, Mxi, 1, 0)
-        )
+        -prim[1] .* (moments_conserve_slope(gaL, MuL, Mv, Mxi, 1, 0) .+
+         moments_conserve_slope(gaR, MuR, Mv, Mxi, 1, 0))
     # ga = pdf_slope(prim, sw, inK)
     # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mv, Mxi, 1, 0)
     gaT = pdf_slope(prim, sw, inK)
@@ -1102,47 +1064,38 @@ function flux_gks!(
         Mt[4] * u * HL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faL[1] * HL +
-            faL[2] * u * HL +
-            faL[3] * v * HL +
-            0.5 * faL[4] * (u^2 + v^2) * HL
-        ) *
+        (faL[1] * HL +
+         faL[2] * u * HL +
+         faL[3] * v * HL +
+         0.5 * faL[4] * (u^2 + v^2) * HL) *
         δ + Mt[4] * u * HR * (1.0 - δ) -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faR[1] * HR +
-            faR[2] * u * HR +
-            faR[3] * v * HL +
-            0.5 * faR[4] * (u^2 + v^2) * HR
-        ) *
+        (faR[1] * HR +
+         faR[2] * u * HR +
+         faR[3] * v * HL +
+         0.5 * faR[4] * (u^2 + v^2) * HR) *
         (1.0 - δ) -
         tau *
         Mt[4] *
         u *
-        (
-            faTL[1] * HL +
-            faTL[2] * u * HL +
-            faTL[3] * v * HL +
-            0.5 * faTL[4] * (u^2 + v^2) * HL
-        ) *
+        (faTL[1] * HL +
+         faTL[2] * u * HL +
+         faTL[3] * v * HL +
+         0.5 * faTL[4] * (u^2 + v^2) * HL) *
         δ -
         tau *
         Mt[4] *
         u *
-        (
-            faTR[1] * HR +
-            faTR[2] * u * HR +
-            faTR[3] * v * HR +
-            0.5 * faTR[4] * (u^2 + v^2) * HR
-        ) *
+        (faTR[1] * HR +
+         faTR[2] * u * HR +
+         faTR[3] * v * HR +
+         0.5 * faTR[4] * (u^2 + v^2) * HR) *
         (1.0 - δ)
 
     ff .*= dy
 
     return nothing
-
 end
 
 """
@@ -1169,7 +1122,6 @@ function flux_gks!(
     swL::T3,
     swR::T3,
 ) where {T2<:AM,T3<:AV,T4<:AM}
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -1199,10 +1151,8 @@ function flux_gks!(
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
-        -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mv, Mxi, 1, 0) .+
-            moments_conserve_slope(gaR, MuR, Mv, Mxi, 1, 0)
-        )
+        -prim[1] .* (moments_conserve_slope(gaL, MuL, Mv, Mxi, 1, 0) .+
+         moments_conserve_slope(gaR, MuR, Mv, Mxi, 1, 0))
     # ga = pdf_slope(prim, sw, inK)
     # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mv, Mxi, 1, 0)
     gaT = pdf_slope(prim, sw, inK)
@@ -1257,142 +1207,113 @@ function flux_gks!(
         Mt[1] * u * H +
         Mt[2] *
         u^2 *
-        (
-            gaL[1] * H +
-            gaL[2] * u * H +
-            gaL[3] * v * H +
-            0.5 * gaL[4] * ((u^2 + v^2) * H + B)
-        ) *
+        (gaL[1] * H +
+         gaL[2] * u * H +
+         gaL[3] * v * H +
+         0.5 * gaL[4] * ((u^2 + v^2) * H + B)) *
         δ +
         Mt[2] *
         u^2 *
-        (
-            gaR[1] * H +
-            gaR[2] * u * H +
-            gaR[3] * v * H +
-            0.5 * gaR[4] * ((u^2 + v^2) * H + B)
-        ) *
+        (gaR[1] * H +
+         gaR[2] * u * H +
+         gaR[3] * v * H +
+         0.5 * gaR[4] * ((u^2 + v^2) * H + B)) *
         (1.0 - δ) +
         Mt[3] *
         u *
-        (
-            gaT[1] * H +
-            gaT[2] * u * H +
-            gaT[3] * v * H +
-            0.5 * gaT[4] * ((u^2 + v^2) * H + B)
-        ) +
+        (gaT[1] * H +
+         gaT[2] * u * H +
+         gaT[3] * v * H +
+         0.5 * gaT[4] * ((u^2 + v^2) * H + B)) +
         Mt[4] * u * HL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faL[1] * HL +
-            faL[2] * u * HL +
-            faL[3] * v * HL +
-            0.5 * faL[4] * ((u^2 + v^2) * HL + BL)
-        ) *
+        (faL[1] * HL +
+         faL[2] * u * HL +
+         faL[3] * v * HL +
+         0.5 * faL[4] * ((u^2 + v^2) * HL + BL)) *
         δ + Mt[4] * u * HR * (1.0 - δ) -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faR[1] * HR +
-            faR[2] * u * HR +
-            faR[3] * v * HR +
-            0.5 * faR[4] * ((u^2 + v^2) * HR + BR)
-        ) *
+        (faR[1] * HR +
+         faR[2] * u * HR +
+         faR[3] * v * HR +
+         0.5 * faR[4] * ((u^2 + v^2) * HR + BR)) *
         (1.0 - δ) -
         tau *
         Mt[4] *
         u *
-        (
-            faTL[1] * HL +
-            faTL[2] * u * HL +
-            faTL[3] * v * HL +
-            0.5 * faTL[4] * ((u^2 + v^2) * HL + BL)
-        ) *
+        (faTL[1] * HL +
+         faTL[2] * u * HL +
+         faTL[3] * v * HL +
+         0.5 * faTL[4] * ((u^2 + v^2) * HL + BL)) *
         δ -
         tau *
         Mt[4] *
         u *
-        (
-            faTR[1] * HR +
-            faTR[2] * u * HR +
-            faTR[3] * v * HR +
-            0.5 * faTR[4] * ((u^2 + v^2) * HR + BR)
-        ) *
+        (faTR[1] * HR +
+         faTR[2] * u * HR +
+         faTR[3] * v * HR +
+         0.5 * faTR[4] * ((u^2 + v^2) * HR + BR)) *
         (1.0 - δ)
     @. fb =
         Mt[1] * u * B +
         Mt[2] *
         u^2 *
-        (
-            gaL[1] * B +
-            gaL[2] * u * B +
-            gaL[3] * v * B +
-            0.5 * gaL[4] * ((u^2 + v^2) * B + Mxi[2] * H)
-        ) *
+        (gaL[1] * B +
+         gaL[2] * u * B +
+         gaL[3] * v * B +
+         0.5 * gaL[4] * ((u^2 + v^2) * B + Mxi[2] * H)) *
         δ +
         Mt[2] *
         u^2 *
-        (
-            gaR[1] * B +
-            gaR[2] * u * B +
-            gaR[3] * v * B +
-            0.5 * gaR[4] * ((u^2 + v^2) * B + Mxi[2] * H)
-        ) *
+        (gaR[1] * B +
+         gaR[2] * u * B +
+         gaR[3] * v * B +
+         0.5 * gaR[4] * ((u^2 + v^2) * B + Mxi[2] * H)) *
         (1.0 - δ) +
         Mt[3] *
         u *
-        (
-            gaT[1] * B +
-            gaT[2] * u * B +
-            gaT[3] * v * B +
-            0.5 * gaT[4] * ((u^2 + v^2) * B + Mxi[2] * H)
-        ) +
+        (gaT[1] * B +
+         gaT[2] * u * B +
+         gaT[3] * v * B +
+         0.5 * gaT[4] * ((u^2 + v^2) * B + Mxi[2] * H)) +
         Mt[4] * u * BL * δ -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faL[1] * BL +
-            faL[2] * u * BL +
-            faL[3] * v * BL +
-            0.5 * faL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)
-        ) *
+        (faL[1] * BL +
+         faL[2] * u * BL +
+         faL[3] * v * BL +
+         0.5 * faL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)) *
         δ + Mt[4] * u * BR * (1.0 - δ) -
         (Mt[5] + tau * Mt[4]) *
         u^2 *
-        (
-            faR[1] * BR +
-            faR[2] * u * BR +
-            faR[3] * v * BR +
-            0.5 * faR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)
-        ) *
+        (faR[1] * BR +
+         faR[2] * u * BR +
+         faR[3] * v * BR +
+         0.5 * faR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)) *
         (1.0 - δ) -
         tau *
         Mt[4] *
         u *
-        (
-            faTL[1] * BL +
-            faTL[2] * u * BL +
-            faTL[3] * v * BL +
-            0.5 * faTL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)
-        ) *
+        (faTL[1] * BL +
+         faTL[2] * u * BL +
+         faTL[3] * v * BL +
+         0.5 * faTL[4] * ((u^2 + v^2) * BL + Mxi[2] * HL)) *
         δ -
         tau *
         Mt[4] *
         u *
-        (
-            faTR[1] * BR +
-            faTR[2] * u * BR +
-            faTR[3] * v * BR +
-            0.5 * faTR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)
-        ) *
+        (faTR[1] * BR +
+         faTR[2] * u * BR +
+         faTR[3] * v * BR +
+         0.5 * faTR[4] * ((u^2 + v^2) * BR + Mxi[2] * HR)) *
         (1.0 - δ)
 
     fh .*= dy
     fb .*= dy
 
     return nothing
-
 end
 
 """
@@ -1409,8 +1330,8 @@ function flux_gks!(
     μᵣ,
     ω,
     dt,
-    swL = zero(wL)::Y,
-    swR = zero(wR)::Y,
+    swL=zero(wL)::Y,
+    swR=zero(wR)::Y,
 ) where {Y<:AV}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
