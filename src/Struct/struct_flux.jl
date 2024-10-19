@@ -24,7 +24,6 @@ struct Flux2F{T1,T2,T3,ND} <: AbstractFlux
     fb::T3
 end
 
-
 function Flux1D(fw::AA)
     n = ones(axes(fw)[end])
     w = deepcopy(fw)
@@ -66,7 +65,6 @@ function Flux1D(fw::AA, fh::AA, fb::AA)
 
     return Flux2F{typeof(n),typeof(w),typeof(fh),1}(n, w, fw, fh, fb)
 end
-
 
 function Flux2D(n::AA, fw::AA)
     w = deepcopy(fw)

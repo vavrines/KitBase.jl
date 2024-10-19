@@ -24,11 +24,10 @@ function VSpace1D(
     U0,
     U1,
     NU::TI;
-    type = "rectangle",
-    ng = zero(NU)::TI,
-    precision = Float64,
+    type="rectangle",
+    ng=zero(NU)::TI,
+    precision=Float64,
 ) where {TI<:Integer}
-
     δ = (U1 - U0) / NU
     u = begin
         if ng > 0
@@ -54,7 +53,7 @@ function VSpace1D(
         end
     elseif type == "algebra" # algebraic
         _nu = NU + 1
-        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i in 1:_nu]
         u .= (_u[1:end-1] .+ _u[2:end]) ./ 2
         du .= _u[2:end] - _u[1:end-1]
         weights .= du
@@ -63,7 +62,6 @@ function VSpace1D(
     end
 
     return VSpace1D{precision,TI,typeof(u),typeof(weights)}(U0, U1, NU, u, du, weights)
-
 end
 
 VSpace1D() = VSpace1D(-5, 5, 50)
@@ -79,11 +77,10 @@ function MVSpace1D(
     Ue0,
     Ue1,
     NU::TI;
-    type = "rectangle",
-    ng = zero(NU)::TI,
-    precision = Float64,
+    type="rectangle",
+    ng=zero(NU)::TI,
+    precision=Float64,
 ) where {TI<:Integer}
-
     u0 = precision.([Ui0, Ue0])
     u1 = precision.([Ui1, Ue1])
     δ = (u1 .- u0) ./ NU
@@ -114,12 +111,10 @@ function MVSpace1D(
     end
 
     return VSpace1D{typeof(u0),TI,typeof(u),typeof(weights)}(u0, u1, NU, u, du, weights)
-
 end
 
 MVSpace1D() = MVSpace1D(-5, 5, -10, 10, 28)
 MVSpace1D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} = MVSpace1D(U0, U1, V0, V1, 28)
-
 
 """
 $(TYPEDEF)
@@ -151,12 +146,11 @@ function VSpace2D(
     V0,
     V1,
     NV::TI;
-    type = "rectangle",
-    ngu = zero(NU)::TI,
-    ngv = zero(NV)::TI,
-    precision = Float64,
+    type="rectangle",
+    ngu=zero(NU)::TI,
+    ngv=zero(NV)::TI,
+    precision=Float64,
 ) where {TI<:Integer}
-
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     u = begin
@@ -198,8 +192,8 @@ function VSpace2D(
     elseif type == "algebra"
         _nu = NU + 1
         _nv = NV + 1
-        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
-        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i in 1:_nu]
+        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j in 1:_nv]
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
         u1, v1 = meshgrid(__u, __v)
@@ -261,7 +255,6 @@ function VSpace2D(
     end
 
     return VSpace2D{precision,TI,typeof(u)}(U0, U1, NU, V0, V1, NV, u, v, du, dv, weights)
-
 end
 
 VSpace2D() = VSpace2D(-5, 5, 28, -5, 5, 28)
@@ -282,12 +275,11 @@ function MVSpace2D(
     Ve0,
     Ve1,
     NV::TI;
-    type = "rectangle",
-    ngu = zero(NU)::TI,
-    ngv = zero(NV)::TI,
-    precision = Float64,
+    type="rectangle",
+    ngu=zero(NU)::TI,
+    ngv=zero(NV)::TI,
+    precision=Float64,
 ) where {TI<:Integer}
-
     u0 = precision.([Ui0, Ue0])
     u1 = precision.([Ui1, Ue1])
     δu = (u1 .- u0) ./ NU
@@ -331,13 +323,11 @@ function MVSpace2D(
     end
 
     return VSpace2D{typeof(u0),TI,typeof(u)}(u0, u1, NU, v0, v1, NV, u, v, du, dv, weights)
-
 end
 
 MVSpace2D() = MVSpace2D(-5, 5, -10, 10, 28, -5, 5, -10, 10, 28)
 MVSpace2D(U0::T, U1::T, V0::T, V1::T) where {T<:Real} =
     MVSpace2D(U0, U1, U0, U1, 28, V0, V1, V0, V1, 28)
-
 
 """
 $(TYPEDEF)
@@ -377,13 +367,12 @@ function VSpace3D(
     W0,
     W1,
     NW::TI;
-    type = "rectangle",
-    ngu = zero(NU)::TI,
-    ngv = zero(NV)::TI,
-    ngw = zero(NW)::TI,
-    precision = Float64,
+    type="rectangle",
+    ngu=zero(NU)::TI,
+    ngv=zero(NV)::TI,
+    ngw=zero(NW)::TI,
+    precision=Float64,
 ) where {TI<:Integer}
-
     δu = (U1 - U0) / NU
     δv = (V1 - V0) / NV
     δw = (W1 - W0) / NW
@@ -431,9 +420,9 @@ function VSpace3D(
         _nu = NU + 1
         _nv = NV + 1
         _nw = NW + 1
-        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i = 1:_nu]
-        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j = 1:_nv]
-        _w = [W1 / (_nw - 1)^3 * (-_nw + 1 + 2 * (k - 1))^3 for k = 1:_nw]
+        _u = [U1 / (_nu - 1)^3 * (-_nu + 1 + 2 * (i - 1))^3 for i in 1:_nu]
+        _v = [V1 / (_nv - 1)^3 * (-_nv + 1 + 2 * (j - 1))^3 for j in 1:_nv]
+        _w = [W1 / (_nw - 1)^3 * (-_nw + 1 + 2 * (k - 1))^3 for k in 1:_nw]
         __u = (_u[1:end-1] .+ _u[2:end]) ./ 2
         __v = (_v[1:end-1] .+ _v[2:end]) ./ 2
         __w = (_w[1:end-1] .+ _w[2:end]) ./ 2
@@ -475,7 +464,6 @@ function VSpace3D(
         dw,
         weights,
     )
-
 end
 
 VSpace3D() = VSpace3D(-5, 5, 28, -5, 5, 28, -5, 5, 28)
@@ -502,13 +490,12 @@ function MVSpace3D(
     We0,
     We1,
     NW::TI;
-    type = "rectangle",
-    ngu = zero(NU)::TI,
-    ngv = zero(NV)::TI,
-    ngw = zero(NW)::TI,
-    precision = Float64,
+    type="rectangle",
+    ngu=zero(NU)::TI,
+    ngv=zero(NV)::TI,
+    ngw=zero(NW)::TI,
+    precision=Float64,
 ) where {TI<:Integer}
-
     u0 = precision.([Ui0, Ue0])
     u1 = precision.([Ui1, Ue1])
     δu = (u1 .- u0) ./ NU
@@ -581,13 +568,11 @@ function MVSpace3D(
         dw,
         weights,
     )
-
 end
 
 MVSpace3D() = MVSpace3D(-5, 5, -10, 10, 20, -5, 5, -10, 10, 20, -5, 5, -10, 10, 20)
 MVSpace3D(U0::T, U1::T, V0::T, V1::T, W0::T, W1::T) where {T<:Real} =
     MVSpace3D(U0, U1, U0, U1, 20, V0, V1, V0, V1, 20, W0, W1, W0, W1, 20)
-
 
 """
 $(SIGNATURES)
@@ -597,21 +582,21 @@ Generate VelocitySpace
 function set_velocity(;
     space,
     nSpecies,
-    umin = nothing,
-    umax = nothing,
-    nu = nothing,
-    vMeshType = nothing,
-    nug = nothing,
-    mi = nothing,
-    me = nothing,
-    vmin = nothing,
-    vmax = nothing,
-    nv = nothing,
-    nvg = nothing,
-    wmin = nothing,
-    wmax = nothing,
-    nw = nothing,
-    nwg = nothing,
+    umin=nothing,
+    umax=nothing,
+    nu=nothing,
+    vMeshType=nothing,
+    nug=nothing,
+    mi=nothing,
+    me=nothing,
+    vmin=nothing,
+    vmax=nothing,
+    nv=nothing,
+    nvg=nothing,
+    wmin=nothing,
+    wmax=nothing,
+    nw=nothing,
+    nwg=nothing,
     kwargs...,
 )
     Dv = parse(Int, space[5])
@@ -619,27 +604,18 @@ function set_velocity(;
         vSpace = nothing
     elseif Dv == 1
         if nSpecies == 1
-            vSpace = VSpace1D(umin, umax, nu; type = vMeshType, ng = nug)
+            vSpace = VSpace1D(umin, umax, nu; type=vMeshType, ng=nug)
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
             ue1 = umax * sqrt(mi / me)
-            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu; type = vMeshType, ng = nug)
+            vSpace = MVSpace1D(umin, umax, ue0, ue1, nu; type=vMeshType, ng=nug)
         else
             throw("The velocity space only supports up to two species.")
         end
     elseif Dv == 2
         if nSpecies == 1
-            vSpace = VSpace2D(
-                umin,
-                umax,
-                nu,
-                vmin,
-                vmax,
-                nv;
-                type = vMeshType,
-                ngu = nug,
-                ngv = nvg,
-            )
+            vSpace =
+                VSpace2D(umin, umax, nu, vmin, vmax, nv; type=vMeshType, ngu=nug, ngv=nvg)
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
             ue1 = umax * sqrt(mi / me)
@@ -656,9 +632,9 @@ function set_velocity(;
                 ve0,
                 ve1,
                 nv;
-                type = vMeshType,
-                ngu = nug,
-                ngv = nvg,
+                type=vMeshType,
+                ngu=nug,
+                ngv=nvg,
             )
         else
             throw("The velocity space only supports up to two species.")
@@ -675,10 +651,10 @@ function set_velocity(;
                 wmin,
                 wmax,
                 nw;
-                type = vMeshType,
-                ngu = nug,
-                ngv = nvg,
-                ngw = nwg,
+                type=vMeshType,
+                ngu=nug,
+                ngv=nvg,
+                ngw=nwg,
             )
         elseif nSpecies == 2
             ue0 = umin * sqrt(mi / me)
@@ -703,10 +679,10 @@ function set_velocity(;
                 we0,
                 we1,
                 nw;
-                type = vMeshType,
-                ngu = nug,
-                ngv = nvg,
-                ngw = nwg,
+                type=vMeshType,
+                ngu=nug,
+                ngv=nvg,
+                ngw=nwg,
             )
         else
             throw("The velocity space only supports up to two species.")
@@ -720,7 +696,6 @@ end
 $(SIGNATURES)
 """
 set_velocity(dict::Union{AbstractDict,NamedTuple}) = set_velocity(; dict...)
-
 
 """
 $(TYPEDEF)
@@ -745,7 +720,7 @@ end
 # ------------------------------------------------------------
 
 function Base.show(io::IO, vs::VSpace1D{TR,TI,TA,TB}) where {TR,TI,TA,TB}
-    print(
+    return print(
         io,
         "VelocitySpace1D{$TR,$TI,$TA,$TB}\n",
         "domain: ($(vs.u0),$(vs.u1))\n",
@@ -754,7 +729,7 @@ function Base.show(io::IO, vs::VSpace1D{TR,TI,TA,TB}) where {TR,TI,TA,TB}
 end
 
 function Base.show(io::IO, vs::VSpace2D{TR,TI,TA}) where {TR,TI,TA}
-    print(
+    return print(
         io,
         "VelocitySpace2D{$TR,$TI,$TA}\n",
         "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1))\n",
@@ -763,7 +738,7 @@ function Base.show(io::IO, vs::VSpace2D{TR,TI,TA}) where {TR,TI,TA}
 end
 
 function Base.show(io::IO, vs::VSpace3D{TR,TI,TA}) where {TR,TI,TA}
-    print(
+    return print(
         io,
         "VelocitySpace3D{$TR,$TI,$TA}\n",
         "domain: ($(vs.u0),$(vs.u1)) × ($(vs.v0),$(vs.v1)) × ($(vs.w0),$(vs.w1))\n",

@@ -20,15 +20,14 @@ function update!(
     face::AV{TF},
     dt,
     residual::Number;
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-    st = fn,
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
-
     sumRes, sumAvg = 0.0, 0.0
 
-    @inbounds @threads for i = 1:KS.ps.nx
+    @inbounds @threads for i in 1:KS.ps.nx
         ctr[i].w, sumRes, sumAvg = fn(
             KS,
             ctr[i],
@@ -36,7 +35,7 @@ function update!(
             face[i+1],
             (dt, KS.ps.dx[i], sumRes, sumAvg),
             coll;
-            st = st,
+            st=st,
         )
     end
 
@@ -57,7 +56,6 @@ function update!(
     end
 
     return residual
-
 end
 
 function update!(
@@ -66,36 +64,32 @@ function update!(
     face,
     dt,
     residual::AA; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-    st = fn,
-) where {
-    TC<:Union{
-        ControlVolume,
-        ControlVolume1D,
-        ControlVolume1F,
-        ControlVolume1D1F,
-        ControlVolume2F,
-        ControlVolume1D2F,
-    },
-}
-
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
+) where {TC<:Union{
+    ControlVolume,
+    ControlVolume1D,
+    ControlVolume1F,
+    ControlVolume1D1F,
+    ControlVolume2F,
+    ControlVolume1D2F,
+},}
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for i = 2:KS.ps.nx-1
-        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll; st = st)
+    @inbounds @threads for i in 2:KS.ps.nx-1
+        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll; st=st)
     end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; bc = bc, fn = fn, st = st)
+    update_boundary!(KS, ctr, face, dt, residual; bc=bc, fn=fn, st=st)
 
     return nothing
-
 end
 
 """
@@ -107,17 +101,16 @@ function update!(
     face::AV{Interface1D3F},
     dt,
     residual; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    isMHD = true::Bool,
-    fn = step!,
-    st = fn,
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    isMHD=true::Bool,
+    fn=step!,
+    st=fn,
 )
-
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for i = 2:KS.ps.nx-1
+    @inbounds @threads for i in 2:KS.ps.nx-1
         fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
@@ -131,15 +124,14 @@ function update!(
         face,
         dt,
         residual;
-        coll = coll,
-        bc = bc,
-        isMHD = isMHD,
-        fn = fn,
-        st = st,
+        coll=coll,
+        bc=bc,
+        isMHD=isMHD,
+        fn=fn,
+        st=st,
     )
 
     return nothing
-
 end
 
 function update!(
@@ -148,17 +140,16 @@ function update!(
     face::AV{Interface1D4F},
     dt,
     residual; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    isMHD = true::Bool,
-    fn = step!,
-    st = fn,
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    isMHD=true::Bool,
+    fn=step!,
+    st=fn,
 )
-
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for i = 2:KS.ps.nx-1
+    @inbounds @threads for i in 2:KS.ps.nx-1
         fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
@@ -172,15 +163,14 @@ function update!(
         face,
         dt,
         residual;
-        coll = coll,
-        bc = bc,
-        isMHD = isMHD,
-        fn = fn,
-        st = st,
+        coll=coll,
+        bc=bc,
+        isMHD=isMHD,
+        fn=fn,
+        st=st,
     )
 
     return nothing
-
 end
 
 """
@@ -207,21 +197,18 @@ function update!(
     a2face,
     dt,
     residual;
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-    st = fn,
-) where {
-    T<:Union{
-        ControlVolume,
-        ControlVolume2D,
-        ControlVolume1F,
-        ControlVolume2D1F,
-        ControlVolume2F,
-        ControlVolume2D2F,
-    },
-}
-
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
+) where {T<:Union{
+    ControlVolume,
+    ControlVolume2D,
+    ControlVolume1F,
+    ControlVolume2D1F,
+    ControlVolume2F,
+    ControlVolume2D2F,
+},}
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -233,8 +220,8 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for j = 2:ny-1
-        for i = 2:nx-1
+    @inbounds @threads for j in 2:ny-1
+        for i in 2:nx-1
             fn(
                 KS,
                 ctr[i, j],
@@ -244,7 +231,7 @@ function update!(
                 a2face[i, j+1],
                 (dt, dx[i, j] * dy[i, j], sumRes, sumAvg),
                 coll;
-                st = st,
+                st=st,
             )
         end
     end
@@ -253,21 +240,9 @@ function update!(
         residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(
-        KS,
-        ctr,
-        a1face,
-        a2face,
-        dt,
-        residual;
-        coll = coll,
-        bc = bc,
-        fn = fn,
-        st = st,
-    )
+    update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll=coll, bc=bc, fn=fn, st=st)
 
     return nothing
-
 end
 
 function update!(
@@ -276,18 +251,17 @@ function update!(
     face::AV{T},
     dt,
     residual; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-    st = fn,
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
 ) where {T<:Union{Interface,Interface2D}}
-
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
-            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
+            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
 
             st(
                 ctr[i].w,
@@ -308,10 +282,9 @@ function update!(
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn, st = st)
+    update_boundary!(KS, ctr, face, dt, residual; coll=coll, bc=bc, fn=fn, st=st)
 
     return nothing
-
 end
 
 function update!(
@@ -320,18 +293,17 @@ function update!(
     face::AV{T},
     dt,
     residual; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-    st = fn,
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
 ) where {T<:Union{Interface1F,Interface2D1F}}
-
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
-            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
+            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
 
             st(
                 ctr[i].w,
@@ -365,10 +337,9 @@ function update!(
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn, st = st)
+    update_boundary!(KS, ctr, face, dt, residual; coll=coll, bc=bc, fn=fn, st=st)
 
     return nothing
-
 end
 
 function update!(
@@ -377,18 +348,17 @@ function update!(
     face::AV{T},
     dt,
     residual; # 1D / 2D
-    coll = symbolize(KS.set.collision),
-    bc = symbolize(KS.set.boundary),
-    fn = step!,
-    st = fn,
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
 ) where {T<:Union{Interface2F,Interface2D2F}}
-
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
     @inbounds @threads for i in eachindex(ctr)
         if KS.ps.cellType[i] in (0, 2)
-            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j = 1:3]
+            dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
 
             st(
                 ctr[i].w,
@@ -426,8 +396,7 @@ function update!(
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
     end
 
-    update_boundary!(KS, ctr, face, dt, residual; coll = coll, bc = bc, fn = fn, st = st)
+    update_boundary!(KS, ctr, face, dt, residual; coll=coll, bc=bc, fn=fn, st=st)
 
     return nothing
-
 end

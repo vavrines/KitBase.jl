@@ -21,7 +21,6 @@ end
     m.fw(args..., m.p), m.bc(args..., m.p)
 end
 
-
 """
 $(TYPEDEF)
 
@@ -41,7 +40,6 @@ end
 (m::IB1F)(args...) = begin
     m.fw(args..., m.p), m.ff(args..., m.p), m.bc(args..., m.p)
 end
-
 
 """
 $(TYPEDEF)
@@ -63,7 +61,6 @@ end
     m.fw(args..., m.p), m.ff(args..., m.p)[1], m.ff(args..., m.p)[2], m.bc(args..., m.p)
 end
 
-
 """
 $(TYPEDEF)
 
@@ -82,7 +79,6 @@ mutable struct IB3F{TF1,TF2,TF3,TF4,TF5,T,NT} <: AbstractCondition
     bc::T
     p::NT
 end
-
 
 """
 $(TYPEDEF)
@@ -103,7 +99,6 @@ mutable struct IB4F{TF1,TF2,TF3,TF4,TF5,T,NT} <: AbstractCondition
     p::NT
 end
 
-
 """
 $(SIGNATURES)
 
@@ -122,7 +117,7 @@ end
 """
 $(SIGNATURES)
 """
-function set_ib(set, pSpace, vSpace, gas, Um = 0.15, Vm = 0.0, Tm = 1.0)
+function set_ib(set, pSpace, vSpace, gas, Um=0.15, Vm=0.0, Tm=1.0)
     ib = begin
         if parse(Int, set.space[3]) == 0
             fw, bc, p = config_ib(set, pSpace, vSpace, gas)

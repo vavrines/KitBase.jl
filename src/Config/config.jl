@@ -13,7 +13,7 @@ $(SIGNATURES)
 
 Config initial and boundary conditions
 """
-function config_ib(args...; case = args[1].case)
+function config_ib(args...; case=args[1].case)
     func = begin
         if case in ("shock", :shock)
             eval(Symbol("ib_" * "rh"))

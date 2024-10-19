@@ -20,7 +20,7 @@ Setup(
     10.0, # time
     false,
 ) |> show
-config_ntuple(u0 = -8, c = 1)
+config_ntuple(; u0=-8, c=1)
 
 KB.Scalar(1.0, 1e-3)
 KB.Radiation(1e-2, 1.0, 0.0, 1e-3, 1000)
@@ -187,9 +187,9 @@ sol_w = rand(4, 3, 2)
 sol_prim = rand(4, 3, 2)
 sol_h = rand(6, 3, 2)
 
-sol_w = [rand(4) for i = 1:4, j = 1:3]
-sol_prim = [rand(4) for i = 1:4, j = 1:3]
-sol_h = [rand(16, 16) for i = 1:4, j = 1:3]
+sol_w = [rand(4) for i in 1:4, j in 1:3]
+sol_prim = [rand(4) for i in 1:4, j in 1:3]
+sol_h = [rand(16, 16) for i in 1:4, j in 1:3]
 
 KB.Solution2D(sol_w, sol_prim)
 KB.Solution2D(sol_w, sol_prim, sol_h)
@@ -204,7 +204,7 @@ KB.Flux1D(sol_w, sol_h, sol_h)
 
 sol_w = rand(4, 3, 2)
 sol_h = rand(6, 3, 2)
-n = [rand(2) for i = 1:3, j = 1:2]
+n = [rand(2) for i in 1:3, j in 1:2]
 KB.Flux2D(n, sol_w)
 KB.Flux2D(n, sol_w, sol_h)
 KB.Flux2D(n, sol_w, sol_h, sol_h)

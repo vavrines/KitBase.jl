@@ -21,7 +21,7 @@ $(SIGNATURES)
 $(SIGNATURES)
 """
 function ∂maxwellian(u::AV, ρ, U, λ)
-    ∂maxwellian.(u::AV, ρ, U, λ)
+    return ∂maxwellian.(u::AV, ρ, U, λ)
 end
 
 """

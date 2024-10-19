@@ -51,16 +51,16 @@ function ib_briowu(
     lorenzR = zeros(3, 2)
 
     p = (
-        x0 = ps.x0,
-        x1 = ps.x1,
-        wL = wL,
-        EL = EL,
-        BL = BL,
-        lorenzL = lorenzL,
-        wR = wR,
-        ER = ER,
-        BR = BR,
-        lorenzR = lorenzR,
+        x0=ps.x0,
+        x1=ps.x1,
+        wL=wL,
+        EL=EL,
+        BL=BL,
+        lorenzL=lorenzL,
+        wR=wR,
+        ER=ER,
+        BR=BR,
+        lorenzR=lorenzR,
     )
 
     fw = function (x, p)
@@ -123,17 +123,7 @@ function ib_briowu(
                 (primR[3, j]^2 + primR[4, j]^2 + 2.0 / (2.0 * primR[end, j])) .* h0R[:, j]
         end
 
-        p = (
-            p...,
-            h0L = h0L,
-            h1L = h1L,
-            h2L = h2L,
-            h3L = h3L,
-            h0R = h0R,
-            h1R = h1R,
-            h2R = h2R,
-            h3R = h3R,
-        )
+        p = (p..., h0L=h0L, h1L=h1L, h2L=h2L, h3L=h3L, h0R=h0R, h1R=h1R, h2R=h2R, h3R=h3R)
 
         ff = function (x, p)
             if x <= (p.x0 + p.x1) / 2
@@ -161,7 +151,7 @@ function ib_briowu(
             h2R[:, :, j] .= (primR[4, j]^2 + 1.0 / (2.0 * primR[end, j])) .* h0R[:, :, j]
         end
 
-        p = (p..., h0L = h0L, h1L = h1L, h2L = h2L, h0R = h0R, h1R = h1R, h2R = h2R)
+        p = (p..., h0L=h0L, h1L=h1L, h2L=h2L, h0R=h0R, h1R=h1R, h2R=h2R)
 
         ff = function (x, p)
             if x <= (p.x0 + p.x1) / 2
@@ -175,7 +165,6 @@ function ib_briowu(
     end
 
     return nothing
-
 end
 
 """

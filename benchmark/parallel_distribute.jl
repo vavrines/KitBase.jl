@@ -41,18 +41,18 @@ dt = ks.ps.dx[1] / (5.0 + KitBase.sound_speed(ks.ib.primL, ks.gas.γ))
 nt = floor(ks.set.maxTime / dt) |> Int
 
 #--- parallel ---#
-wp = SharedArray{Float64}((ks.ps.nx, 3), init = A -> (A = zeros(ks.ps.nx, 3)))
-for i = 1:ks.ps.nx
+wp = SharedArray{Float64}((ks.ps.nx, 3); init=A -> (A = zeros(ks.ps.nx, 3)))
+for i in 1:ks.ps.nx
     if i <= ks.ps.nx ÷ 2
         wp[i, :] .= ks.ib.wL
     else
         wp[i, :] .= ks.ib.wR
     end
 end
-fwp = SharedArray{Float64}((ks.ps.nx + 1, 3), init = A -> (A = zeros(ks.ps.nx + 1, 3)))
+fwp = SharedArray{Float64}((ks.ps.nx + 1, 3); init=A -> (A = zeros(ks.ps.nx + 1, 3)))
 
-@time for iter = 1:nt÷3
-    @sync @distributed for i = 2:ks.ps.nx
+@time for iter in 1:nt÷3
+    @sync @distributed for i in 2:ks.ps.nx
         flux = @view fwp[i, :]
         KitBase.flux_gks!(
             flux,
@@ -68,8 +68,8 @@ fwp = SharedArray{Float64}((ks.ps.nx + 1, 3), init = A -> (A = zeros(ks.ps.nx + 
         )
     end
 
-    @sync @distributed for i = 2:ks.ps.nx-1
-        for j = 1:3
+    @sync @distributed for i in 2:ks.ps.nx-1
+        for j in 1:3
             wp[i, j] += (fwp[i, j] - fwp[i+1, j]) / ks.ps.dx[i]
         end
     end
@@ -78,7 +78,7 @@ end
 
 #--- serial ---#
 w = zeros(ks.ps.nx, 3)
-for i = 1:ks.ps.nx
+for i in 1:ks.ps.nx
     if i <= ks.ps.nx ÷ 2
         w[i, :] .= ks.ib.wL
     else
@@ -87,8 +87,8 @@ for i = 1:ks.ps.nx
 end
 fw = zeros(ks.ps.nx + 1, 3)
 
-@time for iter = 1:nt÷3
-    for i = 2:ks.ps.nx
+@time for iter in 1:nt÷3
+    for i in 2:ks.ps.nx
         flux = @view fw[i, :]
         KitBase.flux_gks!(
             flux,
@@ -104,8 +104,8 @@ fw = zeros(ks.ps.nx + 1, 3)
         )
     end
 
-    for i = 2:ks.ps.nx-1
-        for j = 1:3
+    for i in 2:ks.ps.nx-1
+        for j in 1:3
             w[i, j] += (fw[i, j] - fw[i+1, j]) / ks.ps.dx[i]
         end
     end

@@ -1,26 +1,26 @@
 using KitBase, Plots
 using KitBase.ProgressMeter: @showprogress
 
-cf = config_ntuple(
-    matter = "gas",
-    case = "relaxation",
-    space = "1d3f1v",
-    collision = "rykov",
-    cfl = 0.5,
-    maxTime = 5.0,
-    umin = -5.0,
-    umax = 5.0,
-    nu = 32,
-    knudsen = 0.1,
-    prandtl = 0.72,
-    inK = 2.0,
-    inKr = 2.0,
-    omega = 0.81,
-    Tr0 = 91.5 / 273,
-    Z0 = 18.1,
-    sigma = 1 / 1.55,
-    omega1 = 0.2354,
-    omega2 = 0.3049,
+cf = config_ntuple(;
+    matter="gas",
+    case="relaxation",
+    space="1d3f1v",
+    collision="rykov",
+    cfl=0.5,
+    maxTime=5.0,
+    umin=-5.0,
+    umax=5.0,
+    nu=32,
+    knudsen=0.1,
+    prandtl=0.72,
+    inK=2.0,
+    inKr=2.0,
+    omega=0.81,
+    Tr0=91.5 / 273,
+    Z0=18.1,
+    sigma=1 / 1.55,
+    omega1=0.2354,
+    omega2=0.3049,
 )
 
 γ = heat_capacity_ratio(cf.inK, cf.inKr, 1)
@@ -28,14 +28,8 @@ cf = config_ntuple(
 set = set_setup(; cf...)
 ps = set_geometry(; cf...)
 vs = set_velocity(; cf...)
-gas = DiatomicGas(
-    Kn = cf.knudsen,
-    Pr = cf.prandtl,
-    K = cf.inK,
-    Kr = cf.inKr,
-    ω = cf.omega,
-    T₀ = cf.Tr0,
-)
+gas =
+    DiatomicGas(; Kn=cf.knudsen, Pr=cf.prandtl, K=cf.inK, Kr=cf.inKr, ω=cf.omega, T₀=cf.Tr0)
 
 prim0 = [1.0, 0.0, 1.6556, 1.0, 100.0]
 w0 = prim_conserve(prim0, γ, gas.Kr)
@@ -140,7 +134,7 @@ nt = 2000
 function solve(KS, w, prim, h, b, r, dt, nt)
     whis = zeros(4, nt)
 
-    @showprogress for iter = 1:nt
+    @showprogress for iter in 1:nt
         step(KS, w, prim, h, b, r, dt)
         whis[:, iter] .= w
     end
@@ -150,7 +144,7 @@ end
 
 w_his = solve(ks, w, prim, h, b, r, dt, nt)
 prim_his = zeros(5, nt)
-for i = 1:nt
+for i in 1:nt
     prim_his[:, i] .= conserve_prim(w_his[:, i], ks.gas.K, ks.gas.Kr)
 end
 

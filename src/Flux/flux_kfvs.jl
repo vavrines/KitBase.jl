@@ -13,9 +13,8 @@ function flux_kfvs!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume1F}
-
     dxL, dxR = p[1:2]
 
     flux_kfvs!(
@@ -31,7 +30,6 @@ function flux_kfvs!(
     )
 
     return nothing
-
 end
 
 function flux_kfvs!(
@@ -41,9 +39,8 @@ function flux_kfvs!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume2F}
-
     dxL, dxR = p[1:2]
 
     flux_kfvs!(
@@ -64,7 +61,6 @@ function flux_kfvs!(
     )
 
     return nothing
-
 end
 
 function flux_kfvs!(
@@ -74,12 +70,11 @@ function flux_kfvs!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace2D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume1F}
-
     dxL, dxR, len, n, dirc = p[1:5]
-    sfL = extract_last(ctrL.sf, dirc; mode = :view)
-    sfR = extract_last(ctrR.sf, dirc; mode = :view)
+    sfL = extract_last(ctrL.sf, dirc; mode=:view)
+    sfR = extract_last(ctrR.sf, dirc; mode=:view)
 
     flux_kfvs!(
         face.fw,
@@ -98,7 +93,6 @@ function flux_kfvs!(
     face.fw .= global_frame(face.fw, n)
 
     return nothing
-
 end
 
 function flux_kfvs!(
@@ -108,14 +102,13 @@ function flux_kfvs!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace2D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume2F}
-
     dxL, dxR, len, n, dirc = p[1:5]
-    shL = extract_last(ctrL.sh, dirc; mode = :view)
-    sbL = extract_last(ctrL.sb, dirc; mode = :view)
-    shR = extract_last(ctrR.sh, dirc; mode = :view)
-    sbR = extract_last(ctrR.sb, dirc; mode = :view)
+    shL = extract_last(ctrL.sh, dirc; mode=:view)
+    sbL = extract_last(ctrL.sb, dirc; mode=:view)
+    shR = extract_last(ctrR.sh, dirc; mode=:view)
+    sbR = extract_last(ctrR.sb, dirc; mode=:view)
 
     flux_kfvs!(
         face.fw,
@@ -139,7 +132,6 @@ function flux_kfvs!(
     face.fw .= global_frame(face.fw, n)
 
     return nothing
-
 end
 
 function flux_kfvs!(
@@ -149,9 +141,8 @@ function flux_kfvs!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace3D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume1F}
-
     dxL, dxR = p[1:2]
 
     if length(p) == 2 || p[3] == 1
@@ -171,8 +162,8 @@ function flux_kfvs!(
         )
     else
         len, n, dirc = p[3:5]
-        sfL = extract_last(ctrL.sf, dirc; mode = :view)
-        sfR = extract_last(ctrR.sf, dirc; mode = :view)
+        sfL = extract_last(ctrL.sf, dirc; mode=:view)
+        sfR = extract_last(ctrR.sf, dirc; mode=:view)
 
         flux_kfvs!(
             face.fw,
@@ -192,7 +183,6 @@ function flux_kfvs!(
     end
 
     return nothing
-
 end
 
 # ------------------------------------------------------------
@@ -204,20 +194,11 @@ $(SIGNATURES)
 
 Kinetic flux vector splitting (KFVS) flux
 """
-function flux_kfvs(
-    fL::Y,
-    fR::Y,
-    u::AV,
-    dt,
-    sfL = zero(fL)::Y,
-    sfR = zero(fR)::Y,
-) where {Y<:AV}
-
+function flux_kfvs(fL::Y, fR::Y, u::AV, dt, sfL=zero(fL)::Y, sfR=zero(fR)::Y) where {Y<:AV}
     ff = similar(fL)
     flux_kfvs!(ff, fL, fR, u, dt, sfL, sfR)
 
     return ff
-
 end
 
 """
@@ -233,8 +214,8 @@ function flux_kfvs!(
     fR::Y,
     u::AV,
     dt,
-    sfL = zero(fL)::Y,
-    sfR = zero(fR)::Y,
+    sfL=zero(fL)::Y,
+    sfR=zero(fR)::Y,
 ) where {Y<:AV} # 1F1V flux for pure DOM
 
     # upwind reconstruction
@@ -247,7 +228,6 @@ function flux_kfvs!(
     @. ff = dt * u * f - 0.5 * dt^2 * u^2 * sf
 
     return nothing
-
 end
 
 """
@@ -263,8 +243,8 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sfL = zero(fL)::Z,
-    sfR = zero(fR)::Z,
+    sfL=zero(fL)::Z,
+    sfR=zero(fR)::Z,
 ) where {Z<:AV,A<:AV}
 
     # upwind reconstruction
@@ -281,7 +261,6 @@ function flux_kfvs!(
     #fw[3] = dt * 0.5 * sum(ω .* u .^ 3 .* f) - 0.5 * dt^2 * 0.5 * sum(ω .* u .^ 4 .* sf)
 
     return nothing
-
 end
 
 """
@@ -297,10 +276,9 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sfL = zero(fL)::Z,
-    sfR = zero(fR)::Z,
+    sfL=zero(fL)::Z,
+    sfR=zero(fR)::Z,
 ) where {Z<:AM,A<:AM}
-
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
         _ff = @view ff[:, j]
@@ -315,7 +293,6 @@ function flux_kfvs!(
     end
 
     return nothing
-
 end
 
 """
@@ -334,10 +311,10 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    shL = zero(hL)::Z,
-    sbL = zero(bL)::Z,
-    shR = zero(hR)::Z,
-    sbR = zero(bR)::Z,
+    shL=zero(hL)::Z,
+    sbL=zero(bL)::Z,
+    shR=zero(hR)::Z,
+    sbR=zero(bR)::Z,
 ) where {Y<:AV,Z<:AV,A<:AV}
 
     # upwind reconstruction
@@ -360,7 +337,6 @@ function flux_kfvs!(
         0.5 * dt^2 * 0.5 * (sum(ω .* u .^ 4 .* sh) + sum(ω .* u .^ 2 .* sb))=#
 
     return nothing
-
 end
 
 """
@@ -379,12 +355,11 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    shL = zero(hL)::Z,
-    sbL = zero(bL)::Z,
-    shR = zero(hR)::Z,
-    sbR = zero(bR)::Z,
+    shL=zero(hL)::Z,
+    sbL=zero(bL)::Z,
+    shR=zero(hR)::Z,
+    sbR=zero(bR)::Z,
 ) where {Y<:AM,Z<:AM,A<:AM}
-
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
         _fh = @view fh[:, j]
@@ -404,7 +379,6 @@ function flux_kfvs!(
     end
 
     return nothing
-
 end
 
 """
@@ -426,12 +400,12 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    shL = zero(hL)::Z,
-    sbL = zero(bL)::Z,
-    srL = zero(rL)::Z,
-    shR = zero(hR)::Z,
-    sbR = zero(bR)::Z,
-    srR = zero(rR)::Z,
+    shL=zero(hL)::Z,
+    sbL=zero(bL)::Z,
+    srL=zero(rL)::Z,
+    shR=zero(hR)::Z,
+    sbR=zero(bR)::Z,
+    srR=zero(rR)::Z,
 ) where {Y<:AV,Z<:AV,A<:AV}
 
     # upwind reconstruction
@@ -459,7 +433,6 @@ function flux_kfvs!(
     @. fr = dt * u * r - 0.5 * dt^2 * u^2 * sr
 
     return nothing
-
 end
 
 """
@@ -477,9 +450,9 @@ function flux_kfvs!(
     w::A,
     ω::A,
     dt,
-    len = 1.0,
-    sfL = zero(fL)::Z,
-    sfR = zero(fR)::Z,
+    len=1.0,
+    sfL=zero(fL)::Z,
+    sfR=zero(fR)::Z,
 ) where {Z<:AA3,A<:AA3}
 
     # upwind reconstruction
@@ -501,7 +474,6 @@ function flux_kfvs!(
     @. fw *= len=#
 
     return nothing
-
 end
 
 """
@@ -526,14 +498,14 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sh0L = zero(h0L)::Z,
-    sh1L = zero(h1L)::Z,
-    sh2L = zero(h2L)::Z,
-    sh3L = zero(h3L)::Z,
-    sh0R = zero(h0R)::Z,
-    sh1R = zero(h1R)::Z,
-    sh2R = zero(h2R)::Z,
-    sh3R = zero(h3R)::Z,
+    sh0L=zero(h0L)::Z,
+    sh1L=zero(h1L)::Z,
+    sh2L=zero(h2L)::Z,
+    sh3L=zero(h3L)::Z,
+    sh0R=zero(h0R)::Z,
+    sh1R=zero(h1R)::Z,
+    sh2R=zero(h2R)::Z,
+    sh3R=zero(h3R)::Z,
 ) where {Y<:AV,Z<:AV,A<:AV}
 
     # upwind reconstruction
@@ -564,7 +536,6 @@ function flux_kfvs!(
     @. fh3 = dt * u * h3 - 0.5 * dt^2 * u^2 * sh3
 
     return nothing
-
 end
 
 """
@@ -589,16 +560,15 @@ function flux_kfvs!(
     u::A,
     ω::A,
     dt,
-    sh0L = zero(h0L)::Z,
-    sh1L = zero(h1L)::Z,
-    sh2L = zero(h2L)::Z,
-    sh3L = zero(h3L)::Z,
-    sh0R = zero(h0R)::Z,
-    sh1R = zero(h1R)::Z,
-    sh2R = zero(h2R)::Z,
-    sh3R = zero(h3R)::Z,
+    sh0L=zero(h0L)::Z,
+    sh1L=zero(h1L)::Z,
+    sh2L=zero(h2L)::Z,
+    sh3L=zero(h3L)::Z,
+    sh0R=zero(h0R)::Z,
+    sh1R=zero(h1R)::Z,
+    sh2R=zero(h2R)::Z,
+    sh3R=zero(h3R)::Z,
 ) where {Y<:AM,Z<:AM,A<:AM}
-
     for j in axes(fw, 2)
         _fw = @view fw[:, j]
         _fh0 = @view fh0[:, j]
@@ -635,7 +605,6 @@ function flux_kfvs!(
     end
 
     return nothing
-
 end
 
 """
@@ -653,8 +622,8 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    sfL = zero(fL)::Z,
-    sfR = zero(fR)::Z,
+    sfL=zero(fL)::Z,
+    sfR=zero(fR)::Z,
 ) where {Z<:Union{AV,AM},A<:Union{AV,AM}}
 
     #--- upwind reconstruction ---#
@@ -675,7 +644,6 @@ function flux_kfvs!(
     fw .*= len=#
 
     return nothing
-
 end
 
 """
@@ -696,10 +664,10 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    shL = zero(hL)::Z,
-    sbL = zero(bL)::Z,
-    shR = zero(hR)::Z,
-    sbR = zero(bR)::Z,
+    shL=zero(hL)::Z,
+    sbL=zero(bL)::Z,
+    shR=zero(hR)::Z,
+    sbR=zero(bR)::Z,
 ) where {Y<:Union{AV,AM},Z<:Union{AV,AM},A<:Union{AV,AM}}
 
     #--- upwind reconstruction ---#
@@ -726,7 +694,6 @@ function flux_kfvs!(
     fw .*= len=#
 
     return nothing
-
 end
 
 """
@@ -750,12 +717,12 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    sh0L = zero(h0L)::Z,
-    sh1L = zero(h1L)::Z,
-    sh2L = zero(h2L)::Z,
-    sh0R = zero(h0R)::Z,
-    sh1R = zero(h1R)::Z,
-    sh2R = zero(h2R)::Z,
+    sh0L=zero(h0L)::Z,
+    sh1L=zero(h1L)::Z,
+    sh2L=zero(h2L)::Z,
+    sh0R=zero(h0R)::Z,
+    sh1R=zero(h1R)::Z,
+    sh2R=zero(h2R)::Z,
 ) where {Y<:AM,Z<:AM,A<:AM}
 
     #--- upwind reconstruction ---#
@@ -786,7 +753,6 @@ function flux_kfvs!(
     @. fh2 = (dt * u * h2 - 0.5 * dt^2 * u^2 * sh2) * len
 
     return nothing
-
 end
 
 """
@@ -810,12 +776,12 @@ function flux_kfvs!(
     ω::A,
     dt,
     len,
-    sh0L = zero(h0L)::Z,
-    sh1L = zero(h1L)::Z,
-    sh2L = zero(h2L)::Z,
-    sh0R = zero(h0R)::Z,
-    sh1R = zero(h1R)::Z,
-    sh2R = zero(h2R)::Z,
+    sh0L=zero(h0L)::Z,
+    sh1L=zero(h1L)::Z,
+    sh2L=zero(h2L)::Z,
+    sh0R=zero(h0R)::Z,
+    sh1R=zero(h1R)::Z,
+    sh2R=zero(h2R)::Z,
 ) where {Y<:AA3,Z<:AA3,A<:AA3}
 
     #--- reconstruct initial distribution ---#
@@ -829,7 +795,7 @@ function flux_kfvs!(
     sh1 = @. sh1L * δ + sh1R * (1.0 - δ)
     sh2 = @. sh2L * δ + sh2R * (1.0 - δ)
 
-    for j = 1:2
+    for j in 1:2
         fw[1, j] =
             dt * sum(ω[:, :, j] .* u[:, :, j] .* h0[:, :, j]) -
             0.5 * dt^2 * sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* sh0[:, :, j])
@@ -845,21 +811,13 @@ function flux_kfvs!(
         fw[5, j] =
             dt *
             0.5 *
-            (
-                sum(
-                    ω[:, :, j] .* u[:, :, j] .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
-                    h0[:, :, j],
-                ) + sum(ω[:, :, j] .* u[:, :, j] .* h2[:, :, j])
-            ) -
+            (sum(ω[:, :, j] .* u[:, :, j] .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
+                 h0[:, :, j],) + sum(ω[:, :, j] .* u[:, :, j] .* h2[:, :, j])) -
             0.5 *
             dt^2 *
             0.5 *
-            (
-                sum(
-                    ω[:, :, j] .* u[:, :, j] .^ 2 .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
-                    sh0[:, :, j],
-                ) + sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* sh2[:, :, j])
-            )
+            (sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
+                 sh0[:, :, j],) + sum(ω[:, :, j] .* u[:, :, j] .^ 2 .* sh2[:, :, j]))
 
         @. fh0[:, :, j] =
             dt * u[:, :, j] * h0[:, :, j] - 0.5 * dt^2 * u[:, :, j]^2 * sh0[:, :, j]
@@ -875,5 +833,4 @@ function flux_kfvs!(
     @. fh2 *= len
 
     return nothing
-
 end

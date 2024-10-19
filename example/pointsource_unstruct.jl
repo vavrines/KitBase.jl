@@ -6,7 +6,7 @@ function KitBase.write_vtk(ps, ctr)
     for i in eachindex(cdata)
         cdata[i] = ctr[i].w
     end
-    KitBase.write_vtk(ps.points, ps.cellid, cdata)
+    return KitBase.write_vtk(ps.points, ps.cellid, cdata)
 end
 
 begin
@@ -55,7 +55,7 @@ end
 ctr = Array{KitBase.ControlVolumeUS1F}(undef, size(ps.cellid, 1))
 for i in eachindex(ctr)
     n = Vector{Float64}[]
-    for j = 1:3
+    for j in 1:3
         push!(
             n,
             KitBase.unit_normal(
@@ -120,7 +120,7 @@ end
 
 dt = 1.0 / 200 * cfl
 nt = tspan[2] ÷ dt |> Int
-@showprogress for iter = 1:20#nt
+@showprogress for iter in 1:20#nt
     @inbounds Threads.@threads for i in eachindex(face)
         velo = vs.u[:, 1] .* face[i].n[1] + vs.u[:, 2] .* face[i].n[2]
         if !(-1 in ps.edgeCells[i, :])
@@ -136,7 +136,7 @@ nt = tspan[2] ÷ dt |> Int
 
     @inbounds Threads.@threads for i in eachindex(ctr)
         if ps.cellType[i] == 0
-            for j = 1:3
+            for j in 1:3
                 dirc = sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n))
                 @. ctr[i].f -=
                     dirc * face[ps.cellEdges[i, j]].ff * face[ps.cellEdges[i, j]].len /
@@ -154,7 +154,6 @@ end
 
 KitBase.write_vtk(ps, ctr)
 
-
 @inbounds Threads.@threads for i in eachindex(face)
     velo = vs.u[:, 1] .* face[i].n[1] + vs.u[:, 2] .* face[i].n[2]
     if !(-1 in ps.edgeCells[i, :])
@@ -170,7 +169,7 @@ end
 
 @inbounds Threads.@threads for i in eachindex(ctr)
     if ps.cellType[i] == 0
-        for j = 1:3
+        for j in 1:3
             dirc = sign(dot(ctr[i].n[j], face[ps.cellEdges[i, j]].n))
             @. ctr[i].f -=
                 dirc * face[ps.cellEdges[i, j]].ff * face[ps.cellEdges[i, j]].len /

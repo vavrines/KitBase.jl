@@ -57,12 +57,7 @@ prim = [1.0, 0.0, 1.0]
 
 M = KB.maxwellian(u, prim)
 KB.maxwellian(randn(16, 16), randn(16, 16), [1.0, 0.0, 0.0, 1.0])
-KB.maxwellian(
-    randn(8, 8, 8),
-    randn(8, 8, 8),
-    randn(8, 8, 8),
-    [1.0, 0.0, 0.0, 0.0, 1.0],
-)
+KB.maxwellian(randn(8, 8, 8), randn(8, 8, 8), randn(8, 8, 8), [1.0, 0.0, 0.0, 0.0, 1.0])
 
 KB.energy_maxwellian(M, prim, 2)
 KB.mixture_energy_maxwellian(hcat(M, M), hcat(prim, prim), 2)
@@ -81,12 +76,7 @@ KB.maxwellian!(
 mprim = hcat(prim, prim)
 KB.mixture_maxwellian(hcat(u, u), mprim)
 KB.mixture_maxwellian(randn(8, 8, 2), randn(8, 8, 2), rand(4, 2))
-KB.mixture_maxwellian(
-    randn(8, 8, 8, 2),
-    randn(8, 8, 8, 2),
-    randn(8, 8, 8, 2),
-    rand(5, 2),
-)
+KB.mixture_maxwellian(randn(8, 8, 8, 2), randn(8, 8, 8, 2), randn(8, 8, 8, 2), rand(5, 2))
 
 KB.mixture_maxwellian!(randn(8, 2), randn(8, 2), rand(3, 2))
 KB.mixture_maxwellian!(randn(8, 8, 2), randn(8, 8, 2), randn(8, 8, 2), rand(4, 2))
@@ -331,24 +321,24 @@ KB.hs_boltz_kn(1e-3, 1.0)
 vs = VSpace3D(-5, 5, 16, -5, 5, 16, -5, 5, 16)
 fsm = KB.fsm_kernel(vs, 1e-3)
 phi, psi, phipsi =
-    KB.kernel_mode(5, 5.0, 5.0, 5.0, 0.1, 0.1, 0.1, 16, 16, 16, 1.0, quad_num = 16)
-KB.kernel_mode(5, 5.0, 5.0, 5.0, 16, 16, 16, 1.0, quad_num = 16)
-KB.kernel_mode(5, 5.0, 5.0, 0.1, 0.1, 16, 16, quad_num = 16)
+    KB.kernel_mode(5, 5.0, 5.0, 5.0, 0.1, 0.1, 0.1, 16, 16, 16, 1.0; quad_num=16)
+KB.kernel_mode(5, 5.0, 5.0, 5.0, 16, 16, 16, 1.0; quad_num=16)
+KB.kernel_mode(5, 5.0, 5.0, 0.1, 0.1, 16, 16; quad_num=16)
 KB.boltzmann_fft(rand(16, 16, 16), fsm)
 KB.boltzmann_fft!(rand(16, 16, 16), rand(16, 16, 16), fsm)
 
 KB.boltzmann_ode!(zeros(16, 16, 16), rand(16, 16, 16), (1.0, 5, phi, psi, phipsi), 0.0)
 KB.bgk_ode!(zeros(16, 16, 16), rand(16, 16, 16), (rand(16, 16, 16), 1e-2), 0.0)
 
-vs = KB.VSpace3D(-5.0, 5.0, 16, -5.0, 5.0, 16, -5.0, 5.0, 16, type = "algebra")
+vs = KB.VSpace3D(-5.0, 5.0, 16, -5.0, 5.0, 16, -5.0, 5.0, 16; type="algebra")
 u, v, w = vs.u[:, 1, 1], vs.v[1, :, 1], vs.w[1, 1, :]
 vnu = hcat(vs.u[:], vs.v[:], vs.w[:])
 uuni1d = linspace(vs.u[1, 1, 1], vs.u[end, 1, 1], 16)
 vuni1d = linspace(vs.v[1, 1, 1], vs.v[1, end, 1], 16)
 wuni1d = linspace(vs.w[1, 1, 1], vs.w[1, 1, end], 16)
-u13d = [uuni1d[i] for i = 1:16, j = 1:16, k = 1:16]
-v13d = [vuni1d[j] for i = 1:16, j = 1:16, k = 1:16]
-w13d = [wuni1d[k] for i = 1:16, j = 1:16, k = 1:16]
+u13d = [uuni1d[i] for i in 1:16, j in 1:16, k in 1:16]
+v13d = [vuni1d[j] for i in 1:16, j in 1:16, k in 1:16]
+w13d = [wuni1d[k] for i in 1:16, j in 1:16, k in 1:16]
 vuni = hcat(u13d[:], v13d[:], w13d[:])
 
 τ = KB.aap_hs_collision_time(mprim, 1.0, 0.5, 0.5, 0.5, 1.0)
@@ -356,12 +346,7 @@ KB.aap_hs_prim(mprim, τ, 1.0, 0.5, 0.5, 0.5, 1.0)
 KB.aap_hs_prim(rand(4, 2), rand(2), 1.0, 0.5, 0.5, 0.5, 1e-2)
 KB.aap_hs_prim(rand(5, 2), rand(2), 1.0, 0.5, 0.5, 0.5, 1e-2)
 
-KB.aap_hs_diffeq!(
-    similar(mprim),
-    mprim,
-    [τ[1], τ[2], 1.0, 0.5, 0.5, 0.5, 1.0, 3.0],
-    0.0,
-)
+KB.aap_hs_diffeq!(similar(mprim), mprim, [τ[1], τ[2], 1.0, 0.5, 0.5, 0.5, 1.0, 3.0], 0.0)
 KB.shift_pdf!(M, 1.0, 1e-4, 1e-4)
 KB.shift_pdf!(rand(16, 2), randn(2), rand(2), 1e-4)
 

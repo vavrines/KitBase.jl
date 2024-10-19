@@ -62,7 +62,7 @@ begin
         end
     end
 
-    for i = 1:ks.ps.nx+1
+    for i in 1:ks.ps.nx+1
         face[i] = KitBase.Interface1D(ks.ib.wL)
     end
 
@@ -71,7 +71,7 @@ begin
     res = zeros(3)
 end
 
-ptc = KitBase.init_ptc!(ks, ctr; mode = :soa, factor = 2)
+ptc = KitBase.init_ptc!(ks, ctr; mode=:soa, factor=2)
 ptc_new = deepcopy(ptc)
 
 KitBase.bgk_transport!(ks, ctr, ptc, ptc_new, dt)
@@ -79,11 +79,8 @@ KitBase.bgk_collision!(ks, ctr, ptc_new, face, res)
 KitBase.boundary!(ks, ctr, ptc_new, face, dt, :fix)
 KitBase.duplicate!(ptc, ptc_new, ks.gas.np)
 
-
-
-@showprogress for iter = 1:100#nt
-
-    @inbounds Threads.@threads for i = 1:ks.ps.nx+1
+@showprogress for iter in 1:100#nt
+    @inbounds Threads.@threads for i in 1:ks.ps.nx+1
         KitBase.flux_equilibrium!(
             face[i].fw,
             ctr[i-1].w,

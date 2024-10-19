@@ -3,9 +3,7 @@ $(SIGNATURES)
 
 Python linspace function
 """
-linspace(start, stop, n::T) where {T<:Integer} =
-    collect(range(start, stop = stop, length = n))
-
+linspace(start, stop, n::T) where {T<:Integer} = collect(range(start; stop=stop, length=n))
 
 """
 $(SIGNATURES)
@@ -14,14 +12,12 @@ Heaviside step function
 """
 heaviside(x::T) where {T<:Real} = ifelse(x >= 0, one(x), zero(x))
 
-
 """
 $(SIGNATURES)
 
 Fortran sign function
 """
 fortsign(x, y) = abs(x) * sign(y)
-
 
 """
 $(SIGNATURES)
@@ -50,7 +46,6 @@ msy_3d(m) = eltype(m).([0.0 1.0 0.0]) * m
 
 msz_3d(m) = eltype(m).([0.0 0.0 1.0]) * m
 
-
 """
 $(SIGNATURES)
 
@@ -73,7 +68,7 @@ function lgwt(N::Integer, a::Real, b::Real)
     L = zeros(N1, N2)
 
     # initial guess
-    for i = 1:N1
+    for i in 1:N1
         y[i] =
             cos((2.0 * (i - 1.0) + 1.0) * 4.0 * atan(1.0) / (2.0 * (N - 1.0) + 2.0)) +
             0.27 / N1 *
@@ -86,7 +81,7 @@ function lgwt(N::Integer, a::Real, b::Real)
     while maximum(abs.(y .- y0)) > 0.0000000000001
         L[:, 1] .= 1.0
         L[:, 2] .= y
-        for k = 2:N1
+        for k in 2:N1
             @. L[:, k+1] = ((2.0 * k - 1.0) * y * L[:, k] - (k - 1) * L[:, k-1]) / k
         end
         @. Lp = N2 * (L[:, N1] - y * L[:, N2]) / (1.0 - y^2)
@@ -101,14 +96,12 @@ function lgwt(N::Integer, a::Real, b::Real)
     return x, w
 end
 
-
 """
 $(SIGNATURES)
 
 Calculate rate of convergence
 """
-convergence_order(e1, e2, r = 2) = log(e1 / e2) / log(r)
-
+convergence_order(e1, e2, r=2) = log(e1 / e2) / log(r)
 
 """
 $(SIGNATURES)
@@ -117,7 +110,6 @@ Calculate L1 error
 """
 L1_error(u::T, ue::T, Δx) where {T<:AA} = sum(abs.(u .- ue) .* Δx)
 
-
 """
 $(SIGNATURES)
 
@@ -125,14 +117,12 @@ Calculate L2 error
 """
 L2_error(u::T, ue::T, Δx) where {T<:AA} = sqrt(sum((abs.(u .- ue) .* Δx) .^ 2))
 
-
 """
 $(SIGNATURES)
 
 Calculate L∞ error
 """
 L∞_error(u::T, ue::T, Δx) where {T<:AA} = maximum(abs.(u .- ue) .* Δx)
-
 
 """
 $(SIGNATURES)

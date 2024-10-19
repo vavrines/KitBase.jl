@@ -4,19 +4,19 @@ using KitBase.ProgressMeter: @showprogress
 using PyCall
 itp = pyimport("scipy.interpolate")
 
-set = Setup(
-    case = "cylinder",
-    space = "2d0f0v",
-    boundary = ["fix", "extra", "mirror", "extra"],
-    limiter = "minmod",
-    cfl = 0.1,
-    maxTime = 2.0, # time
-    flux = "hll",
-    hasForce = true,
+set = Setup(;
+    case="cylinder",
+    space="2d0f0v",
+    boundary=["fix", "extra", "mirror", "extra"],
+    limiter="minmod",
+    cfl=0.1,
+    maxTime=2.0, # time
+    flux="hll",
+    hasForce=true,
 )
 ps = PSpace2D(0, 3, 60, 0, 2, 40, 1, 1)
 vs = VSpace2D(-3, 3, 28, -3, 3, 28)
-gas = Gas(Kn = 1e-3, Ma = 0.1, K = 1.0)
+gas = Gas(; Kn=1e-3, Ma=0.1, K=1.0)
 
 prim0 = [1.0, 0.0, 0.0, 1.0]
 prim1 = [1.0, gas.Ma * sound_speed(1.0, gas.γ), 0.0, 1.0]
@@ -38,7 +38,7 @@ ib = IB2F(fw, ff, bc, NamedTuple())
 
 #ks = SolverSet(set, ps, vs, gas, ib)
 ks = SolverSet(set, ps, nothing, gas, ib)
-ctr, a1face, a2face = init_fvm(ks; structarray = true)
+ctr, a1face, a2face = init_fvm(ks; structarray=true)
 
 radius = 1
 θs = linspace(0, π / 2, 30)
@@ -48,7 +48,7 @@ lps = hcat(xs, ys)
 h = ps.dx[1]
 ΔV = 2π * radius / 4 / length(θs) * h
 
-scatter(xs, ys, xticks = 0:0.05:3, yticks = 0:0.05:1, ratio = 1)
+scatter(xs, ys; xticks=0:0.05:3, yticks=0:0.05:1, ratio=1)
 
 struct IB{T1,T2,T3,TF,ND}
     xlp::T1 # position of Lagrangian points
@@ -149,8 +149,8 @@ function updatef!(KS, ctr, a1face, a2face, dt, residual;)
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for j ∈ 1:ny
-        for i ∈ 1:nx
+    @inbounds @threads for j in 1:ny
+        for i in 1:nx
             stepf!(
                 ctr[i, j].w,
                 ctr[i, j].prim,
@@ -172,14 +172,14 @@ function updatef!(KS, ctr, a1face, a2face, dt, residual;)
         residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
-    KitBase.bc_extra!(ctr; dirc = :xr)
-    KitBase.bc_extra!(ctr; dirc = :yr)
-    KitBase.bc_mirror!(ctr; dirc = :yl)
+    KitBase.bc_extra!(ctr; dirc=:xr)
+    KitBase.bc_extra!(ctr; dirc=:yr)
+    KitBase.bc_mirror!(ctr; dirc=:yl)
 
     return nothing
 end
 
-@showprogress for iter = 1:50#nt
+@showprogress for iter in 1:50#nt
     evolve!(ks, ctr, a1face, a2face, dt)
     ib_force!(ks.ps, ctr, ib.xlp)
     updatef!(ks, ctr, a1face, a2face, dt, res)

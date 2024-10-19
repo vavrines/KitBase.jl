@@ -47,26 +47,19 @@ function initialize(config::AbstractDict)
     return (ks, cftuple..., 0.0)
 end
 
-
 """
 $(SIGNATURES)
 
 Initialize finite volume data structure
 """
-function init_fvm(KS, array = :dynamic_array; structarray = false)
-    return init_fvm(KS, KS.ps, array; structarray = structarray)
+function init_fvm(KS, array=:dynamic_array; structarray=false)
+    return init_fvm(KS, KS.ps, array; structarray=structarray)
 end
 
 """
 $(SIGNATURES)
 """
-function init_fvm(
-    KS,
-    ps::AbstractPhysicalSpace1D,
-    array = :dynamic_array;
-    structarray = false,
-)
-
+function init_fvm(KS, ps::AbstractPhysicalSpace1D, array=:dynamic_array; structarray=false)
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
 
@@ -80,7 +73,6 @@ function init_fvm(
     end
 
     if KS.set.space[3:4] == "0f"
-
         ctr = OffsetArray{ControlVolume}(undef, eachindex(KS.ps.x))
         face = Array{Interface}(undef, KS.ps.nx + 1)
 
@@ -93,16 +85,15 @@ function init_fvm(
                     funcprim(w, γ)
                 end
             end
-            ctr[i] = ControlVolume(funcar(w), funcar(prim), 1; auxiliary = KS.set.hasForce)
+            ctr[i] = ControlVolume(funcar(w), funcar(prim), 1; auxiliary=KS.set.hasForce)
         end
 
-        for i = 1:KS.ps.nx+1
+        for i in 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface(fw, 1)
         end
 
     elseif KS.set.space[3:4] == "1f"
-
         ctr = OffsetArray{ControlVolume1F}(undef, eachindex(KS.ps.x))
         face = Array{Interface1F}(undef, KS.ps.nx + 1)
 
@@ -115,18 +106,17 @@ function init_fvm(
                 funcar(prim),
                 funcar(f),
                 1;
-                auxiliary = KS.set.hasForce,
+                auxiliary=KS.set.hasForce,
             )
         end
 
-        for i = 1:KS.ps.nx+1
+        for i in 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface(fw, ff, 1)
         end
 
     elseif KS.set.space[3:4] == "2f"
-
         ctr = OffsetArray{ControlVolume2F}(undef, eachindex(KS.ps.x))
         face = Array{Interface2F}(undef, KS.ps.nx + 1)
 
@@ -140,18 +130,17 @@ function init_fvm(
                 funcar(h),
                 funcar(b),
                 1;
-                auxiliary = KS.set.hasForce,
+                auxiliary=KS.set.hasForce,
             )
         end
 
-        for i = 1:KS.ps.nx+1
+        for i in 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
             face[i] = Interface(fw, ff, ff, 1)
         end
 
     elseif KS.set.space[3:4] == "3f"
-
         ctr = OffsetArray{ControlVolume1D3F}(undef, eachindex(KS.ps.x))
         face = Array{Interface1D3F}(undef, KS.ps.nx + 1)
 
@@ -175,7 +164,7 @@ function init_fvm(
             )
         end
 
-        for i = 1:KS.ps.nx+1
+        for i in 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
             fe = deepcopy(KS.ib.fE(KS.ps.x[1], KS.ib.p)) |> funcar
@@ -183,7 +172,6 @@ function init_fvm(
         end
 
     elseif KS.set.space[3:4] == "4f"
-
         ctr = OffsetArray{ControlVolume1D4F}(undef, eachindex(KS.ps.x))
         face = Array{Interface1D4F}(undef, KS.ps.nx + 1)
 
@@ -208,25 +196,18 @@ function init_fvm(
             )
         end
 
-        for i = 1:KS.ps.nx+1
+        for i in 1:KS.ps.nx+1
             fw = deepcopy(KS.ib.fw(KS.ps.x[1], KS.ib.p)) |> funcar
             ff = deepcopy(KS.ib.ff(KS.ps.x[1], KS.ib.p)[1]) |> funcar
             fe = deepcopy(KS.ib.fE(KS.ps.x[1], KS.ib.p)) |> funcar
             face[i] = Interface1D4F(fw, ff, fe)
         end
-
     end
 
     return ctr |> funcst, face |> funcst
 end
 
-function init_fvm(
-    KS,
-    ps::AbstractPhysicalSpace2D,
-    array = :dynamic_array;
-    structarray = false,
-)
-
+function init_fvm(KS, ps::AbstractPhysicalSpace2D, array=:dynamic_array; structarray=false)
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
     funcprim = ifelse(KS.set.nSpecies == 1, conserve_prim, mixture_conserve_prim)
@@ -240,7 +221,6 @@ function init_fvm(
     end
 
     if KS.set.space[3:4] == "0f"
-
         ctr = OffsetArray{ControlVolume}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface}(undef, nx + 1, ny)
         a2face = Array{Interface}(undef, nx, ny + 1)
@@ -249,25 +229,23 @@ function init_fvm(
             w = KS.ib.fw(KS.ps.x[i, j], KS.ps.y[i, j], KS.ib.p)
             prim = funcprim(w, KS.gas.γ)
 
-            ctr[i, j] =
-                ControlVolume(funcar(w), funcar(prim), 2; auxiliary = KS.set.hasForce)
+            ctr[i, j] = ControlVolume(funcar(w), funcar(prim), 2; auxiliary=KS.set.hasForce)
         end
 
-        for j = 1:ny
-            for i = 1:nx+1
+        for j in 1:ny
+            for i in 1:nx+1
                 a1face[i, j] =
                     Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
             end
         end
-        for i = 1:nx
-            for j = 1:ny+1
+        for i in 1:nx
+            for j in 1:ny+1
                 a2face[i, j] =
                     Interface(funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)), 2)
             end
         end
 
     elseif KS.set.space[3:4] == "1f"
-
         ctr = OffsetArray{ControlVolume1F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface1F}(undef, nx + 1, ny)
         a2face = Array{Interface1F}(undef, nx, ny + 1)
@@ -281,12 +259,12 @@ function init_fvm(
                 funcar(prim),
                 funcar(h),
                 2;
-                auxiliary = KS.set.hasForce,
+                auxiliary=KS.set.hasForce,
             )
         end
 
-        for j = 1:ny
-            for i = 1:nx+1
+        for j in 1:ny
+            for i in 1:nx+1
                 a1face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
@@ -294,8 +272,8 @@ function init_fvm(
                 )
             end
         end
-        for i = 1:nx
-            for j = 1:ny+1
+        for i in 1:nx
+            for j in 1:ny+1
                 a2face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
@@ -305,7 +283,6 @@ function init_fvm(
         end
 
     elseif KS.set.space[3:4] == "2f"
-
         ctr = OffsetArray{ControlVolume2F}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2))
         a1face = Array{Interface2F}(undef, nx + 1, ny)
         a2face = Array{Interface2F}(undef, nx, ny + 1)
@@ -321,12 +298,12 @@ function init_fvm(
                 funcar(h),
                 funcar(b),
                 2;
-                auxiliary = KS.set.hasForce,
+                auxiliary=KS.set.hasForce,
             )
         end
 
-        for j = 1:ny
-            for i = 1:nx+1
+        for j in 1:ny
+            for i in 1:nx+1
                 a1face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)[1]),
@@ -335,8 +312,8 @@ function init_fvm(
                 )
             end
         end
-        for i = 1:nx
-            for j = 1:ny+1
+        for i in 1:nx
+            for j in 1:ny+1
                 a2face[i, j] = Interface(
                     funcar(KS.ib.fw(KS.ps.x[1], KS.ps.y[1], KS.ib.p)),
                     funcar(KS.ib.ff(KS.ps.x[1], KS.ps.y[1], KS.ib.p)[1]),
@@ -345,25 +322,21 @@ function init_fvm(
                 )
             end
         end
-
     end
 
     return ctr |> funcst, a1face |> funcst, a2face |> funcst
-
 end
 
-function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = false)
-
+function init_fvm(KS, ps::UnstructPSpace, array=:dynamic_array; structarray=false)
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)
     funcprim = ifelse(KS.set.nSpecies == 1, conserve_prim, mixture_conserve_prim)
 
     if KS.set.space[3:4] == "0f"
-
         ctr = Array{KitBase.ControlVolumeUS}(undef, size(ps.cellid, 1))
         for i in eachindex(ctr)
             n = Vector{Float64}[]
-            for j = 1:3
+            for j in 1:3
                 push!(
                     n,
                     KitBase.unit_normal(
@@ -439,11 +412,10 @@ function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = 
         end
 
     elseif KS.set.space[3:4] == "1f"
-
         ctr = Array{KitBase.ControlVolumeUS1F}(undef, size(ps.cellid, 1))
         for i in eachindex(ctr)
             n = Vector{Float64}[]
-            for j = 1:3
+            for j in 1:3
                 push!(
                     n,
                     KitBase.unit_normal(
@@ -491,7 +463,6 @@ function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = 
                 funcar(prim),
                 funcar(h),
             )
-
         end
 
         face = Array{KitBase.Interface2D1F}(undef, size(ps.facePoints, 1))
@@ -523,11 +494,10 @@ function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = 
         end
 
     elseif KS.set.space[3:4] == "2f"
-
         ctr = Array{KitBase.ControlVolumeUS2F}(undef, size(ps.cellid, 1))
         for i in eachindex(ctr)
             n = Vector{Float64}[]
-            for j = 1:3
+            for j in 1:3
                 push!(
                     n,
                     KitBase.unit_normal(
@@ -605,20 +575,17 @@ function init_fvm(KS, ps::UnstructPSpace, array = :dynamic_array; structarray = 
 
             face[i] = KitBase.Interface2D2F(len, n[1], n[2], funcar(fw), funcar(fh))
         end
-
     end
 
     return ctr |> funcst, face |> funcst
-
 end
-
 
 """
 $(SIGNATURES)
 
 Initialize particles based on flow conditions
 """
-function init_ptc!(KS, ctr::AV; mode = :soa, factor = 1)
+function init_ptc!(KS, ctr::AV; mode=:soa, factor=1)
     if mode == :soa
         init_ptc_soa!(KS, ctr, factor)
     elseif mode == :aos
@@ -626,14 +593,12 @@ function init_ptc!(KS, ctr::AV; mode = :soa, factor = 1)
     end
 end
 
-
 """
 $(SIGNATURES)
 
 Initialize particles with array of structs
 """
-function init_ptc_aos!(KS, ctr::AV, factor = 1)
-
+function init_ptc_aos!(KS, ctr::AV, factor=1)
     np = 0
     for i in eachindex(ctr)
         np += Int(round(ctr[i].w[1] * KS.ps.dx[i] / KS.gas.m))
@@ -657,24 +622,21 @@ function init_ptc_aos!(KS, ctr::AV, factor = 1)
     np_tmp = 0
     for i in eachindex(ctr)
         npl = Int(round(ctr[i].w[1] * KS.ps.dx[i] / KS.gas.m))
-        for j = 1:npl
+        for j in 1:npl
             np_tmp += 1
             sample_particle!(ptc[np_tmp], KS, ctr[i], i, KS.ps.x[i], KS.ps.dx[i])
         end
     end
 
     return ptc |> StructArray
-
 end
-
 
 """
 $(SIGNATURES)
 
 Initialize particles with struct of arrays
 """
-function init_ptc_soa!(KS, ctr::AV, factor = 1)
-
+function init_ptc_soa!(KS, ctr::AV, factor=1)
     np = 0
     for i in eachindex(ctr)
         np += round(ctr[i].prim[1] * KS.ps.dx[i] / KS.gas.m) |> Int
@@ -695,7 +657,7 @@ function init_ptc_soa!(KS, ctr::AV, factor = 1)
     # in-cell particles
     for i in eachindex(ctr)
         npl = Int(round(ctr[i].w[1] * KS.ps.dx[i] / KS.gas.m))
-        for j = 1:npl
+        for j in 1:npl
             np_tmp += 1
 
             m[np_tmp] = KS.gas.m
@@ -715,7 +677,7 @@ function init_ptc_soa!(KS, ctr::AV, factor = 1)
     end
 
     # placeholder particles
-    for i = KS.gas.np+1:np
+    for i in KS.gas.np+1:np
         m[i] = KS.gas.m
         x[i] = 0.0
         idx[i] = -7
@@ -728,5 +690,4 @@ function init_ptc_soa!(KS, ctr::AV, factor = 1)
     ptc = Particle(m, x, v, e, idx, ref, flag, tc)
 
     return ptc
-
 end

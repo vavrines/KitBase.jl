@@ -13,12 +13,11 @@ function slerp(pt1::T, pt2::T, n::Integer) where {T<:AV}
     end
 
     omega = acos(dot(pt1, pt2))
-    t = collect(range(0, stop = 1, length = n))
+    t = collect(range(0; stop=1, length=n))
 
     return (sin.((1 .- t) * omega) / sin.(omega))' .* pt1 +
            (sin.(t * omega) / sin.(omega))' .* pt2
 end
-
 
 """
 $(SIGNATURES)
@@ -52,13 +51,11 @@ function unique(Points::AM, Triangles::AM{T}) where {T<:Integer}
     [1 1 1 0 1 1 0]
     """
 
-    for i = 1:nPoints
-        for j = i+1:nPoints
-            dist = sqrt(
-                (Points[1, i] - Points[1, j])^2 +
-                (Points[2, i] - Points[2, j])^2 +
-                (Points[3, i] - Points[3, j])^2,
-            )
+    for i in 1:nPoints
+        for j in i+1:nPoints
+            dist = sqrt((Points[1, i] - Points[1, j])^2 +
+                 (Points[2, i] - Points[2, j])^2 +
+                 (Points[3, i] - Points[3, j])^2,)
             if (dist < 1e-6) # equal points
                 map[j] = min(map[j], i) # take the minimal ID
                 unique[j] = 0 # this point is no longer unique
@@ -80,7 +77,7 @@ function unique(Points::AM, Triangles::AM{T}) where {T<:Integer}
     """
 
     uniqueCounter = 1 # the "real" count
-    for i = 1:nPoints
+    for i in 1:nPoints
         if unique[i] == 1
             map[i] = uniqueCounter
             uniqueCounter += 1
@@ -91,8 +88,8 @@ function unique(Points::AM, Triangles::AM{T}) where {T<:Integer}
 
     # now we go through the triangles and update the IDs
     triangulation = zeros(Int64, 3, nTriangles)
-    for i = 1:nTriangles
-        for j = 1:3
+    for i in 1:nTriangles
+        for j in 1:3
             idx = Triangles[j, i]
             triangulation[j, i] = min(idx, map[idx])
         end
@@ -100,14 +97,14 @@ function unique(Points::AM, Triangles::AM{T}) where {T<:Integer}
 
     # count unique points
     nQuadPoints = 0
-    for i = 1:nPoints
+    for i in 1:nPoints
         nQuadPoints += (unique[i] == 1)
     end
 
     # write unique points to XYZ
     xyz = zeros(Float64, 3, nQuadPoints)
     counter = 1
-    for i = 1:nPoints
+    for i in 1:nPoints
         if unique[i] == 1
             xyz[:, counter] = Points[:, i]
             counter += 1
@@ -117,8 +114,7 @@ function unique(Points::AM, Triangles::AM{T}) where {T<:Integer}
     return xyz, triangulation
 end
 
-
-function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AV}
+function area(A::T, B::T, C::T, geometry=:plane::Symbol) where {T<:AV}
     if geometry == :plane
         alpha = angle(B, A, C)
         lb = norm(B - A)
@@ -138,13 +134,12 @@ function area(A::T, B::T, C::T, geometry = :plane::Symbol) where {T<:AV}
     end
 end
 
-
 """
 $(SIGNATURES)
 
 Args order (B,A,C) isn't a mistake
 """
-function angle(B::T, A::T, C::T, geometry = :plane::Symbol) where {T<:AV}
+function angle(B::T, A::T, C::T, geometry=:plane::Symbol) where {T<:AV}
     if geometry == :plane
         u, v = A - B, C - A
         return acos(dot(u, v) / norm(u, 2) / norm(v, 2))
@@ -167,8 +162,7 @@ function angle(B::T, A::T, C::T, geometry = :plane::Symbol) where {T<:AV}
     end
 end
 
-
-function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV}
+function distance(v1::T, v2::T, geometry=:plane::Symbol) where {T<:AV}
     if geometry == :plane
         return norm(v1 - v2)
     elseif geometry == :sphere
@@ -183,20 +177,18 @@ function distance(v1::T, v2::T, geometry = :plane::Symbol) where {T<:AV}
     end
 end
 
-
 function muphi_xyz!(muphi::T, xyz::T) where {T<:AM}
     n = size(xyz, 1)
-    for i = 1:n
+    for i in 1:n
         xyz[i, 1] = sqrt(1 - muphi[i, 1]^2) * cos(muphi[i, 2])
         xyz[i, 2] = sqrt(1 - muphi[i, 1]^2) * sin(muphi[i, 2])
         xyz[i, 3] = muphi[i, 1]
     end
 end
 
-
 function xyz_muphi!(xyz::T, muphi::T) where {T<:AM}
     n = size(xyz, 1)
-    for i = 1:n
+    for i in 1:n
         muphi[i, 1] = xyz[i, 3]
         muphi[i, 2] = atan(xyz[i, 2], xyz[i, 1])
     end

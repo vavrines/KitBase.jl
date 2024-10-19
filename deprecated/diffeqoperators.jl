@@ -35,16 +35,15 @@ Note that for upwind difference, the coeff = 1/-1 can't take the default value a
 function finite_difference(
     y::AA,
     x::AA,
-    coeff = 1,
-    uL = first(y),
-    uR = last(y);
-    method = :central,
-    dimension = 1,
-    derivative = 1,
-    truncation = 2,
-    bc = :dirichlet,
+    coeff=1,
+    uL=first(y),
+    uR=last(y);
+    method=:central,
+    dimension=1,
+    derivative=1,
+    truncation=2,
+    bc=:dirichlet,
 )
-
     oprtfn = eval(difffn[method])
 
     i0 = firstindex(x)
@@ -69,7 +68,6 @@ function finite_difference(
     end
 
     return Δ * B * y
-
 end
 
 function finite_difference(y, dx::Real, args...; kwargs...)
@@ -80,6 +78,6 @@ end
 # test
 u = Float64[0, 1, 2, 3, 2, 1, 0]
 dx = 1.0
-KitBase.finite_difference(u, dx; method = :central, bc = :period)
-KitBase.finite_difference(u, dx; method = :central, bc = :none)
-KitBase.finite_difference(u, dx, -1; method = :upwind, bc = :none)
+KitBase.finite_difference(u, dx; method=:central, bc=:period)
+KitBase.finite_difference(u, dx; method=:central, bc=:none)
+KitBase.finite_difference(u, dx, -1; method=:upwind, bc=:none)

@@ -12,8 +12,8 @@ function step!(
     dt,
     RES,
     AVG,
-    collision = :bgk::Symbol,
-    isMHD = true::Bool,
+    collision=:bgk::Symbol,
+    isMHD=true::Bool,
 ) where {T<:AbstractSolverSet}
 
     #--- update conservative flow variables: step 1 ---#
@@ -75,7 +75,7 @@ function step!(
             KS.gas.Kn[1],
         )
         mw = mixture_prim_conserve(mprim, KS.gas.γ)
-        for k = 1:2
+        for k in 1:2
             @. cell.w[:, k] += (mw[:, k] - w_old[:, k]) * dt / tau[k]
         end
         cell.prim .= mixture_conserve_prim(cell.w, KS.gas.γ)
@@ -92,7 +92,7 @@ function step!(
     cell.ϕ -= dt * (faceL.femR[7] + faceR.femL[7]) / dx
     cell.ψ -= dt * (faceL.femR[8] + faceR.femL[8]) / dx
 
-    for i = 1:3
+    for i in 1:3
         if 1 ∈ vcat(isnan.(cell.E), isnan.(cell.B))
             @warn "NaN electromagnetic update"
         end
@@ -108,40 +108,28 @@ function step!(
 
     #--- calculate lorenz force ---#
     cell.lorenz[1, 1] =
-        0.5 * (
-            x[1] + cell.E[1] + (cell.prim[3, 1] + x[5]) * cell.B[3] -
-            (cell.prim[4, 1] + x[6]) * cell.B[2]
-        ) / KS.gas.rL
+        0.5 * (x[1] + cell.E[1] + (cell.prim[3, 1] + x[5]) * cell.B[3] -
+         (cell.prim[4, 1] + x[6]) * cell.B[2]) / KS.gas.rL
     cell.lorenz[2, 1] =
-        0.5 * (
-            x[2] + cell.E[2] + (cell.prim[4, 1] + x[6]) * cell.B[1] -
-            (cell.prim[2, 1] + x[4]) * cell.B[3]
-        ) / KS.gas.rL
+        0.5 * (x[2] + cell.E[2] + (cell.prim[4, 1] + x[6]) * cell.B[1] -
+         (cell.prim[2, 1] + x[4]) * cell.B[3]) / KS.gas.rL
     cell.lorenz[3, 1] =
-        0.5 * (
-            x[3] + cell.E[3] + (cell.prim[2, 1] + x[4]) * cell.B[2] -
-            (cell.prim[3, 1] + x[5]) * cell.B[1]
-        ) / KS.gas.rL
+        0.5 * (x[3] + cell.E[3] + (cell.prim[2, 1] + x[4]) * cell.B[2] -
+         (cell.prim[3, 1] + x[5]) * cell.B[1]) / KS.gas.rL
     cell.lorenz[1, 2] =
         -0.5 *
-        (
-            x[1] + cell.E[1] + (cell.prim[3, 2] + x[8]) * cell.B[3] -
-            (cell.prim[4, 2] + x[9]) * cell.B[2]
-        ) *
+        (x[1] + cell.E[1] + (cell.prim[3, 2] + x[8]) * cell.B[3] -
+         (cell.prim[4, 2] + x[9]) * cell.B[2]) *
         mr / KS.gas.rL
     cell.lorenz[2, 2] =
         -0.5 *
-        (
-            x[2] + cell.E[2] + (cell.prim[4, 2] + x[9]) * cell.B[1] -
-            (cell.prim[2, 2] + x[7]) * cell.B[3]
-        ) *
+        (x[2] + cell.E[2] + (cell.prim[4, 2] + x[9]) * cell.B[1] -
+         (cell.prim[2, 2] + x[7]) * cell.B[3]) *
         mr / KS.gas.rL
     cell.lorenz[3, 2] =
         -0.5 *
-        (
-            x[3] + cell.E[3] + (cell.prim[2, 2] + x[7]) * cell.B[2] -
-            (cell.prim[3, 2] + x[8]) * cell.B[1]
-        ) *
+        (x[3] + cell.E[3] + (cell.prim[2, 2] + x[7]) * cell.B[2] -
+         (cell.prim[3, 2] + x[8]) * cell.B[1]) *
         mr / KS.gas.rL
 
     cell.E[1] = x[1]
@@ -231,5 +219,4 @@ function step!(
     #--- record residuals ---#
     @. RES += (w_old - cell.w)^2
     @. AVG += abs(cell.w)
-
 end

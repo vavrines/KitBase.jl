@@ -18,7 +18,6 @@ function flux_equilibrium!(
     swL::T1,
     swR::T1,
 ) where {T1<:AV,T2<:AV} # 1D
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -69,10 +68,8 @@ function flux_equilibrium!(
         gaL = pdf_slope(prim, sw0L, inK)
         gaR = pdf_slope(prim, sw0R, inK)
         sw =
-            -prim[1] .* (
-                moments_conserve_slope(gaL, MuL, Mxi, 1) .+
-                moments_conserve_slope(gaR, MuR, Mxi, 1)
-            )
+            -prim[1] .* (moments_conserve_slope(gaL, MuL, Mxi, 1) .+
+             moments_conserve_slope(gaR, MuR, Mxi, 1))
         # ga = pdf_slope(prim, sw, inK)
         # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mxi, 1)
         gaT = pdf_slope(prim, sw, inK)
@@ -99,7 +96,6 @@ function flux_equilibrium!(
     end
 
     return nothing
-
 end
 
 """
@@ -123,7 +119,6 @@ function flux_equilibrium!(
     swL::T1,
     swR::T1,
 ) where {T1<:AV,T2<:AV}
-
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -171,10 +166,8 @@ function flux_equilibrium!(
     gaL = pdf_slope(prim, sw0L, inK)
     gaR = pdf_slope(prim, sw0R, inK)
     sw =
-        -prim[1] .* (
-            moments_conserve_slope(gaL, MuL, Mv, Mxi, 1, 0) .+
-            moments_conserve_slope(gaR, MuR, Mv, Mxi, 1, 0)
-        )
+        -prim[1] .* (moments_conserve_slope(gaL, MuL, Mv, Mxi, 1, 0) .+
+         moments_conserve_slope(gaR, MuR, Mv, Mxi, 1, 0))
     # ga = pdf_slope(prim, sw, inK)
     # sw = -prim[1] .* moments_conserve_slope(ga, Mu, Mv, Mxi, 1, 0)
     gaT = pdf_slope(prim, sw, inK)
@@ -200,5 +193,4 @@ function flux_equilibrium!(
     # fw .= (Mt[1] .* prim[1] .* Muv .+ Mt[2] .* prim[1] .* Mau .+ Mt[3] .* prim[1] .* MauT) .* dy
 
     return nothing
-
 end

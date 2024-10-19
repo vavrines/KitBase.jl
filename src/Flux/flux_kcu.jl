@@ -16,9 +16,8 @@ function flux_kcu!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume1F}
-
     dxL, dxR = p[1:2]
 
     flux_kcu!(
@@ -39,7 +38,6 @@ function flux_kcu!(
     )
 
     return nothing
-
 end
 
 """
@@ -52,9 +50,8 @@ function flux_kcu!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace1D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume2F}
-
     dxL, dxR = p[1:2]
 
     if gas isa Mixture
@@ -102,7 +99,6 @@ function flux_kcu!(
     end
 
     return nothing
-
 end
 
 """
@@ -115,14 +111,13 @@ function flux_kcu!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace2D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume1F}
-
     dxL, dxR, len, n, dirc = p
-    swL = extract_last(ctrL.sw, dirc; mode = :view)
-    swR = extract_last(ctrR.sw, dirc; mode = :view)
-    sfL = extract_last(ctrL.sf, dirc; mode = :view)
-    sfR = extract_last(ctrR.sf, dirc; mode = :view)
+    swL = extract_last(ctrL.sw, dirc; mode=:view)
+    swR = extract_last(ctrR.sw, dirc; mode=:view)
+    sfL = extract_last(ctrL.sf, dirc; mode=:view)
+    sfR = extract_last(ctrR.sf, dirc; mode=:view)
 
     flux_kcu!(
         face.fw,
@@ -146,7 +141,6 @@ function flux_kcu!(
     face.fw .= global_frame(face.fw, n)
 
     return nothing
-
 end
 
 """
@@ -159,16 +153,15 @@ function flux_kcu!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace2D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume2F}
-
     dxL, dxR, len, n, dirc = p
-    swL = extract_last(ctrL.sw, dirc; mode = :view)
-    swR = extract_last(ctrR.sw, dirc; mode = :view)
-    shL = extract_last(ctrL.sh, dirc; mode = :view)
-    sbL = extract_last(ctrL.sb, dirc; mode = :view)
-    shR = extract_last(ctrR.sh, dirc; mode = :view)
-    sbR = extract_last(ctrR.sb, dirc; mode = :view)
+    swL = extract_last(ctrL.sw, dirc; mode=:view)
+    swR = extract_last(ctrR.sw, dirc; mode=:view)
+    shL = extract_last(ctrL.sh, dirc; mode=:view)
+    sbL = extract_last(ctrL.sb, dirc; mode=:view)
+    shR = extract_last(ctrR.sh, dirc; mode=:view)
+    sbR = extract_last(ctrR.sb, dirc; mode=:view)
 
     flux_kcu!(
         face.fw,
@@ -195,7 +188,6 @@ function flux_kcu!(
     face.fw .= global_frame(face.fw, n)
 
     return nothing
-
 end
 
 """
@@ -208,9 +200,8 @@ function flux_kcu!(
     gas::AbstractProperty,
     vs::AbstractVelocitySpace3D,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume1F}
-
     dxL, dxR = p[1:2]
 
     if length(p) == 2 || p[3] == 1
@@ -233,11 +224,9 @@ function flux_kcu!(
             dt,
         )
     else
-
     end
 
     return nothing
-
 end
 
 # ------------------------------------------------------------
@@ -311,7 +300,6 @@ function flux_kcu!(
     @. ff = Mt[1] * u * g + Mt[2] * u * f
 
     return nothing
-
 end
 
 """
@@ -390,7 +378,6 @@ function flux_kcu!(
     end
 
     return nothing
-
 end
 
 """
@@ -415,7 +402,7 @@ function flux_kcu!(
     visIdx,
     Pr,
     dt,
-    len = 1.0,
+    len=1.0,
 ) where {Y<:AA3,Z<:AV,A<:AA3,B<:AA3} # 1D1F1V
 
     # upwind reconstruction
@@ -466,7 +453,6 @@ function flux_kcu!(
     @. ff = (Mt[1] * uVelo * g + Mt[2] * uVelo * f) * len
 
     return nothing
-
 end
 
 """
@@ -541,7 +527,6 @@ function flux_kcu!(
     @. fb = Mt[1] * u * Mb + Mt[2] * u * b
 
     return nothing
-
 end
 
 """
@@ -633,7 +618,6 @@ function flux_kcu!(
     end
 
     return nothing
-
 end
 
 """
@@ -723,7 +707,6 @@ function flux_kcu!(
     @. fh3 = Mt[1] * u * g3 + Mt[2] * u * h3
 
     return nothing
-
 end
 
 """
@@ -757,7 +740,7 @@ function flux_kcu!(
     ne,
     Kn,
     dt,
-    isMHD = false::Bool,
+    isMHD=false::Bool,
 ) where {Y<:AM,Z<:AM,A<:AM,B<:AM}
 
     #--- upwind reconstruction ---#
@@ -835,7 +818,6 @@ function flux_kcu!(
     end
 
     return nothing
-
 end
 
 """
@@ -906,7 +888,6 @@ function flux_kcu!(
     @. ff = (Mt[1] * u * g + Mt[2] * u * f) * len
 
     return nothing
-
 end
 
 """
@@ -983,7 +964,6 @@ function flux_kcu!(
     @. fb = (Mt[1] * u * B + Mt[2] * u * b) * len
 
     return nothing
-
 end
 
 """
@@ -1068,7 +1048,6 @@ function flux_kcu!(
     @. fh2 = (Mt[1] * u * H2 + Mt[2] * u * h2) * len
 
     return nothing
-
 end
 
 """
@@ -1101,7 +1080,7 @@ function flux_kcu!(
     Kn,
     dt,
     len,
-    isMHD = false::Bool,
+    isMHD=false::Bool,
 ) where {Y<:AA3,Z<:AM,A<:AA3,B<:AA3}
 
     # reconstruct initial distribution
@@ -1164,12 +1143,8 @@ function flux_kcu!(
         fw[5, j] +=
             Mt[2, j] *
             0.5 *
-            (
-                sum(
-                    ω[:, :, j] .* u[:, :, j] .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
-                    h0[:, :, j],
-                ) + sum(ω[:, :, j] .* u[:, :, j] .* h2[:, :, j])
-            )
+            (sum(ω[:, :, j] .* u[:, :, j] .* (u[:, :, j] .^ 2 .+ v[:, :, j] .^ 2) .*
+                 h0[:, :, j],) + sum(ω[:, :, j] .* u[:, :, j] .* h2[:, :, j]))
 
         @. fh0[:, :, j] =
             Mt[1, j] * u[:, :, j] * H0[:, :, j] + Mt[2, j] * u[:, :, j] * h0[:, :, j]
@@ -1185,5 +1160,4 @@ function flux_kcu!(
     @. fh2 *= len
 
     return nothing
-
 end

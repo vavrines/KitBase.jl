@@ -12,7 +12,6 @@ Generic dispatcher
 """
 struct Class{N} end
 
-
 """
 $(TYPEDEF)
 
@@ -22,7 +21,6 @@ Dimension dispatcher
 * `N`: dimension index
 """
 struct Dimension{N} end
-
 
 """
 $(TYPEDEF)

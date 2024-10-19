@@ -8,7 +8,7 @@ $(SIGNATURES)
 
 Upwind flux
 """
-function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AV}
+function flux_upwind(uL, uR, Ω::T, n::T, dt=1.0) where {T<:AV}
     ip = dot(Ω, n)
 
     if ip > 0
@@ -17,7 +17,6 @@ function flux_upwind(uL, uR, Ω::T, n::T, dt = 1.0) where {T<:AV}
         return dt * ip * uR
     end
 end
-
 
 """
 $(SIGNATURES)
@@ -32,13 +31,12 @@ function flux_lax!(fw::AV, wL::T, wR::T, γ, dt, dx) where {T<:AV}
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
 HLL flux
 """
-function flux_hll!(fw::AV, wL::T, wR::T, γ, dt, len = 1.0) where {T<:AV}
+function flux_hll!(fw::AV, wL::T, wR::T, γ, dt, len=1.0) where {T<:AV}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -75,9 +73,8 @@ function flux_hll!(
     ctrR::T,
     gas::Gas,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume}
-
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
@@ -98,16 +95,14 @@ function flux_hll!(
     end
 
     return nothing
-
 end
-
 
 """
 $(SIGNATURES)
 
 HLLC flux
 """
-function flux_hllc!(fw, wL::T, wR::T, γ, dt, len = 1.0) where {T}
+function flux_hllc!(fw, wL::T, wR::T, γ, dt, len=1.0) where {T}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -179,9 +174,8 @@ function flux_hllc!(
     ctrR::T,
     gas::Gas,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume}
-
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
@@ -202,7 +196,6 @@ function flux_hllc!(
     end
 
     return nothing
-
 end
 
 function hllc_var(d1, u1, p1, s1, star1, γ)
@@ -233,7 +226,6 @@ function hllc_var(prim, p, s, star, γ)
     end
 end
 
-
 """
 $(SIGNATURES)
 
@@ -254,9 +246,8 @@ function flux_roe!(
     ctrR::T,
     gas::Gas,
     p,
-    dt = 1.0,
+    dt=1.0,
 ) where {T<:ControlVolume}
-
     dxL, dxR = p[1:2]
 
     if size(ctrL.w, 1) == 3
@@ -265,7 +256,6 @@ function flux_roe!(
     end
 
     return nothing
-
 end
 
 """
@@ -274,8 +264,7 @@ $(SIGNATURES)
 ## Arguments
 * `n`: unit face normal (L -> R)
 """
-function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs = 1.0, n = [1.0, 0.0]) where {T<:AV}
-
+function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs=1.0, n=[1.0, 0.0]) where {T<:AV}
     primL = conserve_prim(wL, γ)
     primR = conserve_prim(wR, γ)
 
@@ -345,7 +334,7 @@ function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs = 1.0, n = [1.0, 0.0]) wher
         fw .= 0.5 .* (euler_flux(wL, γ)[1] + euler_flux(wR, γ)[1])
 
         # add matrix dissipation term to complete Roe flux
-        for j = 1:3, k = 1:3
+        for j in 1:3, k in 1:3
             fw[j] -= 0.5 * ws[k] * dV[k] * R[j, k]
         end
 
@@ -440,7 +429,7 @@ function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs = 1.0, n = [1.0, 0.0]) wher
 
         # dissipation term
         diss = zeros(4)
-        for i = 1:4, j = 1:4
+        for i in 1:4, j in 1:4
             diss[i] += ws[j] * LdU[j] * Rv[i, j]
         end
 
@@ -459,9 +448,7 @@ function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs = 1.0, n = [1.0, 0.0]) wher
         ]
 
         @. fw = 0.5 * dt * (fL + fR - diss) * δs
-
     end
 
     return nothing
-
 end

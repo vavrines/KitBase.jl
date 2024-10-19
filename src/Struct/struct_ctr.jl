@@ -29,7 +29,7 @@ function ControlVolume(w, prim, sw, a)
 end
 
 function Base.show(io::IO, ctr::ControlVolume{A,B,C,D,N}) where {A,B,C,D,N}
-    print(
+    return print(
         io,
         "ControlVolume$(N)D{$A,$B,$C}\n",
         "conservative vars: $(ctr.w)\n",
@@ -38,7 +38,6 @@ function Base.show(io::IO, ctr::ControlVolume{A,B,C,D,N}) where {A,B,C,D,N}
         "auxiliary field: $(ctr.a)\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -71,7 +70,7 @@ function ControlVolume1F(w, prim, sw, f, sf, a)
 end
 
 function Base.show(io::IO, ctr::ControlVolume1F{A,B,C,D,E,N}) where {A,B,C,D,E,N}
-    print(
+    return print(
         io,
         "ControlVolume$(N)D1F{$A,$B,$C,$D}\n",
         "conservative vars: $(ctr.w)\n",
@@ -82,7 +81,6 @@ function Base.show(io::IO, ctr::ControlVolume1F{A,B,C,D,E,N}) where {A,B,C,D,E,N
         "auxiliary field: $(ctr.a)\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -119,7 +117,7 @@ function ControlVolume2F(w, prim, sw, h, b, sh, sb, a)
 end
 
 function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,E,N}) where {A,B,C,D,E,N}
-    print(
+    return print(
         io,
         "ControlVolume$(N)D2F{$A,$B,$C,$D}\n",
         "conservative vars: $(ctr.w)\n",
@@ -131,18 +129,16 @@ function Base.show(io::IO, ctr::ControlVolume2F{A,B,C,D,E,N}) where {A,B,C,D,E,N
     )
 end
 
-
 struct ControlVolume3F{T1,T2,T3,T4,ND} <: AbstractControlVolume end
 
 struct ControlVolume4F{T1,T2,T3,T4,ND} <: AbstractControlVolume end
-
 
 """
 $(SIGNATURES)
 
 Construct control volume...
 """
-function ControlVolume(W, PRIM, ND::Integer; auxiliary = false::Bool)
+function ControlVolume(W, PRIM, ND::Integer; auxiliary=false::Bool)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = begin
@@ -170,7 +166,7 @@ end
 """
 $(SIGNATURES)
 """
-function ControlVolume(W, PRIM, F, ND::Integer; auxiliary = false::Bool)
+function ControlVolume(W, PRIM, F, ND::Integer; auxiliary=false::Bool)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     f = deepcopy(F)
@@ -206,7 +202,7 @@ end
 """
 $(SIGNATURES)
 """
-function ControlVolume(W, PRIM, H, B, ND::Integer; auxiliary = false::Bool)
+function ControlVolume(W, PRIM, H, B, ND::Integer; auxiliary=false::Bool)
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     h = deepcopy(H)
@@ -272,7 +268,7 @@ function ControlVolume1D(W, PRIM)
 end
 
 function Base.show(io::IO, ctr::ControlVolume1D{A,B}) where {A,B}
-    print(
+    return print(
         io,
         "ControlVolume1D{$A,$B}\n",
         "conservative vars: $(ctr.w)\n",
@@ -280,7 +276,6 @@ function Base.show(io::IO, ctr::ControlVolume1D{A,B}) where {A,B}
         "conservative slopes: $(ctr.sw)\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -312,7 +307,7 @@ function ControlVolume1D1F(W::T, PRIM::T, F) where {T}
 end
 
 function Base.show(io::IO, ctr::ControlVolume1D1F{A,B}) where {A,B}
-    print(
+    return print(
         io,
         "ControlVolume1D1F{$A,$B}\n",
         "conservative vars: $(ctr.w)\n",
@@ -322,7 +317,6 @@ function Base.show(io::IO, ctr::ControlVolume1D1F{A,B}) where {A,B}
         "pdf slopes: sf\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -358,7 +352,7 @@ function ControlVolume1D2F(W::T1, PRIM::T1, H::T2, B::T2) where {T1<:AA,T2<:AA}
 end
 
 function Base.show(io::IO, ctr::ControlVolume1D2F{A,B}) where {A,B}
-    print(
+    return print(
         io,
         "ControlVolume1D2F{$A,$B}\n",
         "conservative vars: $(ctr.w)\n",
@@ -368,7 +362,6 @@ function Base.show(io::IO, ctr::ControlVolume1D2F{A,B}) where {A,B}
         "pdf slopes: sh, sb\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -534,7 +527,7 @@ function ControlVolume1D3F(
 end
 
 function Base.show(io::IO, ctr::ControlVolume1D3F{A,B,C,D,E}) where {A,B,C,D,E}
-    print(
+    return print(
         io,
         "ControlVolume1D3F{$A,$B,$C,$D,$E}\n",
         "conservative vars: $(ctr.w)\n",
@@ -547,7 +540,6 @@ function Base.show(io::IO, ctr::ControlVolume1D3F{A,B,C,D,E}) where {A,B,C,D,E}
         "Lorenz force: $(ctr.lorenz)\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -591,7 +583,6 @@ function ControlVolume1D4F(
     B0::AA{Float64,1},
     L::AA{Float64,2},
 )
-
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = zero(W)
@@ -629,7 +620,6 @@ function ControlVolume1D4F(
         ψ,
         lorenz,
     )
-
 end
 
 #--- uncertainty quantification ---#
@@ -644,7 +634,6 @@ function ControlVolume1D4F(
     B0::AA{Float64,2},
     L::AA{Float64,3},
 )
-
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     sw = zero(W)
@@ -682,11 +671,10 @@ function ControlVolume1D4F(
         ψ,
         lorenz,
     )
-
 end
 
 function Base.show(io::IO, ctr::ControlVolume1D4F{A,B,C,D,E}) where {A,B,C,D,E}
-    print(
+    return print(
         io,
         "ControlVolume1D4F{$A,$B,$C,$D,$E}\n",
         "conservative vars: $(ctr.w)\n",
@@ -729,7 +717,7 @@ function ControlVolume2D(W, PRIM)
 end
 
 function Base.show(io::IO, ctr::ControlVolume2D{A,B}) where {A,B}
-    print(
+    return print(
         io,
         "ControlVolume2D{$A,$B}\n",
         "conservative vars: $(ctr.w)\n",
@@ -737,7 +725,6 @@ function Base.show(io::IO, ctr::ControlVolume2D{A,B}) where {A,B}
         "conservative slopes: $(ctr.sw)\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -771,7 +758,7 @@ function ControlVolume2D1F(W, PRIM, F::AA)
 end
 
 function Base.show(io::IO, ctr::ControlVolume2D1F{A,B,C,D}) where {A,B,C,D}
-    print(
+    return print(
         io,
         "ControlVolume2D1F{$A,$B,$C,$D}\n",
         "conservative vars: $(ctr.w)\n",
@@ -781,7 +768,6 @@ function Base.show(io::IO, ctr::ControlVolume2D1F{A,B,C,D}) where {A,B,C,D}
         "pdf slopes: sf\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -828,7 +814,7 @@ function ControlVolume2D2F(W::AA, PRIM::AA, H::AA, B::AA)
 end
 
 function Base.show(io::IO, ctr::ControlVolume2D2F{A,B,C,D}) where {A,B,C,D}
-    print(
+    return print(
         io,
         "ControlVolume2D2F{$A,$B,$C,$D}\n",
         "conservative vars: $(ctr.w)\n",
@@ -838,7 +824,6 @@ function Base.show(io::IO, ctr::ControlVolume2D2F{A,B,C,D}) where {A,B,C,D}
         "pdf slopes: sh, sb\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -925,7 +910,6 @@ function ControlVolume2D3F(
     H1::AA{<:FN,2},
     H2::AA{<:FN,2},
 )
-
     w = deepcopy(W)
     prim = deepcopy(PRIM)
     #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2))) # 2D
@@ -971,14 +955,13 @@ function ControlVolume2D3F(
         ψ,
         lorenz,
     )
-
 end
 
 function Base.show(
     io::IO,
     ctr::ControlVolume2D3F{T1,T2,T3,T4,T5,T6,T7},
 ) where {T1,T2,T3,T4,T5,T6,T7}
-    print(
+    return print(
         io,
         "ControlVolume2D3F{$T1,$T2,$T3,$T4,$T5,$T6,$T7}\n",
         "conservative vars: $(ctr.w)\n",
@@ -991,7 +974,6 @@ function Base.show(
         "Lorenz force: $(ctr.lorenz)\n",
     )
 end
-
 
 # ------------------------------------------------------------
 # Unstructured cell
@@ -1026,8 +1008,8 @@ function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AV}}
     #sw = zeros(eltype(W), axes(W)..., length(N[1]))
     sw = ifelse(
         length(N[1]) == 2,
-        slope_array(W; reduction = true),
-        slope_array(W; reduction = false),
+        slope_array(W; reduction=true),
+        slope_array(W; reduction=false),
     )
 
     return ControlVolumeUS{typeof(n),typeof(x),typeof(w),typeof(prim),typeof(sw)}(
@@ -1039,7 +1021,6 @@ function ControlVolumeUS(N, X::T, DX::T, W, PRIM) where {T<:Union{Real,AV}}
         sw,
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -1073,16 +1054,16 @@ function ControlVolumeUS1F(N, X, DX, W, PRIM, F::AA{T}) where {T}
     #sw = zeros(eltype(W), axes(W)..., length(N[1]))
     sw = ifelse(
         length(N[1]) == 2,
-        slope_array(W; reduction = true),
-        slope_array(W; reduction = false),
+        slope_array(W; reduction=true),
+        slope_array(W; reduction=false),
     )
 
     f = deepcopy(F)
     #sf = zeros(eltype(F), axes(F)..., length(N[1]))
     sf = ifelse(
         length(N[1]) == 2,
-        slope_array(F; reduction = true),
-        slope_array(F; reduction = false),
+        slope_array(F; reduction=true),
+        slope_array(F; reduction=false),
     )
 
     return ControlVolumeUS1F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(f),typeof(sf)}(
@@ -1096,7 +1077,6 @@ function ControlVolumeUS1F(N, X, DX, W, PRIM, F::AA{T}) where {T}
         sf,
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -1132,8 +1112,8 @@ function ControlVolumeUS2F(N, X, DX, W::T1, PRIM::T1, H::T2, B::T2) where {T1<:A
     #sw = zeros(eltype(W), axes(W)..., length(N[1]))
     sw = ifelse(
         length(N[1]) == 2,
-        slope_array(W; reduction = true),
-        slope_array(W; reduction = false),
+        slope_array(W; reduction=true),
+        slope_array(W; reduction=false),
     )
 
     h = deepcopy(H)
@@ -1142,13 +1122,13 @@ function ControlVolumeUS2F(N, X, DX, W::T1, PRIM::T1, H::T2, B::T2) where {T1<:A
     #sb = zeros(eltype(B), axes(B)..., length(N[1]))
     sh = ifelse(
         length(N[1]) == 2,
-        slope_array(H; reduction = true),
-        slope_array(H; reduction = false),
+        slope_array(H; reduction=true),
+        slope_array(H; reduction=false),
     )
     sb = ifelse(
         length(N[1]) == 2,
-        slope_array(B; reduction = true),
-        slope_array(B; reduction = false),
+        slope_array(B; reduction=true),
+        slope_array(B; reduction=false),
     )
 
     return ControlVolumeUS2F{typeof(n),typeof(x),typeof(w),typeof(sw),typeof(h),typeof(sh)}(

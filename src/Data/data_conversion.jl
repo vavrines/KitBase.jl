@@ -6,7 +6,6 @@ Generalized surrogate function of `Symbol`
 symbolize(x::AbstractString) = Symbol(x)
 symbolize(x::AA{T}) where {T<:AbstractString} = [symbolize(y) for y in x]
 
-
 """
 $(SIGNATURES)
 
@@ -85,7 +84,6 @@ function static_array(x::AA{T,4}) where {T}
     return y
 end
 
-
 """
 $(SIGNATURES)
 
@@ -98,14 +96,12 @@ $(SIGNATURES)
 """
 dynamic_array(x::StaticArray) = Array(x)
 
-
 """
 $(SIGNATURES)
 
 Transform dictionary to named tuple
 """
 dict_ntuple(d) = (; d...)
-
 
 """
 $(SIGNATURES)

@@ -38,7 +38,6 @@ function extract_sol(ps::AbstractPhysicalSpace2D, ctr)
     return sol
 end
 
-
 """
 $(SIGNATURES)
 

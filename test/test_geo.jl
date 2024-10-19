@@ -65,8 +65,8 @@ KB.meshgrid(x)
 KB.meshgrid(x, y)
 KB.meshgrid(x, y, z)
 
-KB.find_idx(randn(20), 0.13, mode = :uniform)
-KB.find_idx(randn(20), 0.13, mode = :nonuniform)
+KB.find_idx(randn(20), 0.13; mode=:uniform)
+KB.find_idx(randn(20), 0.13; mode=:nonuniform)
 
 #--- unstructure mesh ---#
 cd(@__DIR__)
@@ -90,7 +90,7 @@ flags[:, ps.ny+1] .= -1
 KB.ghost_flag!(ps, flags)
 
 ghost_ids = findall(flags .== -2)
-xbis = [Vector{Float64}(undef, 2) for iter = 1:length(ghost_ids)]
+xbis = [Vector{Float64}(undef, 2) for iter in 1:length(ghost_ids)]
 nbis = zero.(xbis)
 for iter in axes(xbis, 1)
     idx = ghost_ids[iter]

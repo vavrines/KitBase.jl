@@ -9,7 +9,6 @@ function ib_rh(
     vs::Union{AbstractVelocitySpace,Nothing},
     gas::AbstractProperty,
 )
-
     gam = gas.γ
     MaL = gas.Ma
     MaR = sqrt((MaL^2 * (gam - 1.0) + 2.0) / (2.0 * gam * MaL^2 - (gam - 1.0)))
@@ -17,10 +16,9 @@ function ib_rh(
         (1.0 + (gam - 1.0) / 2.0 * MaL^2) * (2.0 * gam / (gam - 1.0) * MaL^2 - 1.0) /
         (MaL^2 * (2.0 * gam / (gam - 1.0) + (gam - 1.0) / 2.0))
 
-    p = (x0 = ps.x0, x1 = ps.x1, u = vs.u, γ = gas.γ, K = gas.K)
+    p = (x0=ps.x0, x1=ps.x1, u=vs.u, γ=gas.γ, K=gas.K)
 
     if set.nSpecies == 1
-
         primL = [1.0, MaL * sqrt(gam / 2.0), 1.0]
         primR = [
             primL[1] * (gam + 1.0) * MaL^2 / ((gam - 1.0) * MaL^2 + 2.0),
@@ -34,7 +32,7 @@ function ib_rh(
         wL = prim_conserve(primL, gam)
         wR = prim_conserve(primR, gam)
 
-        p = (p..., wL = wL, wR = wR, primL = primL, primR = primR)
+        p = (p..., wL=wL, wR=wR, primL=primL, primR=primR)
 
         fw = function (x, p)
             if x <= (p.x0 + p.x1) / 2
@@ -74,7 +72,7 @@ function ib_rh(
 
             return fw, ff, bc, p
         elseif set.space == "1d1f3v"
-            p = (p..., v = vs.v, w = vs.w)
+            p = (p..., v=vs.v, w=vs.w)
             ff = function (x, p)
                 w = ifelse(x <= (p.x0 + p.x1) / 2, p.wL, p.wR)
                 prim = conserve_prim(w, p.γ)
@@ -86,7 +84,6 @@ function ib_rh(
         end
 
     elseif set.nSpecies == 2
-
         mi, me = gas.mi, gas.me
         ni, ne = gas.ni, gas.ne
 
@@ -95,7 +92,7 @@ function ib_rh(
         primL[:, 2] .= [me, MaL * sqrt(gam / 2.0 / (mi * ni + me * ne)), me / 1.0]
 
         primR = zeros(3, 2)
-        for j = 1:2
+        for j in 1:2
             primR[1, j] = primL[1, j] * (gam + 1.0) * MaL^2 / ((gam - 1.0) * MaL^2 + 2.0)
             primR[2, j] = MaR * sqrt(gam / 2.0 / (mi * ni + me * ne)) * sqrt(ratioT)
             primR[3, j] = primL[3, j] / ratioT
@@ -104,7 +101,7 @@ function ib_rh(
         wL = mixture_prim_conserve(primL, gam)
         wR = mixture_prim_conserve(primR, gam)
 
-        p = (p..., wL = wL, wR = wR, primL = primL, primR = primR)
+        p = (p..., wL=wL, wR=wR, primL=primL, primR=primR)
 
         fw = function (x, p)
             if x <= (p.x0 + p.x1) / 2
@@ -127,12 +124,12 @@ function ib_rh(
             hR = mixture_maxwellian(vs.u, primR)
             bL = similar(hL)
             bR = similar(hR)
-            for j = 1:2
+            for j in 1:2
                 bL[:, j] .= hL[:, j] .* gas.K ./ (2.0 .* primL[end, j])
                 bR[:, j] .= hR[:, j] .* gas.K ./ (2.0 .* primR[end, j])
             end
 
-            p = (p..., hL = hL, bL = bL, hR = hR, bR = bR, K = gas.K)
+            p = (p..., hL=hL, bL=bL, hR=hR, bR=bR, K=gas.K)
 
             ff = function (x, p)
                 if x <= (ps.x0 + ps.x1) / 2
@@ -144,11 +141,9 @@ function ib_rh(
 
             return fw, ff, bc, p
         end
-
     end
 
     return nothing
-
 end
 
 """

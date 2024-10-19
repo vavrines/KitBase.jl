@@ -14,14 +14,14 @@ using KitBase, CSV, DataFrames
 
 cd(@__DIR__)
 
-set = (ni = 65, nj = 37, nk = 41, xc = [2.0, 0.0, 0.0])
+set = (ni=65, nj=37, nk=41, xc=[2.0, 0.0, 0.0])
 
 function point_coords(df)
     ni, nj, nk = set.ni, set.nj, set.nk
     x = reshape(collect(df.x), ni, nj, nk)
     y = reshape(collect(df.y), ni, nj, nk)
     z = reshape(collect(df.z), ni, nj, nk)
-    points = cat(x, y, z, dims = 4)
+    points = cat(x, y, z; dims=4)
 
     return points
 end
@@ -43,7 +43,7 @@ function physical_space(points)
     x0, y0, z0 = minimum(points[:, :, :, 1]),
     minimum(points[:, :, :, 2]),
     minimum(points[:, :, :, 3])
-    x1, y1, z1 = maximum(points[:, :, :, 1]),
+    return x1, y1, z1 = maximum(points[:, :, :, 1]),
     maximum(points[:, :, :, 2]),
     maximum(points[:, :, :, 3])
 end
@@ -61,6 +61,6 @@ z = zero(x)
 dx = zero(x)
 dy = zero(x)
 dz = zero(x)
-for i = 1:ni, j = 1:nj, k = 1:nk
+for i in 1:ni, j in 1:nj, k in 1:nk
     x[i, j, k] = points[i, j, k, 1]
 end

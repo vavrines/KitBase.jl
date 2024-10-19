@@ -38,19 +38,19 @@ julia> polylog(0.35, 0.2)
 function polylog(
     s::Number,
     z::Number;
-    level = 1, # keep track of recursion
-    accuracy::Float64 = default_accuracy,
-    min_iterations::Integer = 0,
-    max_iterations::Integer = default_max_iterations,
+    level=1, # keep track of recursion
+    accuracy::Float64=default_accuracy,
+    min_iterations::Integer=0,
+    max_iterations::Integer=default_max_iterations,
 )
     return polylog(
         s,
         z,
         Diagnostics();
-        level = level,
-        accuracy = accuracy,
-        min_iterations = min_iterations,
-        max_iterations = max_iterations,
+        level=level,
+        accuracy=accuracy,
+        min_iterations=min_iterations,
+        max_iterations=max_iterations,
     ) |> first # first is the result
 end
 
@@ -86,10 +86,10 @@ function polylog(
     s::Number,
     z::Number,
     ::Diagnostics;
-    level = 1, # keep track of recursion
-    accuracy::Float64 = default_accuracy,
-    min_iterations::Integer = 0,
-    max_iterations::Integer = default_max_iterations,
+    level=1, # keep track of recursion
+    accuracy::Float64=default_accuracy,
+    min_iterations::Integer=0,
+    max_iterations::Integer=default_max_iterations,
 )
     tau_threshold = 1.0e-3
     μ = log(convert(Complex{Float64}, z)) # input z could be an integer or anything
@@ -107,39 +107,38 @@ function polylog(
         return polylog_series_1(
             s,
             z;
-            accuracy = accuracy,
-            min_iterations = min_iterations,
-            max_iterations = max_iterations,
+            accuracy=accuracy,
+            min_iterations=min_iterations,
+            max_iterations=max_iterations,
         )
     elseif t <= T && (abs(round(real(s)) - s) > tau_threshold || real(s) <= 0)
         return polylog_series_2(
             s,
             z;
-            accuracy = accuracy,
-            min_iterations = min_iterations,
-            max_iterations = max_iterations,
+            accuracy=accuracy,
+            min_iterations=min_iterations,
+            max_iterations=max_iterations,
         )
     elseif t <= T
         return polylog_series_3(
             s,
             z;
-            accuracy = accuracy,
-            min_iterations = min_iterations,
-            max_iterations = max_iterations,
+            accuracy=accuracy,
+            min_iterations=min_iterations,
+            max_iterations=max_iterations,
         )
     else
         return polylog_duplication(
             s,
             z;
-            level = level,
-            accuracy = accuracy,
-            min_iterations = min_iterations,
-            max_iterations = max_iterations,
+            level=level,
+            accuracy=accuracy,
+            min_iterations=min_iterations,
+            max_iterations=max_iterations,
         )
     end
     # we could have a lot more special cases here, particularly for integer input to make the code faster for these cases
 end
-
 
 """
 $(SIGNATURES)
@@ -149,10 +148,10 @@ calculate using the duplication formula
 function polylog_duplication(
     s::Number,
     z::Number;
-    level = 0, # keep track of recursion
-    accuracy::Float64 = default_accuracy,
-    min_iterations::Integer = 0,
-    max_iterations::Integer = default_max_iterations,
+    level=0, # keep track of recursion
+    accuracy::Float64=default_accuracy,
+    min_iterations::Integer=0,
+    max_iterations::Integer=default_max_iterations,
 )
     z = convert(Complex{Float64}, z)
     f = min(0.5, 2.0^(1 - real(s)))
@@ -161,19 +160,19 @@ function polylog_duplication(
         s,
         sqrt(z),
         Diagnostics();
-        level = level + 1,
-        accuracy = f * accuracy,
-        min_iterations = min_iterations,
-        max_iterations = max_iterations,
+        level=level + 1,
+        accuracy=f * accuracy,
+        min_iterations=min_iterations,
+        max_iterations=max_iterations,
     )
     (Li2, k2, series2) = polylog(
         s,
         -sqrt(z),
         Diagnostics();
-        level = level + 1,
-        accuracy = f * accuracy,
-        min_iterations = min_iterations,
-        max_iterations = max_iterations,
+        level=level + 1,
+        accuracy=f * accuracy,
+        min_iterations=min_iterations,
+        max_iterations=max_iterations,
     )
     if typeof(s) <: Real
         s = convert(Float64, s) # convert s into a double
@@ -183,7 +182,6 @@ function polylog_duplication(
     return (2^(s - 1) * (Li1 + Li2), k1 + k2, 10 + series1 + series2)
 end
 
-
 """
 $(SIGNATURES)
 
@@ -192,10 +190,10 @@ Calculate using direct definition
 function polylog_series_1(
     s::Number,
     z::Number;
-    accuracy::Float64 = default_accuracy,
-    min_iterations::Integer = 0,
-    max_iterations::Integer = default_max_iterations,
-    existing_total::Number = 0.0,
+    accuracy::Float64=default_accuracy,
+    min_iterations::Integer=0,
+    max_iterations::Integer=default_max_iterations,
+    existing_total::Number=0.0,
 )
     # prolly should convert z to a double or complex-double
     if abs(z) > 1 || (abs(z) ≈ 1 && real(s) <= 2)
@@ -223,7 +221,6 @@ function polylog_series_1(
     return (total, k, 1)
 end
 
-
 """
 $(SIGNATURES)
 
@@ -234,9 +231,9 @@ This should not be used near positive integer values of s.
 function polylog_series_2(
     s::Number,
     z::Number;
-    accuracy::Float64 = default_accuracy,
-    min_iterations::Integer = 0,
-    max_iterations::Integer = default_max_iterations,
+    accuracy::Float64=default_accuracy,
+    min_iterations::Integer=0,
+    max_iterations::Integer=default_max_iterations,
 )
     μ = log(convert(Complex{Float64}, z)) # input z could be an integer or anything
     if typeof(s) <: Real
@@ -300,7 +297,7 @@ function c_closed(n::Integer, j::Integer, ℒ::Number)
     end
 end
 
-function Q_closed(n::Integer, τ::Number, ℒ::Number; n_terms::Integer = 3)
+function Q_closed(n::Integer, τ::Number, ℒ::Number; n_terms::Integer=3)
     # τ is the distance from the pole s=n>0, ℒ = log(-μ) = log(-log( z ))
     max_n_terms = 3
     if n_terms < 1 || n_terms > max_n_terms
@@ -309,7 +306,7 @@ function Q_closed(n::Integer, τ::Number, ℒ::Number; n_terms::Integer = 3)
     return sum(c_closed.(n, 0:n_terms-1, ℒ) .* τ .^ (0:n_terms-1))
 end
 
-function Q(n::Integer, τ::Number, ℒ::Number; n_terms::Integer = 5) # Crandall,2012, p.35
+function Q(n::Integer, τ::Number, ℒ::Number; n_terms::Integer=5) # Crandall,2012, p.35
     # τ is the distance from the pole s=n>0, ℒ = log(-μ) = log(-log( z ))
     if abs(τ) <= 1.0e-14
         # if really close to the integer, then ignore the extra terms
@@ -321,12 +318,11 @@ function Q(n::Integer, τ::Number, ℒ::Number; n_terms::Integer = 5) # Crandall
         end
         if n_terms <= 3
             # use the direct method in this case
-            return Q_closed(n, τ, ℒ; n_terms = n_terms)
+            return Q_closed(n, τ, ℒ; n_terms=n_terms)
         end
         return sum(c_crandall.(n, 0:n_terms-1, ℒ) .* τ .^ (0:n_terms-1))
     end
 end
-
 
 """
 $(SIGNATURES)
@@ -344,8 +340,8 @@ Crandall, 2012, p.36
 """
 function b_crandall(k::Integer, j::Integer, ℒ)
     total = 0
-    for q = 0:j
-        for t = 0:j-q
+    for q in 0:j
+        for t in 0:j-q
             p = j - q - t
             a1 = ℒ^p / SpecialFunctions.gamma(p + 1)
             a2 = (-1)^t * f_crandall(k, q) # Bailey and Borwein, 2015 correct Crandall (t+q - > t)
@@ -409,7 +405,6 @@ function f_crandall(k::Integer, q::Integer)
     end
 end
 
-
 """
 $(SIGNATURES)
 
@@ -419,10 +414,10 @@ Calculate in a power series around `z=1`, and `s=n`
 function polylog_series_3(
     s::Number,
     z::Number;
-    accuracy::Float64 = default_accuracy,
-    min_iterations::Integer = 0,
-    max_iterations::Integer = default_max_iterations,
-    n_terms::Integer = 5,
+    accuracy::Float64=default_accuracy,
+    min_iterations::Integer=0,
+    max_iterations::Integer=default_max_iterations,
+    n_terms::Integer=5,
 )
     μ = log(convert(Complex{Float64}, z))
     if abs(μ) > 2π
@@ -439,10 +434,8 @@ function polylog_series_3(
     # end
     ℒ = log(complex(-μ))  # '\u2112'
     # total = μ^(n-1)*Q(n-1, τ, ℒ; n_terms=n_terms)/SpecialFunctions.gamma(n)
-    total = exp(
-        (n - 1) * log(μ) + log(Q(n - 1, τ, ℒ; n_terms = n_terms)) -
-        SpecialFunctions.loggamma(n),
-    )
+    total = exp((n - 1) * log(μ) + log(Q(n - 1, τ, ℒ; n_terms=n_terms)) -
+        SpecialFunctions.loggamma(n),)
     converged = false
     a = Inf
     a_2 = Inf
@@ -471,7 +464,6 @@ function polylog_series_3(
     return (total, k, 3)
 end
 
-
 """
 $(SIGNATURES)
 
@@ -494,7 +486,7 @@ function harmonic(n::Integer)
     elseif n <= 10
         # perform exact sum for small n
         total = 0.0
-        for k = 1:n
+        for k in 1:n
             total += 1.0 / k
         end
         return total
@@ -546,12 +538,11 @@ function harmonic(n::Integer, r::Real)
         return harmonic(n)
     end
     total = 0.0
-    for k = 1:n
+    for k in 1:n
         total += 1.0 / k^r
     end
     return total
 end
-
 
 """
 $(SIGNATURES)
@@ -574,11 +565,9 @@ function harmonic(n::Integer, r::Integer)
     if r < 1
         throw(DomainError(r))
     end
-    return (-1)^(r - 1) * (
-        SpecialFunctions.polygamma(r - 1, n + 1) - SpecialFunctions.polygamma(r - 1, 1)
-    ) / SpecialFunctions.gamma(r)
+    return (-1)^(r - 1) * (SpecialFunctions.polygamma(r - 1, n + 1) -
+            SpecialFunctions.polygamma(r - 1, 1)) / SpecialFunctions.gamma(r)
 end
-
 
 const stieltjes_n = [
     Base.MathConstants.γ,

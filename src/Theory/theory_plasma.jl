@@ -4,7 +4,6 @@ $(SIGNATURES)
 Calculate electromagnetic coeffcients in hyperbolic Maxwell's equations
 """
 function em_coefficients(prim::AM, E::AV, B::AV, mr, lD, rL, dt)
-
     if eltype(prim) <: Int
         A = zeros(9, 9)
         b = zeros(9)
@@ -81,5 +80,4 @@ function em_coefficients(prim::AM, E::AV, B::AV, mr, lD, rL, dt)
         prim[1, 2] * prim[4, 2] * mr / (2.0 * rL * lD^2)
 
     return A, b
-
 end

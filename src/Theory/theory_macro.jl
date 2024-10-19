@@ -68,7 +68,6 @@ function prim_conserve!(W::AV, prim::AV, γ, Kr)
     return W
 end
 
-
 """
 $(SIGNATURES)
 
@@ -116,7 +115,6 @@ function prim_conserve(prim::AV, γ, Kr)
     return W
 end
 
-
 """
 $(SIGNATURES)
 
@@ -146,7 +144,6 @@ function mixture_prim_conserve!(w, prim::AM, γ, Kr)
 
     return w
 end
-
 
 """
 $(SIGNATURES)
@@ -179,7 +176,6 @@ function mixture_prim_conserve(prim::AM, γ, Kr)
 
     return w
 end
-
 
 """
 $(SIGNATURES)
@@ -249,7 +245,6 @@ function conserve_prim!(prim, w::AV, K, Kr)
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
@@ -311,7 +306,6 @@ function conserve_prim(w::AV, K, Kr)
     return prim
 end
 
-
 """
 $(SIGNATURES)
 
@@ -341,7 +335,6 @@ function mixture_conserve_prim!(prim, W::AM, K, Kr)
 
     return nothing
 end
-
 
 """
 $(SIGNATURES)
@@ -375,7 +368,6 @@ function mixture_conserve_prim(W::AM, K, Kr)
     return prim
 end
 
-
 """
 $(SIGNATURES)
 
@@ -406,7 +398,6 @@ function heat_capacity_ratio(K, Nr, D::Integer)
     end
 end
 
-
 """
 $(SIGNATURES)
 
@@ -421,7 +412,6 @@ function internal_dof(γ, D::Integer)
         return (5 - 3 * γ) / (γ - 1)
     end
 end
-
 
 """
 $(SIGNATURES)
@@ -449,7 +439,6 @@ function sound_speed(prim::AM, γ)
     return maximum(c)
 end
 
-
 """
 $(SIGNATURES)
 
@@ -470,14 +459,12 @@ Maxwell Boltzmann entropy
 """
 maxwell_boltzmann(f) = f * log(f) - f
 
-
 """
 $(SIGNATURES)
 
 Prim of Maxwell Boltzmann entropy
 """
 maxwell_boltzmann_prime(x) = log(x)
-
 
 """
 $(SIGNATURES)
@@ -486,14 +473,12 @@ Dual of Maxwell Boltzmann entropy
 """
 maxwell_boltzmann_dual(f) = exp(f)
 
-
 """
 $(SIGNATURES)
 
 Dual prim of Maxwell Boltzmann entropy
 """
 maxwell_boltzmann_dual_prime(f) = exp(f)
-
 
 """
 $(SIGNATURES)
@@ -504,7 +489,6 @@ function kinetic_entropy(α::AA, m::AA, weights::AV)
     B = KitBase.maxwell_boltzmann_dual_prime.(α' * m)[:]
     return sum(maxwell_boltzmann.(B) .* weights)
 end
-
 
 """
 $(SIGNATURES)

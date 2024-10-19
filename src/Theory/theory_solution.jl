@@ -26,7 +26,7 @@ struct HydroStatus
         c = sqrt(gamma * p / rho)
         A = 2.0 / (gamma + 1.0) / rho
         B = (gamma - 1.0) / (gamma + 1.0) * p
-        new(rho, u, p, gamma, c, A, B)
+        return new(rho, u, p, gamma, c, A, B)
     end
 end
 
@@ -73,7 +73,6 @@ side_factor(::RightSide) = 1
 choose_side(left, right, ::LeftSide) = left
 choose_side(left, right, ::RightSide) = right
 
-
 #--- PressureGuess.jl ---#
 # (4.46) from Toro
 function p_guess(left::HydroStatus, right::HydroStatus, ::TwoRarefaction)
@@ -81,10 +80,9 @@ function p_guess(left::HydroStatus, right::HydroStatus, ::TwoRarefaction)
     gamma = left.gamma
     gamma_power = (gamma - 1) / 2.0 / gamma
     delta_u = right.u - left.u
-    return (
-        (left.c + right.c - 0.5 * (gamma - 1) * delta_u) /
-        (left.c / left.p^gamma_power + right.c / right.p^gamma_power)
-    )^(1.0 / gamma_power)
+    return ((left.c + right.c - 0.5 * (gamma - 1) * delta_u) /
+            (left.c / left.p^gamma_power +
+             right.c / right.p^gamma_power))^(1.0 / gamma_power)
 end
 
 # (4.47) from Toro
@@ -109,7 +107,6 @@ end
 # (4.49) from Toro
 p_guess(left::HydroStatus, right::HydroStatus, ::MeanPressure) = 0.5 * (left.p + right.p)
 
-
 """
 $(SIGNATURES)
 
@@ -125,10 +122,10 @@ Main function that samples the Riemann problem and returns the density, pressure
 function sample_riemann_solution(
     x,
     t::Float64,
-    left::HydroStatus = HydroStatus(1.0, 0.0, 1.0, 7.0 / 5.0),
-    right::HydroStatus = HydroStatus(0.125, 0.0, 0.1, 7.0 / 5.0),
-    guess_scheme::T = PrimitiveValue(),
-    TOL::Float64 = 1.e-6,
+    left::HydroStatus=HydroStatus(1.0, 0.0, 1.0, 7.0 / 5.0),
+    right::HydroStatus=HydroStatus(0.125, 0.0, 0.1, 7.0 / 5.0),
+    guess_scheme::T=PrimitiveValue(),
+    TOL::Float64=1.e-6,
 ) where {T<:FirstGuessScheme}
     @assert left.gamma == right.gamma
 
@@ -139,7 +136,6 @@ function sample_riemann_solution(
     else
         return sample_riemann_regular(x, t, left, right, guess_scheme, TOL)
     end
-
 end
 
 """
@@ -189,8 +185,7 @@ function sample_riemann_regular(
     head_speed_right = head_speed_calc(p_star, u_star, right, RightSide(), wave_type_right)
     tail_speed_right = tail_speed_calc(p_star, u_star, right, RightSide(), wave_type_right)
 
-
-    for i = 1:length(x)
+    for i in 1:length(x)
         S = x_over_t[i] #this is like the S which Toro use in Section 4.5
 
         #see Figure 4.14 in Toro for the flow of the following lines
@@ -226,7 +221,6 @@ function sample_riemann_side_vaccum(
     status::HydroStatus,
     side::T,
 ) where {T<:Side}
-
     profile = similar(x, HydroStatusSimple) #we return the values of rho, u and p in each point x in space
     vaccum = HydroStatusSimple(0.0, 0.0, 0.0) #vaccum
     simple = HydroStatusSimple(status)
@@ -239,7 +233,7 @@ function sample_riemann_side_vaccum(
     #see "sample_riemann_regular" for explnation about this boolean
     right_condition = isa(side, RightSide)
 
-    for i = 1:length(x)
+    for i in 1:length(x)
         S = x_over_t[i]
 
         if xor(S < head_speed, right_condition)
@@ -263,9 +257,8 @@ function rarefaction_profile(x_over_t, status::HydroStatus, side::T) where {T<:S
     gamma_minus = 2.0 / (gamma - 1.0)
 
     rarefaction_factor =
-        (
-            gamma_plus - side_factor(side) * gamma_ratio / status.c * (status.u - x_over_t)
-        )^gamma_minus
+        (gamma_plus -
+         side_factor(side) * gamma_ratio / status.c * (status.u - x_over_t))^gamma_minus
 
     rho = status.rho * rarefaction_factor
     u =
@@ -299,14 +292,13 @@ function p_star_calc(
     #we define p = exp(u) so inside the interation it won't get negative value
     u0 = log(p0) #p = exp(u) => u = log(p)
     f_star(u) = f(exp(u), left) + f(exp(u), right) + right.u - left.u #function (4.5) from Toro
-    u = find_zero(f_star, u0, Order1(), rtol = TOL) #Secant method
+    u = find_zero(f_star, u0, Order1(); rtol=TOL) #Secant method
     return exp(u) #p = exp(u) 
 end
 
 # equation (4.9) from Toro
 u_star_calc(p_star, left::HydroStatus, right::HydroStatus) =
     0.5 * (left.u + right.u) + 0.5 * (f(p_star, right) - f(p_star, left))
-
 
 # equations (4.23) and (4.32) from Toro
 rho_star_calc(p_star, status::HydroStatus, ::Rarefaction) =
@@ -365,7 +357,6 @@ end
 # for shock the head and the tail are the same
 tail_speed_calc(p_star, u_star, status::HydroStatus, side::T, ::Shock) where {T<:Side} =
     head_speed_calc(p_star, u_star, status, side, Shock())
-
 
 # for vaccum generation the density in the middle is zero (= vaccum)
 rho_star_calc(p_star, status::HydroStatus, ::Vaccum) = 0.0

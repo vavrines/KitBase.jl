@@ -25,7 +25,6 @@ function Interface(fw)
     return Interface{typeof(fw),n}(fw)
 end
 
-
 """
 $(TYPEDEF)
 
@@ -44,7 +43,6 @@ function Interface1F(fw, ff)
     n = size(fw, 1) - 2
     return Interface1F{typeof(fw),typeof(ff),n}(fw, ff)
 end
-
 
 """
 $(TYPEDEF)
@@ -66,11 +64,9 @@ function Interface2F(fw, fh, fb)
     return Interface2F{typeof(fw),typeof(fh),n}(fw, fh, fb)
 end
 
-
 struct Interface3F{T1,T2,ND} <: AbstractInterface end
 
 struct Interface4F{T1,T2,ND} <: AbstractInterface end
-
 
 """
 $(SIGNATURES)
@@ -125,9 +121,8 @@ mutable struct Interface1D{A<:Union{Real,AA}} <: AbstractInterface1D
 end
 
 function Base.show(io::IO, ctr::Interface1D{A}) where {A}
-    print(io, "Interface1D{$A}\n", "conservative fluxes: $(ctr.fw)\n")
+    return print(io, "Interface1D{$A}\n", "conservative fluxes: $(ctr.fw)\n")
 end
-
 
 """
 $(TYPEDEF)
@@ -145,14 +140,13 @@ mutable struct Interface1D1F{A,B<:AA} <: AbstractInterface1D
 end
 
 function Base.show(io::IO, ctr::Interface1D1F{A,B}) where {A,B}
-    print(
+    return print(
         io,
         "Interface1D1F{$A,$B}\n",
         "conservative fluxes: $(ctr.fw)\n",
         "pdf fluxes: ff\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -178,14 +172,13 @@ function Interface1D2F(w, f::AA)
 end
 
 function Base.show(io::IO, ctr::Interface1D2F{A,B}) where {A,B}
-    print(
+    return print(
         io,
         "Interface1D2F{$A,$B}\n",
         "conservative fluxes: $(ctr.fw)\n",
         "pdf fluxes: fh, fb\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -242,7 +235,7 @@ function Interface1D3F(w::AA, f::AA)
 end
 
 function Base.show(io::IO, ctr::Interface1D3F{A,B,C}) where {A,B,C}
-    print(
+    return print(
         io,
         "Interface1D3F{$A,$B,$C}\n",
         "conservative fluxes: $(ctr.fw)\n",
@@ -250,7 +243,6 @@ function Base.show(io::IO, ctr::Interface1D3F{A,B,C}) where {A,B,C}
         "electromagnetic fluxes: femL, femR\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -298,7 +290,7 @@ function Interface1D4F(w::AA, f::AA, E::AA{<:Real,2})
 end
 
 function Base.show(io::IO, ctr::Interface1D4F{A,B,C}) where {A,B,C}
-    print(
+    return print(
         io,
         "Interface1D4F{$A,$B,$C}\n",
         "conservative fluxes: $(ctr.fw)\n",
@@ -336,7 +328,7 @@ function Interface2D(L::Real, C::Real, S::Real, w::AA)
 end
 
 function Base.show(io::IO, ctr::Interface2D{A,B,C}) where {A,B,C}
-    print(
+    return print(
         io,
         "Interface2D{$A,$B,$C}\n",
         "length: $(ctr.len)\n",
@@ -344,7 +336,6 @@ function Base.show(io::IO, ctr::Interface2D{A,B,C}) where {A,B,C}
         "conservative fluxes: $(ctr.fw)\n",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -373,7 +364,7 @@ function Interface2D1F(L::Real, C::Real, S::Real, w, f::AA)
 end
 
 function Base.show(io::IO, ctr::Interface2D1F{A,B,C,D}) where {A,B,C,D}
-    print(
+    return print(
         io,
         "Interface2D1F{$A,$B,$C}\n",
         "length: $(ctr.len)\n",
@@ -382,7 +373,6 @@ function Base.show(io::IO, ctr::Interface2D1F{A,B,C,D}) where {A,B,C,D}
         "pdf fluxes: ff",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -413,7 +403,7 @@ function Interface2D2F(L::Real, C::Real, S::Real, w::AA, f::AA)
 end
 
 function Base.show(io::IO, ctr::Interface2D2F{A,B,C,D}) where {A,B,C,D}
-    print(
+    return print(
         io,
         "Interface2D2F{$A,$B,$C}\n",
         "length: $(ctr.len)\n",
@@ -422,7 +412,6 @@ function Base.show(io::IO, ctr::Interface2D2F{A,B,C,D}) where {A,B,C,D}
         "pdf fluxes: fh, fb",
     )
 end
-
 
 """
 $(TYPEDEF)
@@ -507,7 +496,7 @@ function Interface2D3F(L::Real, C::Real, S::Real, w::AA, f::AA)
 end
 
 function Base.show(io::IO, ctr::Interface2D3F{A,B,C,D,E}) where {A,B,C,D,E}
-    print(
+    return print(
         io,
         "Interface2D3F{$A,$B,$C}\n",
         "length: $(ctr.len)\n",

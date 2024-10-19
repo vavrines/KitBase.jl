@@ -10,7 +10,6 @@ function generate_vars(dict::AbstractDict)
     end
 end
 
-
 """
 $(SIGNATURES)
 
@@ -20,11 +19,11 @@ function collect_run(cmd::Cmd)
     out = Pipe()
     err = Pipe()
 
-    process = run(pipeline(ignorestatus(cmd), stdout = out, stderr = err))
+    process = run(pipeline(ignorestatus(cmd); stdout=out, stderr=err))
     close(out.in)
     close(err.in)
     stdout = @async String(read(out))
     stderr = @async String(read(err))
 
-    return (stdout = String(read(out)), stderr = String(read(err)), code = process.exitcode)
+    return (stdout=String(read(out)), stderr=String(read(err)), code=process.exitcode)
 end

@@ -40,7 +40,7 @@ function solve(w, prim, prim1, h, b, r, dt, nt)
     bhis = zeros(vs.nu, nt)
     rhis = zeros(vs.nu, nt)
 
-    @showprogress for iter = 1:nt
+    @showprogress for iter in 1:nt
         step(w, prim, prim1, h, b, r, dt)
         whis[:, iter] .= w
         primhis[:, iter] .= prim
@@ -53,21 +53,21 @@ function solve(w, prim, prim1, h, b, r, dt, nt)
     return whis, primhis, primhis1, hhis, bhis, rhis
 end
 
-cf = config_ntuple(
-    maxTime = 1.0,
-    umin = -5.0,
-    umax = 5.0,
-    nu = 80,
-    knudsen = 0.01,
-    prandtl = 0.72,
-    inK = 2.0,
-    inKr = 2.0,
-    omega = 0.81,
-    Tr0 = 91.5 / 273,
-    Z0 = 18.1,
-    sigma = 1 / 1.55,
-    omega1 = 0.2354,
-    omega2 = 0.3049,
+cf = config_ntuple(;
+    maxTime=1.0,
+    umin=-5.0,
+    umax=5.0,
+    nu=80,
+    knudsen=0.01,
+    prandtl=0.72,
+    inK=2.0,
+    inKr=2.0,
+    omega=0.81,
+    Tr0=91.5 / 273,
+    Z0=18.1,
+    sigma=1 / 1.55,
+    omega1=0.2354,
+    omega2=0.3049,
 )
 
 dt = 0.001
@@ -78,14 +78,8 @@ tran = collect(0:dt:cf.maxTime-dt)
 set = set_setup(; cf...)
 ps = set_geometry(; cf...)
 vs = set_velocity(; cf...)
-gas = DiatomicGas(
-    Kn = cf.knudsen,
-    Pr = cf.prandtl,
-    K = cf.inK,
-    Kr = cf.inKr,
-    ω = cf.omega,
-    T₀ = cf.Tr0,
-)
+gas =
+    DiatomicGas(; Kn=cf.knudsen, Pr=cf.prandtl, K=cf.inK, Kr=cf.inKr, ω=cf.omega, T₀=cf.Tr0)
 
 #--- 1. non-equilibrium distributions ---#
 #h0 = 
@@ -122,16 +116,16 @@ end
 
 wh, ph, ph1, hh, bh, rh = solve(w, prim, prim1, h, b, r, dt, nt)
 
-plot(tran, 1 ./ prim_his[4, :]; label = "translation", xlabel = "t", ylabel = "T")
-plot!(tran, 1 ./ prim_his[5, :]; label = "internal")
-plot!(tran, 1 ./ prim_his[3, :]; label = "total")
+plot(tran, 1 ./ prim_his[4, :]; label="translation", xlabel="t", ylabel="T")
+plot!(tran, 1 ./ prim_his[5, :]; label="internal")
+plot!(tran, 1 ./ prim_his[3, :]; label="total")
 savefig("rx_t.pdf")
 
 #plot!(1 ./ prim_his1[4, :])
 #plot!(1 ./ prim_his1[5, :])
 
-contourf(tran, vs.u, hh; xlabel = "t", ylabel = "u")
+contourf(tran, vs.u, hh; xlabel="t", ylabel="u")
 savefig("rx_h.pdf")
 
-contourf(tran, vs.u, rh; xlabel = "t", ylabel = "u")
+contourf(tran, vs.u, rh; xlabel="t", ylabel="u")
 savefig("rx_r.pdf")

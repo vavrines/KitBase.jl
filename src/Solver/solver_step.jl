@@ -17,7 +17,7 @@ step!(
     faceL::T,
     faceR::T,
     p,
-    coll = :bgk;
+    coll=:bgk;
     kwargs...,
 ) where {T<:AbstractInterface} =
     step!(KS, KS.vs, KS.gas, cell, faceL, faceR, p, coll; kwargs...)
@@ -35,7 +35,7 @@ step!(
     faceD::T,
     faceU::T,
     p,
-    coll = :bgk;
+    coll=:bgk;
     kwargs...,
 ) where {T<:AbstractInterface} =
     step!(KS, KS.vs, KS.gas, cell, faceL, faceR, faceD, faceU, p, coll; kwargs...)
@@ -53,11 +53,11 @@ function step!(
     faceL,
     faceR,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume,ControlVolume1D}}
     dt, dx, RES, AVG = p
-    st(cell.w, cell.prim, faceL.fw, faceR.fw, gas.a, dx, RES, AVG)
+    return st(cell.w, cell.prim, faceL.fw, faceR.fw, gas.a, dx, RES, AVG)
 end
 
 """
@@ -73,11 +73,11 @@ function step!(
     faceL,
     faceR,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume,ControlVolume1D}}
     dt, dx, RES, AVG = p
-    st(cell.w, cell.prim, faceL.fw, faceR.fw, gas.γ, dx, RES, AVG)
+    return st(cell.w, cell.prim, faceL.fw, faceR.fw, gas.γ, dx, RES, AVG)
 end
 
 """
@@ -93,11 +93,11 @@ function step!(
     faceL,
     faceR,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume,ControlVolume1D}}
     dt, dx, RES, AVG = p
-    st(
+    return st(
         cell.w,
         cell.prim,
         faceL.fw,
@@ -128,11 +128,11 @@ function step!(
     faceL,
     faceR,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume1F,ControlVolume1D1F}}
     dt, dx, RES, AVG = p
-    st(
+    return st(
         cell.w,
         cell.prim,
         cell.f,
@@ -167,8 +167,8 @@ function step!(
     faceL,
     faceR,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume1F,ControlVolume1D1F}}
     dt, dx, RES, AVG = p
     if coll == :fsm
@@ -231,11 +231,11 @@ function step!(
     faceL,
     faceR,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume2F,ControlVolume1D2F}}
     dt, dx, RES, AVG = p
-    st(
+    return st(
         cell.w,
         cell.prim,
         cell.h,
@@ -274,11 +274,11 @@ function step!(
     faceL,
     faceR,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume2F,ControlVolume1D2F}}
     dt, dx, RES, AVG = p
-    st(
+    return st(
         cell.w,
         cell.prim,
         cell.h,
@@ -322,11 +322,23 @@ function step!(
     faceD,
     faceU,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume,ControlVolume2D}}
     dt, Δs, RES, AVG = p
-    st(cell.w, cell.prim, faceL.fw, faceR.fw, faceD.fw, faceU.fw, gas.γ, Δs, RES, AVG, coll)
+    return st(
+        cell.w,
+        cell.prim,
+        faceL.fw,
+        faceR.fw,
+        faceD.fw,
+        faceU.fw,
+        gas.γ,
+        Δs,
+        RES,
+        AVG,
+        coll,
+    )
 end
 
 """
@@ -344,11 +356,11 @@ function step!(
     faceD,
     faceU,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume1F,ControlVolume2D1F}}
     dt, Δs, RES, AVG = p
-    st(
+    return st(
         cell.w,
         cell.prim,
         cell.f,
@@ -390,11 +402,11 @@ function step!(
     faceD,
     faceU,
     p,
-    coll = :bgk;
-    st = step!,
+    coll=:bgk;
+    st=step!,
 ) where {TC<:Union{ControlVolume2F,ControlVolume2D2F}}
     dt, Δs, RES, AVG = p
-    st(
+    return st(
         cell.w,
         cell.prim,
         cell.h,

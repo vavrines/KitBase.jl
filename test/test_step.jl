@@ -20,26 +20,7 @@ begin
     ω = ones(16)
 end
 
-KB.step!(
-    w,
-    prim,
-    f,
-    fwL,
-    ffL,
-    fwR,
-    ffR,
-    u,
-    ω,
-    γ,
-    1e-3,
-    0.72,
-    1.0,
-    dx,
-    dt,
-    res,
-    avg,
-    :bgk,
-)
+KB.step!(w, prim, f, fwL, ffL, fwR, ffR, u, ω, γ, 1e-3, 0.72, 1.0, dx, dt, res, avg, :bgk)
 
 KB.step!(
     KB.prim_conserve([1.0, 0.0, 0.0, 0.0, 1.0], γ),

@@ -8,18 +8,16 @@ function ib_cavity(
     ps::AbstractPhysicalSpace,
     vs::Union{AbstractVelocitySpace,Nothing},
     gas::AbstractProperty,
-    Um = 0.15,
-    Vm = 0.0,
-    Tm = 1.0,
+    Um=0.15,
+    Vm=0.0,
+    Tm=1.0,
 )
-
     if set.nSpecies == 1
-
         prim = [1.0, 0.0, 0.0, 1.0]
         w = prim_conserve(prim, gas.γ)
         primU = [1.0, Um, Vm, Tm]
 
-        p = (y1 = ps.y1, w = w, prim = prim, primU = primU)
+        p = (y1=ps.y1, w=w, prim=prim, primU=primU)
 
         fw = function (args...)
             p = args[end]
@@ -40,7 +38,7 @@ function ib_cavity(
             return fw, bc, p
         elseif set.space == "2d1f2v"
             h = maxwellian(vs.u, vs.v, prim)
-            p = (p..., h = h)
+            p = (p..., h=h)
             ff = function (args...)
                 p = args[end]
                 return p.h
@@ -50,7 +48,7 @@ function ib_cavity(
         elseif set.space == "2d2f2v"
             h = maxwellian(vs.u, vs.v, prim)
             b = h .* gas.K / 2.0 / prim[end]
-            p = (p..., h = h, b = b)
+            p = (p..., h=h, b=b)
             ff = function (args...)
                 p = args[end]
                 return p.h, p.b
@@ -58,9 +56,7 @@ function ib_cavity(
 
             return fw, ff, bc, p
         end
-
     end
 
     return nothing
-
 end

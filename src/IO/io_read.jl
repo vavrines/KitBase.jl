@@ -35,7 +35,6 @@ function read_cfg(filename::T) where {T<:AbstractString}
     return D
 end
 
-
 """
 $(SIGNATURES)
 

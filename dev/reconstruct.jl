@@ -12,7 +12,7 @@ for i in eachindex(ps.cellType)
        -0.1 < ps.cellCenter[i, 2] < 0.1
         ps.cellType[i] = 2
 
-        for j = 1:3
+        for j in 1:3
             if ps.faceType[ps.cellFaces[i, j]] == 1
                 ps.faceType[ps.cellFaces[i, j]] = 2
             end
@@ -20,7 +20,7 @@ for i in eachindex(ps.cellType)
     elseif ps.cellType[i] == 1 && ps.cellCenter[i, 1] > 0.5
         ps.cellType[i] = 3
 
-        for j = 1:3
+        for j in 1:3
             if ps.faceType[ps.cellFaces[i, j]] == 1
                 ps.faceType[ps.cellFaces[i, j]] = 3
             end
@@ -49,10 +49,10 @@ ctr, face = KitBase.init_fvm(ks, ks.ps)
 
 dt = KitBase.timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
-@showprogress for iter = 1:200#nt
+@showprogress for iter in 1:200#nt
     KitBase.reconstruct!(ks, ctr)
 
-    KitBase.evolve!(ks, ctr, face, dt; mode = :kfvs, bc = :maxwell)
+    KitBase.evolve!(ks, ctr, face, dt; mode=:kfvs, bc=:maxwell)
     #=
     @inbounds Threads.@threads for i in eachindex(face)
         vn = ks.vs.u .* face[i].n[1] .+ ks.vs.v .* face[i].n[2]
@@ -101,7 +101,7 @@ nt = ks.set.maxTime ÷ dt |> Int
     end=#
 
     res = zeros(4)
-    KitBase.update!(ks, ctr, face, dt, res; coll = :bgk, bc = :maxwell)
+    KitBase.update!(ks, ctr, face, dt, res; coll=:bgk, bc=:maxwell)
     #=
     sumres = zeros(4)
     sumavg = zeros(4)

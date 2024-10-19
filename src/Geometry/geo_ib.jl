@@ -43,8 +43,8 @@ Label ghost cells
 Should only be used with preprocessing of geometric and external boundary conditions
 """
 function ghost_flag!(ps::AbstractPhysicalSpace2D, flags)
-    for j = 1:ps.ny
-        for i = 1:ps.nx
+    for j in 1:ps.ny
+        for i in 1:ps.nx
             if flags[i, j] == 0
                 if 1 in [flags[i-1, j], flags[i+1, j], flags[i, j-1], flags[i, j+1]]
                     flags[i, j] = -2
@@ -53,8 +53,8 @@ function ghost_flag!(ps::AbstractPhysicalSpace2D, flags)
         end
     end
 
-    @threads for j = 1:ps.ny
-        for i = 1:ps.nx
+    @threads for j in 1:ps.ny
+        for i in 1:ps.nx
             if flags[i, j] == 1
                 @assert 0 ∉ [flags[i-1, j], flags[i+1, j], flags[i, j-1], flags[i, j+1]] @show i j
             end
@@ -68,7 +68,7 @@ $(SIGNATURES)
 Compute location of image points
 """
 function ip_location(ps::AbstractPhysicalSpace2D, gids, xbis)
-    xips = [Vector{Float64}(undef, 2) for iter = 1:length(xbis)]
+    xips = [Vector{Float64}(undef, 2) for iter in 1:length(xbis)]
     for iter in eachindex(xips)
         idx = gids[iter]
         xips[iter][1] = 2 * xbis[iter][1] - ps.x[idx]

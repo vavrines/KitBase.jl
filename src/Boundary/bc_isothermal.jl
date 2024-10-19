@@ -11,9 +11,8 @@ function bc_isothermal!(
     ctr::T,
     ctr1::T,
     γ::RN,
-    λw = 1.0::RN,
+    λw=1.0::RN,
 ) where {T<:Union{ControlVolume1D,ControlVolume2D,ControlVolumeUS}}
-
     ctr.prim[2] = -ctr1.prim[2]
     if length(ctr.prim) == 4
         ctr.prim[3] = -ctr1.prim[3]

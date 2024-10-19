@@ -12,17 +12,17 @@ slope_array(w::Number; kwargs...) = deepcopy(w)
 """
 $(SIGNATURES)
 """
-function slope_array(w::AA; reduction = true)
+function slope_array(w::AA; reduction=true)
     nd = ndims(w)
     ids = []
-    for i = 1:nd
+    for i in 1:nd
         push!(ids, [axes(w, i) |> first, axes(w, i) |> last])
     end
 
     sw = ifelse(
         reduction == true,
-        cat(zero(w), zero(w), dims = ndims(w) + 1),
-        cat(zero(w), zero(w), zero(w), dims = ndims(w) + 1),
+        cat(zero(w), zero(w); dims=ndims(w) + 1),
+        cat(zero(w), zero(w), zero(w); dims=ndims(w) + 1),
     )
 
     if w isa MArray
@@ -49,13 +49,12 @@ function slope_array(w::AA; reduction = true)
     return sw
 end
 
-
 """
 $(SIGNATURES)
 
 Extract subarray except the last column
 """
-function extract_last(a::AA, idx::Integer; mode = :view::Symbol)
+function extract_last(a::AA, idx::Integer; mode=:view::Symbol)
     if mode == :copy
         if ndims(a) == 2
             sw = a[:, idx]

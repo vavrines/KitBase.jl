@@ -53,7 +53,7 @@ begin
         )
     end
 
-    for i = 1:ks.ps.nx+1
+    for i in 1:ks.ps.nx+1
         face[i] = KitBase.Interface1D(ks.ib.wL)
     end
 
@@ -64,7 +64,7 @@ end
 
 ptc = KitBase.init_ptc!(ks, ctr)
 
-@showprogress for iter = 1:100
+@showprogress for iter in 1:100
     KitBase.free_transport!(ks, ptc.x, ptc.v, ptc.flag, dt)
     KitBase.boundary!(ks, ctr, ptc, face, dt, :maxwell)
     KitBase.sort!(ks, ctr, ptc.x, ptc.idx, ptc.ref)
@@ -75,7 +75,7 @@ end
 begin
     using Plots
     sol = zeros(ks.ps.nx, 4)
-    for i = 1:ks.ps.nx
+    for i in 1:ks.ps.nx
         sol[i, :] .= ctr[i].prim
     end
 

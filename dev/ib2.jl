@@ -2,19 +2,19 @@ using KitBase, Plots
 using Base.Threads: @threads
 using KitBase.ProgressMeter: @showprogress
 
-set = Setup(
-    case = "cylinder",
-    space = "2d0f0v",
-    boundary = ["fix", "extra", "mirror", "extra"],
-    limiter = "minmod",
-    cfl = 0.1,
-    maxTime = 2.0, # time
-    flux = "hll",
-    hasForce = true,
+set = Setup(;
+    case="cylinder",
+    space="2d0f0v",
+    boundary=["fix", "extra", "mirror", "extra"],
+    limiter="minmod",
+    cfl=0.1,
+    maxTime=2.0, # time
+    flux="hll",
+    hasForce=true,
 )
 ps = PSpace2D(0, 3, 60, 0, 2, 40, 1, 1)
 vs = VSpace2D(-3, 3, 28, -3, 3, 28)
-gas = Gas(Kn = 1e-3, Ma = 0.8, K = 1.0)
+gas = Gas(; Kn=1e-3, Ma=0.8, K=1.0)
 
 prim0 = [1.0, 0.0, 0.0, 1.0]
 prim1 = [1.0, gas.Ma * sound_speed(1.0, gas.γ), 0.0, 1.0]
@@ -35,7 +35,7 @@ end
 ib = IB2F(fw, ff, bc, NamedTuple())
 
 ks = SolverSet(set, ps, nothing, gas, ib)
-ctr, a1face, a2face = init_fvm(ks; structarray = true)
+ctr, a1face, a2face = init_fvm(ks; structarray=true)
 
 radius = 1
 θs = linspace(0, π / 2, 30)
@@ -64,7 +64,7 @@ flags[:, 0] .= -1
 flags[:, ks.ps.ny+1] .= -1
 
 function ib_flag!(flags, ps)
-    for j = 1:ps.ny, i = 1:ps.nx
+    for j in 1:ps.ny, i in 1:ps.nx
         if flags[i, j] == 0
             if 1 in [flags[i-1, j], flags[i+1, j], flags[i, j-1], flags[i, j+1]]
                 flags[i, j] = -2
@@ -72,7 +72,7 @@ function ib_flag!(flags, ps)
         end
     end
 
-    for j = 1:ps.ny, i = 1:ps.nx
+    for j in 1:ps.ny, i in 1:ps.nx
         if flags[i, j] == 1
             @assert 0 ∉ [flags[i-1, j], flags[i+1, j], flags[i, j-1], flags[i, j+1]] @show i j
         end
@@ -168,16 +168,14 @@ function interp_coeffs(ps, xbis, nbis, nids, bids, W0)
     return M \ W
 end
 
-
-
 function update_field!(KS, ctr, a1face, a2face, flags, residual)
     nx, ny, dx, dy = KS.ps.nx, KS.ps.ny, KS.ps.dx, KS.ps.dy
 
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for j ∈ 1:ny
-        for i ∈ 1:nx
+    @inbounds @threads for j in 1:ny
+        for i in 1:nx
             if flags[i, j] == 1
                 KB.step!(
                     ctr[i, j].w,
@@ -200,9 +198,9 @@ function update_field!(KS, ctr, a1face, a2face, flags, residual)
         residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
-    KitBase.bc_extra!(ctr; dirc = :xr)
-    KitBase.bc_extra!(ctr; dirc = :yr)
-    KitBase.bc_mirror!(ctr; dirc = :yl)
+    KitBase.bc_extra!(ctr; dirc=:xr)
+    KitBase.bc_extra!(ctr; dirc=:yr)
+    KitBase.bc_mirror!(ctr; dirc=:yl)
 
     return nothing
 end
@@ -252,25 +250,20 @@ function update_ghost!(ps, ctr, xbis, nbis, ip_nids, ip_bids, ghost_ids)
         T0 = 2 - T1
         ρ0 = ρ1 * T1 / T0
 
-
         idx = ghost_ids[iter]
         ctr[idx].prim .= [ρ0, -U1, -V1, 1 / T0]
         ctr[idx].w .= prim_conserve(ctr[idx].prim, ks.gas.γ)
     end
 end
 
-
 #update_ghost!(ks.ps, ctr, xbis, nbis, ip_nids, ip_bids, ghost_ids)
-
-
 
 t = 0.0
 dt = timestep(ks, ctr, 0.0)
 nt = ks.set.maxTime ÷ dt |> Int
 res = zeros(4)
 
-
-@showprogress for iter = 1:50#nt
+@showprogress for iter in 1:50#nt
     evolve!(ks, ctr, a1face, a2face, dt)
     update_ghost!(ks.ps, ctr, xbis, nbis, ip_nids, ip_bids, ghost_ids)
     update_field!(ks, ctr, a1face, a2face, flags, res)
@@ -278,15 +271,7 @@ res = zeros(4)
     global t += dt
 end
 
-
 plot(ks, ctr)
-
-
-
-
-
-
-
 
 ###
 

@@ -30,7 +30,7 @@ function __init__()
         @info "Kinetic will run with $(show_worker(np)) and $(show_thread(nt))"
     end=#
 
-    copy!(itp, pyimport("scipy.interpolate"))
+    return copy!(itp, pyimport("scipy.interpolate"))
 end
 
 """
@@ -53,7 +53,7 @@ function boltzmann_nuode!(df, f::AA{T,3}, p, t) where {T}
     _df = boltzmann_fft(_f, Kn, M, phi, psi, phipsi)
 
     curve1 = itp.RegularGridInterpolator((u1, v1, w1), _df)
-    df .= reshape(curve1(vnu), nu, nv, nw)
+    return df .= reshape(curve1(vnu), nu, nv, nw)
 end
 
 boltzmann_nuode!(
@@ -71,7 +71,7 @@ Maxwell quadrature
 ## Arguments
 * `N`: quadrature order (MUST less than 33)
 """
-function maxwell_quadrature(N::Integer, C = 1)
+function maxwell_quadrature(N::Integer, C=1)
     @assert N <= 33
 
     py"""
@@ -110,5 +110,5 @@ function maxwell_quadrature(N::Integer, C = 1)
         return (Xis, weights)
     """
 
-    p, w = py"dvGH"(N, C)
+    return p, w = py"dvGH"(N, C)
 end

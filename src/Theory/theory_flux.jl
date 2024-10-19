@@ -5,7 +5,6 @@ Theoretical flux of linear advection equation
 """
 advection_flux(u, a) = a * u
 
-
 """
 $(SIGNATURES)
 
@@ -13,13 +12,12 @@ Theoretical flux of Burgers' equation
 """
 burgers_flux(u) = 0.5 * u^2
 
-
 """
 $(SIGNATURES)
 
 Theoretical fluxes of Euler Equations
 """
-function euler_flux(w::AV, γ; frame = :cartesian::Symbol)
+function euler_flux(w::AV, γ; frame=:cartesian::Symbol)
     prim = conserve_prim(w, γ)
     p = 0.5 * prim[1] / prim[end]
 
@@ -73,7 +71,6 @@ function euler_flux(w::AV, γ; frame = :cartesian::Symbol)
         return F, G, H
     end
 end
-
 
 """
 $(SIGNATURES)

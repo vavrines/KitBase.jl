@@ -91,22 +91,9 @@ begin
         hasForce,
     )
     pSpace = KB.PSpace1D(x0, x1, nx, nxg)
-    vSpace = KB.VSpace1D(umin, umax, nu; type = vMeshType, ng = nug)
+    vSpace = KB.VSpace1D(umin, umax, nu; type=vMeshType, ng=nug)
     μᵣ = KB.ref_vhs_vis(knudsen, alphaRef, omegaRef)
-    gas = KB.Gas(
-        knudsen,
-        mach,
-        prandtl,
-        inK,
-        γ,
-        omega,
-        alphaRef,
-        omegaRef,
-        μᵣ,
-        mass,
-        0,
-        (),
-    )
+    gas = KB.Gas(knudsen, mach, prandtl, inK, γ, omega, alphaRef, omegaRef, μᵣ, mass, 0, ())
 
     primL = [1.0, 0.0, -1.0, 1.0] # left wall
     primR = [1.0, 0.0, 1.0, 1.0] # right wall
@@ -147,7 +134,7 @@ begin
         )
     end
 
-    for i = 1:ks.ps.nx+1
+    for i in 1:ks.ps.nx+1
         face[i] = KB.Interface1D(ctr[1].w)
     end
 
@@ -158,7 +145,7 @@ end
 
 ptc = KB.init_ptc!(ks, ctr)
 
-for iter = 1:1
+for iter in 1:1
     KB.free_transport!(ks, ptc.x, ptc.v, ptc.flag, dt)
     KB.boundary!(ks, ctr, ptc, face, dt, :maxwell)
     KB.sort!(ks, ctr, ptc.x, ptc.idx, ptc.ref)

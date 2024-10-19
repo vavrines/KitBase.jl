@@ -5,14 +5,12 @@ Bose-Einstein integral `Li_{ν+1}(z)`
 """
 be_integral(ν, z) = polylog(ν + 1, z) |> real
 
-
 """
 $(SIGNATURES)
 
 Fermi-Dirac integral `-Li_{ν+1}(-z)`
 """
 fd_integral(ν, z) = -polylog(ν + 1, -z) |> real
-
 
 """
 $(SIGNATURES)
@@ -31,7 +29,6 @@ function be_equilibrium(u, v, prim, β)
     A, U, V, λ = prim
     return @. β / π / (A^(-1) * exp(λ * ((u - U)^2 + (v - V)^2)) - 1)
 end
-
 
 """
 $(SIGNATURES)
@@ -69,35 +66,34 @@ end
 const Aprob0_2d =
     NonlinearSolve.NonlinearProblem{false}(Aeq_2d, 0.66, (1.77, 1.75, 2.0, fd_integral))
 
-function Aprob(w, β, it = :fd)
+function Aprob(w, β, it=:fd)
     fn = eval(Symbol(string(it) * "_integral"))
     if length(w) == 3
         return NonlinearSolve.remake(
-            Aprob0_1d,
-            u0 = w[1],
-            p = (w[1], w[end] - w[2]^2 / w[1] / 2, β, fn),
+            Aprob0_1d;
+            u0=w[1],
+            p=(w[1], w[end] - w[2]^2 / w[1] / 2, β, fn),
         )
     else
         return NonlinearSolve.remake(
-            Aprob0_2d,
-            u0 = w[1],
-            p = (w[1], w[end] - (w[2]^2 + w[3]^2) / w[1] / 2, β, fn),
+            Aprob0_2d;
+            u0=w[1],
+            p=(w[1], w[end] - (w[2]^2 + w[3]^2) / w[1] / 2, β, fn),
         )
     end
 end
-
 
 """
 $(SIGNATURES)
 
 Transform conservative -> primitive variables
 """
-function quantum_conserve_prim(w, β, it = :fd)
+function quantum_conserve_prim(w, β, it=:fd)
     prim = zero(w)
     fn = eval(Symbol(string(it) * "_integral"))
 
     prob = Aprob(w, β, it)
-    sol = NonlinearSolve.solve(prob, NLSolveJL(), reltol = 1e-9)
+    sol = NonlinearSolve.solve(prob, NLSolveJL(); reltol=1e-9)
     @assert sol.u[1] != 0
     prim[1] = sol.u[1]
     prim[2] = w[2] / w[1]
@@ -112,13 +108,12 @@ function quantum_conserve_prim(w, β, it = :fd)
     return prim
 end
 
-
 """
 $(SIGNATURES)
 
 Transform primitive -> conservative variables
 """
-function quantum_prim_conserve(prim, β, it = :fd)
+function quantum_prim_conserve(prim, β, it=:fd)
     w = zero(prim)
     fn = eval(Symbol(string(it) * "_integral"))
 

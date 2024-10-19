@@ -40,14 +40,13 @@ function reconstruct2(wL::T, wR::T, Δx) where {T<:AA{<:Real,3}}
     return s
 end
 
-
 """
 $(SIGNATURES)
 
 In-place two-cell reconstruction
 """
 function reconstruct2!(sw::AV, wL::Y, wR::Y, Δx) where {Y<:AA{<:Real,1}}
-    sw .= (wR .- wL) ./ Δx
+    return sw .= (wR .- wL) ./ Δx
 end
 
 function reconstruct2!(sw::AM, wL::Y, wR::Y, Δx) where {Y<:AM}
@@ -64,7 +63,6 @@ function reconstruct2!(sw::AA3, wL::Y, wR::Y, Δx) where {Y<:AA3}
     end
 end
 
-
 """
 $(SIGNATURES)
 
@@ -76,7 +74,7 @@ function reconstruct3(
     wR::T,
     ΔxL::T,
     ΔxR::T,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {T}
     sL = (wN - wL) / ΔxL
     sR = (wR - wN) / ΔxR
@@ -90,7 +88,7 @@ function reconstruct3(
     wR::T,
     ΔxL,
     ΔxR,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {T<:AA{<:Real,1}}
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
@@ -104,7 +102,7 @@ function reconstruct3(
     wR::T,
     ΔxL,
     ΔxR,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {T<:AA{<:Real,2}}
     s = zeros(axes(wL))
     for j in axes(s, 2)
@@ -120,7 +118,7 @@ function reconstruct3(
     wR::T,
     ΔxL,
     ΔxR,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {T<:AA{<:Real,3}}
     s = zeros(axes(wL))
     for k in axes(s, 3), j in axes(s, 2)
@@ -129,7 +127,6 @@ function reconstruct3(
 
     return s
 end
-
 
 """
 $(SIGNATURES)
@@ -143,7 +140,7 @@ function reconstruct3!(
     wR::Y,
     ΔxL,
     ΔxR,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {Y<:AV}
     sL = (wN .- wL) ./ ΔxL
     sR = (wR .- wN) ./ ΔxR
@@ -160,7 +157,7 @@ function reconstruct3!(
     wR::Y,
     ΔxL,
     ΔxR,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {Y<:AM}
     for j in axes(sw, 2)
         swj = @view sw[:, j]
@@ -177,7 +174,7 @@ function reconstruct3!(
     wR::Y,
     ΔxL,
     ΔxR,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {Y<:AA3}
     for k in axes(sw, 3), j in axes(sw, 2)
         swjk = @view sw[:, j, k]
@@ -194,7 +191,7 @@ function reconstruct3!(
     wR::Y,
     ΔxL,
     ΔxR,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {Y<:AA4}
     for l in axes(sw, 4), k in axes(sw, 3), j in axes(sw, 2)
         sjkl = @view sw[:, j, k, l]
@@ -212,7 +209,6 @@ function reconstruct3!(
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
@@ -227,7 +223,7 @@ function reconstruct4!(
     Δx1,
     Δx2,
     Δx3,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {Y<:AV}
     s1 = (wN .- w1) ./ Δx1
     s2 = (wN .- w2) ./ Δx2
@@ -247,7 +243,7 @@ function reconstruct4!(
     Δx1,
     Δx2,
     Δx3,
-    limiter = :vanleer::Symbol,
+    limiter=:vanleer::Symbol,
 ) where {Y<:AM}
     for j in axes(sw, 2)
         swj = @view sw[:, j]

@@ -16,10 +16,9 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume,ControlVolume1D},TF<:Union{Interface,Interface1D}}
-
     if firstindex(KS.ps.x) < 1
         idx0 = 1
         idx1 = KS.ps.nx + 1
@@ -30,12 +29,11 @@ function evolve!(
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-    @inbounds @threads for i = idx0:idx1
+    @inbounds @threads for i in idx0:idx1
         fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
     return nothing
-
 end
 
 function evolve!(
@@ -43,10 +41,9 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume1F,ControlVolume1D1F},TF<:Union{Interface1F,Interface1D1F}}
-
     if firstindex(KS.ps.x) < 1
         idx0 = 1
         idx1 = KS.ps.nx + 1
@@ -57,12 +54,11 @@ function evolve!(
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-    @inbounds @threads for i = idx0:idx1
+    @inbounds @threads for i in idx0:idx1
         fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
     return nothing
-
 end
 
 function evolve!(
@@ -70,10 +66,9 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume2F,ControlVolume1D2F},TF<:Union{Interface2F,Interface1D2F}}
-
     if firstindex(KS.ps.x) < 1
         idx0 = 1
         idx1 = KS.ps.nx + 1
@@ -84,14 +79,13 @@ function evolve!(
 
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
-    @inbounds @threads for i = idx0:idx1
+    @inbounds @threads for i in idx0:idx1
         fn(KS, face[i], ctr[i-1], ctr[i], (0.5 * KS.ps.dx[i-1], 0.5 * KS.ps.dx[i]), dt)
     end
 
-    evolve_boundary!(KS, ctr, face, dt; mode = mode, bc = bc)
+    evolve_boundary!(KS, ctr, face, dt; mode=mode, bc=bc)
 
     return nothing
-
 end
 
 function evolve!(
@@ -99,12 +93,11 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
-    isPlasma = false::Bool,
-    isMHD = false::Bool,
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
+    isPlasma=false::Bool,
+    isMHD=false::Bool,
 ) where {TC<:Union{ControlVolume4F,ControlVolume1D4F},TF<:Union{Interface4F,Interface1D4F}}
-
     if firstindex(KS.ps.x) < 1
         idx0 = 1
         idx1 = KS.ps.nx + 1
@@ -114,7 +107,7 @@ function evolve!(
     end
 
     if mode == :kcu
-        @inbounds @threads for i = idx0:idx1
+        @inbounds @threads for i in idx0:idx1
             flux_kcu!(
                 face[i].fw,
                 face[i].fh0,
@@ -145,7 +138,7 @@ function evolve!(
             )
         end
     elseif mode == :kfvs
-        @inbounds @threads for i = idx0:idx1
+        @inbounds @threads for i in idx0:idx1
             flux_kfvs!(
                 face[i].fw,
                 face[i].fh0,
@@ -176,7 +169,7 @@ function evolve!(
     end
 
     if isPlasma
-        @inbounds @threads for i = idx0:idx1
+        @inbounds @threads for i in idx0:idx1
             flux_em!(
                 face[i].femL,
                 face[i].femR,
@@ -206,7 +199,6 @@ function evolve!(
     end
 
     return nothing
-
 end
 
 function evolve!(
@@ -214,12 +206,11 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
-    isPlasma = false::Bool,
-    isMHD = false::Bool,
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
+    isPlasma=false::Bool,
+    isMHD=false::Bool,
 ) where {TC<:Union{ControlVolume3F,ControlVolume1D3F},TF<:Union{Interface3F,Interface1D3F}}
-
     if firstindex(KS.ps.x) < 1
         idx0 = 1
         idx1 = KS.ps.nx + 1
@@ -229,7 +220,7 @@ function evolve!(
     end
 
     if mode == :kcu
-        @inbounds @threads for i = idx0:idx1
+        @inbounds @threads for i in idx0:idx1
             flux_kcu!(
                 face[i].fw,
                 face[i].fh0,
@@ -259,7 +250,7 @@ function evolve!(
             )
         end
     elseif mode == :kfvs
-        @inbounds @threads for i = idx0:idx1
+        @inbounds @threads for i in idx0:idx1
             flux_kfvs!(
                 face[i].fw,
                 face[i].fh0,
@@ -285,7 +276,7 @@ function evolve!(
             )
         end
     elseif mode == :ugks
-        @inbounds @threads for i = idx0:idx1
+        @inbounds @threads for i in idx0:idx1
             flux_ugks!(
                 face[i].fw,
                 face[i].fh0,
@@ -324,7 +315,7 @@ function evolve!(
     end
 
     if isPlasma
-        @inbounds @threads for i = idx0:idx1
+        @inbounds @threads for i in idx0:idx1
             flux_em!(
                 face[i].femL,
                 face[i].femR,
@@ -354,7 +345,6 @@ function evolve!(
     end
 
     return nothing
-
 end
 
 """
@@ -377,10 +367,9 @@ function evolve!(
     a1face::AM{TF},
     a2face::AM{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume,ControlVolume2D},TF<:Union{Interface,Interface2D}}
-
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -407,8 +396,8 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     # x direction
-    @inbounds @threads for j = 1:ny
-        for i = idx0:idx1
+    @inbounds @threads for j in 1:ny
+        for i in idx0:idx1
             n = KS.ps.n[i-1, j, 2]
             len = KS.ps.areas[i-1, j, 2]
 
@@ -424,8 +413,8 @@ function evolve!(
     end
 
     # y direction
-    @inbounds @threads for j = idy0:idy1
-        for i = 1:nx
+    @inbounds @threads for j in idy0:idy1
+        for i in 1:nx
             n = KS.ps.n[i, j-1, 3]
             len = KS.ps.areas[i, j-1, 3]
 
@@ -441,7 +430,6 @@ function evolve!(
     end
 
     return nothing
-
 end
 
 function evolve!(
@@ -450,10 +438,9 @@ function evolve!(
     a1face::AM{TF},
     a2face::AM{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume1F,ControlVolume2D1F},TF<:Union{Interface1F,Interface2D1F}}
-
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -480,8 +467,8 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     # x direction
-    @inbounds @threads for j = 1:ny
-        for i = idx0:idx1
+    @inbounds @threads for j in 1:ny
+        for i in idx0:idx1
             n = KS.ps.n[i-1, j, 2]
             len = KS.ps.areas[i-1, j, 2]
 
@@ -497,8 +484,8 @@ function evolve!(
     end
 
     # y direction
-    @inbounds @threads for j = idy0:idy1
-        for i = 1:nx
+    @inbounds @threads for j in idy0:idy1
+        for i in 1:nx
             n = KS.ps.n[i, j-1, 3]
             len = KS.ps.areas[i, j-1, 3]
 
@@ -515,7 +502,7 @@ function evolve!(
 
     bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc], bc)
     if bcs[1] == :maxwell
-        @inbounds @threads for j = 1:ny
+        @inbounds @threads for j in 1:ny
             n = -KS.ps.n[1, j, 4]
             len = KS.ps.areas[1, j, 4]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -540,7 +527,7 @@ function evolve!(
         end
     end
     if bcs[2] == :maxwell
-        @inbounds @threads for j = 1:ny
+        @inbounds @threads for j in 1:ny
             n = KS.ps.n[nx, j, 2]
             len = KS.ps.areas[nx, j, 2]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -565,7 +552,7 @@ function evolve!(
         end
     end
     if bcs[3] == :maxwell
-        @inbounds @threads for i = 1:nx
+        @inbounds @threads for i in 1:nx
             n = -KS.ps.n[i, 1, 1]
             len = KS.ps.areas[i, 1, 1]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -590,7 +577,7 @@ function evolve!(
         end
     end
     if bcs[4] == :maxwell
-        @inbounds @threads for i = 1:nx
+        @inbounds @threads for i in 1:nx
             n = KS.ps.n[i, ny, 3]
             len = KS.ps.areas[i, ny, 3]
             vn = KS.vs.u .* n[1] .+ KS.vs.v .* n[2]
@@ -616,7 +603,6 @@ function evolve!(
     end
 
     return nothing
-
 end
 
 function evolve!(
@@ -625,10 +611,9 @@ function evolve!(
     a1face::AM{TF},
     a2face::AM{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:Union{ControlVolume2F,ControlVolume2D2F},TF<:Union{Interface2F,Interface2D2F}}
-
     nx, ny, dx, dy = begin
         if KS.ps isa CSpace2D
             KS.ps.nr, KS.ps.nθ, KS.ps.dr, KS.ps.darc
@@ -655,8 +640,8 @@ function evolve!(
     fn = eval(Symbol("flux_" * string(mode) * "!"))
 
     # x direction
-    @inbounds @threads for j = 1:ny
-        for i = idx0:idx1
+    @inbounds @threads for j in 1:ny
+        for i in idx0:idx1
             n = KS.ps.n[i-1, j, 2]
             len = KS.ps.areas[i-1, j, 2]
 
@@ -672,8 +657,8 @@ function evolve!(
     end
 
     # y direction
-    @inbounds @threads for j = idy0:idy1
-        for i = 1:nx
+    @inbounds @threads for j in idy0:idy1
+        for i in 1:nx
             n = KS.ps.n[i, j-1, 3]
             len = KS.ps.areas[i, j-1, 3]
 
@@ -688,10 +673,9 @@ function evolve!(
         end
     end
 
-    evolve_boundary!(KS, ctr, a1face, a2face, dt; mode = mode, bc = bc)
+    evolve_boundary!(KS, ctr, a1face, a2face, dt; mode=mode, bc=bc)
 
     return nothing
-
 end
 
 function evolve!(
@@ -699,12 +683,10 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:ControlVolumeUS,TF<:Interface2D}
-
     if mode == :hll
-
         @inbounds @threads for i in eachindex(face)
             vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
             vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
@@ -770,11 +752,9 @@ function evolve!(
                 end
             end
         end
-
     end
 
     return nothing
-
 end
 
 function evolve!(
@@ -782,12 +762,10 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:ControlVolumeUS1F,TF<:Interface2D1F}
-
     if mode == :kfvs
-
         @inbounds @threads for i in eachindex(face)
             vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
             vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
@@ -828,14 +806,12 @@ function evolve!(
                         face[i].ff,
                         bc,
                         ctr[KS.ps.faceCells[i, idx]].f .+
-                        ctr[KS.ps.faceCells[i, idx]].sf[:, :, 1] .* (
-                            KS.ps.faceCenter[i, 1] -
-                            KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]
-                        ) .+
-                        ctr[KS.ps.faceCells[i, idx]].sf[:, :, 2] .* (
-                            KS.ps.faceCenter[i, 2] -
-                            KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]
-                        ),
+                        ctr[KS.ps.faceCells[i, idx]].sf[:, :, 1] .*
+                        (KS.ps.faceCenter[i, 1] -
+                         KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+
+                        ctr[KS.ps.faceCells[i, idx]].sf[:, :, 2] .*
+                        (KS.ps.faceCenter[i, 2] -
+                         KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
                         vn,
                         vt,
                         KS.vs.weights,
@@ -849,11 +825,9 @@ function evolve!(
                 end
             end
         end
-
     end
 
     return nothing
-
 end
 
 function evolve!(
@@ -861,12 +835,10 @@ function evolve!(
     ctr::AV{TC},
     face::AV{TF},
     dt;
-    mode = symbolize(KS.set.flux)::Symbol,
-    bc = symbolize(KS.set.boundary),
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
 ) where {TC<:ControlVolumeUS2F,TF<:Interface2D2F}
-
     if mode == :kfvs
-
         @inbounds @threads for i in eachindex(face)
             vn = KS.vs.u .* face[i].n[1] .+ KS.vs.v .* face[i].n[2]
             vt = KS.vs.v .* face[i].n[1] .- KS.vs.u .* face[i].n[2]
@@ -919,23 +891,19 @@ function evolve!(
                         face[i].fb,
                         bc,
                         ctr[KS.ps.faceCells[i, idx]].h .+
-                        ctr[KS.ps.faceCells[i, idx]].sh[:, :, 1] .* (
-                            KS.ps.faceCenter[i, 1] -
-                            KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]
-                        ) .+
-                        ctr[KS.ps.faceCells[i, idx]].sh[:, :, 2] .* (
-                            KS.ps.faceCenter[i, 2] -
-                            KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]
-                        ),
+                        ctr[KS.ps.faceCells[i, idx]].sh[:, :, 1] .*
+                        (KS.ps.faceCenter[i, 1] -
+                         KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+
+                        ctr[KS.ps.faceCells[i, idx]].sh[:, :, 2] .*
+                        (KS.ps.faceCenter[i, 2] -
+                         KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
                         ctr[KS.ps.faceCells[i, idx]].b .+
-                        ctr[KS.ps.faceCells[i, idx]].sb[:, :, 1] .* (
-                            KS.ps.faceCenter[i, 1] -
-                            KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]
-                        ) .+
-                        ctr[KS.ps.faceCells[i, idx]].sb[:, :, 2] .* (
-                            KS.ps.faceCenter[i, 2] -
-                            KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]
-                        ),
+                        ctr[KS.ps.faceCells[i, idx]].sb[:, :, 1] .*
+                        (KS.ps.faceCenter[i, 1] -
+                         KS.ps.cellCenter[KS.ps.faceCells[i, idx], 1]) .+
+                        ctr[KS.ps.faceCells[i, idx]].sb[:, :, 2] .*
+                        (KS.ps.faceCenter[i, 2] -
+                         KS.ps.cellCenter[KS.ps.faceCells[i, idx], 2]),
                         vn,
                         vt,
                         KS.vs.weights,
@@ -949,9 +917,7 @@ function evolve!(
                 end
             end
         end
-
     end
 
     return nothing
-
 end
