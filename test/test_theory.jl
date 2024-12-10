@@ -424,6 +424,12 @@ prim = [2.0, 0.5, 0.6]
 f = maxwellian(vs.u, prim)
 df = hermite_force(f, vs.u, vs.weights, prim, 11, 1.0)
 
+vs = VSpace2D(-5, 5, 28, -5, 5, 28)
+prim = [1.0, 0.0, 0.0, 0.5]
+f = maxwellian(vs.u, vs.v, prim)
+df = hermite_force(f, vs.u, vs.v, vs.weights, prim, 4, [1.0, 1.0])
+contourf(vs.u[:, 1], vs.v[1, :], df')
+
 #--- Riemann solution ---#
 KB.sample_riemann_solution(
     [-0.5, -0.2, 0.1, 0.3, 0.5],

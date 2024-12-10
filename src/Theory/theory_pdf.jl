@@ -482,3 +482,68 @@ Calculate the forcing term of distribution function in the Boltzmann equation
 function hermite_force(f::AV, u::AV, weights::AV, prim, norder, a)
     return hermite_derivative(f, u, weights, prim, norder) .* a
 end
+
+"""
+$(SIGNATURES)
+"""
+function hermite_force(f::AM, u::AM, v::AM, weights::AM, prim::AV, norder, a::AV)
+    nx, ny = size(f)
+    U = prim[2]
+    V = prim[3]
+    T = 1.0 / prim[4]
+
+    # scaled velocity
+    vx2d = @. (u - U) / sqrt(T) * sqrt(2.0)
+    vy2d = @. (v - V) / sqrt(T) * sqrt(2.0)
+    w = @. 1.0 / (2.0 * π) * exp(-0.5 * (vx2d^2 + vy2d^2))
+
+    # fractional factorial array
+    frac = OffsetArray{eltype(f)}(undef, 0:norder)
+    frac[0] = 1.0
+    for i in 1:norder
+        frac[i] = i * frac[i-1]
+    end
+
+    # Hermite polynomials
+    hpx = OffsetArray{eltype(f)}(undef, 0:norder+1, nx, ny)
+    hpy = OffsetArray{eltype(f)}(undef, 0:norder+1, nx, ny)
+    hpx[0, :, :] .= 1.0
+    hpy[0, :, :] .= 1.0
+    hpx[1, :, :] .= vx2d
+    hpy[1, :, :] .= vy2d
+    if norder >= 1
+        for i in 2:norder+1
+            @. hpx[i, :, :] = vx2d * hpx[i-1, :, :] - (i - 1.0) * hpx[i-2, :, :]
+            @. hpy[i, :, :] = vy2d * hpy[i-1, :, :] - (i - 1.0) * hpy[i-2, :, :]
+        end
+    end
+
+    # coefficients `dn`
+    dn = OffsetArray{eltype(f)}(undef, 0:norder, 0:norder)
+    dn .= 0.0
+    dn[0, 0] = sum(f .* hpx[0, :, :] .* hpy[0, :, :] .* weights) * 2.0 / T
+    for i in 0:norder
+        for j in 0:i
+            dn[i, j] = sum(f .* hpx[j, :, :] .* hpy[i-j, :, :] .* weights) * 2.0 / T
+        end
+    end
+
+    # a.∇ᵥf
+    force_term = zero(f)
+    #vdf_ex = zero(f)
+    for i in 0:norder
+        for j in 0:i
+            term_factor = w ./ (frac[j] * frac[i-j])
+            @. force_term -=
+                term_factor *
+                sqrt(2.0 / T) *
+                (a[1] * hpx[j+1, :, :] * hpy[i-j, :, :] +
+                 a[2] * hpx[j, :, :] * hpy[i-j+1, :, :]) *
+                dn[i, j]
+            #@. vdf_ex += term_factor * hpx[j, :, :] * hpy[i-j, :, :] * dn[i, j]
+        end
+    end
+    #error = sqrt(sum((f .- vdf_ex) .^ 2)) / sqrt(sum(f .^ 2))
+
+    return force_term#, error
+end
