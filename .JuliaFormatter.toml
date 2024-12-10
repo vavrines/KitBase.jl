@@ -5,4 +5,4 @@ whitespace_in_kwargs = false
 format_docstrings = true
 separate_kwargs_with_semicolon = true
 disallow_single_arg_nesting = true
-format_markdown = true
+format_markdown = false
