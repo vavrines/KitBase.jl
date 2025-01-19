@@ -741,7 +741,7 @@ end
 """
 $(SIGNATURES)
 
-2D & 2D
+2D & 3D
 """
 function flux_gks!(
     fw::AV,
