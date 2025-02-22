@@ -432,8 +432,14 @@ contourf(vs.u[:, 1], vs.v[1, :], df')
 
 #--- Riemann solution ---#
 KB.sample_riemann_solution(
-    [-0.5, -0.2, 0.1, 0.3, 0.5],
-    0.2,
-    KB.HydroStatus(1.0, 0.0, 1.0, 1.4),
-    KB.HydroStatus(0.125, 0.0, 0.1, 1.4),
+    (1.0, 0.0, 1.0),
+    (0.125, 0.0, 0.1),
+    0.1, # x
+    0.2, # t
+)
+KB.sample_riemann_solution(
+    (1.0, 0.0, 1.0),
+    (0.125, 0.0, 0.1),
+    [0.1, 0.2], # x
+    0.2, # t
 )
