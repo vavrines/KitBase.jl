@@ -452,3 +452,113 @@ function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs=1.0, n=[1.0, 0.0]) where {T
 
     return nothing
 end
+
+
+"""
+$(SIGNATURES)
+
+Godunov flux based on the exact solution of Riemann problem
+"""
+flux_godunov!(KS::AbstractSolverSet, face, ctrL, ctrR, args...) =
+    flux_godunov!(face, ctrL, ctrR, KS.gas, args...)
+
+"""
+$(SIGNATURES)
+"""
+function flux_godunov!(
+    face::Interface,
+    ctrL::T,
+    ctrR::T,
+    gas::Gas,
+    p,
+    dt=1.0,
+) where {T<:ControlVolume}
+    if size(ctrL.w, 1) == 3
+        flux_godunov!(face.fw, ctrL.w, ctrR.w, gas.γ, dt)
+    else
+    end
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+"""
+function flux_godunov!(fw, wL, wR, γ, dt=1.0, len=1.0; tol=1e-6)
+    U_star = ustar(wL, wR, γ; tol=tol)
+    fw .= euler_flux(U_star, γ)[1] .* dt .* len
+
+    return nothing
+end
+
+function ustar(UL, UR, γ; tol=1e-6)
+    # convert left/right conservative variables to primitives
+    primL = conserve_prim(UL, γ)
+    primR = conserve_prim(UR, γ)
+    ρL, uL, _ = primL
+    ρR, uR, _ = primR
+    pL = 0.5 * primL[1] / primL[3]
+    pR = 0.5 * primR[1] / primR[3]
+    cL = sound_speed(primL, γ)
+    cR = sound_speed(primR, γ)
+
+    # define helper functions f(p) and its derivative for the Newton iteration
+    f(p, p_i, ρ_i, c_i) =
+        p > p_i ? (p - p_i) * sqrt(2.0 / ((γ + 1) * ρ_i) / (p + (γ - 1) / (γ + 1) * p_i)) :
+        (2 * c_i / (γ - 1)) * ((p / p_i)^((γ - 1) / (2γ)) - 1)
+    df(p, p_i, ρ_i, c_i) =
+        p > p_i ?
+        sqrt(2.0 / ((γ + 1) * ρ_i) / (p + (γ - 1) / (γ + 1) * p_i)) *
+        (1 - 0.5 * (p - p_i) / (p + (γ - 1) / (γ + 1) * p_i)) :
+        (1 / (ρ_i * c_i)) * ((p / p_i)^(-((γ + 1) / (2γ))))
+
+    # initial guess for p_star (using the PVRS approximate solver)
+    p_guess = 0.5 * (pL + pR) - 0.125 * (uR - uL) * (ρL + ρR) * (cL + cR)
+    p_guess = max(1e-6, p_guess)
+
+    # Newton iteration for p_star
+    p_old = p_guess
+    for _ in 1:100
+        fL = f(p_old, pL, ρL, cL)
+        fR = f(p_old, pR, ρR, cR)
+        f_total = fL + fR + (uR - uL)
+        dfL = df(p_old, pL, ρL, cL)
+        dfR = df(p_old, pR, ρR, cR)
+        dp = -f_total / (dfL + dfR)
+        p_new = p_old + dp
+        if abs(dp) < tol * p_old
+            p_old = p_new
+            break
+        end
+        p_old = p_new
+    end
+    p_star = p_old
+
+    # u_star
+    u_star = 0.5 * (uL + uR) + 0.5 * (f(p_star, pR, ρR, cR) - f(p_star, pL, ρL, cL))
+
+    # sample state at x/t = 0
+    if u_star >= 0
+        # left star state
+        if p_star > pL
+            ρ_star =
+                ρL *
+                ((p_star / pL + (γ - 1) / (γ + 1)) / ((γ - 1) / (γ + 1) * p_star / pL + 1))
+        else
+            ρ_star = ρL * (p_star / pL)^(1 / γ)
+        end
+        U_star = prim_conserve([ρ_star, u_star, 0.5 * ρ_star / p_star], γ)
+    else
+        # right star state
+        if p_star > pR
+            ρ_star =
+                ρR *
+                ((p_star / pR + (γ - 1) / (γ + 1)) / ((γ - 1) / (γ + 1) * p_star / pR + 1))
+        else
+            ρ_star = ρR * (p_star / pR)^(1 / γ)
+        end
+        U_star = prim_conserve([ρ_star, u_star, 0.5 * ρ_star / p_star], γ)
+    end
+
+    return U_star
+end
