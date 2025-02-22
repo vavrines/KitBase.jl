@@ -2,14 +2,16 @@
 Solves the Riemann problem for the Euler equations.
 
 ## Arguments
-- `left_state`: Tuple (ρₗ, uₗ, pₗ)
-- `right_state`: Tuple (ρᵣ, uᵣ, pᵣ)
-- `x`: spatial coordinate at which to evaluate the solution
-- `t`: time at which to evaluate the solution (t ≥ 0)
-- `γ`: ratio of specific heats (default 1.4)
+
+  - `left_state`: Tuple (ρₗ, uₗ, pₗ)
+  - `right_state`: Tuple (ρᵣ, uᵣ, pᵣ)
+  - `x`: spatial coordinate at which to evaluate the solution
+  - `t`: time at which to evaluate the solution (t ≥ 0)
+  - `γ`: ratio of specific heats (default 1.4)
 
 ## Outputs
-- `(ρ, u, p)` at (x, t)
+
+  - `(ρ, u, p)` at (x, t)
 """
 function sample_riemann_solution(left_state, right_state, x, t, γ=1.4; tol=1e-6)
     ρₗ, uₗ, pₗ = left_state
@@ -139,5 +141,8 @@ function sample_riemann_solution(left_state, right_state, x, t, γ=1.4; tol=1e-6
 end
 
 function sample_riemann_solution(left_state, right_state, x::AV, t, γ=1.4; tol=1e-6)
-    [sample_riemann_solution(left_state, right_state, x[i], t, γ; tol=tol) for i in 1:length(x)]
+    return [
+        sample_riemann_solution(left_state, right_state, x[i], t, γ; tol=tol) for
+        i in 1:length(x)
+    ]
 end

@@ -453,7 +453,6 @@ function flux_roe!(fw::AV, wL::T, wR::T, γ, dt, δs=1.0, n=[1.0, 0.0]) where {T
     return nothing
 end
 
-
 """
 $(SIGNATURES)
 
