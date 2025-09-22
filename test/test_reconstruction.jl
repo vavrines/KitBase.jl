@@ -75,3 +75,7 @@ let deg = 2, u = rand(deg + 1, deg + 1)
     modal_filter!(u, ℓ; filter=:lasso)
     modal_filter!(u, 2; filter=:exp)
 end
+
+let u = [1.0, 0.5, 0.3, 0.2, 0.2, 0.2, 0.2]
+    KB.choose_l2_strength(u, 1e-1)
+end
