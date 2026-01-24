@@ -25,6 +25,7 @@ end
 #--- fluid flux ---#
 KB.flux_upwind(rand(), rand(), rand(2), rand(2), dt)
 KB.flux_lax!(fw, wL, wR, γ, dt, dx)
+KB.flux_godunov!(fw, wL, wR, γ, dt)
 KB.flux_hll!(fw, wL, wR, γ, dt)
 KB.flux_hllc!(fw, wL, wR, γ, dt)
 fw1 = zeros(4)

@@ -1,7 +1,7 @@
 """
 KitBase.jl: The lightweight module of solution algorithms in Kinetic.jl
 
-Copyright (c) 2020-2024 Tianbai Xiao <tianbaixiao@gmail.com>
+Copyright (c) 2020-2025 Tianbai Xiao <tianbaixiao@gmail.com>
 """
 
 module KitBase
@@ -16,7 +16,6 @@ import BSON
 import CSV
 import JLD2
 import NonlinearSolve
-import Roots: Order1, find_zero
 import SciMLNLSolve: NLSolveJL
 
 using Base.Threads: @threads

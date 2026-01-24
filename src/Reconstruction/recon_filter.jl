@@ -205,3 +205,23 @@ function filter_exp2d(Nx, Ny, spx, spy, Nc=0)
 
     return filterdiag
 end
+
+
+"""
+$(SIGNATURES)
+
+Determine the strength of L2 filter based on the decay rate of modal coefficients
+
+## Arguments
+* `u`: modal solution
+* `c`: desired ratio between the first and last terms after filtering (default: 0.1)
+"""
+function choose_l2_strength(u::AV, c=0.1)
+    q0 = firstindex(u)
+    @assert q0 >= 0
+    N = lastindex(u)
+    
+    λ = (u[N] / (u[q0] * c) - 1.0) / (N - q0 + 1)^2 / (N - q0)^2
+
+    return λ
+end
