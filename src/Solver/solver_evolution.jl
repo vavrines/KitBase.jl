@@ -678,6 +678,118 @@ function evolve!(
     return nothing
 end
 
+"""
+$(SIGNATURES)
+
+Numerical flux solver for 3D
+
+## Arguments
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
+- `a1face`: array of cell interface perpendicular to `x` axis
+- `a2face`: array of cell interface perpendicular to `y` axis
+- `a3face`: array of cell interface perpendicular to `z` axis
+- `dt`: time step
+- `mode`: flux solver
+- `bc`: boundary condition
+"""
+function evolve!(
+    KS::SolverSet,
+    ctr::AA{TC,3},
+    a1face::AA{TF,3},
+    a2face::AA{TF,3},
+    a3face::AA{TF,3},
+    dt;
+    mode=symbolize(KS.set.flux)::Symbol,
+    bc=symbolize(KS.set.boundary),
+) where {TC<:Union{ControlVolume,ControlVolume3D},TF<:Union{Interface,Interface3D}}
+    nx, ny, nz = KS.ps.nx, KS.ps.ny, KS.ps.nz
+    dx, dy, dz = KS.ps.dx, KS.ps.dy, KS.ps.dz
+
+    if firstindex(KS.ps.x[:, 1, 1]) < 1
+        idx0 = 1
+        idx1 = nx + 1
+    else
+        idx0 = 2
+        idx1 = nx
+    end
+    if firstindex(KS.ps.y[1, :, 1]) < 1
+        idy0 = 1
+        idy1 = ny + 1
+    else
+        idy0 = 2
+        idy1 = ny
+    end
+    if firstindex(KS.ps.z[1, 1, :]) < 1
+        idz0 = 1
+        idz1 = nz + 1
+    else
+        idz0 = 2
+        idz1 = nz
+    end
+
+    fn = eval(Symbol("flux_" * string(mode) * "!"))
+
+    # x direction
+    @inbounds @threads for k in 1:nz
+        for j in 1:ny
+            for i in idx0:idx1
+                n = KS.ps.n[i-1, j, k, 2]
+                len = KS.ps.areas[i-1, j, k, 2]
+
+                fn(
+                    KS,
+                    a1face[i, j, k],
+                    ctr[i-1, j, k],
+                    ctr[i, j, k],
+                    (0.5 .* dx[i-1, j, k], 0.5 .* dx[i, j, k], len, n, 1),
+                    dt,
+                )
+            end
+        end
+    end
+
+    # y direction
+    @inbounds @threads for k in 1:nz
+        for j in idy0:idy1
+            for i in 1:nx
+                n = KS.ps.n[i, j-1, k, 4]
+                len = KS.ps.areas[i, j-1, k, 4]
+
+                fn(
+                    KS,
+                    a2face[i, j, k],
+                    ctr[i, j-1, k],
+                    ctr[i, j, k],
+                    (0.5 .* dy[i, j-1, k], 0.5 .* dy[i, j, k], len, n, 2),
+                    dt,
+                )
+            end
+        end
+    end
+
+    # z direction
+    @inbounds @threads for k in idz0:idz1
+        for j in 1:ny
+            for i in 1:nx
+                n = KS.ps.n[i, j, k-1, 6]
+                len = KS.ps.areas[i, j, k-1, 6]
+
+                fn(
+                    KS,
+                    a3face[i, j, k],
+                    ctr[i, j, k-1],
+                    ctr[i, j, k],
+                    (0.5 .* dz[i, j, k-1], 0.5 .* dz[i, j, k], len, n, 3),
+                    dt,
+                )
+            end
+        end
+    end
+
+    return nothing
+end
+
 function evolve!(
     KS::SolverSet,
     ctr::AV{TC},

@@ -263,6 +263,62 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
     return dt
 end
 
+function timestep(KS::AbstractSolverSet, ctr::AA{<:AbstractControlVolume,3}, simTime=0.0)
+    nx, ny, nz = KS.ps.nx, KS.ps.ny, KS.ps.nz
+    dx, dy, dz = KS.ps.dx, KS.ps.dy, KS.ps.dz
+
+    tmax = 0.0
+
+    if KS.set.nSpecies == 1
+        @inbounds @threads for k in 1:nz
+            for j in 1:ny
+                for i in 1:nx
+                    prim = ctr[i, j, k].prim
+                    sos = sound_speed(prim, KS.gas.γ)
+                    umax, vmax, wmax = begin
+                        if KS.vs isa Nothing
+                            abs(prim[2]) + sos, abs(prim[3]) + sos, abs(prim[4]) + sos
+                        else
+                            max(KS.vs.u1, abs(prim[2])) + sos,
+                            max(KS.vs.v1, abs(prim[3])) + sos,
+                            max(KS.vs.w1, abs(prim[4])) + sos
+                        end
+                    end
+                    tmax = max(tmax, umax / dx[i, j, k] + vmax / dy[i, j, k] + wmax / dz[i, j, k])
+                end
+            end
+        end
+
+    elseif KS.set.nSpecies == 2
+        @inbounds @threads for k in 1:nz
+            for j in 1:ny
+                for i in 1:nx
+                    prim = ctr[i, j, k].prim
+                    sos = sound_speed(prim, KS.gas.γ)
+                    umax = max(maximum(KS.vs.u1), maximum(abs.(prim[2, :]))) + sos
+                    vmax = max(maximum(KS.vs.v1), maximum(abs.(prim[3, :]))) + sos
+                    wmax = max(maximum(KS.vs.w1), maximum(abs.(prim[4, :]))) + sos
+
+                    if KS.set.space[3:4] in ["3f", "4f"]
+                        tmax = max(
+                            tmax,
+                            umax / dx[i, j, k] + vmax / dy[i, j, k] + wmax / dz[i, j, k],
+                            KS.gas.sol / dx[i, j, k] + KS.gas.sol / dy[i, j, k] + KS.gas.sol / dz[i, j, k],
+                        )
+                    else
+                        tmax = max(tmax, umax / dx[i, j, k] + vmax / dy[i, j, k] + wmax / dz[i, j, k])
+                    end
+                end
+            end
+        end
+    end
+
+    dt = KS.set.cfl / tmax
+    dt = ifelse(dt < (KS.set.maxTime - simTime), dt, KS.set.maxTime - simTime)
+
+    return dt
+end
+
 function timestep(
     KS::AbstractSolverSet,
     ctr::AV{<:AbstractUnstructControlVolume},

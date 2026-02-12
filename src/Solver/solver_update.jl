@@ -79,9 +79,21 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
-    @inbounds @threads for i in 2:KS.ps.nx-1
-        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll; st=st)
+    n_threads = Threads.nthreads()
+    if typeof(KS.gas) <: Mixture
+        ws = [StepWorkspaceM(ctr[1]) for n in 1:n_threads]
+    else
+        ws = [StepWorkspace(ctr[1]) for n in 1:n_threads]
     end
+
+    @inbounds @threads for i in 2:KS.ps.nx-1
+        tid = Threads.threadid()
+        fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll; ws = ws[tid], st=st)
+    end
+
+    # @inbounds @threads for i in 2:KS.ps.nx-1
+    #     fn(KS, ctr[i], face[i], face[i+1], (dt, KS.ps.dx[i], sumRes, sumAvg), coll; st=st)
+    # end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * KS.ps.nx) / (sumAvg[i] + 1.e-7)
@@ -110,7 +122,15 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
+    n_threads = Threads.nthreads()
+    if typeof(KS.gas) <: Mixture
+        ws = [StepWorkspaceM(ctr[1]) for n in 1:n_threads]
+    else
+        ws = [StepWorkspace3F(ctr[1]) for n in 1:n_threads]
+    end
+
     @inbounds @threads for i in 2:KS.ps.nx-1
+        tid = Threads.threadid()
         fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
     end
 
@@ -149,8 +169,12 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
+    n_threads = Threads.nthreads()
+    ws = [StepWorkspaceM(ctr[1]) for n in 1:n_threads]
+
     @inbounds @threads for i in 2:KS.ps.nx-1
-        fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, coll, isMHD)
+        tid = Threads.threadid()
+        fn(KS, ctr[i], face[i], face[i+1], KS.ps.dx[i], dt, sumRes, sumAvg, ws[tid], coll, isMHD)
     end
 
     for i in eachindex(residual)
@@ -220,8 +244,12 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
+    n_threads = Threads.nthreads()
+    ws = [StepWorkspace(ctr[1]) for n in 1:n_threads]
+
     @inbounds @threads for j in 2:ny-1
         for i in 2:nx-1
+            tid = Threads.threadid()
             fn(
                 KS,
                 ctr[i, j],
@@ -231,16 +259,127 @@ function update!(
                 a2face[i, j+1],
                 (dt, dx[i, j] * dy[i, j], sumRes, sumAvg),
                 coll;
+                ws=ws[tid],
                 st=st,
             )
         end
     end
+
+    # @inbounds @threads for j in 2:ny-1
+    #     for i in 2:nx-1
+    #         fn(
+    #             KS,
+    #             ctr[i, j],
+    #             a1face[i, j],
+    #             a1face[i+1, j],
+    #             a2face[i, j],
+    #             a2face[i, j+1],
+    #             (dt, dx[i, j] * dy[i, j], sumRes, sumAvg),
+    #             coll;
+    #             st=st,
+    #         )
+    #     end
+    # end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * nx * ny) / (sumAvg[i] + 1.e-7)
     end
 
     update_boundary!(KS, ctr, a1face, a2face, dt, residual; coll=coll, bc=bc, fn=fn, st=st)
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+
+Update algorithm for 3D
+
+## Arguments
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
+- `a1face`: array of cell interface perpendicular to `x` axis
+- `a2face`: array of cell interface perpendicular to `y` axis
+- `a3face`: array of cell interface perpendicular to `z` axis
+- `dt`: time step
+- `residual`: residual
+- `coll`: collision operator
+- `bc`: boundary condition
+- `fn`: update function
+- `st`: step function
+"""
+function update!(
+    KS::AbstractSolverSet,
+    ctr::AA{T,3},
+    a1face,
+    a2face,
+    a3face,
+    dt,
+    residual;
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
+) where {T<:Union{
+    ControlVolume,
+    ControlVolume3D,
+},}
+    nx, ny, nz = KS.ps.nx, KS.ps.ny, KS.ps.nz
+    dx, dy, dz = KS.ps.dx, KS.ps.dy, KS.ps.dz
+
+    sumRes = zero(ctr[1, 1, 1].w)
+    sumAvg = zero(ctr[1, 1, 1].w)
+
+    n_threads = Threads.nthreads()
+    ws = [StepWorkspace(ctr[1]) for n in 1:n_threads]
+
+    @inbounds @threads for k in 2:nz-1
+        for j in 2:ny-1
+            for i in 2:nx-1
+                tid = Threads.threadid()
+                fn(
+                    KS,
+                    ctr[i, j, k],
+                    a1face[i, j, k],
+                    a1face[i+1, j, k],
+                    a2face[i, j, k],
+                    a2face[i, j+1, k],
+                    a3face[i, j, k],
+                    a3face[i, j, k+1],
+                    (dt, dx[i, j, k] * dy[i, j, k] * dz[i, j, k], sumRes, sumAvg),
+                    coll;
+                    ws=ws[tid],
+                    st=st,
+                )
+            end
+        end
+    end
+
+    # @inbounds @threads for k in 2:nz-1
+    #     for j in 2:ny-1
+    #         for i in 2:nx-1
+    #             fn(
+    #                 KS,
+    #                 ctr[i, j, k],
+    #                 a1face[i, j, k],
+    #                 a1face[i+1, j, k],
+    #                 a2face[i, j, k],
+    #                 a2face[i, j+1, k],
+    #                 a3face[i, j, k],
+    #                 a3face[i, j, k+1],
+    #                 (dt, dx[i, j, k] * dy[i, j, k] * dz[i, j, k], sumRes, sumAvg),
+    #                 coll;
+    #                 st=st,
+    #             )
+    #         end
+    #     end
+    # end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * nx * ny * nz) / (sumAvg[i] + 1.e-7)
+    end
+
+    update_boundary!(KS, ctr, a1face, a2face, a3face, dt, residual; coll=coll, bc=bc, fn=fn, st=st)
 
     return nothing
 end
@@ -259,7 +398,11 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
+    n_threads = Threads.nthreads()
+    ws = [StepWorkspace(ctr[1]) for n in 1:n_threads]
+
     @inbounds @threads for i in eachindex(ctr)
+        tid = Threads.threadid()
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
 
@@ -274,9 +417,29 @@ function update!(
                 dirc,
                 sumRes,
                 sumAvg,
+                ws[tid],
             )
         end
     end
+
+    # @inbounds @threads for i in eachindex(ctr)
+    #     if KS.ps.cellType[i] in (0, 2)
+    #         dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
+
+    #         st(
+    #             ctr[i].w,
+    #             ctr[i].prim,
+    #             face[KS.ps.cellFaces[i, 1]].fw,
+    #             face[KS.ps.cellFaces[i, 2]].fw,
+    #             face[KS.ps.cellFaces[i, 3]].fw,
+    #             KS.gas.γ,
+    #             KS.ps.cellArea[i],
+    #             dirc,
+    #             sumRes,
+    #             sumAvg,
+    #         )
+    #     end
+    # end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
@@ -301,7 +464,11 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
+    n_threads = Threads.nthreads()
+    ws = [StepWorkspace(ctr[1]) for n in 1:n_threads]
+
     @inbounds @threads for i in eachindex(ctr)
+        tid = Threads.threadid()
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
 
@@ -328,10 +495,43 @@ function update!(
                 dt,
                 sumRes,
                 sumAvg,
+                ws[tid],
                 coll,
             )
         end
     end
+
+    # @inbounds @threads for i in eachindex(ctr)
+    #     if KS.ps.cellType[i] in (0, 2)
+    #         dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
+
+    #         st(
+    #             ctr[i].w,
+    #             ctr[i].prim,
+    #             ctr[i].f,
+    #             face[KS.ps.cellFaces[i, 1]].fw,
+    #             face[KS.ps.cellFaces[i, 1]].ff,
+    #             face[KS.ps.cellFaces[i, 2]].fw,
+    #             face[KS.ps.cellFaces[i, 2]].ff,
+    #             face[KS.ps.cellFaces[i, 3]].fw,
+    #             face[KS.ps.cellFaces[i, 3]].ff,
+    #             KS.vs.u,
+    #             KS.vs.v,
+    #             KS.vs.weights,
+    #             KS.gas.K,
+    #             KS.gas.γ,
+    #             KS.gas.μᵣ,
+    #             KS.gas.ω,
+    #             KS.gas.Pr,
+    #             KS.ps.cellArea[i],
+    #             dirc,
+    #             dt,
+    #             sumRes,
+    #             sumAvg,
+    #             coll,
+    #         )
+    #     end
+    # end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)
@@ -356,7 +556,11 @@ function update!(
     sumRes = zero(ctr[1].w)
     sumAvg = zero(ctr[1].w)
 
+    n_threads = Threads.nthreads()
+    ws = [StepWorkspace(ctr[1]) for n in 1:n_threads]
+
     @inbounds @threads for i in eachindex(ctr)
+        tid = Threads.threadid()
         if KS.ps.cellType[i] in (0, 2)
             dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
 
@@ -387,10 +591,47 @@ function update!(
                 dt,
                 sumRes,
                 sumAvg,
+                ws[tid],
                 coll,
             )
         end
     end
+
+    # @inbounds @threads for i in eachindex(ctr)
+    #     if KS.ps.cellType[i] in (0, 2)
+    #         dirc = [sign(dot(ctr[i].n[j], face[KS.ps.cellFaces[i, j]].n)) for j in 1:3]
+
+    #         st(
+    #             ctr[i].w,
+    #             ctr[i].prim,
+    #             ctr[i].h,
+    #             ctr[i].b,
+    #             face[KS.ps.cellFaces[i, 1]].fw,
+    #             face[KS.ps.cellFaces[i, 1]].fh,
+    #             face[KS.ps.cellFaces[i, 1]].fb,
+    #             face[KS.ps.cellFaces[i, 2]].fw,
+    #             face[KS.ps.cellFaces[i, 2]].fh,
+    #             face[KS.ps.cellFaces[i, 2]].fb,
+    #             face[KS.ps.cellFaces[i, 3]].fw,
+    #             face[KS.ps.cellFaces[i, 3]].fh,
+    #             face[KS.ps.cellFaces[i, 3]].fb,
+    #             KS.vs.u,
+    #             KS.vs.v,
+    #             KS.vs.weights,
+    #             KS.gas.K,
+    #             KS.gas.γ,
+    #             KS.gas.μᵣ,
+    #             KS.gas.ω,
+    #             KS.gas.Pr,
+    #             KS.ps.cellArea[i],
+    #             dirc,
+    #             dt,
+    #             sumRes,
+    #             sumAvg,
+    #             coll,
+    #         )
+    #     end
+    # end
 
     for i in eachindex(residual)
         residual[i] = sqrt(sumRes[i] * size(KS.ps.cellid, 1)) / (sumAvg[i] + 1.e-7)

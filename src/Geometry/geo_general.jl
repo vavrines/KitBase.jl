@@ -25,7 +25,46 @@ function global_frame(w::AV, cosa, sina)
     return G
 end
 
-global_frame(w::AV, n::AV) = global_frame(w, n[1], n[2])
+# global_frame(w::AV, n::AV) = global_frame(w, n[1], n[2])
+
+"""
+$(SIGNATURES)
+
+Build direction cosine matrix from unit normal vector (3D)
+
+Returns a 3×3 matrix where:
+- Row 1: normal vector n
+- Row 2: tangent vector t1
+- Row 3: tangent vector t2
+"""
+function direction_cosine(nx, ny, nz)
+    if abs(nx) < 0.9
+        t1x = 0.0
+        t1y = -nz
+        t1z = ny
+    else
+        t1x = -nz
+        t1y = 0.0
+        t1z = nx
+    end
+    
+    t1_norm = sqrt(t1x^2 + t1y^2 + t1z^2)
+    t1x /= t1_norm
+    t1y /= t1_norm
+    t1z /= t1_norm
+    
+    t2x = ny * t1z - nz * t1y
+    t2y = nz * t1x - nx * t1z
+    t2z = nx * t1y - ny * t1x
+
+    dirccos = [
+        nx ny nz
+        t1x t1y t1z
+        t2x t2y t2z
+    ]
+
+    return dirccos
+end
 
 """
 $(SIGNATURES)
@@ -57,6 +96,35 @@ end
 """
 $(SIGNATURES)
 
+Transform from local frame to global frame (3D)
+"""
+function global_frame(w::AV, nx, ny, nz)
+    dirccos = direction_cosine(nx, ny, nz)
+    
+    return global_frame(w, dirccos)
+end
+
+"""
+$(SIGNATURES)
+
+Transform from local frame to global frame
+
+For 2D: n = [nx, ny]
+For 3D: n = [nx, ny, nz]
+"""
+function global_frame(w::AV, n)
+    if length(n) == 2
+        return global_frame(w, n[1], n[2])
+    elseif length(n) == 3
+        return global_frame(w, n[1], n[2], n[3])
+    else
+        throw("global_frame: unsupported normal vector dimension")
+    end
+end
+
+"""
+$(SIGNATURES)
+
 Transform global flow variables to local frame
 """
 function local_frame(w::AV, cosa, sina)
@@ -81,10 +149,10 @@ function local_frame(w::AV, cosa, sina)
     return L
 end
 
-"""
-$(SIGNATURES)
-"""
-local_frame(w::AV, n) = local_frame(w::AV, n[1], n[2])
+# """
+# $(SIGNATURES)
+# """
+# local_frame(w::AV, n) = local_frame(w::AV, n[1], n[2])
 
 """
 $(SIGNATURES)
@@ -111,6 +179,35 @@ function local_frame(w::AV, dirccos::AM)
     end
 
     return L
+end
+
+"""
+$(SIGNATURES)
+
+Transform from global frame to local frame (3D)
+"""
+function local_frame(w::AV, nx, ny, nz)
+    dirccos = direction_cosine(nx, ny, nz)
+    
+    return local_frame(w, dirccos)
+end
+
+"""
+$(SIGNATURES)
+
+Transform from global frame to local frame
+
+For 2D: n = [nx, ny]
+For 3D: n = [nx, ny, nz]
+"""
+function local_frame(w::AV, n)
+    if length(n) == 2
+        return local_frame(w, n[1], n[2])
+    elseif length(n) == 3
+        return local_frame(w, n[1], n[2], n[3])
+    else
+        throw("local_frame: unsupported normal vector dimension")
+    end
 end
 
 """

@@ -146,6 +146,8 @@ function ControlVolume(W, PRIM, ND::Integer; auxiliary=false::Bool)
             zero(w)
         elseif ND == 2
             slope_array(w)
+        elseif ND == 3
+            slope_array(w; reduction=false)
         end
     end
     a = begin
@@ -972,6 +974,44 @@ function Base.show(
         "electric field: $(ctr.E)\n",
         "magnetic field: $(ctr.B)\n",
         "Lorenz force: $(ctr.lorenz)\n",
+    )
+end
+
+# ------------------------------------------------------------
+# 3D
+# ------------------------------------------------------------
+
+"""
+$(TYPEDEF)
+
+3D control volume with no distribution function
+
+## Fields
+
+$(FIELDS)
+"""
+mutable struct ControlVolume3D{A,B} <: AbstractControlVolume3D
+    w::A
+    prim::A
+    sw::B
+end
+
+function ControlVolume3D(W, PRIM)
+    w = deepcopy(W)
+    prim = deepcopy(PRIM)
+    #sw = zeros(eltype(W), (axes(W)..., Base.OneTo(2)))
+    sw = slope_array(W)
+
+    return ControlVolume3D{typeof(w),typeof(sw)}(w, prim, sw)
+end
+
+function Base.show(io::IO, ctr::ControlVolume3D{A,B}) where {A,B}
+    return print(
+        io,
+        "ControlVolume3D{$A,$B}\n",
+        "conservative vars: $(ctr.w)\n",
+        "primitive vars: $(ctr.prim)\n",
+        "conservative slopes: $(ctr.sw)\n",
     )
 end
 
