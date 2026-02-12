@@ -28,6 +28,7 @@ include("struct_face.jl")
 include("struct_sol.jl")
 include("struct_flux.jl")
 include("struct_ptc.jl")
+include("struct_ws.jl")
 
 function copy_ctr!(
     ctr::T,
