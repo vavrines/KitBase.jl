@@ -1085,3 +1085,157 @@ function reconstruct!(KS::X, ctr::Y) where {X<:AbstractSolverSet,Y<:AV{ControlVo
 
     return nothing
 end
+
+"""
+$(SIGNATURES)
+
+Reconstruction algorithm for 3D structured mesh
+
+## Arguments
+- `KS`: SolverSet
+- `ctr`: 3D array of cell-centered solution
+"""
+function reconstruct!(
+    KS::SolverSet,
+    ctr::AA{T,3},
+) where {T<:Union{ControlVolume,ControlVolume3D}}
+    if KS.set.interpOrder == 1
+        return
+    end
+
+    nx, ny, nz, dx, dy, dz = 
+            KS.ps.nx, KS.ps.ny, KS.ps.nz, KS.ps.dx, KS.ps.dy, KS.ps.dz
+
+    #--- conservative variables ---#
+
+    # ============================================================
+    # x-direction (dim = 1)
+    # ============================================================
+
+    # boundary (i = 1, i = nx)
+    @inbounds @threads for k in 1:nz
+        for j in 1:ny
+            swL = extract_last(ctr[1, j, k].sw, 1; mode=:view)
+            reconstruct2!(
+                swL,
+                ctr[1, j, k].w,
+                ctr[2, j, k].w,
+                0.5 * (dx[1, j, k] + dx[2, j, k]),
+            )
+
+            swR = extract_last(ctr[nx, j, k].sw, 1; mode=:view)
+            reconstruct2!(
+                swR,
+                ctr[nx-1, j, k].w,
+                ctr[nx, j, k].w,
+                0.5 * (dx[nx-1, j, k] + dx[nx, j, k]),
+            )
+        end
+    end
+
+    # inner (i = 2:nx-1)
+    @inbounds @threads for k in 1:nz
+        for j in 1:ny
+            for i in 2:nx-1
+                sw = extract_last(ctr[i, j, k].sw, 1; mode=:view)
+                reconstruct3!(
+                    sw,
+                    ctr[i-1, j, k].w,
+                    ctr[i, j, k].w,
+                    ctr[i+1, j, k].w,
+                    0.5 * (dx[i-1, j, k] + dx[i, j, k]),
+                    0.5 * (dx[i, j, k] + dx[i+1, j, k]),
+                    Symbol(KS.set.limiter),
+                )
+            end
+        end
+    end
+
+    # ============================================================
+    # y-direction (dim = 2)
+    # ============================================================
+
+    # boundary (j = 1, j = ny)
+    @inbounds @threads for k in 1:nz
+        for i in 1:nx
+            swD = extract_last(ctr[i, 1, k].sw, 2; mode=:view)
+            reconstruct2!(
+                swD,
+                ctr[i, 1, k].w,
+                ctr[i, 2, k].w,
+                0.5 * (dy[i, 1, k] + dy[i, 2, k]),
+            )
+
+            swU = extract_last(ctr[i, ny, k].sw, 2; mode=:view)
+            reconstruct2!(
+                swU,
+                ctr[i, ny-1, k].w,
+                ctr[i, ny, k].w,
+                0.5 * (dy[i, ny-1, k] + dy[i, ny, k]),
+            )
+        end
+    end
+
+    # inner (j = 2:ny-1)
+    @inbounds @threads for k in 1:nz
+        for j in 2:ny-1
+            for i in 1:nx
+                sw = extract_last(ctr[i, j, k].sw, 2; mode=:view)
+                reconstruct3!(
+                    sw,
+                    ctr[i, j-1, k].w,
+                    ctr[i, j, k].w,
+                    ctr[i, j+1, k].w,
+                    0.5 * (dy[i, j-1, k] + dy[i, j, k]),
+                    0.5 * (dy[i, j, k] + dy[i, j+1, k]),
+                    Symbol(KS.set.limiter),
+                )
+            end
+        end
+    end
+
+    # ============================================================
+    # z-direction (dim = 3)
+    # ============================================================
+
+    # boundary (k = 1, k = nz)
+    @inbounds @threads for j in 1:ny
+        for i in 1:nx
+            swB = extract_last(ctr[i, j, 1].sw, 3; mode=:view)
+            reconstruct2!(
+                swB,
+                ctr[i, j, 1].w,
+                ctr[i, j, 2].w,
+                0.5 * (dz[i, j, 1] + dz[i, j, 2]),
+            )
+
+            swF = extract_last(ctr[i, j, nz].sw, 3; mode=:view)
+            reconstruct2!(
+                swF,
+                ctr[i, j, nz-1].w,
+                ctr[i, j, nz].w,
+                0.5 * (dz[i, j, nz-1] + dz[i, j, nz]),
+            )
+        end
+    end
+
+    # inner (k = 2:nz-1)
+    @inbounds @threads for k in 2:nz-1
+        for j in 1:ny
+            for i in 1:nx
+                sw = extract_last(ctr[i, j, k].sw, 3; mode=:view)
+                reconstruct3!(
+                    sw,
+                    ctr[i, j, k-1].w,
+                    ctr[i, j, k].w,
+                    ctr[i, j, k+1].w,
+                    0.5 * (dz[i, j, k-1] + dz[i, j, k]),
+                    0.5 * (dz[i, j, k] + dz[i, j, k+1]),
+                    Symbol(KS.set.limiter),
+                )
+            end
+        end
+    end
+
+    return nothing
+end

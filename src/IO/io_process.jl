@@ -38,6 +38,23 @@ function extract_sol(ps::AbstractPhysicalSpace2D, ctr)
     return sol
 end
 
+function extract_sol(ps::AbstractPhysicalSpace3D, ctr)
+    nx, ny, nz = ps.nx, ps.ny, ps.nz
+
+    sol = zeros(nx, ny, nz, axes(ctr[1].prim)...)
+    if ndims(sol) == 4
+        for i in axes(sol, 1), j in axes(sol, 2), k in axes(sol, 3)
+            sol[i, j, k, :] .= ctr[i, j, k].prim
+        end
+    elseif ndims(sol) == 5
+        for i in axes(sol, 1), j in axes(sol, 2), k in axes(sol, 3)
+            sol[i, j, k, :, :] .= ctr[i, j, k].prim
+        end
+    end
+
+    return sol
+end
+
 """
 $(SIGNATURES)
 

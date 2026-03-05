@@ -43,6 +43,26 @@ step!(
 """
 $(SIGNATURES)
 
+3D
+"""
+step!(
+    KS::AbstractSolverSet,
+    cell::AbstractControlVolume,
+    faceXL::T,
+    faceXR::T,
+    faceYL::T,
+    faceYR::T,
+    faceZL::T,
+    faceZR::T,
+    p,
+    coll=:bgk;
+    kwargs...,
+) where {T<:AbstractInterface} =
+    step!(KS, KS.vs, KS.gas, cell, faceXL, faceXR, faceYL, faceYR, faceZL, faceZR, p, coll; kwargs...)
+
+"""
+$(SIGNATURES)
+
 1D scalar
 """
 function step!(
@@ -433,6 +453,44 @@ function step!(
         gas.Pr,
         Δs,
         dt,
+        RES,
+        AVG,
+        coll,
+    )
+end
+
+"""
+$(SIGNATURES)
+
+3D0F
+"""
+function step!(
+    KS,
+    vs,
+    gas::Gas,
+    cell::TC,
+    faceXL,
+    faceXR,
+    faceYL,
+    faceYR,
+    faceZL,
+    faceZR,
+    p,
+    coll=:bgk;
+    st=step!,
+) where {TC<:Union{ControlVolume,ControlVolume3D}}
+    dt, Δv, RES, AVG = p
+    return st(
+        cell.w,
+        cell.prim,
+        faceXL.fw,
+        faceXR.fw,
+        faceYL.fw,
+        faceYR.fw,
+        faceZL.fw,
+        faceZR.fw,
+        gas.γ,
+        Δv,
         RES,
         AVG,
         coll,

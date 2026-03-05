@@ -137,6 +137,8 @@ function Setup(
             [bc, bc]
         elseif parse(Int, space[1]) == 2
             [bc, bc, bc, bc]
+        elseif parse(Int, space[1]) == 3
+            [bc, bc, bc, bc, bc, bc]
         end
     end
 

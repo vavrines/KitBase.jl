@@ -375,6 +375,145 @@ struct PSpace3D{TR<:Real,TI<:Integer,TA<:AA{<:Real,3},TB<:AA{<:Real,5},TC,TD} <:
     n::TD
 end
 
+function PSpace3D(
+    X0::TR,
+    X1::TR,
+    NX::TI,
+    Y0::TR,
+    Y1::TR,
+    NY::TI,
+    Z0::TR,
+    Z1::TR,
+    NZ::TI,
+    NGX=0::Integer,
+    NGY=0::Integer,
+    NGZ=0::Integer,
+) where {TR,TI}
+    TX = ifelse(TR == Float32, Float32, Float64)
+
+    δx = (X1 - X0) / NX
+    δy = (Y1 - Y0) / NY
+    δz = (Z1 - Z0) / NZ
+    
+    x = OffsetArray{TX}(undef, 1-NGX:NX+NGX, 1-NGY:NY+NGY, 1-NGZ:NZ+NGZ)
+    y = similar(x)
+    z = similar(x)
+    dx = similar(x)
+    dy = similar(x)
+    dz = similar(x)
+    
+    for k in axes(x, 3)
+        for j in axes(x, 2)
+            for i in axes(x, 1)
+                x[i, j, k] = X0 + (i - 0.5) * δx
+                y[i, j, k] = Y0 + (j - 0.5) * δy
+                z[i, j, k] = Z0 + (k - 0.5) * δz
+                dx[i, j, k] = δx
+                dy[i, j, k] = δy
+                dz[i, j, k] = δz
+            end
+        end
+    end
+
+    # 8 vertices per cell, 3 coordinates per vertex
+    vertices = similar(x, axes(x)..., 8, 3)
+    for k in axes(vertices, 3), j in axes(vertices, 2), i in axes(vertices, 1)
+        # vertex 1: (-x, -y, -z)
+        vertices[i, j, k, 1, 1] = x[i, j, k] - 0.5 * dx[i, j, k]
+        vertices[i, j, k, 1, 2] = y[i, j, k] - 0.5 * dy[i, j, k]
+        vertices[i, j, k, 1, 3] = z[i, j, k] - 0.5 * dz[i, j, k]
+        
+        # vertex 2: (+x, -y, -z)
+        vertices[i, j, k, 2, 1] = x[i, j, k] + 0.5 * dx[i, j, k]
+        vertices[i, j, k, 2, 2] = y[i, j, k] - 0.5 * dy[i, j, k]
+        vertices[i, j, k, 2, 3] = z[i, j, k] - 0.5 * dz[i, j, k]
+        
+        # vertex 3: (+x, +y, -z)
+        vertices[i, j, k, 3, 1] = x[i, j, k] + 0.5 * dx[i, j, k]
+        vertices[i, j, k, 3, 2] = y[i, j, k] + 0.5 * dy[i, j, k]
+        vertices[i, j, k, 3, 3] = z[i, j, k] - 0.5 * dz[i, j, k]
+        
+        # vertex 4: (-x, +y, -z)
+        vertices[i, j, k, 4, 1] = x[i, j, k] - 0.5 * dx[i, j, k]
+        vertices[i, j, k, 4, 2] = y[i, j, k] + 0.5 * dy[i, j, k]
+        vertices[i, j, k, 4, 3] = z[i, j, k] - 0.5 * dz[i, j, k]
+        
+        # vertex 5: (+x, -y, +z)
+        vertices[i, j, k, 5, 1] = x[i, j, k] + 0.5 * dx[i, j, k]
+        vertices[i, j, k, 5, 2] = y[i, j, k] - 0.5 * dy[i, j, k]
+        vertices[i, j, k, 5, 3] = z[i, j, k] + 0.5 * dz[i, j, k]
+        
+        # vertex 6: (+x, +y, +z)
+        vertices[i, j, k, 6, 1] = x[i, j, k] + 0.5 * dx[i, j, k]
+        vertices[i, j, k, 6, 2] = y[i, j, k] + 0.5 * dy[i, j, k]
+        vertices[i, j, k, 6, 3] = z[i, j, k] + 0.5 * dz[i, j, k]
+        
+        # vertex 7: (-x, +y, +z)
+        vertices[i, j, k, 7, 1] = x[i, j, k] - 0.5 * dx[i, j, k]
+        vertices[i, j, k, 7, 2] = y[i, j, k] + 0.5 * dy[i, j, k]
+        vertices[i, j, k, 7, 3] = z[i, j, k] + 0.5 * dz[i, j, k]
+        
+        # vertex 8: (-x, -y, +z)
+        vertices[i, j, k, 8, 1] = x[i, j, k] - 0.5 * dx[i, j, k]
+        vertices[i, j, k, 8, 2] = y[i, j, k] - 0.5 * dy[i, j, k]
+        vertices[i, j, k, 8, 3] = z[i, j, k] + 0.5 * dz[i, j, k]
+    end
+
+    # 6 faces per cell: -x, +x, -y, +y, -z, +z
+    # face 1: -x (vertices 1, 4, 7, 8)
+    # face 2: +x (vertices 2, 3, 6, 5)
+    # face 3: -y (vertices 1, 2, 5, 8)
+    # face 4: +y (vertices 3, 4, 7, 6)
+    # face 5: -z (vertices 1, 2, 3, 4)
+    # face 6: +z (vertices 5, 6, 7, 8)
+    areas = [0.0 for i in axes(x, 1), j in axes(x, 2), k in axes(x, 3), f in 1:6]
+    for k in axes(x, 3), j in axes(x, 2), i in axes(x, 1)
+        areas[i, j, k, 1] = dy[i, j, k] * dz[i, j, k]  # -x face
+        areas[i, j, k, 2] = dy[i, j, k] * dz[i, j, k]  # +x face
+        areas[i, j, k, 3] = dx[i, j, k] * dz[i, j, k]  # -y face
+        areas[i, j, k, 4] = dx[i, j, k] * dz[i, j, k]  # +y face
+        areas[i, j, k, 5] = dx[i, j, k] * dy[i, j, k]  # -z face
+        areas[i, j, k, 6] = dx[i, j, k] * dy[i, j, k]  # +z face
+    end
+
+    # outward unit normal vectors for 6 faces
+    n = [zeros(3) for i in axes(x, 1), j in axes(x, 2), k in axes(x, 3), f in 1:6]
+    for k in axes(x, 3), j in axes(x, 2), i in axes(x, 1)
+        n[i, j, k, 1] .= [-1.0, 0.0, 0.0]  # -x face
+        n[i, j, k, 2] .= [1.0, 0.0, 0.0]   # +x face
+        n[i, j, k, 3] .= [0.0, -1.0, 0.0]  # -y face
+        n[i, j, k, 4] .= [0.0, 1.0, 0.0]   # +y face
+        n[i, j, k, 5] .= [0.0, 0.0, -1.0]  # -z face
+        n[i, j, k, 6] .= [0.0, 0.0, 1.0]   # +z face
+    end
+
+    return PSpace3D{TR,TI,typeof(x),typeof(vertices),typeof(areas),typeof(n)}(
+        X0,
+        X1,
+        NX,
+        Y0,
+        Y1,
+        NY,
+        Z0,
+        Z1,
+        NZ,
+        x,
+        y,
+        z,
+        dx,
+        dy,
+        dz,
+        vertices,
+        areas,
+        n,
+    )
+end
+
+PSpace3D() = PSpace3D(0, 1, 45, 0, 1, 45, 0, 1, 45)
+
+PSpace3D(X0::T, X1::T, Y0::T, Y1::T, Z0::T, Z1::T) where {T} = 
+    PSpace3D(X0, X1, 45, Y0, Y1, 45, Z0, Z1, 45)
+
 """
 $(SIGNATURES)
 

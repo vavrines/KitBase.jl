@@ -152,6 +152,84 @@ end
 """
 $(SIGNATURES)
 
+Solution algorithm for 3D structured mesh
+
+## Arguments
+- `KS`: SolverSet
+- `ctr`: matrix of cell-centered solution
+- `a1face`: matrix of cell interface perpendicular to `x` axis
+- `a2face`: matrix of cell interface perpendicular to `y` axis
+- `a3face`: matrix of cell interface perpendicular to `z` axis
+- `simTime`: simulation time
+"""
+function solve!(
+    KS::AbstractSolverSet,
+    ctr::AA{<:AbstractControlVolume,3},
+    a1face::T,
+    a2face::T,
+    a3face::T,
+    simTime;
+    steady=false,
+) where {T<:AA{<:AbstractInterface,3}}
+
+    #--- initial checkpoint ---#
+    write_jld(KS, ctr, simTime)
+
+    #--- setup ---#
+    iter = 0
+    t = deepcopy(simTime)
+    dt = timestep(KS, ctr, simTime)
+    nt = Int(floor(KS.set.maxTime / dt)) + 1
+    res = zero(ctr[1].w)
+
+    #--- main loop ---#
+    @showprogress for iter in 1:nt
+        reconstruct!(KS, ctr)
+        evolve!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            a3face,
+            dt;
+            mode=symbolize(KS.set.flux),
+            bc=symbolize(KS.set.boundary),
+        )
+        update!(
+            KS,
+            ctr,
+            a1face,
+            a2face,
+            a3face,
+            dt,
+            res;
+            coll=symbolize(KS.set.collision),
+            bc=symbolize(KS.set.boundary),
+        )
+
+        t += dt
+
+        if iter % 500 == 0
+            println("iter: $(iter), time: $(t), dt: $(dt), res: $(res[1:end])")
+        end
+
+        if t > KS.set.maxTime
+            break
+        end
+        if steady == true
+            if maximum(res) < 5.e-7
+                break
+            end
+        end
+    end
+
+    write_jld(KS, ctr, simTime)
+    return t
+end
+
+"""
+$(SIGNATURES)
+
 Calculate timestep based on the current solution
 
 ## Arguments
@@ -252,6 +330,62 @@ function timestep(KS::AbstractSolverSet, ctr::AM{<:AbstractControlVolume}, simTi
                     )
                 else
                     tmax = max(tmax, umax / dx[i, j] + vmax / dy[i, j])
+                end
+            end
+        end
+    end
+
+    dt = KS.set.cfl / tmax
+    dt = ifelse(dt < (KS.set.maxTime - simTime), dt, KS.set.maxTime - simTime)
+
+    return dt
+end
+
+function timestep(KS::AbstractSolverSet, ctr::AA{<:AbstractControlVolume,3}, simTime=0.0)
+    nx, ny, nz = KS.ps.nx, KS.ps.ny, KS.ps.nz
+    dx, dy, dz = KS.ps.dx, KS.ps.dy, KS.ps.dz
+
+    tmax = 0.0
+
+    if KS.set.nSpecies == 1
+        @inbounds @threads for k in 1:nz
+            for j in 1:ny
+                for i in 1:nx
+                    prim = ctr[i, j, k].prim
+                    sos = sound_speed(prim, KS.gas.γ)
+                    umax, vmax, wmax = begin
+                        if KS.vs isa Nothing
+                            abs(prim[2]) + sos, abs(prim[3]) + sos, abs(prim[4]) + sos
+                        else
+                            max(KS.vs.u1, abs(prim[2])) + sos,
+                            max(KS.vs.v1, abs(prim[3])) + sos,
+                            max(KS.vs.w1, abs(prim[4])) + sos
+                        end
+                    end
+                    tmax = max(tmax, umax / dx[i, j, k] + vmax / dy[i, j, k] + wmax / dz[i, j, k])
+                end
+            end
+        end
+
+    elseif KS.set.nSpecies == 2
+        @inbounds @threads for k in 1:nz
+            for j in 1:ny
+                for i in 1:nx
+                    prim = ctr[i, j, k].prim
+                    sos = sound_speed(prim, KS.gas.γ)
+                    umax = max(maximum(KS.vs.u1), maximum(abs.(prim[2, :]))) + sos
+                    vmax = max(maximum(KS.vs.v1), maximum(abs.(prim[3, :]))) + sos
+                    wmax = max(maximum(KS.vs.w1), maximum(abs.(prim[4, :]))) + sos
+
+                    if KS.set.space[3:4] in ["3f", "4f"]
+                        tmax = max(
+                            tmax,
+                            umax / dx[i, j, k] + vmax / dy[i, j, k] + wmax / dz[i, j, k],
+                            KS.gas.sol / dx[i, j, k] + KS.gas.sol / dy[i, j, k] + KS.gas.sol / dz[i, j, k],
+                        )
+                    else
+                        tmax = max(tmax, umax / dx[i, j, k] + vmax / dy[i, j, k] + wmax / dz[i, j, k])
+                    end
                 end
             end
         end

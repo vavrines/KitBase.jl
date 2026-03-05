@@ -506,3 +506,50 @@ function Base.show(io::IO, ctr::Interface2D3F{A,B,C,D,E}) where {A,B,C,D,E}
         "electromagnetic fluxes: femL, femR, femLU, femLD, femRU, femRD\n",
     )
 end
+
+# ------------------------------------------------------------
+# 3D
+# ------------------------------------------------------------
+
+"""
+$(TYPEDEF)
+
+3D cell interface with no distribution function
+
+## Fields
+
+$(FIELDS)    
+"""
+mutable struct Interface3D{A,B,C} <: AbstractInterface3D
+    len::A
+    n::B
+    fw::C
+end
+
+function Interface3D(L::Real, nx::Real, ny::Real, nz::Real, w::AA)
+    len = L
+    n = [nx, ny, nz]
+
+    fw = zero(w)
+
+    return Interface3D(len, n, fw)
+end
+
+function Interface3D(L::Real, n::AbstractVector, w::AA)
+    len = L
+    n_vec = [n[1], n[2], n[3]]
+
+    fw = zero(w)
+
+    return Interface3D(len, n_vec, fw)
+end
+
+function Base.show(io::IO, face::Interface3D{A,B,C}) where {A,B,C}
+    return print(
+        io,
+        "Interface3D{$A,$B,$C}\n",
+        "area: $(face.len)\n",
+        "normal vector: ($(face.n[1]),$(face.n[2]),$(face.n[3]))\n",
+        "conservative fluxes: $(face.fw)\n",
+    )
+end

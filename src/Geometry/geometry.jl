@@ -26,6 +26,10 @@ function set_geometry(;
     y1=nothing,
     ny=nothing,
     nyg=nothing,
+    z0=nothing,
+    z1=nothing,
+    nz=nothing,
+    nzg=nothing,
     mesh=nothing,
     kwargs...,
 )
@@ -37,6 +41,8 @@ function set_geometry(;
             return PSpace1D(x0, x1, nx, nxg)
         elseif Dx == 2
             return PSpace2D(x0, x1, nx, y0, y1, ny, nxg, nyg)
+        elseif Dx == 3
+            return PSpace3D(x0, x1, nx, y0, y1, ny, z0, z1, nz, nxg, nyg, nzg)
         else
             throw("No preset available for 3D simulation, please set it up manually.")
         end

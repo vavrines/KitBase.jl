@@ -245,6 +245,75 @@ function update!(
     return nothing
 end
 
+"""
+$(SIGNATURES)
+
+Update algorithm for 3D
+
+## Arguments
+- `KS`: SolverSet
+- `ctr`: array of cell-centered solution
+- `a1face`: array of cell interface perpendicular to `x` axis
+- `a2face`: array of cell interface perpendicular to `y` axis
+- `a3face`: array of cell interface perpendicular to `z` axis
+- `dt`: time step
+- `residual`: residual
+- `coll`: collision operator
+- `bc`: boundary condition
+- `fn`: update function
+- `st`: step function
+"""
+function update!(
+    KS::AbstractSolverSet,
+    ctr::AA{T,3},
+    a1face,
+    a2face,
+    a3face,
+    dt,
+    residual;
+    coll=symbolize(KS.set.collision),
+    bc=symbolize(KS.set.boundary),
+    fn=step!,
+    st=fn,
+) where {T<:Union{
+    ControlVolume,
+    ControlVolume3D,
+},}
+    nx, ny, nz = KS.ps.nx, KS.ps.ny, KS.ps.nz
+    dx, dy, dz = KS.ps.dx, KS.ps.dy, KS.ps.dz
+
+    sumRes = zero(ctr[1, 1, 1].w)
+    sumAvg = zero(ctr[1, 1, 1].w)
+
+    @inbounds @threads for k in 2:nz-1
+        for j in 2:ny-1
+            for i in 2:nx-1
+                fn(
+                    KS,
+                    ctr[i, j, k],
+                    a1face[i, j, k],
+                    a1face[i+1, j, k],
+                    a2face[i, j, k],
+                    a2face[i, j+1, k],
+                    a3face[i, j, k],
+                    a3face[i, j, k+1],
+                    (dt, dx[i, j, k] * dy[i, j, k] * dz[i, j, k], sumRes, sumAvg),
+                    coll;
+                    st=st,
+                )
+            end
+        end
+    end
+
+    for i in eachindex(residual)
+        residual[i] = sqrt(sumRes[i] * nx * ny * nz) / (sumAvg[i] + 1.e-7)
+    end
+
+    update_boundary!(KS, ctr, a1face, a2face, a3face, dt, residual; coll=coll, bc=bc, fn=fn, st=st)
+
+    return nothing
+end
+
 function update!(
     KS::AbstractSolverSet,
     ctr::AV{ControlVolumeUS},

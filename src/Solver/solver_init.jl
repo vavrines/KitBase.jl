@@ -327,6 +327,64 @@ function init_fvm(KS, ps::AbstractPhysicalSpace2D, array=:dynamic_array; structa
     return ctr |> funcst, a1face |> funcst, a2face |> funcst
 end
 
+function init_fvm(KS, ps::AbstractPhysicalSpace3D, array=:dynamic_array; structarray=false)
+    funcar = eval(array)
+    funcst = ifelse(structarray, StructArray, dynamic_array)
+    funcprim = ifelse(KS.set.nSpecies == 1, conserve_prim, mixture_conserve_prim)
+
+    nx, ny, nz = ps.nx, ps.ny, ps.nz
+    dx, dy, dz = ps.dx, ps.dy, ps.dz
+
+    if KS.set.space[3:4] == "0f"
+        ctr = OffsetArray{ControlVolume}(undef, axes(KS.ps.x, 1), axes(KS.ps.y, 2), axes(KS.ps.z, 3))
+        a1face = Array{Interface}(undef, nx + 1, ny, nz)
+        a2face = Array{Interface}(undef, nx, ny + 1, nz)
+        a3face = Array{Interface}(undef, nx, ny, nz + 1)
+
+        for k in axes(ctr, 3), j in axes(ctr, 2), i in axes(ctr, 1)
+            w = KS.ib.fw(KS.ps.x[i, j, k], KS.ps.y[i, j, k], KS.ps.z[i, j, k], KS.ib.p)
+            prim = funcprim(w, KS.gas.γ)
+
+            ctr[i, j, k] = ControlVolume(funcar(w), funcar(prim), 3; auxiliary=KS.set.hasForce)
+        end
+
+        for k in 1:nz
+            for j in 1:ny
+                for i in 1:nx+1
+                    a1face[i, j, k] = Interface(
+                        funcar(KS.ib.fw(KS.ps.x[1, 1, 1], KS.ps.y[1, 1, 1], KS.ps.z[1, 1, 1], KS.ib.p)),
+                        3,
+                    )
+                end
+            end
+        end
+
+        for k in 1:nz
+            for j in 1:ny+1
+                for i in 1:nx
+                    a2face[i, j, k] = Interface(
+                        funcar(KS.ib.fw(KS.ps.x[1, 1, 1], KS.ps.y[1, 1, 1], KS.ps.z[1, 1, 1], KS.ib.p)),
+                        3,
+                    )
+                end
+            end
+        end
+
+        for k in 1:nz+1
+            for j in 1:ny
+                for i in 1:nx
+                    a3face[i, j, k] = Interface(
+                        funcar(KS.ib.fw(KS.ps.x[1, 1, 1], KS.ps.y[1, 1, 1], KS.ps.z[1, 1, 1], KS.ib.p)),
+                        3,
+                    )
+                end
+            end
+        end
+    end
+
+    return ctr |> funcst, a1face |> funcst, a2face |> funcst, a3face |> funcst
+end
+
 function init_fvm(KS, ps::UnstructPSpace, array=:dynamic_array; structarray=false)
     funcar = eval(array)
     funcst = ifelse(structarray, StructArray, dynamic_array)

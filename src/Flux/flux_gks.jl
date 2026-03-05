@@ -58,7 +58,42 @@ function flux_gks!(face::Interface, ctrL, ctrR, gas::Gas, p, dt=1.0)
             ctrL.sw,
             ctrR.sw,
         )
-    else
+    elseif size(ctrL.w, 1) == 4
+        len, n, axis = p[3:5]
+        flux_gks!(
+            face.fw,
+            local_frame(ctrL.w .+ dxL .* ctrL.sw[:, axis], n),
+            local_frame(ctrR.w .- dxR .* ctrR.sw[:, axis], n),
+            gas.K,
+            gas.γ,
+            gas.μᵣ,
+            gas.ω,
+            dt,
+            dxL,
+            dxR,
+            len,
+            ctrL.sw[:, axis],
+            ctrR.sw[:, axis],
+        )
+        face.fw .= global_frame(face.fw, n)
+    elseif size(ctrL.w, 1) == 5
+        len, n, axis = p[3:5]
+        flux_gks!(
+            face.fw,
+            local_frame(ctrL.w .+ dxL .* ctrL.sw[:, axis], n),
+            local_frame(ctrR.w .- dxR .* ctrR.sw[:, axis], n),
+            gas.K,
+            gas.γ,
+            gas.μᵣ,
+            gas.ω,
+            dt,
+            dxL,
+            dxR,
+            len,
+            ctrL.sw[:, axis],
+            ctrR.sw[:, axis],
+        )
+        face.fw .= global_frame(face.fw, n)
     end
 
     return nothing
