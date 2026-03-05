@@ -1,0 +1,41 @@
+# ------------------------------------------------------------
+# Configuration of 3D lid-driven cavity
+# ------------------------------------------------------------
+
+# setup
+matter = gas
+case = cube
+space = 3d0f0v
+flux = gks
+collision = bgk
+nSpecies = 1
+interpOrder = 2
+limiter = vanleer
+boundary = fix
+cfl = 0.8
+maxTime = 0.0001
+hasForce = false
+
+# phase space
+x0 = 0.0
+x1 = 1.0
+nx = 21
+y0 = 0.0
+y1 = 1.0
+ny = 21
+z0 = 0.0
+z1 = 1.0
+nz = 21
+pMeshType = uniform
+nxg = 1
+nyg = 1
+nzg = 1
+
+# gas
+knudsen = 1.0
+mach = 2.0
+prandtl = 1.0
+inK = 0.0
+omega = 0.72
+alphaRef = 1.0
+omegaRef = 0.5

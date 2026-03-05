@@ -18,6 +18,8 @@ function read_cfg(filename::T) where {T<:AbstractString}
                 [D[:boundary], D[:boundary]]
             elseif parse(Int, D[:space][1]) == 2
                 [D[:boundary], D[:boundary], D[:boundary], D[:boundary]]
+            elseif parse(Int, D[:space][1]) == 3
+                [D[:boundary], D[:boundary], D[:boundary], D[:boundary], D[:boundary], D[:boundary]]
             end
         end
     elseif haskey(D, :boundary4)

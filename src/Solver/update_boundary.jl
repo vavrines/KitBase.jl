@@ -310,6 +310,209 @@ $(SIGNATURES)
 """
 function update_boundary!(
     KS,
+    ctr::AA{TC,3},
+    a1face,
+    a2face,
+    a3face,
+    dt,
+    residual;
+    coll=symbolize(KS.set.collision),
+    bc,
+    fn=step!,
+    st=fn,
+    kwargs...,
+) where {TC<:Union{
+    ControlVolume,
+    ControlVolume3D,
+},}
+    bcs = ifelse(bc isa Symbol, [bc, bc, bc, bc, bc, bc], bc)
+
+    nx, ny, nz = KS.ps.nx, KS.ps.ny, KS.ps.nz
+    dx, dy, dz = KS.ps.dx, KS.ps.dy, KS.ps.dz
+
+    resXL = zero(ctr[1, 1, 1].w)
+    avgXL = zero(ctr[1, 1, 1].w)
+    resXR = zero(ctr[1, 1, 1].w)
+    avgXR = zero(ctr[1, 1, 1].w)
+    resYL = zero(ctr[1, 1, 1].w)
+    avgYL = zero(ctr[1, 1, 1].w)
+    resYR = zero(ctr[1, 1, 1].w)
+    avgYR = zero(ctr[1, 1, 1].w)
+    resZL = zero(ctr[1, 1, 1].w)
+    avgZL = zero(ctr[1, 1, 1].w)
+    resZR = zero(ctr[1, 1, 1].w)
+    avgZR = zero(ctr[1, 1, 1].w)
+
+    if bcs[1] != :fix
+        @inbounds for k in 1:nz
+            for j in 1:ny
+                fn(
+                    KS,
+                    ctr[1, j, k],
+                    a1face[1, j, k],
+                    a1face[2, j, k],
+                    a2face[1, j, k],
+                    a2face[1, j+1, k],
+                    a3face[1, j, k],
+                    a3face[1, j, k+1],
+                    (dt, dx[1, j, k] * dy[1, j, k] * dz[1, j, k], resXL, avgXL),
+                    coll;
+                    st=st,
+                )
+            end
+        end
+    end
+
+    if bcs[2] != :fix
+        @inbounds for k in 1:nz
+            for j in 1:ny
+                fn(
+                    KS,
+                    ctr[nx, j, k],
+                    a1face[nx, j, k],
+                    a1face[nx+1, j, k],
+                    a2face[nx, j, k],
+                    a2face[nx, j+1, k],
+                    a3face[nx, j, k],
+                    a3face[nx, j, k+1],
+                    (dt, dx[nx, j, k] * dy[nx, j, k] * dz[nx, j, k], resXR, avgXR),
+                    coll;
+                    st=st,
+                )
+            end
+        end
+    end
+
+    if bcs[3] != :fix
+        @inbounds for k in 1:nz
+            for i in 2:nx-1  # skip overlap with x boundaries
+                fn(
+                    KS,
+                    ctr[i, 1, k],
+                    a1face[i, 1, k],
+                    a1face[i+1, 1, k],
+                    a2face[i, 1, k],
+                    a2face[i, 2, k],
+                    a3face[i, 1, k],
+                    a3face[i, 1, k+1],
+                    (dt, dx[i, 1, k] * dy[i, 1, k] * dz[i, 1, k], resYL, avgYL),
+                    coll;
+                    st=st,
+                )
+            end
+        end
+    end
+
+    if bcs[4] != :fix
+        @inbounds for k in 1:nz
+            for i in 2:nx-1  # skip overlap with x boundaries
+                fn(
+                    KS,
+                    ctr[i, ny, k],
+                    a1face[i, ny, k],
+                    a1face[i+1, ny, k],
+                    a2face[i, ny, k],
+                    a2face[i, ny+1, k],
+                    a3face[i, ny, k],
+                    a3face[i, ny, k+1],
+                    (dt, dx[i, ny, k] * dy[i, ny, k] * dz[i, ny, k], resYR, avgYR),
+                    coll;
+                    st=st,
+                )
+            end
+        end
+    end
+
+    if bcs[5] != :fix
+        @inbounds for j in 2:ny-1  # skip overlap with x and y boundaries
+            for i in 2:nx-1
+                fn(
+                    KS,
+                    ctr[i, j, 1],
+                    a1face[i, j, 1],
+                    a1face[i+1, j, 1],
+                    a2face[i, j, 1],
+                    a2face[i, j+1, 1],
+                    a3face[i, j, 1],
+                    a3face[i, j, 2],
+                    (dt, dx[i, j, 1] * dy[i, j, 1] * dz[i, j, 1], resZL, avgZL),
+                    coll;
+                    st=st,
+                )
+            end
+        end
+    end
+
+    if bcs[6] != :fix
+        @inbounds for j in 2:ny-1  # skip overlap with x and y boundaries
+            for i in 2:nx-1
+                fn(
+                    KS,
+                    ctr[i, j, nz],
+                    a1face[i, j, nz],
+                    a1face[i+1, j, nz],
+                    a2face[i, j, nz],
+                    a2face[i, j+1, nz],
+                    a3face[i, j, nz],
+                    a3face[i, j, nz+1],
+                    (dt, dx[i, j, nz] * dy[i, j, nz] * dz[i, j, nz], resZR, avgZR),
+                    coll;
+                    st=st,
+                )
+            end
+        end
+    end
+
+    for i in eachindex(residual)
+        residual[i] +=
+            sqrt((resXL[i] + resXR[i] + resYL[i] + resYR[i] + resZL[i] + resZR[i]) * 2) /
+            (avgXL[i] + avgXR[i] + avgYL[i] + avgYR[i] + avgZL[i] + avgZR[i] + 1.e-7)
+    end
+
+    ngx = 1 - first(eachindex(KS.ps.x[:, 1, 1]))
+    if bcs[1] == :period
+        bc_period!(ctr, ngx; dirc=:x)
+    elseif bcs[1] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[1]) * "!"))
+        bcfun(ctr, ngx; dirc=:xl)
+    end
+    if bcs[2] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[2]) * "!"))
+        bcfun(ctr, ngx; dirc=:xr)
+    end
+
+    ngy = 1 - first(eachindex(KS.ps.y[1, :, 1]))
+    if bcs[3] == :period
+        bc_period!(ctr, ngy; dirc=:y)
+    elseif bcs[3] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[3]) * "!"))
+        bcfun(ctr, ngy; dirc=:yl)
+    end
+    if bcs[4] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[4]) * "!"))
+        bcfun(ctr, ngy; dirc=:yr)
+    end
+
+    ngz = 1 - first(eachindex(KS.ps.z[1, 1, :]))
+    if bcs[5] == :period
+        bc_period!(ctr, ngz; dirc=:z)
+    elseif bcs[5] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[5]) * "!"))
+        bcfun(ctr, ngz; dirc=:zl)
+    end
+    if bcs[6] in (:extra, :mirror)
+        bcfun = eval(Symbol("bc_" * string(bcs[6]) * "!"))
+        bcfun(ctr, ngz; dirc=:zr)
+    end
+
+    return nothing
+end
+
+"""
+$(SIGNATURES)
+"""
+function update_boundary!(
+    KS,
     ctr::AV{TC},
     face,
     dt,

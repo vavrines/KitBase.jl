@@ -149,3 +149,36 @@ function step!(
     @. RES += (w - w_old)^2
     @. AVG += abs(w)
 end
+
+"""
+$(SIGNATURES)
+
+3D0F
+"""
+function step!(
+    w::T1,
+    prim::T1,
+    fwXL::T1,
+    fwXR::T1,
+    fwYL::T1,
+    fwYR::T1,
+    fwZL::T1,
+    fwZR::T1,
+    γ,
+    Δv,
+    RES,
+    AVG,
+    collision,
+) where {T1<:AV}
+
+    #--- store W^n and calculate shakhov term ---#
+    w_old = deepcopy(w)
+
+    #--- update W^{n+1} ---#
+    @. w += (fwXL - fwXR + fwYL - fwYR + fwZL - fwZR) / Δv
+    prim = conserve_prim(w, γ)
+
+    #--- record residuals ---#
+    @. RES += (w - w_old)^2
+    @. AVG += abs(w)
+end
