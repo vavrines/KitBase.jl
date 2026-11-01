@@ -56,7 +56,7 @@ SciMLNLSolve = "0.1"
 SpecialFunctions = "^1, ^2"
 StaticArrays = "^1"
 StructArrays = "0.6, 0.7"
-TypedPolynomials = "0.3, 0.4"
+TypedPolynomials = "0.3, 0.4, 0.5"
 WriteVTK = "^1"
 julia = "^1"
 
