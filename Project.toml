@@ -1,6 +1,6 @@
 name = "KitBase"
 uuid = "86eed249-3a28-466f-8d3a-596821e1af9a"
-version = "0.9.32"
+version = "0.9.33"
 authors = ["Tianbai Xiao <tianbaixiao@gmail.com>"]
 
 [deps]
